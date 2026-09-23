@@ -413,12 +413,7 @@ $('#btn-aplicar').addEventListener('click', function () { abrirPanel(false); });
 
 function limpiarTodo() {
   F.color = []; F.grupo = []; F.mes = []; F.loma = []; F.habitat = []; F.familia = [];
-  F.altitud = null; F.altDesde = ALT_MIN; F.altHasta = ALT_MAX;
-  $('#f-altitud').value = 1050;
-  $('#f-altitud-val').textContent = 'todas';
-  $('#f-alt-min').value = ALT_MIN; $('#f-alt-max').value = ALT_MAX;
-  pintarRango();
-  render();
+  quitarAltitud();
 }
 $('#btn-reset').addEventListener('click', limpiarTodo);
 $('#btn-limpiar-filtros').addEventListener('click', function () {
@@ -427,11 +422,30 @@ $('#btn-limpiar-filtros').addEventListener('click', function () {
 });
 
 $('#f-altitud').addEventListener('input', function (ev) {
-  var v = +ev.target.value;
-  if (v > ALT_MAX) { F.altitud = null; $('#f-altitud-val').textContent = 'todas'; }
-  else { F.altitud = v; $('#f-altitud-val').textContent = v + ' msnm'; }
+  F.altitud = +ev.target.value;          // tocarlo lo activa; se apaga con Quitar
+  pintarAltitud();
   render();
 });
+
+function quitarAltitud() {
+  F.altitud = null;
+  F.altDesde = ALT_MIN; F.altHasta = ALT_MAX;
+  $('#f-altitud').value = 550;
+  $('#f-alt-min').value = ALT_MIN;
+  $('#f-alt-max').value = ALT_MAX;
+  pintarAltitud(); pintarRango(); render();
+}
+$('#alt-quitar').addEventListener('click', quitarAltitud);
+
+function pintarAltitud() {
+  var act = altActiva();
+  $('#alt-quitar').classList.toggle('oculto', !act);
+  $('#alt-cota').classList.toggle('apagado', F.altitud == null);
+  $('#alt-rango').classList.toggle('apagado',
+      F.altDesde === ALT_MIN && F.altHasta === ALT_MAX);
+  $('#f-altitud-val').textContent =
+      F.altitud == null ? 'sin filtrar' : F.altitud + ' msnm';
+}
 
 function pintarRango() {
   $('#f-alt-min-val').textContent = F.altDesde + ' msnm';
@@ -451,12 +465,12 @@ function pintarRango() {
 $('#f-alt-min').addEventListener('input', function (ev) {
   F.altDesde = +ev.target.value;
   if (F.altDesde > F.altHasta) { F.altHasta = F.altDesde; $('#f-alt-max').value = F.altHasta; }
-  pintarRango(); render();
+  pintarRango(); pintarAltitud(); render();
 });
 $('#f-alt-max').addEventListener('input', function (ev) {
   F.altHasta = +ev.target.value;
   if (F.altHasta < F.altDesde) { F.altDesde = F.altHasta; $('#f-alt-min').value = F.altDesde; }
-  pintarRango(); render();
+  pintarRango(); pintarAltitud(); render();
 });
 $$('.segmentado [data-modo]').forEach(function (b) {
   b.addEventListener('click', function () {
@@ -466,7 +480,7 @@ $$('.segmentado [data-modo]').forEach(function (b) {
     });
     $('#alt-cota').classList.toggle('oculto', F.altModo !== 'cota');
     $('#alt-rango').classList.toggle('oculto', F.altModo !== 'rango');
-    render();
+    pintarAltitud(); pintarRango(); render();
   });
 });
 
@@ -517,6 +531,7 @@ $('#btn-tema').addEventListener('click', function () {
 aplicarTema(leerTema());
 pintarChipsRapidos();
 pintarFiltros();
+pintarAltitud();
 pintarRango();
 pintarIconos(document);
 render();

@@ -69,16 +69,18 @@
       <div class="envoltura" id="f-mes"></div>
     </div>
     <div class="grupo">
-      <h3><span data-ico="mountains" aria-hidden="true"></span> Altitud</h3>
+      <h3><span data-ico="mountains" aria-hidden="true"></span> Altitud
+        <button class="quitar oculto" id="alt-quitar">Quitar</button>
+      </h3>
       <div class="segmentado" role="group" aria-label="Modo de filtro por altitud">
         <button data-modo="cota" aria-pressed="true">Una cota</button>
         <button data-modo="rango" aria-pressed="false">Un rango</button>
       </div>
       <div id="alt-cota">
         <div class="rango">
-          <input type="range" id="f-altitud" min="100" max="1050" step="50" value="1050"
+          <input type="range" id="f-altitud" min="100" max="1000" step="50" value="550"
                  aria-label="Altitud a la que estás">
-          <output id="f-altitud-val">todas</output>
+          <output id="f-altitud-val">sin filtrar</output>
         </div>
         <p class="pista">Deja sólo las especies cuyo rango incluye esa altura.</p>
       </div>
@@ -120,8 +122,10 @@
 <!-- ---------- ficha de especie ---------- -->
 <article class="ficha" id="ficha" role="dialog" aria-modal="true" aria-label="Ficha de especie">
   <div class="ficha-cab">
-    <button class="btn-icono" id="volver" aria-label="Volver" data-ico="arrow-left"></button>
-    <span class="titulo" id="ficha-titulo"></span>
+    <div class="ficha-cab-int">
+      <button class="btn-icono" id="volver" aria-label="Volver" data-ico="arrow-left"></button>
+      <span class="titulo" id="ficha-titulo"></span>
+    </div>
   </div>
   <div class="ficha-int" id="ficha-int"></div>
 </article>
