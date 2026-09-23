@@ -179,7 +179,11 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .tarjeta:active { transform: scale(.982); }
 .tarjeta:hover { border-color: color-mix(in srgb, var(--acento) 40%, var(--borde)); }
 .tarjeta .foto { position: relative; aspect-ratio: 4/3; flex: none; background: var(--superficie-2); }
-.tarjeta .foto img { width: 100%; height: 100%; object-fit: cover; }
+/* la imagen va en absoluto: si no, su alto natural manda sobre el
+   aspect-ratio del contenedor y las fichas salen de distinto alto */
+.tarjeta .foto img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
 .marcas { position: absolute; top: 7px; left: 7px; display: flex; gap: 5px; }
 .marca-p {
   font-size: 10px; font-weight: 700; letter-spacing: .03em;
@@ -357,8 +361,10 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 .ficha-int { max-width: 1100px; margin: 0 auto; padding: 0 0 60px; }
 
 .galeria { position: relative; background: var(--superficie-2); }
-.galeria .grande { aspect-ratio: 4/3; }
-.galeria .grande img { width: 100%; height: 100%; object-fit: cover; }
+.galeria .grande { aspect-ratio: 4/3; position: relative; }
+.galeria .grande img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
 .miniaturas { display: flex; gap: 8px; padding: 8px 14px; overflow-x: auto; scrollbar-width: none; }
 .miniaturas::-webkit-scrollbar { display: none; }
 .miniaturas button {

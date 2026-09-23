@@ -111,13 +111,25 @@ las dos con su procedencia en vez de elegir una por ti.
 
 ## El color de la flor no está en el PDF
 
-La guía no trae un campo de color: se dedujo leyendo la descripción de cada
-especie. 111 salen del texto, 9 son gramíneas y helechos marcados como *sin flor
-vistosa*, y **14 quedan pendientes de revisar**.
+La guía no trae un campo de color: se deduce leyendo la descripción de cada
+especie. **133 de 134 tienen color**; sólo falta *Vasconcellea candicans*, cuya
+flor ni se describe en el texto ni se ve en la foto.
 
-Para corregirlos, edita `datos/propio/color_flor.csv` (trae la sugerencia y la
-frase exacta del libro como evidencia) y vuelve a ejecutar `construir.py`. Tu
-valor manda siempre sobre el automático.
+| De dónde sale | Especies |
+|---|---|
+| Del texto de la descripción | 119 |
+| Por familia (Poaceae, Pteridaceae, Ephedraceae → *sin flor vistosa*) | 9 |
+| Criterio propio, anotado en `color_flor.csv` | 5 |
+| Sin dato | 1 |
+
+La familia manda sobre el texto: la guía llama «inconspicuas» a las flores de
+*Ephedra*, y una espiga de gramínea color paja no es lo que busca quien filtra
+por color en el campo.
+
+Las 5 de criterio propio están marcadas `revisado = FALSE` con el motivo en
+`notas_color`: son lecturas del libro y de la foto, no de un botánico. El valor
+ya funciona en la app; falta que alguien las confirme. Para corregir cualquiera,
+edita `datos/propio/color_flor.csv` y vuelve a ejecutar `construir.py`.
 
 ---
 

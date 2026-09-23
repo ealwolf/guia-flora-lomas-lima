@@ -1,19 +1,19 @@
 ﻿especie_id,numero_guia,nombre_cientifico,familia,color_flor_auto,color_flor_todos_auto,n_colores,metodo,evidencia
 adiantum-subvolubile,1,Adiantum subvolubile,Pteridaceae,Sin flor vistosa,Sin flor vistosa,1,regla_taxonomica,
-ephedra-americana,2,Ephedra americana,Ephedraceae,Sin flor vistosa,Sin flor vistosa,1,regla_taxonomica,
+ephedra-americana,2,Ephedra americana,Ephedraceae,Sin flor vistosa,Sin flor vistosa,1,regla_taxonomica,"Flores verticiladas, dioicas, inconspicuas; las femeninas con un solo óvulo; inflorescencia masculina amarill"
 anthericum-eccremorrhizum,3,Anthericum eccremorrhizum,Asparagaceae,Blanco,"Blanco, Amarillo",2,texto,"Flores blancas, estigma y anteras amarillas"
 oziroe-biflora,4,Oziroe biflora,Asparagaceae,Blanco,Blanco,1,texto,"Flores blancas hermafroditas, con floración de un solo día"
 alstroemeria-lineatiflora,5,Alstroemeria lineatiflora,Alstroemeriaceae,Morado/lila,"Morado/lila, Amarillo, Blanco",3,texto,Flores hermafroditas de color lila jaspeadas de amarillo y blanco en el centro
-ismene-amancaes,6,Ismene amancaes,Amaryllidaceae,Amarillo,Amarillo,1,texto,Flores terminales amarillas con interior verdoso
-stenomesson-flavum,7,Stenomesson flavum,Amaryllidaceae,Anaranjado,Anaranjado,1,texto,"Flores anaranjadas, campanuladas, de aproximadamente 2 cm, por lo general en posición horizontal"
+ismene-amancaes,6,Ismene amancaes,Amaryllidaceae,Amarillo,"Amarillo, Verde",2,texto,Flores terminales amarillas con interior verdoso
+stenomesson-flavum,7,Stenomesson flavum,Amaryllidaceae,Anaranjado,Anaranjado,1,texto,"Flores anaranjadas, campanuladas, de aproximadamente 2 cm, por lo general en posición horizontal, hermafrodita"
 puya-ferruginea,8,Puya ferruginea,Bromeliaceae,Blanco,"Blanco, Morado/lila",2,texto,"pétalos oblanceolados, glabros, purpúreos"
 tillandsia-latifolia,9,Tillandsia latifolia,Bromeliaceae,Rosado,"Rosado, Rojo",2,texto,"Flores pequeñas de color rosado, rodeadas de brácteas de color rojizo"
 tillandsia-purpurea,10,Tillandsia purpurea,Bromeliaceae,Blanco,"Blanco, Morado/lila",2,texto,Flores pequeñas de color blanco con bordes de color morado
-commelina-fasciculata,11,Commelina fasciculata,Commelinaceae,Azul,Azul,1,texto,"Flores de color azul, con sépalos translúcidos, compuestas de tres pétalos bien desarrollados"
+commelina-fasciculata,11,Commelina fasciculata,Commelinaceae,Azul,Azul,1,texto,"Flores de color azul, con sépalos translúcidos, compuestas de tres pétalos bien desarrollado"
 tinantia-erecta,12,Tinantia erecta,Commelinaceae,Azul,"Azul, Rosado, Morado/lila",3,texto,"Flor zogomorfa de color azul, rosado-púrpura o morada"
-tigridia-pavonia,13,Tigridia pavonia,Iridaceae,,,0,sin_dato,
-chloraea-undulata,14,Chloraea undulata,Orchidaceae,Amarillo,"Amarillo, Verde",2,texto,"Flores amarillas con notorias venas verdes, reticuladas; labelo discretamente trilobado, disco d"
-distichlis-spicata,15,Distichlis spicata,Poaceae,Sin flor vistosa,Sin flor vistosa,1,regla_taxonomica,
+tigridia-pavonia,13,Tigridia pavonia,Iridaceae,Blanco,Blanco,1,texto,Flores cremosas y jaspeadas
+chloraea-undulata,14,Chloraea undulata,Orchidaceae,Amarillo,"Amarillo, Verde",2,texto,"floral 27 cm. Flores amarillas con notorias venas verdes, reticuladas; labelo discretamente trilobado, disco d"
+distichlis-spicata,15,Distichlis spicata,Poaceae,Sin flor vistosa,Sin flor vistosa,1,regla_taxonomica,"inflorescencia: inflorescencia pistilada e inflorescencia estaminada más alargada, ambas de color amarillento"
 lamarckia-aurea,16,Lamarckia aurea,Poaceae,Sin flor vistosa,Sin flor vistosa,1,regla_taxonomica,
 paspalum-penicillatum,17,Paspalum penicillatum,Poaceae,Sin flor vistosa,Sin flor vistosa,1,regla_taxonomica,
 poa-annua,18,Poa annua,Poaceae,Sin flor vistosa,Sin flor vistosa,1,regla_taxonomica,
@@ -21,40 +21,40 @@ poa-infirma,19,Poa infirma,Poaceae,Sin flor vistosa,Sin flor vistosa,1,regla_tax
 polypogon-viridis,20,Polypogon viridis,Poaceae,Sin flor vistosa,Sin flor vistosa,1,regla_taxonomica,
 rostraria-trachyantha,21,Rostraria trachyantha,Poaceae,Sin flor vistosa,Sin flor vistosa,1,regla_taxonomica,
 tetragonia-crystallina,22,Tetragonia crystallina,Aizoaceae,Amarillo,Amarillo,1,texto,Flores de color amarillo
-alternanthera-halimifolia,23,Alternanthera halimifolia,Amaranthaceae,,,0,sin_dato,
-alternanthera-porrigens,24,Alternanthera porrigens,Amaranthaceae,Morado/lila,Morado/lila,1,texto,"Flores bisexuales ubicadas en una axila de las brácteas florales, de color morado intenso, que c"
-atriplex-rotundifolia,25,Atriplex rotundifolia,Amaranthaceae,Amarillo,Amarillo,1,texto,Flores pequeñas amarillo verdosas
+alternanthera-halimifolia,23,Alternanthera halimifolia,Amaranthaceae,Blanco,Blanco,1,texto,"Flores hermafroditas, dispuestas en inflorescencias de tipo cabezuela, envueltas por brácteas de color blanco"
+alternanthera-porrigens,24,Alternanthera porrigens,Amaranthaceae,Morado/lila,Morado/lila,1,texto,"Flores bisexuales ubicadas en una axila de las brácteas florales, de color morado intenso, que confieren color"
+atriplex-rotundifolia,25,Atriplex rotundifolia,Amaranthaceae,Amarillo,"Amarillo, Verde",2,texto,Flores pequeñas amarillo verdosas
 chenopodium-murale,26,Chenopodium murale,Amaranthaceae,Rosado,Rosado,1,texto,"Inflorescencia en forma de espiga, con numerosas flores pentámeras, diminutas; perianto de 1 mm de largo"
 chenopodium-petiolare,27,Chenopodium petiolare,Amaranthaceae,Verde,Verde,1,texto,"Flores pequeñas hermafroditas y femeninas, dispuestas en en panoja, de color verde"
-bowlesia-palmata,28,Bowlesia palmata,Apiaceae,Verde,"Verde, Amarillo",2,texto,"flores pequeñas verde amarillentas agrupadas en umbelas simples, subcompactas, paucifloras, axil"
-philibertia-solanoides,29,Philibertia solanoides,Apocynaceae,Amarillo,"Amarillo, Blanco, Rojo",3,texto,flores de 3 cm de diámetro de color amarillo - verdoso o crema con puntos rojos en la cara inter
-acmella-alba,30,Acmella alba,Asteraceae,Blanco,"Blanco, Morado/lila",2,texto,"Inflorescencia en forma de capítulo o cabezuela, ovoide u oblonga, de color blanco y lila, que se torna"
-bidens-pilosa,31,Bidens pilosa,Asteraceae,Blanco,Blanco,1,texto,flores de las periferias blancas y estériles
-conyza-bonariensis,32,Conyza bonariensis,Asteraceae,Amarillo,Amarillo,1,texto,corolas tubulosas amarillentas orientadas hacia el ápice
-erigeron-leptorhizon,33,Erigeron leptorhizon,Asteraceae,Amarillo,"Amarillo, Blanco",2,texto,Flores centrales fértiles de color amarillo y flores marginales estériles de color blanco
+bowlesia-palmata,28,Bowlesia palmata,Apiaceae,Verde,"Verde, Amarillo",2,texto,"flores pequeñas verde amarillentas agrupadas en umbelas simples, subcompactas, paucifloras, axilares"
+philibertia-solanoides,29,Philibertia solanoides,Apocynaceae,Amarillo,"Amarillo, Verde, Blanco, Rojo",4,texto,flores de 3 cm de diámetro de color amarillo - verdoso o crema con puntos rojos en la cara interna Corola rot
+acmella-alba,30,Acmella alba,Asteraceae,Blanco,"Blanco, Morado/lila",2,texto,"Inflorescencia en forma de capítulo o cabezuela, ovoide u oblonga, de color blanco y lila, que se torna más os"
+bidens-pilosa,31,Bidens pilosa,Asteraceae,Amarillo,"Amarillo, Blanco",2,texto,"cabezuela, con flores tubulares y radiadas las ubicadas en la parte central fértiles de color amarillo intenso"
+conyza-bonariensis,32,Conyza bonariensis,Asteraceae,Amarillo,Amarillo,1,texto,"corolas prolongadas y delgadas de 3mm de largo, flores hermafroditas 7-18, las corolas tubulosas amarillentas"
+erigeron-leptorhizon,33,Erigeron leptorhizon,Asteraceae,Amarillo,"Amarillo, Blanco",2,texto,inflorescencia tipo capítulo o cabezuela de 8 a 10 mm. Flores centrales fértiles de color amarillo y flores ma
 galinsoga-caligensis,34,Galinsoga caligensis,Asteraceae,Amarillo,"Amarillo, Blanco",2,texto,Flores centrales hermafroditas amarillas
 gamochaeta-americana,35,Gamochaeta americana,Asteraceae,,,0,sin_dato,
 philoglossa-peruviana,36,Philoglossa peruviana,Asteraceae,Amarillo,Amarillo,1,texto,"Flores en forma de capítulo o cabezuela de 12 a 15 mm, con pétalos de color amarillo intenso"
 sonchus-oleraceus,37,Sonchus oleraceus,Asteraceae,Amarillo,Amarillo,1,texto,"Inflorescencias en cabezuelas con más de 100 flores, de color amarillo"
 villanova-oppositifolia,38,Villanova oppositifolia,Asteraceae,,,0,sin_dato,
-anredera-diffusa,39,Anredera diffusa,Basellaceae,Rosado,"Rosado, Rojo, Morado/lila",3,texto,"Flores pequeñas, de color magenta (rojo púrpura), dispuestas en inflorescencias de racimo, que s"
+anredera-diffusa,39,Anredera diffusa,Basellaceae,Rosado,"Rosado, Rojo, Morado/lila",3,texto,"Flores pequeñas, de color magenta (rojo púrpura), dispuestas en inflorescencias de racimo, que se originan de"
 begonia-geraniifolia,40,Begonia geraniifolia,Begoniaceae,Blanco,"Blanco, Amarillo",2,texto,"Flores blancas compuestas por cuatro pétalos, con estambres de color amarillo"
 begonia-octopetala,41,Begonia octopetala,Begoniaceae,Blanco,"Blanco, Amarillo",2,texto,"Flores compuestas con 8 pétalos de color blanco, con numerosos estambres de color amarillo"
 tourrettia-lappacea,42,Tourrettia lappacea,Bignoniaceae,Rojo,Rojo,1,texto,"Flores de color rojo, hermafroditas y dispuestas en inflorescencias terminales"
-cryptantha-limensis,43,Cryptantha limensis,Boraginaceae,Blanco,"Blanco, Amarillo",2,texto,"Flores pequeñas de 3 a 4 mm aproximadamente, con cinco pétalos blancos con la base color amarill"
-heliotropium-angiospermum,44,Heliotropium angiospermum,Boraginaceae,Blanco,"Blanco, Amarillo",2,texto,"flores pequeñas de color blanco, dispuestas en inflorescencia cimosa semejante a la “cola de un"
-heliotropium-pilosum,45,Heliotropium pilosum,Boraginaceae,Blanco,Blanco,1,texto,Flores blancas pequeñas dispuestas en inflorescencia de tipo escorpioidea e insertada hacia un s
+cryptantha-limensis,43,Cryptantha limensis,Boraginaceae,Blanco,"Blanco, Amarillo",2,texto,"Flores pequeñas de 3 a 4 mm aproximadamente, con cinco pétalos blancos con la base color amarillo"
+heliotropium-angiospermum,44,Heliotropium angiospermum,Boraginaceae,Blanco,"Blanco, Amarillo",2,texto,"flores pequeñas de color blanco, dispuestas en inflorescencia cimosa semejante a la “cola de un alacrán”"
+heliotropium-pilosum,45,Heliotropium pilosum,Boraginaceae,Blanco,Blanco,1,texto,Flores blancas pequeñas dispuestas en inflorescencia de tipo escorpioidea e insertada hacia un solo lado (cima
 calceolaria-pinnata,46,Calceolaria pinnata,Calceolariaceae,Amarillo,Amarillo,1,texto,"corola es amarilla, con anteras amarillas"
-triodanis-perfoliata-subsp-biflora,47,Triodanis perfoliata subsp. biflora,Campanulaceae,,,0,sin_dato,
-cleome-chilensis,48,Cleome chilensis,Capparaceae,Blanco,Blanco,1,texto,"Flores muy vistosas de color blanco con cuatro pétalos, no soldados y 4 sépalos libres"
-drymaria-paposana-var-weberbaueri,49,Drymaria paposana var. weberbaueri,Caryophyllaceae,Blanco,Blanco,1,texto,"Flores pequeñas de color blanco con 5 pétalos de 4 a 6 mm de largo, profundamente hendidos en el"
+triodanis-perfoliata-subsp-biflora,47,Triodanis perfoliata subsp. biflora,Campanulaceae,Morado/lila,Morado/lila,1,texto,"Flores violáceas campanuladas, las anteriores con 3 o 4 lóbulos ovados a lanceolados; los posteriores con 4 o"
+cleome-chilensis,48,Cleome chilensis,Capparaceae,Blanco,"Blanco, Morado/lila",2,texto,"Flores muy vistosas de color blanco con cuatro pétalos, no soldados y 4 sépalos libre"
+drymaria-paposana-var-weberbaueri,49,Drymaria paposana var. weberbaueri,Caryophyllaceae,Blanco,Blanco,1,texto,"Flores pequeñas de color blanco con 5 pétalos de 4 a 6 mm de largo, profundamente hendidos en el ápice y solda"
 crassula-connata,50,Crassula connata,Crassulaceae,,,0,sin_dato,
-chamaesyce-hypericifolia,51,Chamaesyce hypericifolia,Euphorbiaceae,Blanco,"Blanco, Rojo",2,texto,inflorescencia es un ciatio con apéndices blancos de bordes curvados semejantes a flores rodeando a la v
+chamaesyce-hypericifolia,51,Chamaesyce hypericifolia,Euphorbiaceae,Blanco,"Blanco, Rojo",2,texto,inflorescencia es un ciatio con apéndices blancos de bordes curvados semejantes a flores rodeando a la verdade
 euphorbia-peplus,52,Euphorbia peplus,Euphorbiaceae,,,0,sin_dato,
-vicia-lomensis,53,Vicia lomensis,Fabaceae,Blanco,Blanco,1,texto,"Flores solitarias, subsésiles de color violáceo con blanco, los 5 pétalos soldados en forma de m"
+vicia-lomensis,53,Vicia lomensis,Fabaceae,Morado/lila,"Morado/lila, Blanco",2,texto,"Flores solitarias, subsésiles de color violáceo con blanco, los 5 pétalos soldados en forma de mariposa"
 medicago-polymorpha,54,Medicago polymorpha,Fabaceae,Amarillo,Amarillo,1,texto,Flores pequeñas de color amarillo
 erodium-malacoides,55,Erodium malacoides,Geraniaceae,Morado/lila,Morado/lila,1,texto,"Flores pequeñas de color violeta o lila, agrupadas en umbelas, en grupos de 3 a 8"
-erodium-moschatum,56,Erodium moschatum,Geraniaceae,Morado/lila,Morado/lila,1,texto,"Flores de color violeta o moradas, en umbelas de 5 a 12 flores, con pétalos de aproximadamente 1"
+erodium-moschatum,56,Erodium moschatum,Geraniaceae,Morado/lila,Morado/lila,1,texto,"Flores de color violeta o moradas, en umbelas de 5 a 12 flores, con pétalos de aproximadamente 1.5 cm. Fruto t"
 geranium-limae,57,Geranium limae,Geraniaceae,Rosado,Rosado,1,texto,flores pequeñas de color rosado
 salvia-paposana,58,Salvia paposana,Lamiaceae,Azul,Azul,1,texto,"Corola azul, del doble larg del cáliz; estambres y estilo salientes"
 salvia-rhombifolia,59,Salvia rhombifolia,Lamiaceae,Azul,"Azul, Morado/lila",2,texto,"corola azul o violeta, con el labio inferior más largo que el superior"
@@ -62,74 +62,74 @@ stachys-arvensis,60,Stachys arvensis,Lamiaceae,Rosado,"Rosado, Blanco",2,texto,c
 loasa-nitida,61,Loasa nitida,Loasaceae,Amarillo,"Amarillo, Rojo, Blanco",3,texto,"flores son solitarias, hermafroditas y de color amarillo con centro de rojo y blanco"
 mentzelia-scabra-subsp-grandiflora,62,Mentzelia scabra subsp. grandiflora,Loasaceae,Anaranjado,Anaranjado,1,texto,"Flores solitarias de color naranja, hermafrodita, compuesto de 5 pétalos con números estambres"
 nasa-urens,63,Nasa urens,Loasaceae,Amarillo,Amarillo,1,texto,Flores amarillas de cinco pétalos aovados al revés
-fuertesimalva-limensis,64,Fuertesimalva limensis,Malvaceae,Morado/lila,Morado/lila,1,texto,"corola morada, de 5 pétalos que sobrepasan ligeramente el cáliz; estambres con filamentos unidos"
-fuertesimalva-peruviana,65,Fuertesimalva peruviana,Malvaceae,Morado/lila,Morado/lila,1,texto,"Corola morada, de 5 pétalos que sobrepasan ligeramente al cáliz"
-palaua-dissecta,66,Palaua dissecta,Malvaceae,Morado/lila,"Morado/lila, Rosado, Blanco, Rojo",4,texto,"Flores de color lila pálido o magenta con el centro blanco; anteras de rojo brillante, carpelos"
-palaua-malvifolia,67,Palaua malvifolia,Malvaceae,Rojo,Rojo,1,texto,"Flores pequeñas de color rojo pálido, pétalos suborbiculares de 3 – 4 mm de longitud, muchos car"
-palaua-moschata,68,Palaua moschata,Malvaceae,Morado/lila,"Morado/lila, Rojo",2,texto,"Flores lila–rojizas, pétalos obtusos o truncados de 1"
-palaua-rhombifolia,69,Palaua rhombifolia,Malvaceae,Rosado,"Rosado, Morado/lila",2,texto,"Flor con cinco pétalos de color rosado a violeta, cada pétalo de 12 – 18 mm de longitud o más"
-sida-jatrophioides,70,Sida jatrophioides,Malvaceae,Rosado,"Rosado, Amarillo",2,texto,"ores rosado –violáceas, los bordes de los pétalos con cierta tonalidad amarillenta."
+fuertesimalva-limensis,64,Fuertesimalva limensis,Malvaceae,Morado/lila,Morado/lila,1,texto,"corola morada, de 5 pétalos que sobrepasan ligeramente el cáliz; estambres con filamentos unidos formando un"
+fuertesimalva-peruviana,65,Fuertesimalva peruviana,Malvaceae,Morado/lila,Morado/lila,1,texto,"Flores con cáliz de 5 sépalos triangulares, unidos en la base, frecuentemente con los márgenes de color púrpur"
+palaua-dissecta,66,Palaua dissecta,Malvaceae,Morado/lila,"Morado/lila, Rosado, Blanco, Rojo",4,texto,"Flores de color lila pálido o magenta con el centro blanco; anteras de rojo brillante, carpelos ovoides"
+palaua-malvifolia,67,Palaua malvifolia,Malvaceae,Rojo,Rojo,1,texto,"Flores pequeñas de color rojo pálido, pétalos suborbiculares de 3 – 4 mm de longitud, muchos carpelos 1.5 mm"
+palaua-moschata,68,Palaua moschata,Malvaceae,Morado/lila,"Morado/lila, Rojo",2,texto,"Flores lila–rojizas, pétalos obtusos o truncados de 1.5 -2 (2.5) cm. Frutos encerrados en el cáliz, carpelos"
+palaua-rhombifolia,69,Palaua rhombifolia,Malvaceae,Rosado,"Rosado, Morado/lila",2,texto,"Flor con cinco pétalos de color rosado a violeta, cada pétalo de 12 – 18 mm de longitud o más largo, pedúncul"
+sida-jatrophioides,70,Sida jatrophioides,Malvaceae,Rosado,"Rosado, Morado/lila, Amarillo",3,texto,"ores rosado –violáceas, los bordes de los pétalos con cierta tonalidad amarillenta."
 sida-oligandra,71,Sida oligandra,Malvaceae,Morado/lila,Morado/lila,1,texto,Flores de color violáceo o lila claro
 tarasa-operculata,72,Tarasa operculata,Malvaceae,Blanco,"Blanco, Morado/lila",2,texto,"Flor grande blanca, con tonalidades de morado claro"
 calandrinia-alba,73,Calandrinia alba,Montiaceae,Blanco,Blanco,1,texto,Flores blancas muy pequeñas
 cistanthe-paniculata,74,Cistanthe paniculata,Montiaceae,Morado/lila,Morado/lila,1,texto,"Flores solitarias, hermafroditas, de color púrpura o violetas"
 oenothera-arequipensis,75,Oenothera arequipensis,Onagraceae,Amarillo,"Amarillo, Rojo",2,texto,"Flores hermafroditas, de color amarillo rojizo, actinomorfas, con 4 pétalos libres y 4 sépalos"
-oxalis-latifolia,76,Oxalis latifolia,Oxalidaceae,Blanco,Blanco,1,texto,"Flores hermafroditas de color blanco violáceo, con cinco pétalos soldados en la base"
-oxalis-lomana,77,Oxalis lomana,Oxalidaceae,Amarillo,Amarillo,1,texto,"Flores amarillas de 10 mm, pedicelos de 4-8 mm"
+oxalis-latifolia,76,Oxalis latifolia,Oxalidaceae,Blanco,"Blanco, Morado/lila",2,texto,"Flores hermafroditas de color blanco violáceo, con cinco pétalos soldados en la bas"
+oxalis-lomana,77,Oxalis lomana,Oxalidaceae,Amarillo,Amarillo,1,texto,"Flores amarillas de 10 mm, pedicelos de 4-8 mm. de largo; sépalos desiguales ovado-deltoideo densamente piloso"
 oxalis-megalorrhiza,78,Oxalis megalorrhiza,Oxalidaceae,Amarillo,Amarillo,1,texto,"Flores con corola amarilla, formada por cinco pétalos en inflorescencia umbeliforme"
 argemone-subfusiformis,79,Argemone subfusiformis,Papaveraceae,Blanco,"Blanco, Amarillo, Anaranjado",3,texto,"Pétalos 4-6, dispuestos en 2-3 series, blancos, amarillos o anaranjados"
-fumaria-capreolata,80,Fumaria capreolata,Papaveraceae,Blanco,Blanco,1,texto,"Flores de color blanco de cuatro pétalos de aproximadamente 9 cm de longitud, agrupadas en racim"
-peperomia-crystallina,81,Peperomia crystallina,Piperaceae,Verde,Verde,1,texto,"flores; bracteas ovadas orbiculares peltadas verdes caducas, estambres 2, anteras verdes, globos"
-peperomia-inaequalifolia,82,Peperomia inaequalifolia,Piperaceae,Verde,Verde,1,texto,florales peltadas orbiculares de color verde opaco
+fumaria-capreolata,80,Fumaria capreolata,Papaveraceae,Blanco,Blanco,1,texto,"Flores de color blanco de cuatro pétalos de aproximadamente 9 cm de longitud, agrupadas en racimos, cáliz con"
+peperomia-crystallina,81,Peperomia crystallina,Piperaceae,Verde,"Verde, Rojo",2,texto,"flores; bracteas ovadas orbiculares peltadas verdes caducas, estambres 2, anteras verdes, globosas, ovario ver"
+peperomia-inaequalifolia,82,Peperomia inaequalifolia,Piperaceae,Verde,Verde,1,texto,Brácteas florales peltadas orbiculares de color verde opaco
 peperomia-umbilicata,83,Peperomia umbilicata,Piperaceae,,,0,sin_dato,
-veronica-persica,84,Veronica persica,Plantaginaceae,Azul,"Azul, Morado/lila",2,texto,"Flores pequeñas de 8 a 14 mm, axilares y solitarias, corola de color azul o violeta con la base"
+veronica-persica,84,Veronica persica,Plantaginaceae,Azul,"Azul, Morado/lila",2,texto,"Flores pequeñas de 8 a 14 mm, axilares y solitarias, corola de color azul o violeta con la base más pálida"
 anagallis-arvensis,85,Anagallis arvensis,Primulaceae,Azul,Azul,1,texto,"Flores azules muy pequeñas, pero llamativas por su color y forma"
-alonsoa-meridionalis,86,Alonsoa meridionalis,Scrophulariaceae,Anaranjado,"Anaranjado, Rojo, Amarillo",3,texto,"Inflorescencia en racimos terminales, flor de color naranja con máculas rojas, pedicelos glabros, brácte"
-castilleja-arvensis,87,Castilleja arvensis,Scrophulariaceae,Rosado,"Rosado, Anaranjado, Verde",3,texto,"Flores numerosas subsésiles agrupadas en espigas, de color naranja intenso con verde, vistosas s"
-browallia-americana,88,Browallia americana,Solanaceae,Blanco,"Blanco, Amarillo",2,texto,"Flores terminales, con pétalos soldados, de forma tubular, de color blanco con un punto amarillo"
+alonsoa-meridionalis,86,Alonsoa meridionalis,Scrophulariaceae,Anaranjado,"Anaranjado, Rojo, Amarillo",3,texto,"Inflorescencia en racimos terminales, flor de color naranja con máculas rojas, pedicelos glabros, brácteas de"
+castilleja-arvensis,87,Castilleja arvensis,Scrophulariaceae,Rosado,"Rosado, Anaranjado, Verde",3,texto,"Flores numerosas subsésiles agrupadas en espigas, de color naranja intenso con verde, vistosas semejando la cr"
+browallia-americana,88,Browallia americana,Solanaceae,Blanco,"Blanco, Amarillo",2,texto,"Flores terminales, con pétalos soldados, de forma tubular, de color blanco con un punto amarillo en la parte c"
 exodeconus-maritimus,89,Exodeconus maritimus,Solanaceae,Blanco,"Blanco, Morado/lila",2,texto,Flores tubulosas de color blanco con garganta purpúrea y estambres desiguales
 exodeconus-prostratus,90,Exodeconus prostratus,Solanaceae,Blanco,"Blanco, Morado/lila",2,texto,"Flores tubulares, blancas, purpureas con pétalos soldados"
-jaltomata-aspera,91,Jaltomata aspera,Solanaceae,Amarillo,"Amarillo, Verde",2,texto,"Flores amarillo palido, amarillo verdoso o verde -amarillento, de 3 a 3,8 cm de diámetro, casi s"
-jaltomata-umbellata,92,Jaltomata umbellata,Solanaceae,Blanco,"Blanco, Verde, Rojo",3,texto,Inflorescencia con 4 a 9 flores de color crema o verde pálido
-nicandra-physalodes,93,Nicandra physalodes,Solanaceae,Morado/lila,"Morado/lila, Blanco, Verde",3,texto,"Flores de color violeta claro, con la garganta blanca, 2-3 cm de largo por 3–5 cm de ancho con f"
-nicotiana-paniculata,94,Nicotiana paniculata,Solanaceae,,,0,sin_dato,
-nolana-humifusa,95,Nolana humifusa,Solanaceae,Azul,Azul,1,texto,"Flores hermafroditas, con pétalos soldados, color violáceo blanquecino, con el centro azul inten"
-solanum-americanum,96,Solanum americanum,Solanaceae,Blanco,Blanco,1,texto,"corola blanca, de 4 a 7"
-solanum-chancayense,97,Solanum chancayense,Solanaceae,Blanco,"Blanco, Morado/lila",2,texto,"Inflorescencia con 3 a 6 flores blancas (aunque hay reportes de flores color violeta), con una estrella"
-solanum-montanum,98,Solanum montanum,Solanaceae,Blanco,Blanco,1,texto,"Flores blancas y dispuestas en inflorescencias cimosas; hermafroditas, compuestas de 5 pétalos,"
-solanum-multifidum,99,Solanum multifidum,Solanaceae,Blanco,"Blanco, Morado/lila",2,texto,"Flores dispuestas en inflorescencias cimosas, de color blanco, con tonalidades de color violeta,"
+jaltomata-aspera,91,Jaltomata aspera,Solanaceae,Amarillo,"Amarillo, Verde",2,texto,"Flores amarillo palido, amarillo verdoso o verde -amarillento, de 3 a 3,8 cm de diámetro, casi siempre solitar"
+jaltomata-umbellata,92,Jaltomata umbellata,Solanaceae,Blanco,"Blanco, Verde, Rojo",3,texto,Inflorescencia con 4 a 9 flores de color crema o verde pálid
+nicandra-physalodes,93,Nicandra physalodes,Solanaceae,Morado/lila,"Morado/lila, Blanco, Verde",3,texto,"Flores de color violeta claro, con la garganta blanca, 2-3 cm de largo por 3–5 cm de ancho con forma acampanad"
+nicotiana-paniculata,94,Nicotiana paniculata,Solanaceae,Verde,Verde,1,texto,Flores verdosas de forma tubular
+nolana-humifusa,95,Nolana humifusa,Solanaceae,Morado/lila,"Morado/lila, Azul",2,texto,"Flores hermafroditas, con pétalos soldados, color violáceo blanquecino, con el centro azul intenso"
+solanum-americanum,96,Solanum americanum,Solanaceae,Blanco,Blanco,1,texto,"corola blanca, de 4 a 7.5 mm de largo, con lóbulos triangulares, pubescentes; anteras de 1 a 2 mm de largo, ov"
+solanum-chancayense,97,Solanum chancayense,Solanaceae,Blanco,"Blanco, Morado/lila, Amarillo, Verde",4,texto,"Inflorescencia con 3 a 6 flores blancas (aunque hay reportes de flores color violeta), con una estrella centr"
+solanum-montanum,98,Solanum montanum,Solanaceae,Blanco,"Blanco, Amarillo",2,texto,"Flores blancas y dispuestas en inflorescencias cimosas; hermafroditas, compuestas de 5 pétalos, soldados, con"
+solanum-multifidum,99,Solanum multifidum,Solanaceae,Blanco,"Blanco, Morado/lila",2,texto,"Flores dispuestas en inflorescencias cimosas, de color blanco, con tonalidades de color violeta, hermafrodita"
 solanum-peruvianum,100,Solanum peruvianum,Solanaceae,Amarillo,Amarillo,1,texto,Flores amarillas
-parietaria-debilis,101,Parietaria debilis,Urticaceae,,,0,sin_dato,
-urtica-urens,102,Urtica urens,Urticaceae,Verde,"Verde, Morado/lila",2,texto,Flores monoicas de color verde o lila agrupadas en espigas cortas que nacen entre el tallo y el
+parietaria-debilis,101,Parietaria debilis,Urticaceae,Verde,Verde,1,texto,"Flores verdosas o blanquecinas, que brotan en las axilas de las hojas y en grupos de 5 formando glomérulos"
+urtica-urens,102,Urtica urens,Urticaceae,Verde,"Verde, Morado/lila",2,texto,Flores monoicas de color verde o lila agrupadas en espigas cortas que nacen entre el tallo y el soporte de la
 astrephia-chaerophylloides,103,Astrephia chaerophylloides,Valerianaceae,Blanco,Blanco,1,texto,"Flores muy pequeñas de color blanco, hermafroditas"
-phyla-canescens,104,Phyla canescens,Verbenaceae,Morado/lila,Morado/lila,1,texto,"Inflorescencia capituliforme, una espiga por axila; pedúnculo de 3-10 cm; brácteas moradas, cafés o verd"
+phyla-canescens,104,Phyla canescens,Verbenaceae,Morado/lila,"Morado/lila, Verde, Rosado, Blanco",4,texto,"Inflorescencia capituliforme, una espiga por axila; pedúnculo de 3-10 cm; brácteas moradas, cafés o verdes; cá"
 cuscuta-foetida,105,Cuscuta foetida,Convolvulaceae,Blanco,Blanco,1,texto,"Flores sésiles, blancas de 4-9 mm de largo, en grupos"
-ipomoea-tricolor,106,Ipomoea tricolor,Convolvulaceae,Azul,"Azul, Morado/lila, Rojo, Blanco",4,texto,"corola de color azul o púrpura a rojo o blanco o multicolor, en forma de embudo; estambres 5, in"
+ipomoea-tricolor,106,Ipomoea tricolor,Convolvulaceae,Azul,"Azul, Morado/lila, Rojo, Blanco",4,texto,"corola de color azul o púrpura a rojo o blanco o multicolor, en forma de embudo; estambres 5, insertos en la p"
 jacquemontia-unilateralis,107,Jacquemontia unilateralis,Convolvulaceae,Azul,"Azul, Blanco",2,texto,"Flores solitarias axilares, hermafroditas, de color azul"
 cyclanthera-mathewsii,108,Cyclanthera mathewsii,Cucurbitaceae,Amarillo,Amarillo,1,texto,Flores de color amarillo
 sicyos-baderoa,109,Sicyos baderoa,Cucurbitaceae,Amarillo,Amarillo,1,texto,"Flores pequeñas, sin pétalos de color amarillo claro cubierta de pelos solo en la cara externa"
-cardiospermum-corindum,110,Cardiospermum corindum,Sapindaceae,Blanco,"Blanco, Amarillo",2,texto,"Flores pequeñas de colores blanco con terminaciones amarillas, corola compuesta de cuatro pétalo"
-dicliptera-tomentosa,111,Dicliptera tomentosa,Acanthaceae,Morado/lila,Morado/lila,1,texto,"flores) en las axilas de hojas, opuestas (a veces gemelas); corola púrpura pubescente, tubo cilí"
-suaeda-foliosa,112,Suaeda foliosa,Amaranthaceae,,,0,sin_dato,
-ophryosporus-pubescens,113,Ophryosporus pubescens,Asteraceae,Blanco,"Blanco, Amarillo",2,texto,"Flores de color blanco amarillento, dispuestas en inflorescencia en forma de capítulo o cabezuel"
+cardiospermum-corindum,110,Cardiospermum corindum,Sapindaceae,Blanco,"Blanco, Amarillo",2,texto,"Flores pequeñas de colores blanco con terminaciones amarillas, corola compuesta de cuatro pétalos"
+dicliptera-tomentosa,111,Dicliptera tomentosa,Acanthaceae,Morado/lila,Morado/lila,1,texto,"flores) en las axilas de hojas, opuestas (a veces gemelas); corola púrpura pubescente, tubo cilíndrico gradua"
+suaeda-foliosa,112,Suaeda foliosa,Amaranthaceae,Rojo,Rojo,1,texto,"Brácteas pardo-rojizas, aleznadas a subuladas, de 1-2 mm de longitu"
+ophryosporus-pubescens,113,Ophryosporus pubescens,Asteraceae,Blanco,"Blanco, Amarillo",2,texto,"Flores de color blanco amarillento, dispuestas en inflorescencia en forma de capítulo o cabezuela; presentan d"
 senecio-abadianus,114,Senecio abadianus,Asteraceae,Amarillo,Amarillo,1,texto,"Flores de color amarillo, dispuestas en inflorescencia a modo de capítulo o cabezuela"
-verbesina-saubinetioides,115,Verbesina saubinetioides,Asteraceae,Blanco,Blanco,1,texto,"Flores liguladas 7-9 de color “blanco sucio”, pistiladas, lámina suborbicular emarginada, 4"
-heliotropium-arborescens,116,Heliotropium arborescens,Boraginaceae,Blanco,"Blanco, Morado/lila",2,texto,"Flores pequeñas de color blanco con matices morados, dispuestas en inflorescencia de tipo escorp"
-croton-alnifolius,117,Croton alnifolius,Euphorbiaceae,Blanco,"Blanco, Amarillo",2,texto,"Inflorescencia con flores blancas o amarillo-verdosas pequeñas, unisexuales"
-calliandra-taxifolia,118,Calliandra taxifolia,Fabaceae,,,0,sin_dato,
-hyptis-sidifolia,119,Hyptis sidifolia,Lamiaceae,Morado/lila,Morado/lila,1,texto,"Flores pequeñas compuestas de color lila, con pedúnculos de 1 a 3 cm"
-scutia-spicata,120,Scutia spicata,Rhamnaceae,Amarillo,Amarillo,1,texto,"pétalos amarillos de 0,6 a 0,7 mm de largo"
-acnistus-arborescens,121,Acnistus arborescens,Solanaceae,Amarillo,Amarillo,1,texto,flores en racimo de color amarillo - cremoso
-lantana-scabiosiflora-var-limensis,122,Lantana scabiosiflora var. limensis,Verbenaceae,Amarillo,Amarillo,1,texto,"Flores amarillas dispuestas en cabezuelas, agrupadas en cimas capituliformes, densas y axilares,"
-verbena-litoralis,123,Verbena litoralis,Verbenaceae,Azul,Azul,1,texto,corola azul o violácea
+verbesina-saubinetioides,115,Verbesina saubinetioides,Asteraceae,Blanco,Blanco,1,texto,"Flores liguladas 7-9 de color “blanco sucio”, pistiladas, lámina suborbicular emarginada, 4.2-5 X 4 mm; flores"
+heliotropium-arborescens,116,Heliotropium arborescens,Boraginaceae,Blanco,"Blanco, Morado/lila",2,texto,"Flores pequeñas de color blanco con matices morados, dispuestas en inflorescencia de tipo escorpioidea, semeja"
+croton-alnifolius,117,Croton alnifolius,Euphorbiaceae,Blanco,"Blanco, Amarillo, Verde",3,texto,"Inflorescencia con flores blancas o amarillo-verdosas pequeñas, unisexuales"
+calliandra-taxifolia,118,Calliandra taxifolia,Fabaceae,Rojo,Rojo,1,texto,"corola 0,6-1,2 mm de longitud, acampanada, con 4-6 lóbulos; estambres 2-5 cm de longitud, filamentos rojos muy"
+hyptis-sidifolia,119,Hyptis sidifolia,Lamiaceae,Morado/lila,Morado/lila,1,texto,"Flores pequeñas compuestas de color lila, con pedúnculos de 1 a 3 cm. Cáliz pequeño de 2 a 5 mm de largo, cor"
+scutia-spicata,120,Scutia spicata,Rhamnaceae,Amarillo,Amarillo,1,texto,"pétalos amarillos de 0,6 a 0,7 mm de larg"
+acnistus-arborescens,121,Acnistus arborescens,Solanaceae,Amarillo,"Amarillo, Blanco",2,texto,flores en racimo de color amarillo - cremos
+lantana-scabiosiflora-var-limensis,122,Lantana scabiosiflora var. limensis,Verbenaceae,Amarillo,Amarillo,1,texto,"Flores amarillas dispuestas en cabezuelas, agrupadas en cimas capituliformes, densas y axilares, de 2 a 3 cm d"
+verbena-litoralis,123,Verbena litoralis,Verbenaceae,Azul,"Azul, Morado/lila",2,texto,"Flores reunidas en espigas cilíndricas, de 3 a 3.5 mm de longitud; corola azul o violácea"
 vasconcellea-candicans,124,Vasconcellea candicans,Caricaceae,,,0,sin_dato,
-caesalpinia-spinosa,125,Caesalpinia spinosa,Fabaceae,Amarillo,"Amarillo, Rojo",2,texto,"Corola compuesta de 5 pétalos de color amarillo rojizo, en forma de túbulos que se agrupan en ra"
+caesalpinia-spinosa,125,Caesalpinia spinosa,Fabaceae,Amarillo,"Amarillo, Rojo",2,texto,"Corola compuesta de 5 pétalos de color amarillo rojizo, en forma de túbulos que se agrupan en racimos"
 vachellia-macracantha,126,Vachellia macracantha,Fabaceae,Amarillo,Amarillo,1,texto,flores se agrupan en cabezuelas amarillentas y esféricas
 armatocereus-matucanensis,127,Armatocereus matucanensis,Cactaceae,Blanco,Blanco,1,texto,Flor blanca de 10 cm de largo y 6 cm de diámetro
 armatocereus-procerus,128,Armatocereus procerus,Cactaceae,Blanco,Blanco,1,texto,"Flor tubular de color blanco, tubo floral y ovarios espinosos"
-haageocereus-acranthus-subsp-olowinskianus,129,Haageocereus acranthus subsp. olowinskianus,Cactaceae,Blanco,Blanco,1,texto,"Flor tubular blanco -verdosa, con numerosos estambres y pétalos"
+haageocereus-acranthus-subsp-olowinskianus,129,Haageocereus acranthus subsp. olowinskianus,Cactaceae,Blanco,"Blanco, Verde",2,texto,"Flor tubular blanco -verdosa, con numerosos estambres y pétalos"
 haageocereus-pseudomelanostele-subsp-carminiflorus,130,Haageocereus pseudomelanostele subsp. carminiflorus,Cactaceae,Rojo,Rojo,1,texto,"Flores de color carmín y rojo vino por fuera, con numerosos estambres y pétalos"
 haageocereus-pseudomelanostele-subsp-setosus,131,Haageocereus pseudomelanostele subsp. setosus,Cactaceae,Rojo,"Rojo, Blanco",2,texto,Flores radiales rojas abiertas
 loxanthocereus-acanthurus-subsp-pullatus,132,Loxanthocereus acanthurus subsp. pullatus,Cactaceae,Rojo,Rojo,1,texto,"Flores apicales de color rojo, tubulares angostas con numerosos estambres y pétalos"
-loxanthocereus-convergens,133,Loxanthocereus convergens,Cactaceae,,,0,sin_dato,
-mila-caespitosa,134,Mila caespitosa,Cactaceae,Amarillo,Amarillo,1,texto,Flores apicales de color amarillo de 1
+loxanthocereus-convergens,133,Loxanthocereus convergens,Cactaceae,Rojo,Rojo,1,texto,"go. Flores cerca del ápice, 7.5 a 10.5 cm. de largo, zigomorfas,"
+mila-caespitosa,134,Mila caespitosa,Cactaceae,Amarillo,Amarillo,1,texto,Flores apicales de color amarillo de 1.5 cm de diámetro
