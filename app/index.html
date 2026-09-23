@@ -10,21 +10,24 @@
 <body>
 
 <header class="cab">
-  <div class="cab-fila">
+  <div class="cab-int">
     <div class="marca">
       <h1>Flora de las Lomas</h1>
       <span>de Lima</span>
     </div>
-    <button class="btn-icono" id="btn-info" aria-label="Sobre la guía" data-ico="info"></button>
-    <button class="btn-icono" id="btn-filtros" aria-label="Filtros" data-ico="sliders-horizontal"></button>
-  </div>
 
-  <div class="buscador">
-    <span class="ico-lupa" data-ico="magnifying-glass" aria-hidden="true"></span>
-    <input id="q" type="search" enterkeyhint="search" autocomplete="off"
-           placeholder="Buscar por nombre, familia, loma…"
-           aria-label="Buscar especies">
-    <button id="limpiar" class="oculto" aria-label="Limpiar búsqueda" data-ico="x"></button>
+    <div class="buscador">
+      <span class="ico-lupa" data-ico="magnifying-glass" aria-hidden="true"></span>
+      <input id="q" type="search" enterkeyhint="search" autocomplete="off"
+             placeholder="Buscar por nombre, familia, loma…"
+             aria-label="Buscar especies">
+      <button id="limpiar" class="oculto" aria-label="Limpiar búsqueda" data-ico="x"></button>
+    </div>
+
+    <div class="acciones">
+      <button class="btn-icono" id="btn-info" aria-label="Sobre la guía" data-ico="info"></button>
+      <button class="btn-icono" id="btn-filtros" aria-label="Filtros" data-ico="sliders-horizontal"></button>
+    </div>
   </div>
 
   <div class="chips" id="chips-rapidos" role="group" aria-label="Filtros rápidos"></div>

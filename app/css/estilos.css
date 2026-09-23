@@ -61,9 +61,21 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   padding: 10px 0 0;
 }
 /* el fondo va de borde a borde, pero el contenido se alinea con la rejilla */
-.cab > * { max-width: 1400px; margin-inline: auto; padding-inline: 14px; }
-.cab-fila { display: flex; align-items: center; gap: 10px; }
-.marca { display: flex; align-items: baseline; gap: 8px; min-width: 0; flex: 1; }
+.anchura { max-width: 1400px; margin-inline: auto; padding-inline: 14px; }
+
+/* movil: marca y acciones arriba, buscador debajo ocupando el ancho */
+.cab-int {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center; column-gap: 10px; row-gap: 10px;
+  max-width: 1400px; margin-inline: auto; padding-inline: 14px;
+}
+.acciones { display: flex; align-items: center; gap: 4px; }
+/* colocacion explicita: si no, el buscador (que va antes en el html) empuja
+   los botones a una tercera fila */
+.marca    { grid-area: 1 / 1; }
+.acciones { grid-area: 1 / 2; }
+.buscador { grid-area: 2 / 1 / 3 / 3; }
+.marca { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
 .marca h1 {
   font: 600 16px/1.2 Georgia, "Iowan Old Style", "Times New Roman", serif;
   margin: 0; letter-spacing: -.01em; white-space: nowrap;
@@ -76,7 +88,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 .btn-icono:hover, .btn-icono:focus-visible { background: var(--superficie-2); color: var(--texto); }
 
-.buscador { position: relative; margin: 10px 0 0; }
+.buscador { position: relative; }
 .buscador .ico-lupa {
   position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
   color: var(--tenue); pointer-events: none;
@@ -97,7 +109,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 /* ---------- fichas de filtro ---------- */
 .chips {
-  display: flex; gap: 7px; overflow-x: auto; padding: 10px 0;
+  display: flex; gap: 7px; overflow-x: auto; padding-block: 10px;
+  max-width: 1400px; margin-inline: auto; padding-inline: 14px;
   scrollbar-width: none; -ms-overflow-style: none;
 }
 .chips::-webkit-scrollbar { display: none; }
@@ -122,7 +135,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .resumen {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 10px; color: var(--tenue); font-size: 13px; margin: 2px 2px 10px;
+  gap: 10px; color: var(--tenue); font-size: 13px; margin: 2px 0 10px;
 }
 .rejilla {
   display: grid; gap: 12px;
@@ -362,9 +375,32 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   .datos { grid-template-columns: repeat(4, 1fr); }
   .marca h1 { font-size: 18px; }
 }
+@media (min-width: 700px) {
+  .rejilla { grid-template-columns: repeat(auto-fill, minmax(164px, 1fr)); }
+}
+/* tableta y escritorio: todo en una fila y tarjetas mas holgadas */
+@media (min-width: 900px) {
+  .cab { padding-top: 12px; }
+  .cab-int { display: flex; gap: 18px; }
+  .marca { flex: none; }
+  .buscador { flex: 1; max-width: 620px; }
+  .acciones { margin-left: auto; }
+  .rejilla { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
+  main { padding-inline: 14px; }
+}
+@media (min-width: 1300px) {
+  .rejilla { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 18px; }
+  .tarjeta .comun { font-size: 15px; }
+  .tarjeta .cient { font-size: 13.5px; }
+}
 /* horizontal en móvil: cabecera compacta, más columnas */
 @media (max-height: 520px) and (orientation: landscape) {
   .cab { padding-top: 6px; }
+  /* con 375px de alto, cada fila de cabecera cuesta: todo en una */
+  .cab-int { display: flex; gap: 12px; }
+  .marca { flex: none; }
+  .buscador { flex: 1; max-width: 420px; }
+  .acciones { margin-left: auto; }
   .marca span { display: none; }
   #q { padding-block: 8px; }
   .chips { padding: 7px 0; }
@@ -387,6 +423,14 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   .bloque    { padding-inline: 0; }
   .fuente    { padding-inline: 0; }
 }
+@media (min-width: 1300px) {
+  .ficha-int { max-width: 1240px; grid-template-columns: minmax(0,1fr) 400px; gap: 0 32px; }
+  .figura .perfil { max-width: 360px; }
+  .figura .mapa-lomas { max-width: 290px; }
+  .encabezado h2 { font-size: 30px; }
+  .bloque p { font-size: 15px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
