@@ -148,6 +148,10 @@ button {
   outline: none; transition: border-color .15s, box-shadow .15s;
 }
 #q:focus { border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-sua); }
+/* el navegador pone su propia aspa en los input de busqueda: sobraba, porque
+   al lado esta la nuestra, que ademas cierra la lista de sugerencias */
+#q::-webkit-search-cancel-button,
+#q::-webkit-search-decoration { -webkit-appearance: none; appearance: none; }
 .encabezado .sinon {
   margin: 4px 0 0; font-size: 13px; color: var(--tenue);
   display: flex; align-items: center; gap: 5px;
