@@ -58,8 +58,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   background: color-mix(in srgb, var(--fondo) 88%, transparent);
   backdrop-filter: saturate(1.4) blur(12px);
   border-bottom: 1px solid var(--borde);
-  padding: 10px 14px 0;
+  padding: 10px 0 0;
 }
+/* el fondo va de borde a borde, pero el contenido se alinea con la rejilla */
+.cab > * { max-width: 1400px; margin-inline: auto; padding-inline: 14px; }
 .cab-fila { display: flex; align-items: center; gap: 10px; }
 .marca { display: flex; align-items: baseline; gap: 8px; min-width: 0; flex: 1; }
 .marca h1 {
@@ -194,8 +196,36 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .btn.principal { background: var(--acento); border-color: var(--acento); color: #fff; }
 :root.oscuro .btn.principal { color: #0f140f; }
 
+@media (min-width: 720px) {
+  .panel {
+    left: 50%; right: auto; top: 50%; bottom: auto;
+    width: min(520px, calc(100vw - 48px));
+    max-height: min(78vh, 700px);
+    border-radius: 18px; border: 1px solid var(--borde);
+    transform: translate(-50%, -47%) scale(.97);
+    opacity: 0; visibility: hidden;
+    transition: transform .2s cubic-bezier(.2,.8,.3,1), opacity .18s, visibility .18s;
+  }
+  .panel.abierto { transform: translate(-50%, -50%) scale(1); opacity: 1; visibility: visible; }
+  .panel-pie { border-radius: 0 0 18px 18px; }
+}
+
 /* deslizador de altitud */
+.segmentado {
+  display: inline-flex; gap: 3px; padding: 3px; margin-bottom: 10px;
+  background: var(--superficie-2); border-radius: 11px;
+}
+.segmentado button {
+  padding: 6px 13px; border-radius: 8px; font-size: 13px; font-weight: 600;
+  color: var(--tenue); transition: background .15s, color .15s;
+}
+.segmentado button[aria-pressed="true"] {
+  background: var(--superficie); color: var(--texto); box-shadow: 0 1px 2px rgba(0,0,0,.08);
+}
 .rango { display: flex; align-items: center; gap: 10px; }
+.rango + .rango { margin-top: 8px; }
+.rango label { font-size: 12px; color: var(--tenue); min-width: 42px; }
+.pista { margin: 8px 0 0; font-size: 12px; color: var(--tenue); line-height: 1.45; }
 .rango input[type=range] { flex: 1; accent-color: var(--acento); }
 .rango output {
   font-variant-numeric: tabular-nums; font-size: 13px; color: var(--tenue);

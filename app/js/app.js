@@ -46,11 +46,19 @@ G.especies.forEach(function (e) {
 });
 
 /* ---------- estado ---------- */
-var F = { q: '', color: [], grupo: [], mes: [], loma: [], habitat: [], familia: [], altitud: null };
+var ALT_MIN = 100, ALT_MAX = 1000;
+var F = { q: '', color: [], grupo: [], mes: [], loma: [], habitat: [], familia: [],
+          altModo: 'cota', altitud: null, altDesde: ALT_MIN, altHasta: ALT_MAX };
+
+function altActiva() {
+  return F.altModo === 'cota'
+      ? F.altitud != null
+      : (F.altDesde > ALT_MIN || F.altHasta < ALT_MAX);
+}
 
 function activos() {
   return F.color.length + F.grupo.length + F.mes.length + F.loma.length +
-         F.habitat.length + F.familia.length + (F.altitud ? 1 : 0);
+         F.habitat.length + F.familia.length + (altActiva() ? 1 : 0);
 }
 function alterna(lista, valor) {
   var i = lista.indexOf(valor);
@@ -68,10 +76,14 @@ function filtrar() {
     if (F.mes.length     && !F.mes.some(function (m) { return e.flor.indexOf(m) >= 0; })) return false;
     if (F.loma.length    && !F.loma.some(function (l) { return e.lomas.indexOf(l) >= 0; })) return false;
     if (F.habitat.length && !F.habitat.some(function (h) { return e.habitats.indexOf(h) >= 0; })) return false;
-    if (F.altitud != null) {
+    if (altActiva()) {
       var min = e.altitud[0], max = e.altitud[1];
       if (min == null || max == null) return false;
-      if (F.altitud < min || F.altitud > max) return false;   // la cota debe caer en su rango
+      if (F.altModo === 'cota') {
+        if (F.altitud < min || F.altitud > max) return false;      // la cota cae dentro
+      } else {
+        if (max < F.altDesde || min > F.altHasta) return false;    // los tramos se solapan
+      }
     }
     return true;
   });
@@ -116,6 +128,9 @@ function render() {
       ? tot + ' especies'
       : r.length + ' de ' + tot + ' especies';
   $('#btn-limpiar-filtros').classList.toggle('oculto', activos() === 0 && !F.q);
+  $('#btn-aplicar').textContent = r.length === tot
+      ? 'Ver las ' + tot
+      : 'Ver ' + r.length + (r.length === 1 ? ' resultado' : ' resultados');
   sincronizarChips();
 }
 
@@ -397,9 +412,11 @@ $('#btn-aplicar').addEventListener('click', function () { abrirPanel(false); });
 
 function limpiarTodo() {
   F.color = []; F.grupo = []; F.mes = []; F.loma = []; F.habitat = []; F.familia = [];
-  F.altitud = null;
+  F.altitud = null; F.altDesde = ALT_MIN; F.altHasta = ALT_MAX;
   $('#f-altitud').value = 1050;
   $('#f-altitud-val').textContent = 'todas';
+  $('#f-alt-min').value = ALT_MIN; $('#f-alt-max').value = ALT_MAX;
+  pintarRango();
   render();
 }
 $('#btn-reset').addEventListener('click', limpiarTodo);
@@ -410,9 +427,35 @@ $('#btn-limpiar-filtros').addEventListener('click', function () {
 
 $('#f-altitud').addEventListener('input', function (ev) {
   var v = +ev.target.value;
-  if (v >= 1050) { F.altitud = null; $('#f-altitud-val').textContent = 'todas'; }
+  if (v > ALT_MAX) { F.altitud = null; $('#f-altitud-val').textContent = 'todas'; }
   else { F.altitud = v; $('#f-altitud-val').textContent = v + ' msnm'; }
   render();
+});
+
+function pintarRango() {
+  $('#f-alt-min-val').textContent = F.altDesde + ' msnm';
+  $('#f-alt-max-val').textContent = F.altHasta + ' msnm';
+}
+$('#f-alt-min').addEventListener('input', function (ev) {
+  F.altDesde = +ev.target.value;
+  if (F.altDesde > F.altHasta) { F.altHasta = F.altDesde; $('#f-alt-max').value = F.altHasta; }
+  pintarRango(); render();
+});
+$('#f-alt-max').addEventListener('input', function (ev) {
+  F.altHasta = +ev.target.value;
+  if (F.altHasta < F.altDesde) { F.altDesde = F.altHasta; $('#f-alt-min').value = F.altDesde; }
+  pintarRango(); render();
+});
+$$('.segmentado [data-modo]').forEach(function (b) {
+  b.addEventListener('click', function () {
+    F.altModo = b.dataset.modo;
+    $$('.segmentado [data-modo]').forEach(function (o) {
+      o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
+    });
+    $('#alt-cota').classList.toggle('oculto', F.altModo !== 'cota');
+    $('#alt-rango').classList.toggle('oculto', F.altModo !== 'rango');
+    render();
+  });
 });
 
 $('#btn-info').addEventListener('click', function () {
@@ -435,6 +478,7 @@ document.addEventListener('keydown', function (ev) {
 /* ---------- arranque ---------- */
 pintarChipsRapidos();
 pintarFiltros();
+pintarRango();
 pintarIconos(document);
 render();
 

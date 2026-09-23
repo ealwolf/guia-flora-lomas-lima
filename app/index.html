@@ -66,9 +66,30 @@
     </div>
     <div class="grupo">
       <h3><span data-ico="mountains" aria-hidden="true"></span> Altitud</h3>
-      <div class="rango">
-        <input type="range" id="f-altitud" min="0" max="1050" step="50" value="1050">
-        <output id="f-altitud-val">todas</output>
+      <div class="segmentado" role="group" aria-label="Modo de filtro por altitud">
+        <button data-modo="cota" aria-pressed="true">Una cota</button>
+        <button data-modo="rango" aria-pressed="false">Un rango</button>
+      </div>
+      <div id="alt-cota">
+        <div class="rango">
+          <input type="range" id="f-altitud" min="100" max="1050" step="50" value="1050"
+                 aria-label="Altitud a la que estás">
+          <output id="f-altitud-val">todas</output>
+        </div>
+        <p class="pista">Deja sólo las especies cuyo rango incluye esa altura.</p>
+      </div>
+      <div id="alt-rango" class="oculto">
+        <div class="rango">
+          <label for="f-alt-min">Desde</label>
+          <input type="range" id="f-alt-min" min="100" max="1000" step="50" value="100">
+          <output id="f-alt-min-val">100 msnm</output>
+        </div>
+        <div class="rango">
+          <label for="f-alt-max">Hasta</label>
+          <input type="range" id="f-alt-max" min="100" max="1000" step="50" value="1000">
+          <output id="f-alt-max-val">1000 msnm</output>
+        </div>
+        <p class="pista">Deja las especies que aparecen en alguna parte de ese tramo.</p>
       </div>
     </div>
     <div class="grupo">
