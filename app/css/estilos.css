@@ -15,6 +15,9 @@
   --ambar:      #b07d1a;
   --sobre-acento: #ffffff;
   --tirador: 20px;
+  --mar:    #cfe0e6;
+  --tierra: #edeae1;
+  --costa:  #8d968c;
   --sombra:     0 1px 2px rgba(28,33,29,.06), 0 8px 24px -12px rgba(28,33,29,.18);
   --r:  14px;
   --r-s: 10px;
@@ -35,6 +38,9 @@
     --rojo:       #e8695f;
     --ambar:      #d8a545;
     --sobre-acento: #0f140f;
+    --mar:    #10242b;
+    --tierra: #222720;
+    --costa:  #566055;
     --sombra:     0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
     color-scheme: dark;
   }
@@ -52,6 +58,9 @@
     --rojo:       #e8695f;
     --ambar:      #d8a545;
     --sobre-acento: #0f140f;
+    --mar:    #10242b;
+    --tierra: #222720;
+    --costa:  #566055;
     --sombra:     0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
     color-scheme: dark;
 }
@@ -412,7 +421,12 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 .figura svg { display: block; margin: 0 auto; width: 100%; height: auto; }
 .figura .perfil { max-width: 330px; }
 .figura .mapa-lomas { max-width: 250px; }
-.figura figcaption { font-size: 12px; color: var(--tenue); margin-top: 8px; text-align: center; }
+.figura figcaption {
+  font-size: 12px; color: var(--tenue); margin-top: 8px; text-align: center;
+  line-height: 1.45;
+}
+.figura figcaption b { color: var(--texto); font-weight: 600; }
+.eti small { font-weight: 400; opacity: .7; }
 
 /* perfil de altitud */
 .perfil { width: 100%; height: auto; display: block; }
@@ -420,15 +434,22 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 .perfil .banda-relieve { fill: color-mix(in srgb, var(--acento) 30%, var(--superficie-2)); }
 .perfil .silueta { fill: none; stroke: var(--tenue); stroke-width: .3; opacity: .7; }
 .perfil .rejilla-l { stroke: var(--borde); stroke-width: .18; }
-.perfil .franja { fill: color-mix(in srgb, var(--rojo) 55%, transparent); }
-.perfil .franja-borde { stroke: var(--rojo); stroke-width: .5; fill: none; }
+.perfil .trazo {
+  fill: none; stroke: var(--rojo); stroke-width: 1.5;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.perfil .cara {
+  font-size: 2.4px; font-weight: 600; letter-spacing: .06em;
+  fill: var(--tenue); opacity: .75;
+}
 .perfil text { fill: var(--tenue); font-size: 2.6px; font-family: system-ui, sans-serif; }
 
 /* mapa */
 .mapa-lomas { width: 100%; height: auto; display: block; border-radius: var(--r-s); }
-.mapa-lomas .mapa-fondo { fill: var(--superficie-2); stroke: none; }
-.mapa-lomas .mapa-tierra { fill: color-mix(in srgb, var(--acento) 12%, var(--superficie)); stroke: none; }
-.mapa-lomas .mapa-linea { fill: none; stroke: color-mix(in srgb, var(--tenue) 55%, transparent); stroke-width: .3; }
+.mapa-lomas .mapa-mar { fill: var(--mar); stroke: none; }
+.mapa-lomas .mapa-tierra { fill: var(--tierra); stroke: none; }
+.mapa-lomas .mapa-relleno { fill: var(--tierra); stroke: none; }
+.mapa-lomas .mapa-linea { fill: none; stroke: var(--costa); stroke-width: .35; }
 .mapa-lomas .loma { fill: color-mix(in srgb, var(--tenue) 42%, transparent); stroke: none; transition: fill .2s; }
 .mapa-lomas .loma.activa { fill: var(--rojo); }
 .lista-lomas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }

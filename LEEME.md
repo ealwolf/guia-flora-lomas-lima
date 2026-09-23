@@ -86,12 +86,26 @@ Luego copia al teléfono **sólo `app/js/datos.js`** (263 KB). Las 295 fotos
 - **Perfil de altitud** y **mapa de las lomas**, con los vectores del propio
   libro: no son imágenes, son dibujos que se adaptan al tamaño de la pantalla y
   al modo claro u oscuro.
+- El perfil reproduce **el trazo rojo tal como lo dibuja la guía**, que no sólo
+  dice entre qué cotas vive la especie sino en qué cara de la loma: 85 de las
+  134 aparecen sólo en la occidental (la que mira al mar), 15 sólo en la
+  oriental y 34 en ambas.
 
 - **Tema**: el botón de la cabecera alterna automático → claro → oscuro. Por
   defecto sigue al teléfono, y lo que elijas se recuerda.
 
 Funciona en vertical y en horizontal; desde tableta la cabecera se reduce a una
 sola fila y la ficha se reparte en dos columnas.
+
+---
+
+## La cara de la loma se dice dos veces
+
+El pie del perfil indica la cara según **el dibujo**; la ficha de Hábitats, la
+que menciona **el texto**. Coinciden en 91 de 103 especies. En 12 la guía se
+contradice a sí misma (por ejemplo *Tillandsia latifolia*: el perfil la pinta en
+la cara occidental y el texto la describe en la oriental), así que se muestran
+las dos con su procedencia en vez de elegir una por ti.
 
 ---
 

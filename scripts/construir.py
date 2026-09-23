@@ -75,6 +75,7 @@ def main():
     lomas = leer(os.path.join(CRUDO, 'loma.csv'))
     colauto = {r['especie_id']: r for r in leer(os.path.join(CRUDO, 'especie_color.csv'))}
     colrev = {r['especie_id']: r for r in leer(os.path.join(PROPIO, 'color_flor.csv'))}
+    rojos = json.load(open(os.path.join(CRUDO, 'perfil_rojo.json'), encoding='utf-8'))
 
     # fotos por especie, principales primero
     fotos = collections.defaultdict(list)
@@ -122,6 +123,9 @@ def main():
             'dist': r['distribucion'],
             'sit': r['situacion_actual'],
             'fotos': fotos.get(eid, []),
+            # el trazo rojo tal como lo dibuja la guia: dice en que cara de la
+            # loma esta la especie, no solo entre que cotas
+            'perfil': rojos.get(eid, ''),
         })
 
     def cuenta(clave):

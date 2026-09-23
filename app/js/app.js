@@ -216,25 +216,42 @@ function svgPerfil(e) {
                '" x2="' + W + '" y2="' + y(a).toFixed(2) + '"/>';
     etiquetas += '<text x="8" y="' + (y(a) + 1).toFixed(2) + '" text-anchor="end">' + a + '</text>';
   });
-  var franja = '';
-  if (min != null && max != null) {
-    var yt = y(max), yb = y(min);
-    franja =
-      '<clipPath id="cp-perfil">' + bandas + '</clipPath>' +
-      '<g clip-path="url(#cp-perfil)">' +
-        '<rect class="franja" x="0" y="' + yt.toFixed(2) + '" width="' + W +
-        '" height="' + Math.max(0.4, yb - yt).toFixed(2) + '"/>' +
-      '</g>' +
-      '<line class="franja-borde" x1="9" y1="' + yt.toFixed(2) + '" x2="' + W + '" y2="' + yt.toFixed(2) + '"/>' +
-      '<line class="franja-borde" x1="9" y1="' + yb.toFixed(2) + '" x2="' + W + '" y2="' + yb.toFixed(2) + '"/>';
-  }
-  return '<svg class="perfil" viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
-         'aria-label="Rango de altitud: ' + (min != null ? min + ' a ' + max + ' metros' : 'sin dato') + '">' +
+  // El trazo rojo de la guia va sobre la cara occidental, la oriental o ambas.
+  // Una banda horizontal daria a entender que la especie ocupa todo el cerro.
+  var trazo = e.perfil
+      ? '<path class="trazo" d="' + e.perfil + '"/>'
+      : '';
+  var caras = '<text class="cara" x="11" y="' + (H - 1.2).toFixed(1) + '">Oeste</text>' +
+              '<text class="cara" x="' + (W - 1) + '" y="' + (H - 1.2).toFixed(1) +
+              '" text-anchor="end">Este</text>';
+  var c = caraDe(e);
+  var enCara = c === 'Ambas caras' ? 'en ambas caras de la loma'
+             : c ? 'en la cara ' + c.toLowerCase() : '';
+  var desc = min != null
+      ? 'De ' + min + ' a ' + max + ' metros, ' + enCara
+      : 'sin dato';
+  return '<svg class="perfil" viewBox="0 0 ' + W + ' ' + (H + 2) + '" role="img" ' +
+         'aria-label="Rango de altitud: ' + desc + '">' +
            rejilla +
            '<g class="banda-relieve">' + bandas + '</g>' +
            '<path class="silueta" d="' + P.silueta + '"/>' +
-           franja + etiquetas +
+           trazo + etiquetas + caras +
          '</svg>';
+}
+
+/* de que lado del perfil cae el trazo (el valle separa las dos caras).
+   Hay que leer todas las coordenadas, no solo las de M y L: los trazos son
+   casi todos curvas, y en una C las x estan en las posiciones pares. */
+function caraDe(e) {
+  var d = e.perfil || '';
+  if (!d) return '';
+  var nums = d.match(/-?\d*\.?\d+/g) || [];
+  var xs = nums.filter(function (_, i) { return i % 2 === 0; }).map(parseFloat);
+  if (!xs.length) return '';
+  var VALLE = 27;
+  var oeste = xs.some(function (x) { return x < VALLE - 2; });
+  var este  = xs.some(function (x) { return x > VALLE + 2; });
+  return oeste && este ? 'Ambas caras' : oeste ? 'Occidental' : 'Oriental';
 }
 
 /* ---------- mapa ---------- */
@@ -319,7 +336,8 @@ function abrirFicha(id, empujar) {
     '<div class="lateral">' +
       '<section class="bloque"><h3>' + svgIcono('mountains') + 'Rango de altitud</h3>' +
         '<figure class="figura">' + svgPerfil(e) +
-        '<figcaption>' + (e.altitudTxt ? esc(e.altitudTxt) : 'Según el perfil de la guía') +
+        '<figcaption><b>' + esc(caraDe(e) || '—') + '</b> según el perfil de la guía' +
+        (e.altitudTxt ? '<br>En el texto: “' + esc(e.altitudTxt) + '”' : '') +
         '</figcaption></figure></section>' +
       '<section class="bloque"><h3>' + svgIcono('map-trifold') + 'Dónde se registró</h3>' +
         '<figure class="figura">' + svgMapa(e) +
@@ -328,7 +346,8 @@ function abrirFicha(id, empujar) {
       (e.flor.length ? '<section class="bloque"><h3>' + svgIcono('calendar-blank') + 'Calendario de floración</h3>' + cal + '</section>' : '') +
       (e.habitats.length ? '<section class="bloque"><h3>' + svgIcono('drop') + 'Hábitats</h3><div class="envoltura">' +
         e.habitats.map(function (h) { return '<span class="eti">' + esc(h) + '</span>'; }).join('') +
-        (e.cara ? '<span class="eti">' + svgIcono('sun') + 'Cara ' + esc(e.cara.toLowerCase()) + '</span>' : '') +
+        (e.cara ? '<span class="eti">' + svgIcono('sun') + 'Cara ' + esc(e.cara.toLowerCase()) +
+          ' <small>(texto)</small></span>' : '') +
         '</div></section>' : '') +
     '</div>' +
 
