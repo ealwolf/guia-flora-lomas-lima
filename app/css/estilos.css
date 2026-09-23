@@ -61,7 +61,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   padding: 10px 14px 0;
 }
 .cab-fila { display: flex; align-items: center; gap: 10px; }
-.marca { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.marca { display: flex; align-items: baseline; gap: 8px; min-width: 0; flex: 1; }
 .marca h1 {
   font: 600 16px/1.2 Georgia, "Iowan Old Style", "Times New Roman", serif;
   margin: 0; letter-spacing: -.01em; white-space: nowrap;
