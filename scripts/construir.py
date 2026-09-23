@@ -76,6 +76,9 @@ def main():
     colauto = {r['especie_id']: r for r in leer(os.path.join(CRUDO, 'especie_color.csv'))}
     colrev = {r['especie_id']: r for r in leer(os.path.join(PROPIO, 'color_flor.csv'))}
     rojos = json.load(open(os.path.join(CRUDO, 'perfil_rojo.json'), encoding='utf-8'))
+    # los sinonimos no estan en la guia: son aporte propio
+    sinon = {r['especie_id']: lista(r.get('sinonimos', ''), ';')
+             for r in leer(os.path.join(PROPIO, 'sinonimos.csv'))}
 
     # fotos por especie, principales primero
     fotos = collections.defaultdict(list)
@@ -101,6 +104,7 @@ def main():
             'comun': r['nombre_comun'],
             'cientifico': r['nombre_cientifico'],
             'autoria': r['autor_cientifico'],
+            'sinonimos': sinon.get(eid, []),
             'familia': r['familia'],
             'grupo': r['grupo'],
             'origen': r['origen'],

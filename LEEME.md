@@ -43,7 +43,8 @@ Guía de Flora de las Lomas de Lima/
 ├── datos/
 │   ├── crudo/              copia congelada del PDF. NO EDITAR.
 │   ├── propio/             tus correcciones. Ningún script escribe aquí.
-│   │   └── color_flor.csv
+│   │   ├── color_flor.csv
+│   │   └── sinonimos.csv
 │   └── iconos-phosphor.json
 │
 ├── scripts/
@@ -74,6 +75,12 @@ Luego copia al teléfono **sólo `app/js/datos.js`** (263 KB). Las 295 fotos
 
 - **Buscar** por nombre común, científico, familia, grupo, loma o hábitat. Sin
   tildes también encuentra: *amancaes* halla *Amancáes*.
+- Al escribir aparece una **lista de sugerencias que dice de qué tipo es cada
+  coincidencia**: *amarillo* es un color, *Malvaceae* una familia, *Amancáes*
+  una loma y a la vez una especie. Elegir una aplica el filtro en vez de dejar
+  el texto suelto; elegir una especie abre su ficha. También con las flechas y
+  Enter. *julio* enciende el filtro de floración aunque esa palabra no esté en
+  ningún texto del libro.
 - **Filtrar por color de flor** desde la propia portada. Es lo que se busca en
   campo cuando no sabes qué planta tienes delante. Una especie sale en **todos
   los colores que tiene**, no sólo en el principal: 19 son blancas y amarillas
@@ -135,6 +142,27 @@ Las 5 de criterio propio están marcadas `revisado = FALSE` con el motivo en
 `notas_color`: son lecturas del libro y de la foto, no de un botánico. El valor
 ya funciona en la app; falta que alguien las confirme. Para corregir cualquiera,
 edita `datos/propio/color_flor.csv` y vuelve a ejecutar `construir.py`.
+
+---
+
+## Los sinónimos tampoco están en el PDF
+
+La guía nombra cada especie una sola vez y no menciona sus nombres anteriores:
+las palabras «sinónimo» y «basónimo» no aparecen en todo el libro. Pero en campo
+y en la bibliografía antigua circulan los nombres viejos, así que la búsqueda
+los acepta desde `datos/propio/sinonimos.csv`.
+
+Vienen **2 sembrados** de la hoja de cálculo anterior de Lomas de Paraíso:
+
+| Nombre en la guía | Se encuentra además por |
+|---|---|
+| *Oziroe biflora* | *Fortunatia biflora* |
+| *Astrephia chaerophylloides* | *Valeriana chaerophylloides* |
+
+Para añadir más, escribe en la fila de la especie; si tiene varios, sepáralos
+con punto y coma. Luego `construir.py`. El sinónimo se busca igual que el
+nombre válido, sale en las sugerencias etiquetado como tal y aparece en la
+ficha bajo el nombre científico.
 
 ---
 

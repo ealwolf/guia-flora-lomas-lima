@@ -148,6 +148,40 @@ button {
   outline: none; transition: border-color .15s, box-shadow .15s;
 }
 #q:focus { border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-sua); }
+.encabezado .sinon {
+  margin: 4px 0 0; font-size: 13px; color: var(--tenue);
+  display: flex; align-items: center; gap: 5px;
+}
+.encabezado .sinon .ico { width: 14px; height: 14px; flex: none; }
+
+/* ---------- sugerencias del buscador ---------- */
+.sug {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 55;
+  padding: 6px; max-height: min(56vh, 430px); overflow-y: auto;
+  background: var(--superficie); border: 1px solid var(--borde);
+  border-radius: 14px; box-shadow: var(--sombra);
+  -webkit-overflow-scrolling: touch;
+}
+.sug button {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 8px 10px; border-radius: 10px; text-align: left; color: var(--texto);
+}
+.sug button:hover, .sug button[aria-selected="true"] { background: var(--superficie-2); }
+.sug-ico { display: grid; place-items: center; width: 20px; flex: none; color: var(--tenue); }
+.sug-ico .punto { width: 13px; height: 13px; }
+.sug-txt { min-width: 0; flex: 1; }
+.sug-txt b { display: block; font-size: 14px; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sug-txt small { display: block; font-size: 12px; color: var(--tenue);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sug-txt i { font-style: italic; }
+.sug-tipo {
+  flex: none; font-size: 11px; font-weight: 600; letter-spacing: .02em;
+  color: var(--tenue); background: var(--superficie-2);
+  border: 1px solid var(--borde); border-radius: 999px; padding: 2px 8px;
+}
+.sug button[aria-selected="true"] .sug-tipo { background: var(--fondo); }
+
 #limpiar {
   position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
   width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center;

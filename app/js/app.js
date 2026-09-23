@@ -38,12 +38,133 @@ G.lomas.forEach(function (l) { nombreLoma[l.id] = l.nombre; });
 
 G.especies.forEach(function (e) {
   e._b = sinTildes([
-    e.comun, e.cientifico, e.autoria, e.familia, e.grupo, e.color,
+    e.comun, e.cientifico, e.autoria, e.familia, e.grupo,
+    (e.colores || []).join(' '), e.color,
+    (e.sinonimos || []).join(' '),
     e.habitats.join(' '),
     e.lomas.map(function (id) { return nombreLoma[id]; }).join(' '),
     e.n
   ].join(' '));
 });
+
+/* ---------- sugerencias: qué es lo que estás escribiendo ----------
+   «amarillo» es un color, «Malvaceae» una familia y «Amancaes» una loma, pero
+   el buscador los trataba a los tres como texto suelto. La lista dice de qué
+   tipo es cada coincidencia y aplica el filtro en vez de dejarlo en el cajón.
+   Se arma una sola vez con lo que ya está en memoria: unas 370 entradas, no
+   descarga nada y no se nota en el arranque. */
+var MESES_LARGO = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+                   'julio', 'agosto', 'setiembre septiembre', 'octubre',
+                   'noviembre', 'diciembre'];
+var ORDEN_SUG = { 'Especie': 0, 'Sinónimo': 1, 'Color': 2, 'Loma': 3,
+                  'Familia': 4, 'Grupo': 5, 'Hábitat': 6, 'En flor': 7 };
+var SUG = [];
+(function () {
+  function meter(o) {
+    o._k = sinTildes([o.et, o.sub, o.oculto].join(' '));
+    SUG.push(o);
+  }
+  G.colores.forEach(function (c) {
+    meter({ tipo: 'Color', punto: c.hex, et: c.nombre, n: c.n, f: 'color', v: c.nombre });
+  });
+  G.lomas.forEach(function (l) {
+    meter({ tipo: 'Loma', ico: 'map-pin', et: l.nombre, n: l.nEsp,
+            sub: l.sectores ? l.sectores.split(';').join(' · ') : '',
+            f: 'loma', v: l.id });
+  });
+  G.familias.forEach(function (f) {
+    meter({ tipo: 'Familia', ico: 'leaf', et: f.nombre, n: f.n, f: 'familia', v: f.nombre });
+  });
+  G.grupos.forEach(function (g) {
+    meter({ tipo: 'Grupo', ico: 'plant', et: g.nombre, n: g.n, f: 'grupo', v: g.nombre });
+  });
+  G.habitats.forEach(function (h) {
+    meter({ tipo: 'Hábitat', ico: 'drop', et: h.nombre, n: h.n, f: 'habitat', v: h.nombre });
+  });
+  G.meses.forEach(function (m, i) {
+    meter({ tipo: 'En flor', ico: 'calendar-blank', et: m, oculto: MESES_LARGO[i],
+            f: 'mes', v: i + 1 });
+  });
+  G.especies.forEach(function (e) {
+    meter({ tipo: 'Especie', ico: 'flower-lotus', et: e.comun, sub: e.cientifico,
+            cursiva: true, id: e.id });
+    // los sinonimos no vienen de la guia: salen de datos/propio/sinonimos.csv
+    (e.sinonimos || []).forEach(function (s) {
+      meter({ tipo: 'Sinónimo', ico: 'flower-lotus', et: s,
+              sub: 'hoy ' + e.cientifico + ' · ' + e.comun, cursiva: true, id: e.id });
+    });
+  });
+})();
+
+function sugerir(txt) {
+  var k = sinTildes(txt).trim();
+  if (k.length < 2) return [];
+  var hallados = [];
+  for (var i = 0; i < SUG.length; i++) {
+    var p = SUG[i]._k.indexOf(k);
+    if (p < 0) continue;
+    // 0 empieza por lo escrito, 1 empieza una palabra, 2 cae en medio de una
+    var r = p === 0 ? 0 : SUG[i]._k.charAt(p - 1) === ' ' ? 1 : 2;
+    hallados.push({ s: SUG[i], r: r, p: p });
+  }
+  hallados.sort(function (a, b) {
+    return a.r - b.r || ORDEN_SUG[a.s.tipo] - ORDEN_SUG[b.s.tipo] || a.p - b.p;
+  });
+  return hallados.slice(0, 8).map(function (x) { return x.s; });
+}
+
+var sugActual = [], sugSel = -1;
+
+function pintarSug() {
+  var caja = $('#sug');
+  if (!sugActual.length) { cerrarSug(); return; }
+  caja.innerHTML = sugActual.map(function (s, i) {
+    var marca = s.punto
+        ? '<span class="punto" style="background:' + s.punto + '"></span>'
+        : svgIcono(s.ico);
+    var sub = s.sub
+        ? '<small>' + (s.cursiva ? '<i>' + esc(s.sub) + '</i>' : esc(s.sub)) + '</small>'
+        : '';
+    return '<button type="button" role="option" aria-selected="false" data-sug="' + i + '">' +
+        '<span class="sug-ico">' + marca + '</span>' +
+        '<span class="sug-txt"><b>' + esc(s.et) + '</b>' + sub + '</span>' +
+        '<span class="sug-tipo">' + esc(s.tipo) +
+          (s.n != null ? ' · ' + s.n : '') + '</span>' +
+      '</button>';
+  }).join('');
+  caja.hidden = false;
+  $('#q').setAttribute('aria-expanded', 'true');
+  sugSel = -1;
+}
+
+function cerrarSug() {
+  $('#sug').hidden = true;
+  $('#sug').innerHTML = '';
+  $('#q').setAttribute('aria-expanded', 'false');
+  sugActual = []; sugSel = -1;
+}
+
+function moverSug(i) {
+  var n = sugActual.length;
+  if (!n) return;
+  sugSel = (i + n) % n;
+  $$('#sug [data-sug]').forEach(function (b, j) {
+    b.setAttribute('aria-selected', j === sugSel ? 'true' : 'false');
+    if (j === sugSel) b.scrollIntoView({ block: 'nearest' });
+  });
+}
+
+function elegirSug(i) {
+  var s = sugActual[i];
+  if (!s) return;
+  cerrarSug();
+  if (s.id) { $('#q').blur(); abrirFicha(s.id); return; }
+  var v = s.f === 'mes' ? +s.v : s.v;
+  if (F[s.f].indexOf(v) < 0) F[s.f].push(v);
+  F.q = ''; $('#q').value = ''; $('#limpiar').classList.add('oculto');
+  $('#q').blur();
+  render();
+}
 
 /* ---------- estado ---------- */
 var ALT_MIN = 100, ALT_MAX = 1000;
@@ -343,6 +464,10 @@ function abrirFicha(id, empujar) {
       '<h2>' + esc(e.comun) + '</h2>' +
       '<p class="cient">' + esc(e.cientifico) +
         (e.autoria ? ' <span class="aut">' + esc(e.autoria) + '</span>' : '') + '</p>' +
+      (e.sinonimos && e.sinonimos.length
+        ? '<p class="sinon">' + svgIcono('arrow-left') + 'Antes ' +
+          e.sinonimos.map(function (x) { return '<i>' + esc(x) + '</i>'; }).join(', ') +
+          '</p>' : '') +
       '<div class="etiquetas">' + etiquetas + '</div>' +
     '</header>' +
 
@@ -434,11 +559,34 @@ var tq;
 $('#q').addEventListener('input', function (ev) {
   F.q = ev.target.value;
   $('#limpiar').classList.toggle('oculto', !F.q);
+  sugActual = sugerir(F.q);           // la lista sale ya; la rejilla espera
+  pintarSug();
   clearTimeout(tq);
   tq = setTimeout(render, 110);
 });
+$('#q').addEventListener('keydown', function (ev) {
+  if ($('#sug').hidden) return;
+  if (ev.key === 'ArrowDown')    { ev.preventDefault(); moverSug(sugSel + 1); }
+  else if (ev.key === 'ArrowUp') { ev.preventDefault(); moverSug(sugSel - 1); }
+  else if (ev.key === 'Enter') {
+    if (sugSel >= 0) { ev.preventDefault(); elegirSug(sugSel); } else cerrarSug();
+  } else if (ev.key === 'Escape') { ev.preventDefault(); cerrarSug(); }
+});
+$('#q').addEventListener('focus', function () {
+  if (F.q) { sugActual = sugerir(F.q); pintarSug(); }
+});
+// sin esto el teclado del telefono se cierra y el click cae en otro sitio
+$('#sug').addEventListener('mousedown', function (ev) { ev.preventDefault(); });
+$('#sug').addEventListener('click', function (ev) {
+  var b = ev.target.closest('[data-sug]');
+  if (b) elegirSug(+b.dataset.sug);
+});
+document.addEventListener('click', function (ev) {
+  if (!$('#sug').hidden && !ev.target.closest('.buscador')) cerrarSug();
+});
 $('#limpiar').addEventListener('click', function () {
-  F.q = ''; $('#q').value = ''; $('#limpiar').classList.add('oculto'); render(); $('#q').focus();
+  F.q = ''; $('#q').value = ''; $('#limpiar').classList.add('oculto');
+  cerrarSug(); render(); $('#q').focus();
 });
 
 function abrirPanel(v) {
@@ -459,6 +607,7 @@ function limpiarTodo() {
 $('#btn-reset').addEventListener('click', limpiarTodo);
 $('#btn-limpiar-filtros').addEventListener('click', function () {
   F.q = ''; $('#q').value = ''; $('#limpiar').classList.add('oculto');
+  cerrarSug();
   limpiarTodo();
 });
 
@@ -537,6 +686,7 @@ window.addEventListener('resize', pintarRango);
 
 document.addEventListener('keydown', function (ev) {
   if (ev.key === 'Escape') {
+    if (!$('#sug').hidden) { cerrarSug(); return; }
     if (!$('#menu-tema').hidden) { abrirMenuTema(false); $('#btn-tema').focus(); return; }
     if ($('#visor').classList.contains('abierto')) { $('#visor').classList.remove('abierto'); return; }
     if ($('#panel').classList.contains('abierto')) { abrirPanel(false); return; }
