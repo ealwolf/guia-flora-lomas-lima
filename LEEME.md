@@ -75,7 +75,12 @@ Luego copia al teléfono **sólo `app/js/datos.js`** (263 KB). Las 295 fotos
 - **Buscar** por nombre común, científico, familia, grupo, loma o hábitat. Sin
   tildes también encuentra: *amancaes* halla *Amancáes*.
 - **Filtrar por color de flor** desde la propia portada. Es lo que se busca en
-  campo cuando no sabes qué planta tienes delante.
+  campo cuando no sabes qué planta tienes delante. Una especie sale en **todos
+  los colores que tiene**, no sólo en el principal: 19 son blancas y amarillas
+  a la vez, y si dudas entre los dos la encuentras por cualquiera. Delante van
+  las que lo tienen como color principal; detrás, las que sólo lo tienen en un
+  detalle (el centro amarillo de una flor blanca). La tarjeta muestra un punto
+  por color.
 - Filtrar por grupo, mes de floración, altitud, loma, hábitat y familia.
 - **Altitud**, de dos formas: *una cota* (las especies cuyo rango incluye esa
   altura, útil cuando sabes dónde estás) o *un rango* (las que aparecen en algún

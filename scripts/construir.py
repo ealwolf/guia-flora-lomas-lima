@@ -136,7 +136,8 @@ def main():
         return c
 
     cfam, cgru, chab = cuenta('familia'), cuenta('grupo'), cuenta('habitats')
-    ccol, clom = cuenta('color'), cuenta('lomas')
+    # se cuenta por 'colores' porque el filtro acepta cualquiera de ellos
+    ccol, clom = cuenta('colores'), cuenta('lomas')
 
     datos = {
         'meta': META | {'especies': len(especies),

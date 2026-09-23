@@ -65,12 +65,19 @@ function alterna(lista, valor) {
   if (i < 0) lista.push(valor); else lista.splice(i, 1);
 }
 
+function coloresDe(e) {
+  return (e.colores && e.colores.length) ? e.colores : (e.color ? [e.color] : []);
+}
+
 function filtrar() {
   var q = sinTildes(F.q).trim();
   var term = q ? q.split(/\s+/) : [];
   return G.especies.filter(function (e) {
     for (var i = 0; i < term.length; i++) if (e._b.indexOf(term[i]) < 0) return false;
-    if (F.color.length   && F.color.indexOf(e.color) < 0) return false;
+    // basta con que coincida cualquiera de sus colores: una flor entre
+    // blanca y amarilla debe salir en las dos busquedas
+    if (F.color.length && !coloresDe(e).some(function (c) {
+          return F.color.indexOf(c) >= 0; })) return false;
     if (F.grupo.length   && F.grupo.indexOf(e.grupo) < 0) return false;
     if (F.familia.length && F.familia.indexOf(e.familia) < 0) return false;
     if (F.mes.length     && !F.mes.some(function (m) { return e.flor.indexOf(m) >= 0; })) return false;
@@ -89,13 +96,28 @@ function filtrar() {
   });
 }
 
+/* Con un color activo, delante las que lo tienen como principal: las otras
+   coinciden por un detalle (el centro amarillo de una flor blanca, por
+   ejemplo) y son menos probables. */
+function ordenar(lista) {
+  if (!F.color.length) return lista;
+  return lista.slice().sort(function (a, b) {
+    var pa = F.color.indexOf(a.color) >= 0 ? 0 : 1;
+    var pb = F.color.indexOf(b.color) >= 0 ? 0 : 1;
+    return pa - pb || a.n - b.n;
+  });
+}
+
 /* ---------- tarjetas ---------- */
 function tarjeta(e) {
   var foto = e.fotos[0] ? 'img/' + e.fotos[0] : '';
   var marcas = '';
   if (e.endemico) marcas += '<span class="marca-p">ENDÉMICA</span>';
   if (e.amenaza)  marcas += '<span class="marca-p vu">' + esc(e.amenaza) + '</span>';
-  var col = colorHex(e.color);
+  var puntos = coloresDe(e).slice(0, 3).map(function (c) {
+    return '<span class="punto" title="' + esc(c) + '" style="background:' +
+           colorHex(c) + '"></span>';
+  }).join('');
   return '<button class="tarjeta" data-id="' + e.id + '">' +
       '<div class="foto">' +
         (foto ? '<img loading="lazy" decoding="async" src="' + foto + '" alt="' + esc(e.comun) + '">' : '') +
@@ -105,7 +127,7 @@ function tarjeta(e) {
         '<div class="comun">' + esc(e.comun) + '</div>' +
         '<div class="cient">' + esc(e.cientifico) + '</div>' +
         '<div class="pie">' +
-          (col ? '<span class="punto" style="background:' + col + '"></span>' : '') +
+          (puntos ? '<span class="puntos">' + puntos + '</span>' : '') +
           '<span>' + esc(e.familia) + '</span>' +
         '</div>' +
       '</div>' +
@@ -119,7 +141,7 @@ function colorHex(nombre) {
 
 var ultimo = [];
 function render() {
-  var r = filtrar();
+  var r = ordenar(filtrar());
   ultimo = r;
   $('#rejilla').innerHTML = r.map(tarjeta).join('');
   $('#vacio').classList.toggle('oculto', r.length > 0);
