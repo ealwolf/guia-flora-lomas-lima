@@ -1,0 +1,7 @@
+# generados por scripts/construir.py
+app/js/datos.js
+app/js/mapa.js
+app/js/iconos.js
+app/todo-en-uno.html
+__pycache__/
+*.pyc

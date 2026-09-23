@@ -1,0 +1,612 @@
+﻿especie_id,numero_guia,nombre_cientifico,loma_id,loma,pagina_pdf,origen_dato
+adiantum-subvolubile,1,Adiantum subvolubile,portillo,Portillo,17,mapa
+adiantum-subvolubile,1,Adiantum subvolubile,pachacamac,Pachacámac,17,mapa
+adiantum-subvolubile,1,Adiantum subvolubile,lucumo,Lúcumo,17,mapa
+adiantum-subvolubile,1,Adiantum subvolubile,manchay,Manchay,17,mapa
+adiantum-subvolubile,1,Adiantum subvolubile,amancaes,Amancáes,17,mapa
+ephedra-americana,2,Ephedra americana,retamal,Retamal,18,mapa
+anthericum-eccremorrhizum,3,Anthericum eccremorrhizum,paloma,Paloma,20,mapa
+anthericum-eccremorrhizum,3,Anthericum eccremorrhizum,caringa,Caringa,20,mapa
+anthericum-eccremorrhizum,3,Anthericum eccremorrhizum,malanche,Malanche,20,mapa
+anthericum-eccremorrhizum,3,Anthericum eccremorrhizum,pacta,Pacta,20,mapa
+anthericum-eccremorrhizum,3,Anthericum eccremorrhizum,pachacamac,Pachacámac,20,mapa
+anthericum-eccremorrhizum,3,Anthericum eccremorrhizum,lucumo,Lúcumo,20,mapa
+anthericum-eccremorrhizum,3,Anthericum eccremorrhizum,zorritos,Zorritos,20,mapa
+anthericum-eccremorrhizum,3,Anthericum eccremorrhizum,manchay,Manchay,20,mapa
+anthericum-eccremorrhizum,3,Anthericum eccremorrhizum,retamal,Retamal,20,mapa
+anthericum-eccremorrhizum,3,Anthericum eccremorrhizum,villa-maria,Villa María,20,mapa
+anthericum-eccremorrhizum,3,Anthericum eccremorrhizum,carabayllo,Carabayllo,20,mapa
+oziroe-biflora,4,Oziroe biflora,paloma,Paloma,21,mapa
+oziroe-biflora,4,Oziroe biflora,caringa,Caringa,21,mapa
+oziroe-biflora,4,Oziroe biflora,malanche,Malanche,21,mapa
+oziroe-biflora,4,Oziroe biflora,pacta,Pacta,21,mapa
+oziroe-biflora,4,Oziroe biflora,portillo,Portillo,21,mapa
+oziroe-biflora,4,Oziroe biflora,pachacamac,Pachacámac,21,mapa
+oziroe-biflora,4,Oziroe biflora,lucumo,Lúcumo,21,mapa
+oziroe-biflora,4,Oziroe biflora,zorritos,Zorritos,21,mapa
+oziroe-biflora,4,Oziroe biflora,manchay,Manchay,21,mapa
+oziroe-biflora,4,Oziroe biflora,retamal,Retamal,21,mapa
+oziroe-biflora,4,Oziroe biflora,villa-maria,Villa María,21,mapa
+oziroe-biflora,4,Oziroe biflora,payet,Payet,21,mapa
+oziroe-biflora,4,Oziroe biflora,carabayllo,Carabayllo,21,mapa
+alstroemeria-lineatiflora,5,Alstroemeria lineatiflora,caringa,Caringa,22,mapa
+alstroemeria-lineatiflora,5,Alstroemeria lineatiflora,malanche,Malanche,22,mapa
+alstroemeria-lineatiflora,5,Alstroemeria lineatiflora,villa-maria,Villa María,22,mapa
+ismene-amancaes,6,Ismene amancaes,paloma,Paloma,23,mapa
+ismene-amancaes,6,Ismene amancaes,pachacamac,Pachacámac,23,mapa
+ismene-amancaes,6,Ismene amancaes,lucumo,Lúcumo,23,mapa
+ismene-amancaes,6,Ismene amancaes,villa-maria,Villa María,23,mapa
+stenomesson-flavum,7,Stenomesson flavum,lapa-lapa,Lapa Lapa,24,mapa
+stenomesson-flavum,7,Stenomesson flavum,paloma,Paloma,24,mapa
+stenomesson-flavum,7,Stenomesson flavum,caringa,Caringa,24,mapa
+stenomesson-flavum,7,Stenomesson flavum,malanche,Malanche,24,mapa
+stenomesson-flavum,7,Stenomesson flavum,pachacamac,Pachacámac,24,mapa
+stenomesson-flavum,7,Stenomesson flavum,lucumo,Lúcumo,24,mapa
+stenomesson-flavum,7,Stenomesson flavum,amancaes,Amancáes,24,mapa
+puya-ferruginea,8,Puya ferruginea,caringa,Caringa,25,mapa
+puya-ferruginea,8,Puya ferruginea,malanche,Malanche,25,mapa
+puya-ferruginea,8,Puya ferruginea,pachacamac,Pachacámac,25,mapa
+puya-ferruginea,8,Puya ferruginea,amancaes,Amancáes,25,mapa
+tillandsia-latifolia,9,Tillandsia latifolia,asia,Asia,26,mapa
+tillandsia-latifolia,9,Tillandsia latifolia,malanche,Malanche,26,mapa
+tillandsia-latifolia,9,Tillandsia latifolia,amancaes,Amancáes,26,mapa
+tillandsia-latifolia,9,Tillandsia latifolia,san-lorenzo,San Lorenzo,26,mapa
+tillandsia-latifolia,9,Tillandsia latifolia,lapa-lapa,Lapa Lapa,26,mapa
+tillandsia-purpurea,10,Tillandsia purpurea,manchay,Manchay,27,mapa
+tillandsia-purpurea,10,Tillandsia purpurea,retamal,Retamal,27,mapa
+commelina-fasciculata,11,Commelina fasciculata,asia,Asia,28,mapa
+commelina-fasciculata,11,Commelina fasciculata,malanche,Malanche,28,mapa
+commelina-fasciculata,11,Commelina fasciculata,pacta,Pacta,28,mapa
+commelina-fasciculata,11,Commelina fasciculata,portillo,Portillo,28,mapa
+commelina-fasciculata,11,Commelina fasciculata,pachacamac,Pachacámac,28,mapa
+commelina-fasciculata,11,Commelina fasciculata,lucumo,Lúcumo,28,mapa
+commelina-fasciculata,11,Commelina fasciculata,villa-maria,Villa María,28,mapa
+commelina-fasciculata,11,Commelina fasciculata,amancaes,Amancáes,28,mapa
+commelina-fasciculata,11,Commelina fasciculata,carabayllo,Carabayllo,28,mapa
+tinantia-erecta,12,Tinantia erecta,asia,Asia,29,mapa
+tigridia-pavonia,13,Tigridia pavonia,pachacamac,Pachacámac,30,mapa
+tigridia-pavonia,13,Tigridia pavonia,lucumo,Lúcumo,30,mapa
+tigridia-pavonia,13,Tigridia pavonia,villa-maria,Villa María,30,mapa
+chloraea-undulata,14,Chloraea undulata,asia,Asia,31,mapa
+distichlis-spicata,15,Distichlis spicata,san-lorenzo,San Lorenzo,32,mapa
+lamarckia-aurea,16,Lamarckia aurea,asia,Asia,33,mapa
+lamarckia-aurea,16,Lamarckia aurea,lucumo,Lúcumo,33,mapa
+lamarckia-aurea,16,Lamarckia aurea,villa-maria,Villa María,33,mapa
+paspalum-penicillatum,17,Paspalum penicillatum,lucumo,Lúcumo,34,mapa
+paspalum-penicillatum,17,Paspalum penicillatum,asia,Asia,34,mapa
+poa-annua,18,Poa annua,lucumo,Lúcumo,35,mapa
+poa-annua,18,Poa annua,asia,Asia,35,mapa
+poa-annua,18,Poa annua,villa-maria,Villa María,35,mapa
+poa-annua,18,Poa annua,amancaes,Amancáes,35,mapa
+poa-infirma,19,Poa infirma,lucumo,Lúcumo,36,mapa
+polypogon-viridis,20,Polypogon viridis,san-lorenzo,San Lorenzo,37,mapa
+polypogon-viridis,20,Polypogon viridis,asia,Asia,37,mapa
+rostraria-trachyantha,21,Rostraria trachyantha,villa-maria,Villa María,38,mapa
+rostraria-trachyantha,21,Rostraria trachyantha,lucumo,Lúcumo,38,mapa
+rostraria-trachyantha,21,Rostraria trachyantha,amancaes,Amancáes,38,mapa
+rostraria-trachyantha,21,Rostraria trachyantha,san-lorenzo,San Lorenzo,38,mapa
+rostraria-trachyantha,21,Rostraria trachyantha,asia,Asia,38,mapa
+tetragonia-crystallina,22,Tetragonia crystallina,san-lorenzo,San Lorenzo,40,mapa
+tetragonia-crystallina,22,Tetragonia crystallina,asia,Asia,40,mapa
+alternanthera-halimifolia,23,Alternanthera halimifolia,lucumo,Lúcumo,41,mapa
+alternanthera-halimifolia,23,Alternanthera halimifolia,lapa-lapa,Lapa Lapa,41,mapa
+alternanthera-halimifolia,23,Alternanthera halimifolia,san-lorenzo,San Lorenzo,41,mapa
+alternanthera-halimifolia,23,Alternanthera halimifolia,asia,Asia,41,mapa
+alternanthera-porrigens,24,Alternanthera porrigens,lucumo,Lúcumo,42,mapa
+atriplex-rotundifolia,25,Atriplex rotundifolia,manchay,Manchay,43,mapa
+atriplex-rotundifolia,25,Atriplex rotundifolia,lucumo,Lúcumo,43,mapa
+atriplex-rotundifolia,25,Atriplex rotundifolia,retamal,Retamal,43,mapa
+atriplex-rotundifolia,25,Atriplex rotundifolia,villa-maria,Villa María,43,mapa
+atriplex-rotundifolia,25,Atriplex rotundifolia,carabayllo,Carabayllo,43,mapa
+atriplex-rotundifolia,25,Atriplex rotundifolia,san-lorenzo,San Lorenzo,43,mapa
+atriplex-rotundifolia,25,Atriplex rotundifolia,lapa-lapa,Lapa Lapa,43,mapa
+atriplex-rotundifolia,25,Atriplex rotundifolia,asia,Asia,43,mapa
+chenopodium-murale,26,Chenopodium murale,villa-maria,Villa María,44,mapa
+chenopodium-murale,26,Chenopodium murale,lucumo,Lúcumo,44,mapa
+chenopodium-murale,26,Chenopodium murale,amancaes,Amancáes,44,mapa
+chenopodium-murale,26,Chenopodium murale,asia,Asia,44,mapa
+chenopodium-petiolare,27,Chenopodium petiolare,lucumo,Lúcumo,45,mapa
+chenopodium-petiolare,27,Chenopodium petiolare,amancaes,Amancáes,45,mapa
+bowlesia-palmata,28,Bowlesia palmata,asia,Asia,46,mapa
+bowlesia-palmata,28,Bowlesia palmata,villa-maria,Villa María,46,mapa
+philibertia-solanoides,29,Philibertia solanoides,carabayllo,Carabayllo,47,mapa
+philibertia-solanoides,29,Philibertia solanoides,asia,Asia,47,mapa
+philibertia-solanoides,29,Philibertia solanoides,villa-maria,Villa María,47,mapa
+acmella-alba,30,Acmella alba,asia,Asia,48,mapa
+acmella-alba,30,Acmella alba,lapa-lapa,Lapa Lapa,48,mapa
+acmella-alba,30,Acmella alba,paloma,Paloma,48,mapa
+acmella-alba,30,Acmella alba,caringa,Caringa,48,mapa
+acmella-alba,30,Acmella alba,malanche,Malanche,48,mapa
+acmella-alba,30,Acmella alba,pacta,Pacta,48,mapa
+acmella-alba,30,Acmella alba,portillo,Portillo,48,mapa
+acmella-alba,30,Acmella alba,pachacamac,Pachacámac,48,mapa
+acmella-alba,30,Acmella alba,lucumo,Lúcumo,48,mapa
+acmella-alba,30,Acmella alba,zorritos,Zorritos,48,mapa
+acmella-alba,30,Acmella alba,manchay,Manchay,48,mapa
+acmella-alba,30,Acmella alba,retamal,Retamal,48,mapa
+acmella-alba,30,Acmella alba,villa-maria,Villa María,48,mapa
+acmella-alba,30,Acmella alba,amancaes,Amancáes,48,mapa
+bidens-pilosa,31,Bidens pilosa,san-lorenzo,San Lorenzo,49,mapa
+bidens-pilosa,31,Bidens pilosa,asia,Asia,49,mapa
+conyza-bonariensis,32,Conyza bonariensis,san-lorenzo,San Lorenzo,50,mapa
+conyza-bonariensis,32,Conyza bonariensis,asia,Asia,50,mapa
+erigeron-leptorhizon,33,Erigeron leptorhizon,asia,Asia,51,mapa
+erigeron-leptorhizon,33,Erigeron leptorhizon,lapa-lapa,Lapa Lapa,51,mapa
+erigeron-leptorhizon,33,Erigeron leptorhizon,paloma,Paloma,51,mapa
+erigeron-leptorhizon,33,Erigeron leptorhizon,caringa,Caringa,51,mapa
+erigeron-leptorhizon,33,Erigeron leptorhizon,malanche,Malanche,51,mapa
+erigeron-leptorhizon,33,Erigeron leptorhizon,pacta,Pacta,51,mapa
+erigeron-leptorhizon,33,Erigeron leptorhizon,portillo,Portillo,51,mapa
+erigeron-leptorhizon,33,Erigeron leptorhizon,pachacamac,Pachacámac,51,mapa
+erigeron-leptorhizon,33,Erigeron leptorhizon,lucumo,Lúcumo,51,mapa
+erigeron-leptorhizon,33,Erigeron leptorhizon,carabayllo,Carabayllo,51,mapa
+erigeron-leptorhizon,33,Erigeron leptorhizon,san-lorenzo,San Lorenzo,51,mapa
+galinsoga-caligensis,34,Galinsoga caligensis,asia,Asia,52,mapa
+galinsoga-caligensis,34,Galinsoga caligensis,manchay,Manchay,52,mapa
+galinsoga-caligensis,34,Galinsoga caligensis,villa-maria,Villa María,52,mapa
+galinsoga-caligensis,34,Galinsoga caligensis,puquio,Puquio,52,mapa
+gamochaeta-americana,35,Gamochaeta americana,amancaes,Amancáes,53,mapa
+gamochaeta-americana,35,Gamochaeta americana,villa-maria,Villa María,53,mapa
+gamochaeta-americana,35,Gamochaeta americana,san-lorenzo,San Lorenzo,53,mapa
+philoglossa-peruviana,36,Philoglossa peruviana,paloma,Paloma,54,mapa
+philoglossa-peruviana,36,Philoglossa peruviana,pacta,Pacta,54,mapa
+philoglossa-peruviana,36,Philoglossa peruviana,portillo,Portillo,54,mapa
+philoglossa-peruviana,36,Philoglossa peruviana,pachacamac,Pachacámac,54,mapa
+philoglossa-peruviana,36,Philoglossa peruviana,lucumo,Lúcumo,54,mapa
+philoglossa-peruviana,36,Philoglossa peruviana,manchay,Manchay,54,mapa
+philoglossa-peruviana,36,Philoglossa peruviana,villa-maria,Villa María,54,mapa
+philoglossa-peruviana,36,Philoglossa peruviana,amancaes,Amancáes,54,mapa
+sonchus-oleraceus,37,Sonchus oleraceus,lapa-lapa,Lapa Lapa,55,mapa
+sonchus-oleraceus,37,Sonchus oleraceus,paloma,Paloma,55,mapa
+sonchus-oleraceus,37,Sonchus oleraceus,caringa,Caringa,55,mapa
+sonchus-oleraceus,37,Sonchus oleraceus,malanche,Malanche,55,mapa
+sonchus-oleraceus,37,Sonchus oleraceus,pacta,Pacta,55,mapa
+sonchus-oleraceus,37,Sonchus oleraceus,pachacamac,Pachacámac,55,mapa
+sonchus-oleraceus,37,Sonchus oleraceus,lucumo,Lúcumo,55,mapa
+sonchus-oleraceus,37,Sonchus oleraceus,zorritos,Zorritos,55,mapa
+sonchus-oleraceus,37,Sonchus oleraceus,manchay,Manchay,55,mapa
+sonchus-oleraceus,37,Sonchus oleraceus,retamal,Retamal,55,mapa
+sonchus-oleraceus,37,Sonchus oleraceus,villa-maria,Villa María,55,mapa
+sonchus-oleraceus,37,Sonchus oleraceus,amancaes,Amancáes,55,mapa
+sonchus-oleraceus,37,Sonchus oleraceus,carabayllo,Carabayllo,55,mapa
+sonchus-oleraceus,37,Sonchus oleraceus,san-lorenzo,San Lorenzo,55,mapa
+villanova-oppositifolia,38,Villanova oppositifolia,lapa-lapa,Lapa Lapa,56,mapa
+villanova-oppositifolia,38,Villanova oppositifolia,paloma,Paloma,56,mapa
+villanova-oppositifolia,38,Villanova oppositifolia,caringa,Caringa,56,mapa
+villanova-oppositifolia,38,Villanova oppositifolia,malanche,Malanche,56,mapa
+villanova-oppositifolia,38,Villanova oppositifolia,pacta,Pacta,56,mapa
+villanova-oppositifolia,38,Villanova oppositifolia,portillo,Portillo,56,mapa
+villanova-oppositifolia,38,Villanova oppositifolia,pachacamac,Pachacámac,56,mapa
+villanova-oppositifolia,38,Villanova oppositifolia,lucumo,Lúcumo,56,mapa
+villanova-oppositifolia,38,Villanova oppositifolia,zorritos,Zorritos,56,mapa
+villanova-oppositifolia,38,Villanova oppositifolia,manchay,Manchay,56,mapa
+villanova-oppositifolia,38,Villanova oppositifolia,retamal,Retamal,56,mapa
+villanova-oppositifolia,38,Villanova oppositifolia,villa-maria,Villa María,56,mapa
+villanova-oppositifolia,38,Villanova oppositifolia,amancaes,Amancáes,56,mapa
+anredera-diffusa,39,Anredera diffusa,asia,Asia,57,mapa
+anredera-diffusa,39,Anredera diffusa,lucumo,Lúcumo,57,mapa
+begonia-geraniifolia,40,Begonia geraniifolia,pachacamac,Pachacámac,58,mapa
+begonia-geraniifolia,40,Begonia geraniifolia,lucumo,Lúcumo,58,mapa
+begonia-octopetala,41,Begonia octopetala,paloma,Paloma,59,mapa
+begonia-octopetala,41,Begonia octopetala,caringa,Caringa,59,mapa
+begonia-octopetala,41,Begonia octopetala,malanche,Malanche,59,mapa
+begonia-octopetala,41,Begonia octopetala,pacta,Pacta,59,mapa
+begonia-octopetala,41,Begonia octopetala,portillo,Portillo,59,mapa
+begonia-octopetala,41,Begonia octopetala,pachacamac,Pachacámac,59,mapa
+begonia-octopetala,41,Begonia octopetala,lucumo,Lúcumo,59,mapa
+begonia-octopetala,41,Begonia octopetala,manchay,Manchay,59,mapa
+begonia-octopetala,41,Begonia octopetala,villa-maria,Villa María,59,mapa
+begonia-octopetala,41,Begonia octopetala,amancaes,Amancáes,59,mapa
+tourrettia-lappacea,42,Tourrettia lappacea,asia,Asia,60,mapa
+tourrettia-lappacea,42,Tourrettia lappacea,pachacamac,Pachacámac,60,mapa
+cryptantha-limensis,43,Cryptantha limensis,lucumo,Lúcumo,61,mapa
+cryptantha-limensis,43,Cryptantha limensis,villa-maria,Villa María,61,mapa
+cryptantha-limensis,43,Cryptantha limensis,san-lorenzo,San Lorenzo,61,mapa
+heliotropium-angiospermum,44,Heliotropium angiospermum,lapa-lapa,Lapa Lapa,62,mapa
+heliotropium-angiospermum,44,Heliotropium angiospermum,pachacamac,Pachacámac,62,mapa
+heliotropium-angiospermum,44,Heliotropium angiospermum,lucumo,Lúcumo,62,mapa
+heliotropium-angiospermum,44,Heliotropium angiospermum,retamal,Retamal,62,mapa
+heliotropium-angiospermum,44,Heliotropium angiospermum,villa-maria,Villa María,62,mapa
+heliotropium-pilosum,45,Heliotropium pilosum,manchay,Manchay,63,mapa
+heliotropium-pilosum,45,Heliotropium pilosum,villa-maria,Villa María,63,mapa
+calceolaria-pinnata,46,Calceolaria pinnata,asia,Asia,64,mapa
+calceolaria-pinnata,46,Calceolaria pinnata,malanche,Malanche,64,mapa
+calceolaria-pinnata,46,Calceolaria pinnata,portillo,Portillo,64,mapa
+calceolaria-pinnata,46,Calceolaria pinnata,pachacamac,Pachacámac,64,mapa
+calceolaria-pinnata,46,Calceolaria pinnata,lucumo,Lúcumo,64,mapa
+calceolaria-pinnata,46,Calceolaria pinnata,manchay,Manchay,64,mapa
+calceolaria-pinnata,46,Calceolaria pinnata,amancaes,Amancáes,64,mapa
+triodanis-perfoliata-subsp-biflora,47,Triodanis perfoliata subsp. biflora,asia,Asia,65,mapa
+cleome-chilensis,48,Cleome chilensis,asia,Asia,66,mapa
+drymaria-paposana-var-weberbaueri,49,Drymaria paposana var. weberbaueri,malanche,Malanche,67,mapa
+drymaria-paposana-var-weberbaueri,49,Drymaria paposana var. weberbaueri,pacta,Pacta,67,mapa
+drymaria-paposana-var-weberbaueri,49,Drymaria paposana var. weberbaueri,pachacamac,Pachacámac,67,mapa
+drymaria-paposana-var-weberbaueri,49,Drymaria paposana var. weberbaueri,amancaes,Amancáes,67,mapa
+drymaria-paposana-var-weberbaueri,49,Drymaria paposana var. weberbaueri,puquio,Puquio,67,mapa
+crassula-connata,50,Crassula connata,villa-maria,Villa María,68,mapa
+crassula-connata,50,Crassula connata,amancaes,Amancáes,68,mapa
+crassula-connata,50,Crassula connata,asia,Asia,68,mapa
+chamaesyce-hypericifolia,51,Chamaesyce hypericifolia,asia,Asia,69,mapa
+chamaesyce-hypericifolia,51,Chamaesyce hypericifolia,villa-maria,Villa María,69,mapa
+euphorbia-peplus,52,Euphorbia peplus,lucumo,Lúcumo,70,mapa
+vicia-lomensis,53,Vicia lomensis,asia,Asia,71,mapa
+medicago-polymorpha,54,Medicago polymorpha,lucumo,Lúcumo,72,mapa
+medicago-polymorpha,54,Medicago polymorpha,manchay,Manchay,72,mapa
+erodium-malacoides,55,Erodium malacoides,pacta,Pacta,73,mapa
+erodium-malacoides,55,Erodium malacoides,lapa-lapa,Lapa Lapa,73,mapa
+erodium-malacoides,55,Erodium malacoides,portillo,Portillo,73,mapa
+erodium-malacoides,55,Erodium malacoides,pachacamac,Pachacámac,73,mapa
+erodium-malacoides,55,Erodium malacoides,lucumo,Lúcumo,73,mapa
+erodium-malacoides,55,Erodium malacoides,zorritos,Zorritos,73,mapa
+erodium-malacoides,55,Erodium malacoides,manchay,Manchay,73,mapa
+erodium-malacoides,55,Erodium malacoides,villa-maria,Villa María,73,mapa
+erodium-malacoides,55,Erodium malacoides,amancaes,Amancáes,73,mapa
+erodium-malacoides,55,Erodium malacoides,puquio,Puquio,73,mapa
+erodium-moschatum,56,Erodium moschatum,paloma,Paloma,74,mapa
+erodium-moschatum,56,Erodium moschatum,caringa,Caringa,74,mapa
+erodium-moschatum,56,Erodium moschatum,pacta,Pacta,74,mapa
+erodium-moschatum,56,Erodium moschatum,portillo,Portillo,74,mapa
+erodium-moschatum,56,Erodium moschatum,pachacamac,Pachacámac,74,mapa
+erodium-moschatum,56,Erodium moschatum,lucumo,Lúcumo,74,mapa
+erodium-moschatum,56,Erodium moschatum,zorritos,Zorritos,74,mapa
+erodium-moschatum,56,Erodium moschatum,manchay,Manchay,74,mapa
+erodium-moschatum,56,Erodium moschatum,lapa-lapa,Lapa Lapa,74,mapa
+geranium-limae,57,Geranium limae,lucumo,Lúcumo,75,mapa
+geranium-limae,57,Geranium limae,san-lorenzo,San Lorenzo,75,mapa
+salvia-paposana,58,Salvia paposana,pachacamac,Pachacámac,76,mapa
+salvia-paposana,58,Salvia paposana,lucumo,Lúcumo,76,mapa
+salvia-paposana,58,Salvia paposana,villa-maria,Villa María,76,mapa
+salvia-paposana,58,Salvia paposana,amancaes,Amancáes,76,mapa
+salvia-rhombifolia,59,Salvia rhombifolia,pachacamac,Pachacámac,77,mapa
+salvia-rhombifolia,59,Salvia rhombifolia,portillo,Portillo,77,mapa
+salvia-rhombifolia,59,Salvia rhombifolia,asia,Asia,77,mapa
+salvia-rhombifolia,59,Salvia rhombifolia,villa-maria,Villa María,77,mapa
+stachys-arvensis,60,Stachys arvensis,pachacamac,Pachacámac,78,mapa
+stachys-arvensis,60,Stachys arvensis,lucumo,Lúcumo,78,mapa
+stachys-arvensis,60,Stachys arvensis,villa-maria,Villa María,78,mapa
+loasa-nitida,61,Loasa nitida,lapa-lapa,Lapa Lapa,79,mapa
+loasa-nitida,61,Loasa nitida,paloma,Paloma,79,mapa
+loasa-nitida,61,Loasa nitida,caringa,Caringa,79,mapa
+loasa-nitida,61,Loasa nitida,malanche,Malanche,79,mapa
+loasa-nitida,61,Loasa nitida,pacta,Pacta,79,mapa
+loasa-nitida,61,Loasa nitida,portillo,Portillo,79,mapa
+loasa-nitida,61,Loasa nitida,pachacamac,Pachacámac,79,mapa
+loasa-nitida,61,Loasa nitida,lucumo,Lúcumo,79,mapa
+loasa-nitida,61,Loasa nitida,zorritos,Zorritos,79,mapa
+loasa-nitida,61,Loasa nitida,manchay,Manchay,79,mapa
+loasa-nitida,61,Loasa nitida,villa-maria,Villa María,79,mapa
+loasa-nitida,61,Loasa nitida,amancaes,Amancáes,79,mapa
+loasa-nitida,61,Loasa nitida,puquio,Puquio,79,mapa
+mentzelia-scabra-subsp-grandiflora,62,Mentzelia scabra subsp. grandiflora,lucumo,Lúcumo,80,mapa
+mentzelia-scabra-subsp-grandiflora,62,Mentzelia scabra subsp. grandiflora,retamal,Retamal,80,mapa
+nasa-urens,63,Nasa urens,caringa,Caringa,81,mapa
+nasa-urens,63,Nasa urens,pacta,Pacta,81,mapa
+nasa-urens,63,Nasa urens,portillo,Portillo,81,mapa
+nasa-urens,63,Nasa urens,pachacamac,Pachacámac,81,mapa
+nasa-urens,63,Nasa urens,lucumo,Lúcumo,81,mapa
+nasa-urens,63,Nasa urens,zorritos,Zorritos,81,mapa
+nasa-urens,63,Nasa urens,manchay,Manchay,81,mapa
+nasa-urens,63,Nasa urens,villa-maria,Villa María,81,mapa
+nasa-urens,63,Nasa urens,mangomarca,Mangomarca,81,mapa
+nasa-urens,63,Nasa urens,amancaes,Amancáes,81,mapa
+nasa-urens,63,Nasa urens,puquio,Puquio,81,mapa
+nasa-urens,63,Nasa urens,carabayllo,Carabayllo,81,mapa
+fuertesimalva-limensis,64,Fuertesimalva limensis,asia,Asia,82,mapa
+fuertesimalva-peruviana,65,Fuertesimalva peruviana,lapa-lapa,Lapa Lapa,83,mapa
+fuertesimalva-peruviana,65,Fuertesimalva peruviana,paloma,Paloma,83,mapa
+fuertesimalva-peruviana,65,Fuertesimalva peruviana,caringa,Caringa,83,mapa
+fuertesimalva-peruviana,65,Fuertesimalva peruviana,malanche,Malanche,83,mapa
+fuertesimalva-peruviana,65,Fuertesimalva peruviana,pacta,Pacta,83,mapa
+fuertesimalva-peruviana,65,Fuertesimalva peruviana,portillo,Portillo,83,mapa
+fuertesimalva-peruviana,65,Fuertesimalva peruviana,pachacamac,Pachacámac,83,mapa
+fuertesimalva-peruviana,65,Fuertesimalva peruviana,lucumo,Lúcumo,83,mapa
+fuertesimalva-peruviana,65,Fuertesimalva peruviana,zorritos,Zorritos,83,mapa
+fuertesimalva-peruviana,65,Fuertesimalva peruviana,manchay,Manchay,83,mapa
+fuertesimalva-peruviana,65,Fuertesimalva peruviana,villa-maria,Villa María,83,mapa
+fuertesimalva-peruviana,65,Fuertesimalva peruviana,payet,Payet,83,mapa
+fuertesimalva-peruviana,65,Fuertesimalva peruviana,carabayllo,Carabayllo,83,mapa
+palaua-dissecta,66,Palaua dissecta,san-lorenzo,San Lorenzo,84,mapa
+palaua-malvifolia,67,Palaua malvifolia,lucumo,Lúcumo,85,mapa
+palaua-malvifolia,67,Palaua malvifolia,san-lorenzo,San Lorenzo,85,mapa
+palaua-moschata,68,Palaua moschata,san-lorenzo,San Lorenzo,86,mapa
+palaua-rhombifolia,69,Palaua rhombifolia,lucumo,Lúcumo,87,mapa
+palaua-rhombifolia,69,Palaua rhombifolia,asia,Asia,87,mapa
+sida-jatrophioides,70,Sida jatrophioides,asia,Asia,88,mapa
+sida-oligandra,71,Sida oligandra,asia,Asia,89,mapa
+tarasa-operculata,72,Tarasa operculata,asia,Asia,90,mapa
+tarasa-operculata,72,Tarasa operculata,retamal,Retamal,90,mapa
+calandrinia-alba,73,Calandrinia alba,paloma,Paloma,91,mapa
+calandrinia-alba,73,Calandrinia alba,caringa,Caringa,91,mapa
+calandrinia-alba,73,Calandrinia alba,lucumo,Lúcumo,91,mapa
+calandrinia-alba,73,Calandrinia alba,villa-maria,Villa María,91,mapa
+calandrinia-alba,73,Calandrinia alba,amancaes,Amancáes,91,mapa
+cistanthe-paniculata,74,Cistanthe paniculata,lapa-lapa,Lapa Lapa,92,mapa
+cistanthe-paniculata,74,Cistanthe paniculata,pacta,Pacta,92,mapa
+cistanthe-paniculata,74,Cistanthe paniculata,pachacamac,Pachacámac,92,mapa
+cistanthe-paniculata,74,Cistanthe paniculata,lucumo,Lúcumo,92,mapa
+cistanthe-paniculata,74,Cistanthe paniculata,san-lorenzo,San Lorenzo,92,mapa
+oenothera-arequipensis,75,Oenothera arequipensis,manchay,Manchay,93,mapa
+oenothera-arequipensis,75,Oenothera arequipensis,asia,Asia,93,mapa
+oxalis-latifolia,76,Oxalis latifolia,lucumo,Lúcumo,94,mapa
+oxalis-latifolia,76,Oxalis latifolia,amancaes,Amancáes,94,mapa
+oxalis-lomana,77,Oxalis lomana,amancaes,Amancáes,95,mapa
+oxalis-lomana,77,Oxalis lomana,lucumo,Lúcumo,95,mapa
+oxalis-lomana,77,Oxalis lomana,zorritos,Zorritos,95,mapa
+oxalis-lomana,77,Oxalis lomana,san-lorenzo,San Lorenzo,95,mapa
+oxalis-lomana,77,Oxalis lomana,asia,Asia,95,mapa
+oxalis-megalorrhiza,78,Oxalis megalorrhiza,caringa,Caringa,96,mapa
+oxalis-megalorrhiza,78,Oxalis megalorrhiza,malanche,Malanche,96,mapa
+oxalis-megalorrhiza,78,Oxalis megalorrhiza,pacta,Pacta,96,mapa
+oxalis-megalorrhiza,78,Oxalis megalorrhiza,pachacamac,Pachacámac,96,mapa
+oxalis-megalorrhiza,78,Oxalis megalorrhiza,lucumo,Lúcumo,96,mapa
+oxalis-megalorrhiza,78,Oxalis megalorrhiza,zorritos,Zorritos,96,mapa
+oxalis-megalorrhiza,78,Oxalis megalorrhiza,manchay,Manchay,96,mapa
+oxalis-megalorrhiza,78,Oxalis megalorrhiza,retamal,Retamal,96,mapa
+oxalis-megalorrhiza,78,Oxalis megalorrhiza,mangomarca,Mangomarca,96,mapa
+oxalis-megalorrhiza,78,Oxalis megalorrhiza,amancaes,Amancáes,96,mapa
+oxalis-megalorrhiza,78,Oxalis megalorrhiza,puquio,Puquio,96,mapa
+oxalis-megalorrhiza,78,Oxalis megalorrhiza,carabayllo,Carabayllo,96,mapa
+oxalis-megalorrhiza,78,Oxalis megalorrhiza,san-lorenzo,San Lorenzo,96,mapa
+argemone-subfusiformis,79,Argemone subfusiformis,asia,Asia,97,mapa
+fumaria-capreolata,80,Fumaria capreolata,pachacamac,Pachacámac,98,mapa
+fumaria-capreolata,80,Fumaria capreolata,lucumo,Lúcumo,98,mapa
+fumaria-capreolata,80,Fumaria capreolata,villa-maria,Villa María,98,mapa
+fumaria-capreolata,80,Fumaria capreolata,amancaes,Amancáes,98,mapa
+peperomia-crystallina,81,Peperomia crystallina,portillo,Portillo,99,mapa
+peperomia-crystallina,81,Peperomia crystallina,amancaes,Amancáes,99,mapa
+peperomia-inaequalifolia,82,Peperomia inaequalifolia,pachacamac,Pachacámac,100,mapa
+peperomia-inaequalifolia,82,Peperomia inaequalifolia,manchay,Manchay,100,mapa
+peperomia-inaequalifolia,82,Peperomia inaequalifolia,villa-maria,Villa María,100,mapa
+peperomia-inaequalifolia,82,Peperomia inaequalifolia,amancaes,Amancáes,100,mapa
+peperomia-inaequalifolia,82,Peperomia inaequalifolia,zorritos,Zorritos,100,mapa
+peperomia-inaequalifolia,82,Peperomia inaequalifolia,portillo,Portillo,100,mapa
+peperomia-inaequalifolia,82,Peperomia inaequalifolia,lucumo,Lúcumo,100,mapa
+peperomia-inaequalifolia,82,Peperomia inaequalifolia,asia,Asia,100,mapa
+peperomia-umbilicata,83,Peperomia umbilicata,asia,Asia,101,mapa
+veronica-persica,84,Veronica persica,portillo,Portillo,102,mapa
+veronica-persica,84,Veronica persica,pachacamac,Pachacámac,102,mapa
+veronica-persica,84,Veronica persica,lucumo,Lúcumo,102,mapa
+veronica-persica,84,Veronica persica,manchay,Manchay,102,mapa
+veronica-persica,84,Veronica persica,villa-maria,Villa María,102,mapa
+anagallis-arvensis,85,Anagallis arvensis,portillo,Portillo,103,mapa
+anagallis-arvensis,85,Anagallis arvensis,pachacamac,Pachacámac,103,mapa
+anagallis-arvensis,85,Anagallis arvensis,lucumo,Lúcumo,103,mapa
+anagallis-arvensis,85,Anagallis arvensis,manchay,Manchay,103,mapa
+anagallis-arvensis,85,Anagallis arvensis,villa-maria,Villa María,103,mapa
+alonsoa-meridionalis,86,Alonsoa meridionalis,asia,Asia,104,mapa
+castilleja-arvensis,87,Castilleja arvensis,asia,Asia,105,mapa
+castilleja-arvensis,87,Castilleja arvensis,villa-maria,Villa María,105,mapa
+browallia-americana,88,Browallia americana,pacta,Pacta,106,mapa
+browallia-americana,88,Browallia americana,lucumo,Lúcumo,106,mapa
+browallia-americana,88,Browallia americana,manchay,Manchay,106,mapa
+browallia-americana,88,Browallia americana,retamal,Retamal,106,mapa
+browallia-americana,88,Browallia americana,carabayllo,Carabayllo,106,mapa
+browallia-americana,88,Browallia americana,lapa-lapa,Lapa Lapa,106,mapa
+exodeconus-maritimus,89,Exodeconus maritimus,asia,Asia,107,mapa
+exodeconus-prostratus,90,Exodeconus prostratus,asia,Asia,108,mapa
+exodeconus-prostratus,90,Exodeconus prostratus,caringa,Caringa,108,mapa
+exodeconus-prostratus,90,Exodeconus prostratus,pacta,Pacta,108,mapa
+exodeconus-prostratus,90,Exodeconus prostratus,portillo,Portillo,108,mapa
+exodeconus-prostratus,90,Exodeconus prostratus,lucumo,Lúcumo,108,mapa
+exodeconus-prostratus,90,Exodeconus prostratus,retamal,Retamal,108,mapa
+exodeconus-prostratus,90,Exodeconus prostratus,villa-maria,Villa María,108,mapa
+exodeconus-prostratus,90,Exodeconus prostratus,collique,Collique,108,mapa
+jaltomata-aspera,91,Jaltomata aspera,asia,Asia,109,mapa
+jaltomata-umbellata,92,Jaltomata umbellata,asia,Asia,110,mapa
+nicandra-physalodes,93,Nicandra physalodes,lucumo,Lúcumo,111,mapa
+nicandra-physalodes,93,Nicandra physalodes,asia,Asia,111,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,asia,Asia,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,mala,Mala,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,lapa-lapa,Lapa Lapa,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,paloma,Paloma,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,cicasos,Cicasos,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,caringa,Caringa,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,malanche,Malanche,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,pacta,Pacta,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,portillo,Portillo,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,pachacamac,Pachacámac,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,lucumo,Lúcumo,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,zorritos,Zorritos,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,manchay,Manchay,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,retamal,Retamal,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,villa-maria,Villa María,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,mangomarca,Mangomarca,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,amancaes,Amancáes,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,payet,Payet,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,collique,Collique,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,puquio,Puquio,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,carabayllo,Carabayllo,112,mapa
+nicotiana-paniculata,94,Nicotiana paniculata,san-lorenzo,San Lorenzo,112,mapa
+nolana-humifusa,95,Nolana humifusa,asia,Asia,113,mapa
+nolana-humifusa,95,Nolana humifusa,mala,Mala,113,mapa
+nolana-humifusa,95,Nolana humifusa,paloma,Paloma,113,mapa
+nolana-humifusa,95,Nolana humifusa,cicasos,Cicasos,113,mapa
+nolana-humifusa,95,Nolana humifusa,caringa,Caringa,113,mapa
+nolana-humifusa,95,Nolana humifusa,malanche,Malanche,113,mapa
+nolana-humifusa,95,Nolana humifusa,pacta,Pacta,113,mapa
+nolana-humifusa,95,Nolana humifusa,portillo,Portillo,113,mapa
+nolana-humifusa,95,Nolana humifusa,pachacamac,Pachacámac,113,mapa
+nolana-humifusa,95,Nolana humifusa,lucumo,Lúcumo,113,mapa
+nolana-humifusa,95,Nolana humifusa,zorritos,Zorritos,113,mapa
+nolana-humifusa,95,Nolana humifusa,manchay,Manchay,113,mapa
+nolana-humifusa,95,Nolana humifusa,retamal,Retamal,113,mapa
+nolana-humifusa,95,Nolana humifusa,villa-maria,Villa María,113,mapa
+nolana-humifusa,95,Nolana humifusa,mangomarca,Mangomarca,113,mapa
+nolana-humifusa,95,Nolana humifusa,amancaes,Amancáes,113,mapa
+nolana-humifusa,95,Nolana humifusa,payet,Payet,113,mapa
+nolana-humifusa,95,Nolana humifusa,collique,Collique,113,mapa
+nolana-humifusa,95,Nolana humifusa,puquio,Puquio,113,mapa
+nolana-humifusa,95,Nolana humifusa,carabayllo,Carabayllo,113,mapa
+nolana-humifusa,95,Nolana humifusa,san-lorenzo,San Lorenzo,113,mapa
+nolana-humifusa,95,Nolana humifusa,lapa-lapa,Lapa Lapa,113,mapa
+solanum-americanum,96,Solanum americanum,san-lorenzo,San Lorenzo,114,mapa
+solanum-americanum,96,Solanum americanum,asia,Asia,114,mapa
+solanum-chancayense,97,Solanum chancayense,asia,Asia,115,mapa
+solanum-montanum,98,Solanum montanum,asia,Asia,116,mapa
+solanum-montanum,98,Solanum montanum,paloma,Paloma,116,mapa
+solanum-montanum,98,Solanum montanum,caringa,Caringa,116,mapa
+solanum-montanum,98,Solanum montanum,malanche,Malanche,116,mapa
+solanum-montanum,98,Solanum montanum,pacta,Pacta,116,mapa
+solanum-montanum,98,Solanum montanum,pachacamac,Pachacámac,116,mapa
+solanum-montanum,98,Solanum montanum,lucumo,Lúcumo,116,mapa
+solanum-montanum,98,Solanum montanum,zorritos,Zorritos,116,mapa
+solanum-montanum,98,Solanum montanum,manchay,Manchay,116,mapa
+solanum-montanum,98,Solanum montanum,retamal,Retamal,116,mapa
+solanum-montanum,98,Solanum montanum,villa-maria,Villa María,116,mapa
+solanum-montanum,98,Solanum montanum,mangomarca,Mangomarca,116,mapa
+solanum-montanum,98,Solanum montanum,amancaes,Amancáes,116,mapa
+solanum-montanum,98,Solanum montanum,payet,Payet,116,mapa
+solanum-montanum,98,Solanum montanum,collique,Collique,116,mapa
+solanum-montanum,98,Solanum montanum,puquio,Puquio,116,mapa
+solanum-montanum,98,Solanum montanum,carabayllo,Carabayllo,116,mapa
+solanum-montanum,98,Solanum montanum,san-lorenzo,San Lorenzo,116,mapa
+solanum-multifidum,99,Solanum multifidum,lucumo,Lúcumo,117,mapa
+solanum-multifidum,99,Solanum multifidum,carabayllo,Carabayllo,117,mapa
+solanum-multifidum,99,Solanum multifidum,san-lorenzo,San Lorenzo,117,mapa
+solanum-peruvianum,100,Solanum peruvianum,paloma,Paloma,118,mapa
+solanum-peruvianum,100,Solanum peruvianum,caringa,Caringa,118,mapa
+solanum-peruvianum,100,Solanum peruvianum,malanche,Malanche,118,mapa
+solanum-peruvianum,100,Solanum peruvianum,portillo,Portillo,118,mapa
+solanum-peruvianum,100,Solanum peruvianum,pachacamac,Pachacámac,118,mapa
+solanum-peruvianum,100,Solanum peruvianum,lucumo,Lúcumo,118,mapa
+solanum-peruvianum,100,Solanum peruvianum,manchay,Manchay,118,mapa
+solanum-peruvianum,100,Solanum peruvianum,retamal,Retamal,118,mapa
+solanum-peruvianum,100,Solanum peruvianum,villa-maria,Villa María,118,mapa
+solanum-peruvianum,100,Solanum peruvianum,amancaes,Amancáes,118,mapa
+solanum-peruvianum,100,Solanum peruvianum,payet,Payet,118,mapa
+solanum-peruvianum,100,Solanum peruvianum,puquio,Puquio,118,mapa
+solanum-peruvianum,100,Solanum peruvianum,carabayllo,Carabayllo,118,mapa
+solanum-peruvianum,100,Solanum peruvianum,lapa-lapa,Lapa Lapa,118,mapa
+parietaria-debilis,101,Parietaria debilis,amancaes,Amancáes,119,mapa
+parietaria-debilis,101,Parietaria debilis,asia,Asia,119,mapa
+parietaria-debilis,101,Parietaria debilis,puquio,Puquio,119,mapa
+parietaria-debilis,101,Parietaria debilis,payet,Payet,119,mapa
+parietaria-debilis,101,Parietaria debilis,collique,Collique,119,mapa
+parietaria-debilis,101,Parietaria debilis,mangomarca,Mangomarca,119,mapa
+parietaria-debilis,101,Parietaria debilis,paloma,Paloma,119,mapa
+parietaria-debilis,101,Parietaria debilis,caringa,Caringa,119,mapa
+parietaria-debilis,101,Parietaria debilis,malanche,Malanche,119,mapa
+parietaria-debilis,101,Parietaria debilis,pachacamac,Pachacámac,119,mapa
+parietaria-debilis,101,Parietaria debilis,lucumo,Lúcumo,119,mapa
+parietaria-debilis,101,Parietaria debilis,zorritos,Zorritos,119,mapa
+parietaria-debilis,101,Parietaria debilis,manchay,Manchay,119,mapa
+parietaria-debilis,101,Parietaria debilis,villa-maria,Villa María,119,mapa
+parietaria-debilis,101,Parietaria debilis,carabayllo,Carabayllo,119,mapa
+parietaria-debilis,101,Parietaria debilis,san-lorenzo,San Lorenzo,119,mapa
+urtica-urens,102,Urtica urens,villa-maria,Villa María,120,mapa
+urtica-urens,102,Urtica urens,asia,Asia,120,mapa
+urtica-urens,102,Urtica urens,amancaes,Amancáes,120,mapa
+astrephia-chaerophylloides,103,Astrephia chaerophylloides,pachacamac,Pachacámac,121,mapa
+astrephia-chaerophylloides,103,Astrephia chaerophylloides,lucumo,Lúcumo,121,mapa
+astrephia-chaerophylloides,103,Astrephia chaerophylloides,villa-maria,Villa María,121,mapa
+phyla-canescens,104,Phyla canescens,retamal,Retamal,122,mapa
+cuscuta-foetida,105,Cuscuta foetida,san-lorenzo,San Lorenzo,123,mapa
+ipomoea-tricolor,106,Ipomoea tricolor,amancaes,Amancáes,124,mapa
+jacquemontia-unilateralis,107,Jacquemontia unilateralis,caringa,Caringa,125,mapa
+jacquemontia-unilateralis,107,Jacquemontia unilateralis,lucumo,Lúcumo,125,mapa
+cyclanthera-mathewsii,108,Cyclanthera mathewsii,lucumo,Lúcumo,126,mapa
+cyclanthera-mathewsii,108,Cyclanthera mathewsii,carabayllo,Carabayllo,126,mapa
+sicyos-baderoa,109,Sicyos baderoa,pachacamac,Pachacámac,127,mapa
+sicyos-baderoa,109,Sicyos baderoa,lucumo,Lúcumo,127,mapa
+sicyos-baderoa,109,Sicyos baderoa,manchay,Manchay,127,mapa
+sicyos-baderoa,109,Sicyos baderoa,villa-maria,Villa María,127,mapa
+sicyos-baderoa,109,Sicyos baderoa,amancaes,Amancáes,127,mapa
+sicyos-baderoa,109,Sicyos baderoa,puquio,Puquio,127,mapa
+cardiospermum-corindum,110,Cardiospermum corindum,caringa,Caringa,128,mapa
+dicliptera-tomentosa,111,Dicliptera tomentosa,portillo,Portillo,129,mapa
+dicliptera-tomentosa,111,Dicliptera tomentosa,asia,Asia,129,mapa
+dicliptera-tomentosa,111,Dicliptera tomentosa,lucumo,Lúcumo,129,mapa
+suaeda-foliosa,112,Suaeda foliosa,pachacamac,Pachacámac,130,mapa
+suaeda-foliosa,112,Suaeda foliosa,san-lorenzo,San Lorenzo,130,mapa
+ophryosporus-pubescens,113,Ophryosporus pubescens,lucumo,Lúcumo,131,mapa
+ophryosporus-pubescens,113,Ophryosporus pubescens,lapa-lapa,Lapa Lapa,131,mapa
+ophryosporus-pubescens,113,Ophryosporus pubescens,caringa,Caringa,131,mapa
+ophryosporus-pubescens,113,Ophryosporus pubescens,malanche,Malanche,131,mapa
+ophryosporus-pubescens,113,Ophryosporus pubescens,pacta,Pacta,131,mapa
+ophryosporus-pubescens,113,Ophryosporus pubescens,portillo,Portillo,131,mapa
+ophryosporus-pubescens,113,Ophryosporus pubescens,manchay,Manchay,131,mapa
+ophryosporus-pubescens,113,Ophryosporus pubescens,villa-maria,Villa María,131,mapa
+ophryosporus-pubescens,113,Ophryosporus pubescens,carabayllo,Carabayllo,131,mapa
+senecio-abadianus,114,Senecio abadianus,lucumo,Lúcumo,132,mapa
+senecio-abadianus,114,Senecio abadianus,zorritos,Zorritos,132,mapa
+senecio-abadianus,114,Senecio abadianus,amancaes,Amancáes,132,mapa
+verbesina-saubinetioides,115,Verbesina saubinetioides,carabayllo,Carabayllo,133,mapa
+heliotropium-arborescens,116,Heliotropium arborescens,paloma,Paloma,134,mapa
+heliotropium-arborescens,116,Heliotropium arborescens,pacta,Pacta,134,mapa
+heliotropium-arborescens,116,Heliotropium arborescens,portillo,Portillo,134,mapa
+heliotropium-arborescens,116,Heliotropium arborescens,pachacamac,Pachacámac,134,mapa
+heliotropium-arborescens,116,Heliotropium arborescens,lucumo,Lúcumo,134,mapa
+heliotropium-arborescens,116,Heliotropium arborescens,zorritos,Zorritos,134,mapa
+heliotropium-arborescens,116,Heliotropium arborescens,manchay,Manchay,134,mapa
+heliotropium-arborescens,116,Heliotropium arborescens,villa-maria,Villa María,134,mapa
+heliotropium-arborescens,116,Heliotropium arborescens,amancaes,Amancáes,134,mapa
+heliotropium-arborescens,116,Heliotropium arborescens,puquio,Puquio,134,mapa
+croton-alnifolius,117,Croton alnifolius,lapa-lapa,Lapa Lapa,135,mapa
+croton-alnifolius,117,Croton alnifolius,pachacamac,Pachacámac,135,mapa
+croton-alnifolius,117,Croton alnifolius,lucumo,Lúcumo,135,mapa
+croton-alnifolius,117,Croton alnifolius,villa-maria,Villa María,135,mapa
+croton-alnifolius,117,Croton alnifolius,carabayllo,Carabayllo,135,mapa
+calliandra-taxifolia,118,Calliandra taxifolia,lucumo,Lúcumo,136,mapa
+hyptis-sidifolia,119,Hyptis sidifolia,lapa-lapa,Lapa Lapa,137,mapa
+hyptis-sidifolia,119,Hyptis sidifolia,caringa,Caringa,137,mapa
+hyptis-sidifolia,119,Hyptis sidifolia,malanche,Malanche,137,mapa
+hyptis-sidifolia,119,Hyptis sidifolia,pacta,Pacta,137,mapa
+hyptis-sidifolia,119,Hyptis sidifolia,portillo,Portillo,137,mapa
+hyptis-sidifolia,119,Hyptis sidifolia,pachacamac,Pachacámac,137,mapa
+hyptis-sidifolia,119,Hyptis sidifolia,lucumo,Lúcumo,137,mapa
+hyptis-sidifolia,119,Hyptis sidifolia,zorritos,Zorritos,137,mapa
+hyptis-sidifolia,119,Hyptis sidifolia,villa-maria,Villa María,137,mapa
+hyptis-sidifolia,119,Hyptis sidifolia,puquio,Puquio,137,mapa
+scutia-spicata,120,Scutia spicata,asia,Asia,138,mapa
+acnistus-arborescens,121,Acnistus arborescens,portillo,Portillo,139,mapa
+acnistus-arborescens,121,Acnistus arborescens,lucumo,Lúcumo,139,mapa
+lantana-scabiosiflora-var-limensis,122,Lantana scabiosiflora var. limensis,lucumo,Lúcumo,140,mapa
+lantana-scabiosiflora-var-limensis,122,Lantana scabiosiflora var. limensis,manchay,Manchay,140,mapa
+lantana-scabiosiflora-var-limensis,122,Lantana scabiosiflora var. limensis,retamal,Retamal,140,mapa
+lantana-scabiosiflora-var-limensis,122,Lantana scabiosiflora var. limensis,villa-maria,Villa María,140,mapa
+verbena-litoralis,123,Verbena litoralis,asia,Asia,141,mapa
+verbena-litoralis,123,Verbena litoralis,villa-maria,Villa María,141,mapa
+vasconcellea-candicans,124,Vasconcellea candicans,asia,Asia,142,mapa
+vasconcellea-candicans,124,Vasconcellea candicans,caringa,Caringa,142,mapa
+vasconcellea-candicans,124,Vasconcellea candicans,malanche,Malanche,142,mapa
+vasconcellea-candicans,124,Vasconcellea candicans,pacta,Pacta,142,mapa
+vasconcellea-candicans,124,Vasconcellea candicans,portillo,Portillo,142,mapa
+vasconcellea-candicans,124,Vasconcellea candicans,pachacamac,Pachacámac,142,mapa
+vasconcellea-candicans,124,Vasconcellea candicans,lucumo,Lúcumo,142,mapa
+vasconcellea-candicans,124,Vasconcellea candicans,zorritos,Zorritos,142,mapa
+vasconcellea-candicans,124,Vasconcellea candicans,manchay,Manchay,142,mapa
+vasconcellea-candicans,124,Vasconcellea candicans,villa-maria,Villa María,142,mapa
+vasconcellea-candicans,124,Vasconcellea candicans,amancaes,Amancáes,142,mapa
+caesalpinia-spinosa,125,Caesalpinia spinosa,caringa,Caringa,143,mapa
+caesalpinia-spinosa,125,Caesalpinia spinosa,portillo,Portillo,143,mapa
+caesalpinia-spinosa,125,Caesalpinia spinosa,pachacamac,Pachacámac,143,mapa
+caesalpinia-spinosa,125,Caesalpinia spinosa,lucumo,Lúcumo,143,mapa
+caesalpinia-spinosa,125,Caesalpinia spinosa,villa-maria,Villa María,143,mapa
+caesalpinia-spinosa,125,Caesalpinia spinosa,amancaes,Amancáes,143,mapa
+vachellia-macracantha,126,Vachellia macracantha,lapa-lapa,Lapa Lapa,144,mapa
+vachellia-macracantha,126,Vachellia macracantha,pacta,Pacta,144,mapa
+vachellia-macracantha,126,Vachellia macracantha,portillo,Portillo,144,mapa
+vachellia-macracantha,126,Vachellia macracantha,pachacamac,Pachacámac,144,mapa
+vachellia-macracantha,126,Vachellia macracantha,lucumo,Lúcumo,144,mapa
+vachellia-macracantha,126,Vachellia macracantha,manchay,Manchay,144,mapa
+vachellia-macracantha,126,Vachellia macracantha,villa-maria,Villa María,144,mapa
+vachellia-macracantha,126,Vachellia macracantha,carabayllo,Carabayllo,144,mapa
+armatocereus-matucanensis,127,Armatocereus matucanensis,malanche,Malanche,145,mapa
+armatocereus-matucanensis,127,Armatocereus matucanensis,portillo,Portillo,145,mapa
+armatocereus-procerus,128,Armatocereus procerus,asia,Asia,146,mapa
+armatocereus-procerus,128,Armatocereus procerus,carabayllo,Carabayllo,146,mapa
+haageocereus-acranthus-subsp-olowinskianus,129,Haageocereus acranthus subsp. olowinskianus,caringa,Caringa,147,mapa
+haageocereus-acranthus-subsp-olowinskianus,129,Haageocereus acranthus subsp. olowinskianus,malanche,Malanche,147,mapa
+haageocereus-pseudomelanostele-subsp-carminiflorus,130,Haageocereus pseudomelanostele subsp. carminiflorus,malanche,Malanche,148,mapa
+haageocereus-pseudomelanostele-subsp-setosus,131,Haageocereus pseudomelanostele subsp. setosus,paloma,Paloma,149,mapa
+loxanthocereus-acanthurus-subsp-pullatus,132,Loxanthocereus acanthurus subsp. pullatus,pachacamac,Pachacámac,150,mapa
+loxanthocereus-acanthurus-subsp-pullatus,132,Loxanthocereus acanthurus subsp. pullatus,manchay,Manchay,150,mapa
+loxanthocereus-acanthurus-subsp-pullatus,132,Loxanthocereus acanthurus subsp. pullatus,lapa-lapa,Lapa Lapa,150,mapa
+loxanthocereus-acanthurus-subsp-pullatus,132,Loxanthocereus acanthurus subsp. pullatus,caringa,Caringa,150,mapa
+loxanthocereus-acanthurus-subsp-pullatus,132,Loxanthocereus acanthurus subsp. pullatus,malanche,Malanche,150,mapa
+loxanthocereus-convergens,133,Loxanthocereus convergens,asia,Asia,151,mapa
+loxanthocereus-convergens,133,Loxanthocereus convergens,paloma,Paloma,151,mapa
+loxanthocereus-convergens,133,Loxanthocereus convergens,puquio,Puquio,151,mapa
+mila-caespitosa,134,Mila caespitosa,caringa,Caringa,152,mapa
+mila-caespitosa,134,Mila caespitosa,malanche,Malanche,152,mapa
+mila-caespitosa,134,Mila caespitosa,retamal,Retamal,152,mapa

@@ -1,0 +1,23 @@
+﻿loma_id,legend_n,nombre,sectores,lat_wgs84,lon_wgs84,utm18s_e,utm18s_n,ancho_km,alto_km,n_especies,jaccard_mapa_vs_texto,confianza_nombre
+carabayllo,1,Carabayllo,,-11.80381,-77.06903,274561,8694308,5.1,2.8,23,0.826,alta
+puquio,2,Puquio,Carmelito; Puquio,-11.82049,-76.97293,285049,8692538,1.4,1.0,15,0.8,alta
+collique,3,Collique,,-11.90683,-76.99821,282362,8682966,3.1,3.3,5,0.4,media
+payet,4,Payet,,-11.95749,-77.02183,279828,8677342,2.1,2.0,7,0.429,media
+amancaes,5,Amancáes,Bella Durmiente; Flor de Amancáes,-11.98766,-77.02542,279462,8674001,1.5,3.8,41,0.732,alta
+mangomarca,6,Mangomarca,,-12.00209,-76.97404,285071,8672445,4.6,3.5,6,0.5,media
+villa-maria,7,Villa María,,-12.13395,-76.91345,291771,8657903,2.9,1.5,56,0.839,alta
+retamal,8,Retamal,,-12.13895,-76.87595,295858,8657379,3.9,3.4,21,0.81,alta
+manchay,9,Manchay,,-12.14306,-76.84648,299069,8656946,2.6,2.0,37,0.805,alta
+zorritos,10,Zorritos,,-12.15588,-76.8988,293383,8655488,4.2,3.9,21,0.739,alta
+lucumo,11,Lúcumo,Quebrada Verde; Guayabo; Picapiedra,-12.19083,-76.87071,296468,8651643,4.7,4.3,75,0.882,alta
+pachacamac,12,Pachacámac,Punta Blanca; Manzano; Pucará,-12.18272,-76.79823,304349,8652594,6.1,2.3,48,0.562,media
+portillo,13,Portillo,"Flor de Nieve; Quiebraleña (referida como ""Lurín"" en el texto)",-12.23519,-76.75968,308583,8646817,3.4,3.5,32,0.879,alta
+pacta,14,Pacta,,-12.26898,-76.77237,307226,8643069,5.0,6.5,27,0.889,alta
+malanche,15,Malanche,,-12.27399,-76.72399,312494,8642549,3.5,4.0,30,0.933,alta
+caringa,16,Caringa,,-12.29554,-76.72589,312302,8640163,3.7,3.3,31,0.903,alta
+cicasos,17,Cicasos,,-12.32865,-76.72946,311937,8636499,7.5,6.3,2,0.0,por-verificar
+paloma,18,Paloma,,-12.43554,-76.71553,313529,8624683,6.4,7.3,22,0.826,alta
+lapa-lapa,19,Lapa Lapa,Chilca; Caluma; Higuerón,-12.53864,-76.64734,321014,8613324,7.2,8.2,23,0.833,alta
+mala,20,Mala,,-12.59327,-76.58762,327540,8607321,4.1,6.5,2,0.0,por-verificar
+asia,21,Asia,,-12.72507,-76.55029,331683,8592765,9.9,7.9,59,0.532,media
+san-lorenzo,22,San Lorenzo,,-12.09247,-77.21524,258878,8662245,5.8,5.0,28,0.821,alta

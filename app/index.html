@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2f6b45">
+<title>Guía de Flora de las Lomas de Lima</title>
+<link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+<header class="cab">
+  <div class="cab-fila">
+    <div class="marca">
+      <h1>Flora de las Lomas</h1>
+      <span>de Lima</span>
+    </div>
+    <button class="btn-icono" id="btn-info" aria-label="Sobre la guía" data-ico="info"></button>
+    <button class="btn-icono" id="btn-filtros" aria-label="Filtros" data-ico="sliders-horizontal"></button>
+  </div>
+
+  <div class="buscador">
+    <span class="ico-lupa" data-ico="magnifying-glass" aria-hidden="true"></span>
+    <input id="q" type="search" enterkeyhint="search" autocomplete="off"
+           placeholder="Buscar por nombre, familia, loma…"
+           aria-label="Buscar especies">
+    <button id="limpiar" class="oculto" aria-label="Limpiar búsqueda" data-ico="x"></button>
+  </div>
+
+  <div class="chips" id="chips-rapidos" role="group" aria-label="Filtros rápidos"></div>
+</header>
+
+<main>
+  <div class="resumen">
+    <span id="cuenta">—</span>
+    <button id="btn-limpiar-filtros" class="chip oculto">
+      <span data-ico="x" aria-hidden="true"></span> Quitar filtros
+    </button>
+  </div>
+  <div class="rejilla" id="rejilla"></div>
+  <div class="vacio oculto" id="vacio">
+    <div data-ico="list-magnifying-glass" aria-hidden="true"></div>
+    <p><b>Sin resultados</b><br>Prueba con otro nombre o quita algún filtro.</p>
+  </div>
+</main>
+
+<!-- ---------- panel de filtros ---------- -->
+<div class="velo" id="velo"></div>
+<section class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="panel-tit">
+  <div class="panel-cab">
+    <h2 id="panel-tit">Filtros</h2>
+    <button class="btn-icono" id="cerrar-panel" aria-label="Cerrar" data-ico="x"></button>
+  </div>
+  <div class="panel-cuerpo">
+    <div class="grupo">
+      <h3><span data-ico="flower" aria-hidden="true"></span> Color de la flor</h3>
+      <div class="envoltura" id="f-color"></div>
+    </div>
+    <div class="grupo">
+      <h3><span data-ico="plant" aria-hidden="true"></span> Grupo</h3>
+      <div class="envoltura" id="f-grupo"></div>
+    </div>
+    <div class="grupo">
+      <h3><span data-ico="calendar-blank" aria-hidden="true"></span> En flor durante</h3>
+      <div class="envoltura" id="f-mes"></div>
+    </div>
+    <div class="grupo">
+      <h3><span data-ico="mountains" aria-hidden="true"></span> Altitud</h3>
+      <div class="rango">
+        <input type="range" id="f-altitud" min="0" max="1050" step="50" value="1050">
+        <output id="f-altitud-val">todas</output>
+      </div>
+    </div>
+    <div class="grupo">
+      <h3><span data-ico="map-trifold" aria-hidden="true"></span> Loma</h3>
+      <div class="envoltura" id="f-loma"></div>
+    </div>
+    <div class="grupo">
+      <h3><span data-ico="drop" aria-hidden="true"></span> Hábitat</h3>
+      <div class="envoltura" id="f-habitat"></div>
+    </div>
+    <div class="grupo">
+      <h3><span data-ico="leaf" aria-hidden="true"></span> Familia</h3>
+      <div class="envoltura" id="f-familia"></div>
+    </div>
+  </div>
+  <div class="panel-pie">
+    <button class="btn" id="btn-reset">Limpiar</button>
+    <button class="btn principal" id="btn-aplicar">Ver resultados</button>
+  </div>
+</section>
+
+<!-- ---------- ficha de especie ---------- -->
+<article class="ficha" id="ficha" role="dialog" aria-modal="true" aria-label="Ficha de especie">
+  <div class="ficha-cab">
+    <button class="btn-icono" id="volver" aria-label="Volver" data-ico="arrow-left"></button>
+    <span class="titulo" id="ficha-titulo"></span>
+  </div>
+  <div class="ficha-int" id="ficha-int"></div>
+</article>
+
+<!-- ---------- visor de imagen ---------- -->
+<div class="visor" id="visor">
+  <img id="visor-img" alt="">
+  <button id="visor-cerrar" aria-label="Cerrar" data-ico="x"></button>
+</div>
+
+<script src="js/datos.js"></script>
+<script src="js/mapa.js"></script>
+<script src="js/iconos.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
