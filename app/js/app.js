@@ -274,8 +274,59 @@ function render() {
   $('#btn-aplicar').textContent = r.length === tot
       ? 'Ver las ' + tot
       : 'Ver ' + r.length + (r.length === 1 ? ' resultado' : ' resultados');
+  pintarActivos();
   sincronizarChips();
 }
+
+/* Las fichas de lo puesto. Llevan data-f/data-v, asi que las quita el mismo
+   manejador que ya destildaba las fichas del panel. */
+function pintarActivos() {
+  var f = [];
+  F.color.forEach(function (v) {
+    f.push({ marca: '<span class="punto" style="background:' + colorHex(v) + '"></span>',
+             et: v, tipo: 'Color', f: 'color', v: v });
+  });
+  F.loma.forEach(function (v) {
+    f.push({ ico: 'map-pin', et: nombreLoma[v] || v, tipo: 'Loma', f: 'loma', v: v });
+  });
+  F.familia.forEach(function (v) {
+    f.push({ ico: 'leaf', et: v, tipo: 'Familia', f: 'familia', v: v });
+  });
+  F.grupo.forEach(function (v) {
+    f.push({ ico: 'plant', et: v, tipo: 'Grupo', f: 'grupo', v: v });
+  });
+  F.habitat.forEach(function (v) {
+    f.push({ ico: 'drop', et: v, tipo: 'Hábitat', f: 'habitat', v: v });
+  });
+  F.mes.slice().sort(function (a, b) { return a - b; }).forEach(function (v) {
+    f.push({ ico: 'calendar-blank', et: 'En flor en ' + G.meses[v - 1],
+             tipo: 'Floración', f: 'mes', v: v });
+  });
+
+  var caja = $('#activos');
+  var html = f.map(function (x) {
+    return '<button class="chip" data-f="' + x.f + '" data-v="' + esc('' + x.v) + '" ' +
+        'title="' + esc(x.tipo + ': ' + x.et) + '" ' +
+        'aria-label="Quitar el filtro ' + esc(x.tipo + ': ' + x.et) + '">' +
+        (x.marca || svgIcono(x.ico)) + esc(x.et) + svgIcono('x', 'quita') + '</button>';
+  }).join('');
+
+  if (altActiva()) {
+    var txt = F.altModo === 'cota'
+        ? F.altitud + ' msnm'
+        : F.altDesde + '–' + F.altHasta + ' msnm';
+    html += '<button class="chip" id="quita-alt" title="Altitud: ' + txt + '" ' +
+        'aria-label="Quitar el filtro de altitud">' +
+        svgIcono('mountains') + txt + svgIcono('x', 'quita') + '</button>';
+  }
+
+  caja.innerHTML = html;
+  caja.classList.toggle('oculto', !html);
+}
+
+$('#activos').addEventListener('click', function (ev) {
+  if (ev.target.closest('#quita-alt')) quitarAltitud();
+});
 
 /* ---------- filtros: interfaz ---------- */
 function chip(texto, activo, extra) {
