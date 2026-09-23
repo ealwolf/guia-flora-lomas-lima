@@ -101,6 +101,22 @@ button {
   max-width: 1400px; margin-inline: auto; padding-inline: 14px;
 }
 .acciones { display: flex; align-items: center; gap: 4px; }
+.menu-envoltura { position: relative; }
+.menu {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 50;
+  min-width: 182px; padding: 6px;
+  background: var(--superficie); border: 1px solid var(--borde);
+  border-radius: 13px; box-shadow: var(--sombra);
+}
+.menu button {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 9px 10px; border-radius: 9px; font-size: 14px; text-align: left;
+  color: var(--texto);
+}
+.menu button:hover, .menu button:focus-visible { background: var(--superficie-2); }
+.menu button[aria-checked="true"] { color: var(--acento-txt); font-weight: 600; }
+.menu .visto { margin-left: auto; opacity: 0; }
+.menu button[aria-checked="true"] .visto { opacity: 1; }
 /* colocacion explicita: si no, el buscador (que va antes en el html) empuja
    los botones a una tercera fila */
 .marca    { grid-area: 1 / 1; }

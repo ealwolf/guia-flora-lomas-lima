@@ -25,7 +25,11 @@
     </div>
 
     <div class="acciones">
-      <button class="btn-icono" id="btn-tema" aria-label="Cambiar tema"></button>
+      <div class="menu-envoltura">
+        <button class="btn-icono" id="btn-tema" aria-label="Tema"
+                aria-haspopup="menu" aria-expanded="false"></button>
+        <div class="menu" id="menu-tema" role="menu" aria-label="Tema" hidden></div>
+      </div>
       <button class="btn-icono" id="btn-info" aria-label="Sobre la guía" data-ico="info"></button>
       <button class="btn-icono" id="btn-filtros" aria-label="Filtros" data-ico="sliders-horizontal"></button>
     </div>

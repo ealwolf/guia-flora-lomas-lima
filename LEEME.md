@@ -96,8 +96,8 @@ Luego copia al teléfono **sólo `app/js/datos.js`** (263 KB). Las 295 fotos
   134 aparecen sólo en la occidental (la que mira al mar), 15 sólo en la
   oriental y 34 en ambas.
 
-- **Tema**: el botón de la cabecera alterna automático → claro → oscuro. Por
-  defecto sigue al teléfono, y lo que elijas se recuerda.
+- **Tema**: el botón de la cabecera abre un menú con automático, claro y
+  oscuro. Por defecto sigue al teléfono, y lo que elijas se recuerda.
 
 Funciona en vertical y en horizontal; desde tableta la cabecera se reduce a una
 sola fila y la ficha se reparte en dos columnas.
