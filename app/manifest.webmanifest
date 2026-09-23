@@ -1,0 +1,20 @@
+{
+  "id": "/",
+  "name": "Guía de Flora de las Lomas de Lima",
+  "short_name": "Flora Lomas",
+  "description": "Las 134 especies de la guía de SERFOR (2015), para identificar en campo sin conexión.",
+  "lang": "es-PE",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f7f5f0",
+  "theme_color": "#2f6b45",
+  "categories": ["education", "books", "utilities"],
+  "icons": [
+    { "src": "icono/icono-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icono/icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icono/icono-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

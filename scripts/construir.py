@@ -14,7 +14,7 @@ está bloqueado por seguridad del navegador.
 
 Uso:  python scripts/construir.py
 """
-import os, sys, io, csv, json, re, datetime, collections
+import os, sys, io, csv, json, re, datetime, collections, hashlib
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -220,10 +220,59 @@ def main():
         print('-> app/todo-en-uno.html %.0f KB  (respaldo: no carga archivos vecinos)'
               % (os.path.getsize(pu) / 1024))
 
+    escribir_sw()
+
     nimg = len(os.listdir(os.path.join(RAIZ, 'app', 'img')))
     print('\nrevisión de color: %d/%d especies marcadas como revisadas'
           % (revisados, len(especies)))
     print('imágenes en app/img: %d' % nimg)
+
+
+NUCLEO = ['./', 'index.html', 'manifest.webmanifest',
+          'css/estilos.css',
+          'js/datos.js', 'js/mapa.js', 'js/iconos.js', 'js/app.js',
+          'icono/icono-192.png', 'icono/icono-512.png',
+          'icono/icono-512-maskable.png', 'icono/apple-touch-icon.png']
+
+
+def firma(rutas):
+    h = hashlib.sha256()
+    for r in rutas:
+        h.update(open(r, 'rb').read())
+    return h.hexdigest()[:12]
+
+
+def escribir_sw():
+    """El service worker, con la lista de todo lo que hay que guardar.
+
+    Las fotos van en un almacén aparte del resto: así, cuando cambian los
+    datos, el teléfono vuelve a bajar unos cientos de KB y no los 12 MB.
+    """
+    app = os.path.join(RAIZ, 'app')
+    fotos = sorted(os.listdir(os.path.join(app, 'img')))
+    nucleo = [x for x in NUCLEO if x != './']
+
+    vn = firma([os.path.join(app, x) for x in nucleo])
+    # las fotos no se leen enteras: con los nombres y los tamaños basta para
+    # saber si cambió algo, y son 12 MB que no hay que recorrer en cada build
+    hf = hashlib.sha256()
+    for f in fotos:
+        hf.update(f.encode())
+        hf.update(str(os.path.getsize(os.path.join(app, 'img', f))).encode())
+    vf = hf.hexdigest()[:12]
+
+    plant = open(os.path.join(RAIZ, 'scripts', 'sw.plantilla.js'),
+                 encoding='utf-8').read()
+    js = (plant.replace('__NUCLEO__', 'flora-nucleo-' + vn)
+               .replace('__FOTOS__', 'flora-fotos-' + vf)
+               .replace('__LISTA_NUCLEO__', json.dumps(NUCLEO, indent=2))
+               .replace('__LISTA_FOTOS__',
+                        json.dumps(['img/' + f for f in fotos], indent=2)))
+    p = os.path.join(app, 'sw.js')
+    open(p, 'w', encoding='utf-8', newline='\n').write(js)
+    print('-> app/sw.js        %.0f KB  (%d archivos: %d fotos + %d del nucleo)'
+          % (os.path.getsize(p) / 1024, len(fotos) + len(NUCLEO),
+             len(fotos), len(NUCLEO)))
 
 
 if __name__ == '__main__':

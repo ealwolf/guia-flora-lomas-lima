@@ -6,6 +6,9 @@
 <meta name="theme-color" content="#2f6b45">
 <title>Guía de Flora de las Lomas de Lima</title>
 <link rel="stylesheet" href="css/estilos.css">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icono/apple-touch-icon.png">
+<link rel="icon" href="icono/icono-192.png" sizes="192x192">
 </head>
 <body>
 
@@ -137,6 +140,18 @@
   </div>
   <div class="ficha-int" id="ficha-int"></div>
 </article>
+
+<!-- ---------- aviso de descarga / instalacion ---------- -->
+<div class="aviso oculto" id="aviso" role="status" aria-live="polite">
+  <span class="aviso-ico" id="aviso-ico" aria-hidden="true"></span>
+  <div class="aviso-txt">
+    <b id="aviso-tit"></b>
+    <div class="barra oculto" id="aviso-barra"><i id="aviso-barra-int"></i></div>
+    <small id="aviso-sub"></small>
+  </div>
+  <button class="btn principal oculto" id="aviso-btn"></button>
+  <button class="btn-icono" id="aviso-x" aria-label="Cerrar aviso" data-ico="x"></button>
+</div>
 
 <!-- ---------- visor de imagen ---------- -->
 <div class="visor" id="visor">

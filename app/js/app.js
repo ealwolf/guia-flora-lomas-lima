@@ -808,6 +808,93 @@ document.addEventListener('click', function (ev) {
   }
 });
 
+/* ---------- guardado para el campo ----------
+   El service worker baja las 295 fotos a la primera visita con wifi. Sin este
+   aviso no hay forma de saber cuando es seguro irse sin senal. */
+var avisoTemp;
+function aviso(ico, tit, sub, btn, alPulsar) {
+  $('#aviso-ico').innerHTML = svgIcono(ico);
+  $('#aviso-tit').textContent = tit;
+  $('#aviso-sub').textContent = sub || '';
+  var b = $('#aviso-btn');
+  b.classList.toggle('oculto', !btn);
+  if (btn) { b.textContent = btn; b.onclick = alPulsar; }
+  $('#aviso').classList.remove('oculto');
+}
+function cerrarAviso() {
+  $('#aviso').classList.add('oculto');
+  clearTimeout(avisoTemp);
+}
+$('#aviso-x').addEventListener('click', cerrarAviso);
+
+var descargando = false;
+function progresoFotos(hechas, total, fin) {
+  if (fin) {
+    if (!descargando) return;           // recuento de arranque: sin ruido
+    descargando = false;
+    $('#aviso-barra').classList.add('oculto');
+    if (hechas >= total) {
+      aviso('seal-check', 'Lista para el campo',
+            'Las ' + total + ' fotos están guardadas. Funciona sin señal.');
+    } else {
+      // alguna foto no bajó; se recupera sola la próxima vez que haya red
+      aviso('images', 'Guardadas ' + hechas + ' de ' + total + ' fotos',
+            'Vuelve a abrirla con wifi para completar las que faltan.');
+    }
+    clearTimeout(avisoTemp);
+    avisoTemp = setTimeout(seguirODespedirse, 5000);
+    return;
+  }
+  descargando = true;
+  aviso('images', 'Guardando las fotos', hechas + ' de ' + total +
+        ' · déjala abierta con wifi');
+  $('#aviso-barra').classList.remove('oculto');
+  $('#aviso-barra-int').style.width =
+      (total ? Math.round(hechas * 100 / total) : 0) + '%';
+}
+
+/* Si Chrome ofreció instalarla mientras bajaban las fotos, el ofrecimiento
+   esperaba su turno: los dos avisos comparten el mismo sitio. */
+function seguirODespedirse() {
+  if (instalador) ofrecerInstalar(); else cerrarAviso();
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('message', function (ev) {
+    if (ev.data && ev.data.tipo === 'fotos') {
+      progresoFotos(ev.data.hechas, ev.data.total, ev.data.fin);
+    }
+  });
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').then(function () {
+      // que Android no borre los 12 MB cuando le falte espacio
+      if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
+      if (navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ tipo: 'estado' });
+      }
+    }).catch(function () {});
+  });
+}
+
+// Chrome deja instalarla como app; el aviso propio explica para que sirve
+var instalador = null;
+function ofrecerInstalar() {
+  if (!instalador) return;
+  aviso('flower-lotus', 'Instalar en el teléfono',
+        'Queda como un icono más y abre a pantalla completa.',
+        'Instalar', function () {
+    cerrarAviso();
+    instalador.prompt();
+    instalador = null;
+  });
+}
+window.addEventListener('beforeinstallprompt', function (ev) {
+  ev.preventDefault();
+  instalador = ev;
+  if (!descargando) ofrecerInstalar();  // si no, se ofrece al terminar
+});
+window.addEventListener('appinstalled', function () { instalador = null; cerrarAviso(); });
+
 /* ---------- arranque ---------- */
 aplicarTema(leerTema());
 pintarChipsRapidos();

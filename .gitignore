@@ -6,3 +6,5 @@ app/todo-en-uno.html
 __pycache__/
 *.pyc
 flora-lomas-app.zip
+app/sw.js
+flora-lomas-app/

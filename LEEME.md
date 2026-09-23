@@ -11,17 +11,68 @@ el teléfono **sin conexión**: en la loma no hay señal.
 
 ## Cómo se usa en el teléfono
 
-1. Copia la carpeta **`app/`** completa al teléfono (13 MB).
-2. Ábrela con Chrome: el archivo **`app/index.html`**.
-3. Menú de Chrome → *Añadir a pantalla de inicio*, y queda como un icono más.
+Se **instala como app** desde una dirección web, y a partir de ahí funciona sin
+conexión: en la primera visita con wifi el teléfono se guarda las 295 fotos y
+todo lo demás, y en la loma ya no necesita señal para nada.
 
-No necesita internet, ni cuenta, ni instalar nada, ni tienda de aplicaciones.
+1. Publica la carpeta **`app/`** como sitio (ver abajo). Tiene que ser
+   **HTTPS**: es la única condición.
+2. Abre esa dirección con Chrome en el teléfono, **con wifi**.
+3. Sale un aviso abajo, *Guardando las fotos*, con su barra. Deja la app
+   abierta hasta que diga **«Lista para el campo»** (12 MB, un par de minutos).
+4. Cuando Chrome ofrezca **Instalar**, acepta: queda como un icono más, abre a
+   pantalla completa y sin barra de navegador.
+5. Comprueba que funciona: modo avión y ábrela.
 
-**Si al abrirla se ve en blanco**, usa `app/todo-en-uno.html` en su lugar: es la
-misma app con todo dentro de un único archivo. Algunos navegadores no dejan que
-un archivo local cargue los `.js` que tiene al lado, y ese respaldo lo evita.
-Vale la pena probar primero `index.html`, que es la versión que se actualiza
-copiando un archivo pequeño en vez de uno grande.
+Después de eso no vuelve a necesitar internet. Si algún día hay wifi, se pone
+al día sola.
+
+### Por qué no se puede abrir el archivo y ya
+
+Se intentó y no funciona en Android moderno. Al abrir un archivo desde el
+gestor de archivos, Chrome no recibe una dirección `file://` sino una
+`content://`, y con esa las rutas relativas no resuelven:
+
+| | Qué pasa |
+|---|---|
+| `index.html` | no carga `css/` ni `js/` → interfaz rota |
+| `todo-en-uno.html` | eso va incrustado → interfaz bien, pero **sin fotos** |
+
+Comprobado en un Pixel 6a. `todo-en-uno.html` sigue ahí porque para mirar los
+textos desde el PC va bien, pero para el campo la vía es la de arriba.
+
+---
+
+## Publicar la carpeta `app/`
+
+Cualquier alojamiento estático con HTTPS sirve. La carpeta `app/` es la raíz
+del sitio: `index.html` tiene que quedar en `/`, no en `/app/`.
+
+**Lo más rápido** — [Netlify Drop](https://app.netlify.com/drop): arrastras la
+carpeta `app/` a la página y en un minuto tienes una dirección. Para volver a
+publicar, arrastras otra vez.
+
+**Si quieres que sólo entres tú** — Cloudflare Pages: subes la carpeta igual, y
+en *Zero Trust → Access* pones una regla que exija tu correo. Cloudflare manda
+un código de un solo uso y nadie más puede abrirla. Es gratis hasta 50
+personas, y no estorba al uso sin conexión: la comprobación es al entrar con
+red, y en el campo la app ya está guardada en el teléfono.
+
+> Aunque la dirección no se enlace en ningún sitio, publicar es publicar. El
+> texto y las fotos son de SERFOR y de los fotógrafos. Para uso propio de
+> identificación en campo es otra cosa, pero conviene tenerlo presente si algún
+> día esto se comparte.
+
+### Actualizar lo publicado
+
+```bash
+python scripts/construir.py
+```
+
+y vuelve a subir la carpeta. El teléfono nota el cambio la próxima vez que la
+abras con red. **Sólo baja lo que cambió**: las fotos y el resto se guardan por
+separado a propósito, así que corregir un color de flor son unos 400 KB, no los
+12 MB otra vez.
 
 ---
 
@@ -30,14 +81,17 @@ copiando un archivo pequeño en vez de uno grande.
 ```
 Guía de Flora de las Lomas de Lima/
 │
-├── app/                    ← ESTO es lo que se copia al teléfono
+├── app/                    ← ESTO es lo que se publica como sitio
 │   ├── index.html
-│   ├── todo-en-uno.html    respaldo, todo en un archivo
+│   ├── manifest.webmanifest  nombre, colores e iconos de la app instalada
+│   ├── sw.js               guarda todo para usarlo sin red ← generado
+│   ├── todo-en-uno.html    respaldo de un solo archivo    ← generado
 │   ├── css/estilos.css     la apariencia. Edítala si quieres cambiarla.
 │   ├── js/app.js           la lógica
 │   ├── js/datos.js         las 134 especies        ← generado
 │   ├── js/mapa.js          el mapa de las 22 lomas ← generado
 │   ├── js/iconos.js        iconos Phosphor         ← generado
+│   ├── icono/              el icono de la app
 │   └── img/                295 fotos de la guía
 │
 ├── datos/
@@ -48,14 +102,16 @@ Guía de Flora de las Lomas de Lima/
 │   └── iconos-phosphor.json
 │
 ├── scripts/
-│   └── construir.py        datos/ → app/js/
+│   ├── construir.py        datos/ → app/js/ y app/sw.js
+│   ├── sw.plantilla.js     de donde sale sw.js
+│   └── icono.py            dibuja el icono (se ejecuta una vez)
 │
 └── docs/
     └── guia_flora_lomas_lima_2015.pdf   la fuente
 ```
 
-Sólo tres archivos de `app/` se generan; el resto se escribe a mano y no se
-sobrescribe nunca.
+Los archivos marcados como generados se rehacen en cada construcción; el resto
+se escribe a mano y no se sobrescribe nunca.
 
 ---
 
@@ -65,8 +121,7 @@ sobrescribe nunca.
 python scripts/construir.py
 ```
 
-Luego copia al teléfono **sólo `app/js/datos.js`** (263 KB). Las 295 fotos
-—que son el 98 % del peso— no se mueven. Cambiar la apariencia es editar
+Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
 `app/css/estilos.css` y no toca los datos para nada.
 
 ---
@@ -108,6 +163,7 @@ Luego copia al teléfono **sólo `app/js/datos.js`** (263 KB). Las 295 fotos
 
 - **Tema**: el botón de la cabecera abre un menú con automático, claro y
   oscuro. Por defecto sigue al teléfono, y lo que elijas se recuerda.
+- **Funciona sin conexión** una vez guardada, y se instala con su propio icono.
 
 Funciona en vertical y en horizontal; desde tableta la cabecera se reduce a una
 sola fila y la ficha se reparte en dos columnas.
