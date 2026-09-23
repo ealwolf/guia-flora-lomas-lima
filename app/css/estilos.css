@@ -13,6 +13,8 @@
   --acento-txt: #235536;
   --rojo:       #c8443c;
   --ambar:      #b07d1a;
+  --sobre-acento: #ffffff;
+  --tirador: 20px;
   --sombra:     0 1px 2px rgba(28,33,29,.06), 0 8px 24px -12px rgba(28,33,29,.18);
   --r:  14px;
   --r-s: 10px;
@@ -20,7 +22,7 @@
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-tema="claro"]) {
     --fondo:      #12150f;
     --superficie: #1a1e18;
     --superficie-2:#232821;
@@ -32,9 +34,26 @@
     --acento-txt: #9ad9ae;
     --rojo:       #e8695f;
     --ambar:      #d8a545;
+    --sobre-acento: #0f140f;
     --sombra:     0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
     color-scheme: dark;
   }
+}
+:root[data-tema="oscuro"] {
+    --fondo:      #12150f;
+    --superficie: #1a1e18;
+    --superficie-2:#232821;
+    --texto:      #e9ece5;
+    --tenue:      #9aa392;
+    --borde:      #2c3329;
+    --acento:     #78c493;
+    --acento-sua: #1e2c22;
+    --acento-txt: #9ad9ae;
+    --rojo:       #e8695f;
+    --ambar:      #d8a545;
+    --sobre-acento: #0f140f;
+    --sombra:     0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+    color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -123,12 +142,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 .chip:hover { border-color: color-mix(in srgb, var(--acento) 45%, var(--borde)); }
 .chip[aria-pressed="true"] {
-  background: var(--acento); border-color: var(--acento); color: #fff;
+  background: var(--acento); border-color: var(--acento); color: var(--sobre-acento);
 }
-:root.oscuro .chip[aria-pressed="true"],
-.chip.activo-oscuro { color: #0f140f; }
 .chip .cuenta { color: var(--tenue); font-weight: 400; font-variant-numeric: tabular-nums; }
-.chip[aria-pressed="true"] .cuenta { color: rgba(255,255,255,.8); }
+.chip[aria-pressed="true"] .cuenta { color: var(--sobre-acento); opacity: .75; }
 .punto { width: 13px; height: 13px; border-radius: 50%; border: 1px solid rgba(0,0,0,.18); flex: none; }
 
 /* ---------- resultados ---------- */
@@ -206,8 +223,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   flex: 1; padding: 12px; border-radius: 12px; font-weight: 600; font-size: 15px;
   border: 1px solid var(--borde); background: var(--superficie); color: var(--texto);
 }
-.btn.principal { background: var(--acento); border-color: var(--acento); color: #fff; }
-:root.oscuro .btn.principal { color: #0f140f; }
+.btn.principal { background: var(--acento); border-color: var(--acento); color: var(--sobre-acento); }
 
 @media (min-width: 720px) {
   .panel {
@@ -236,8 +252,62 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   background: var(--superficie); color: var(--texto); box-shadow: 0 1px 2px rgba(0,0,0,.08);
 }
 .rango { display: flex; align-items: center; gap: 10px; }
-.rango + .rango { margin-top: 8px; }
 .rango label { font-size: 12px; color: var(--tenue); min-width: 42px; }
+
+/* Deslizadores con estilo propio. El nativo pinta de color la parte izquierda,
+   y eso hace leer "cuanto" cuando aqui lo que se marca es "donde". */
+input[type=range] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 28px; margin: 0; background: transparent;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  height: 4px; border-radius: 3px; background: var(--borde);
+}
+input[type=range]::-moz-range-track {
+  height: 4px; border-radius: 3px; background: var(--borde);
+}
+input[type=range]::-moz-range-progress { height: 4px; background: transparent; }
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: var(--tirador); height: var(--tirador);
+  margin-top: calc((4px - var(--tirador)) / 2); border-radius: 50%;
+  background: var(--superficie); border: 2px solid var(--acento);
+  box-shadow: 0 1px 3px rgba(0,0,0,.22); cursor: pointer;
+}
+input[type=range]::-moz-range-thumb {
+  width: var(--tirador); height: var(--tirador);
+  border-radius: 50%; border: 2px solid var(--acento);
+  background: var(--superficie); box-shadow: 0 1px 3px rgba(0,0,0,.22); cursor: pointer;
+}
+input[type=range]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px var(--acento-sua); }
+input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--acento-sua); }
+
+/* Rango: dos tiradores sobre una misma linea, con el tramo central relleno. */
+.doble { position: relative; height: 28px; }
+.doble-pista, .doble-activa {
+  position: absolute; top: 12px; height: 4px; border-radius: 3px; pointer-events: none;
+}
+.doble-pista { left: 0; right: 0; background: var(--borde); }
+.doble-activa { background: var(--acento); }
+.doble input[type=range] {
+  position: absolute; left: 0; top: 0; pointer-events: none;
+}
+.doble input[type=range]::-webkit-slider-runnable-track { background: transparent; }
+.doble input[type=range]::-moz-range-track { background: transparent; }
+.doble input[type=range]::-webkit-slider-thumb { pointer-events: auto; }
+.doble input[type=range]::-moz-range-thumb { pointer-events: auto; }
+/* con el dedo hace falta un blanco mayor */
+@media (pointer: coarse) {
+  :root { --tirador: 26px; }
+  input[type=range] { height: 36px; }
+  .doble { height: 36px; }
+  .doble-pista, .doble-activa { top: 16px; }
+}
+.doble-val {
+  display: flex; justify-content: space-between; margin-top: 2px;
+  font-size: 12.5px; font-weight: 600; color: var(--texto);
+  font-variant-numeric: tabular-nums;
+}
 .pista { margin: 8px 0 0; font-size: 12px; color: var(--tenue); line-height: 1.45; }
 .rango input[type=range] { flex: 1; accent-color: var(--acento); }
 .rango output {
@@ -323,8 +393,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   text-align: center; font-size: 9.5px; font-weight: 600; padding: 6px 0 5px;
   border-radius: 6px; background: var(--superficie-2); color: var(--tenue);
 }
-.calendario span.on { background: var(--acento); color: #fff; }
-:root.oscuro .calendario span.on { color: #0f140f; }
+.calendario span.on { background: var(--acento); color: var(--sobre-acento); }
 
 .figura { background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--r); padding: 12px; }
 /* los SVG se escalan al ancho: sin tope se comen la pantalla en horizontal */

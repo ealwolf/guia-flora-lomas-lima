@@ -86,8 +86,11 @@ Luego copia al teléfono **sólo `app/js/datos.js`** (263 KB). Las 295 fotos
   libro: no son imágenes, son dibujos que se adaptan al tamaño de la pantalla y
   al modo claro u oscuro.
 
-Funciona en vertical y en horizontal; en horizontal la ficha se reparte en dos
-columnas. Sigue el modo claro u oscuro del teléfono.
+- **Tema**: el botón de la cabecera alterna automático → claro → oscuro. Por
+  defecto sigue al teléfono, y lo que elijas se recuerda.
+
+Funciona en vertical y en horizontal; desde tableta la cabecera se reduce a una
+sola fila y la ficha se reparte en dos columnas.
 
 ---
 

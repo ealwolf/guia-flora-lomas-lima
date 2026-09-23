@@ -402,6 +402,7 @@ $('#limpiar').addEventListener('click', function () {
 
 function abrirPanel(v) {
   $('#panel').classList.toggle('abierto', v);
+  if (v) setTimeout(pintarRango, 30);
   $('#velo').classList.toggle('abierto', v);
   document.body.style.overflow = v ? 'hidden' : '';
 }
@@ -435,6 +436,17 @@ $('#f-altitud').addEventListener('input', function (ev) {
 function pintarRango() {
   $('#f-alt-min-val').textContent = F.altDesde + ' msnm';
   $('#f-alt-max-val').textContent = F.altHasta + ' msnm';
+  var caja = $('#doble'), barra = $('#doble-activa');
+  if (!caja || !barra) return;
+  var w = caja.clientWidth;
+  var tirador = parseFloat(getComputedStyle(document.documentElement)
+                  .getPropertyValue('--tirador')) || 20;
+  if (!w) return;                       // el panel está oculto: aún no mide
+  var p = function (v) { return (v - ALT_MIN) / (ALT_MAX - ALT_MIN); };
+  var a = p(F.altDesde) * (w - tirador) + tirador / 2;
+  var b = p(F.altHasta) * (w - tirador) + tirador / 2;
+  barra.style.left = a + 'px';
+  barra.style.width = Math.max(0, b - a) + 'px';
 }
 $('#f-alt-min').addEventListener('input', function (ev) {
   F.altDesde = +ev.target.value;
@@ -466,6 +478,8 @@ $('#btn-info').addEventListener('click', function () {
         '\n\nEsta app reproduce el contenido de la guía. Los datos se extrajeron del PDF publicado por SERFOR.');
 });
 
+window.addEventListener('resize', pintarRango);
+
 document.addEventListener('keydown', function (ev) {
   if (ev.key === 'Escape') {
     if ($('#visor').classList.contains('abierto')) { $('#visor').classList.remove('abierto'); return; }
@@ -475,7 +489,32 @@ document.addEventListener('keydown', function (ev) {
   if (ev.key === '/' && document.activeElement !== $('#q')) { ev.preventDefault(); $('#q').focus(); }
 });
 
+/* ---------- tema ---------- */
+var TEMAS = [
+  { id: 'auto',   ico: 'circle-half-tilt', txt: 'Tema: automático' },
+  { id: 'claro',  ico: 'sun',              txt: 'Tema: claro' },
+  { id: 'oscuro', ico: 'moon',             txt: 'Tema: oscuro' }
+];
+function leerTema() {
+  try { return localStorage.getItem('tema') || 'auto'; } catch (e) { return 'auto'; }
+}
+function aplicarTema(id) {
+  var t = TEMAS.filter(function (x) { return x.id === id; })[0] || TEMAS[0];
+  if (t.id === 'auto') document.documentElement.removeAttribute('data-tema');
+  else document.documentElement.setAttribute('data-tema', t.id);
+  var b = $('#btn-tema');
+  b.innerHTML = svgIcono(t.ico);
+  b.setAttribute('aria-label', t.txt);
+  b.setAttribute('title', t.txt + ' (toca para cambiar)');
+  try { localStorage.setItem('tema', t.id); } catch (e) {}
+}
+$('#btn-tema').addEventListener('click', function () {
+  var i = TEMAS.map(function (t) { return t.id; }).indexOf(leerTema());
+  aplicarTema(TEMAS[(i + 1) % TEMAS.length].id);
+});
+
 /* ---------- arranque ---------- */
+aplicarTema(leerTema());
 pintarChipsRapidos();
 pintarFiltros();
 pintarRango();
