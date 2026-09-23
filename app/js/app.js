@@ -51,7 +51,7 @@ G.especies.forEach(function (e) {
    «amarillo» es un color, «Malvaceae» una familia y «Amancaes» una loma, pero
    el buscador los trataba a los tres como texto suelto. La lista dice de qué
    tipo es cada coincidencia y aplica el filtro en vez de dejarlo en el cajón.
-   Se arma una sola vez con lo que ya está en memoria: unas 370 entradas, no
+   Se arma una sola vez con lo que ya está en memoria: 244 entradas, no
    descarga nada y no se nota en el arranque. */
 var MESES_LARGO = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
                    'julio', 'agosto', 'setiembre septiembre', 'octubre',
