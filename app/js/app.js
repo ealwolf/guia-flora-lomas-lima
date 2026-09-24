@@ -270,7 +270,6 @@ function render() {
   $('#cuenta').textContent = r.length === tot
       ? tot + ' especies'
       : r.length + ' de ' + tot + ' especies';
-  $('#btn-limpiar-filtros').classList.toggle('oculto', activos() === 0 && !F.q);
   $('#btn-aplicar').textContent = r.length === tot
       ? 'Ver las ' + tot
       : 'Ver ' + r.length + (r.length === 1 ? ' resultado' : ' resultados');
@@ -282,6 +281,12 @@ function render() {
    manejador que ya destildaba las fichas del panel. */
 function pintarActivos() {
   var f = [];
+  // la busqueda tambien es un filtro puesto, y asi «Quitar todo» tiene sitio
+  // aunque lo unico activo sea el texto
+  if (F.q) {
+    f.push({ ico: 'magnifying-glass', et: '“' + F.q + '”', tipo: 'Búsqueda',
+             quita: 'quita-q' });
+  }
   F.color.forEach(function (v) {
     f.push({ marca: '<span class="punto" style="background:' + colorHex(v) + '"></span>',
              et: v, tipo: 'Color', f: 'color', v: v });
@@ -305,7 +310,9 @@ function pintarActivos() {
 
   var caja = $('#activos');
   var html = f.map(function (x) {
-    return '<button class="chip" data-f="' + x.f + '" data-v="' + esc('' + x.v) + '" ' +
+    var senas = x.quita ? 'id="' + x.quita + '"'
+                        : 'data-f="' + x.f + '" data-v="' + esc('' + x.v) + '"';
+    return '<button class="chip" ' + senas + ' ' +
         'title="' + esc(x.tipo + ': ' + x.et) + '" ' +
         'aria-label="Quitar el filtro ' + esc(x.tipo + ': ' + x.et) + '">' +
         (x.marca || svgIcono(x.ico)) + esc(x.et) + svgIcono('x', 'quita') + '</button>';
@@ -320,13 +327,25 @@ function pintarActivos() {
         svgIcono('mountains') + txt + svgIcono('x', 'quita') + '</button>';
   }
 
+  if (html) {
+    html += '<button class="chip todo" id="quita-todo">' + svgIcono('x', 'quita') +
+            'Quitar todo</button>';
+  }
   caja.innerHTML = html;
   caja.classList.toggle('oculto', !html);
 }
 
 $('#activos').addEventListener('click', function (ev) {
   if (ev.target.closest('#quita-alt')) quitarAltitud();
+  else if (ev.target.closest('#quita-q')) quitarBusqueda();
+  else if (ev.target.closest('#quita-todo')) { quitarBusqueda(true); limpiarTodo(); }
 });
+
+function quitarBusqueda(callado) {
+  F.q = ''; $('#q').value = ''; $('#limpiar').classList.add('oculto');
+  cerrarSug();
+  if (!callado) render();             // limpiarTodo ya repinta por su cuenta
+}
 
 /* ---------- filtros: interfaz ---------- */
 function chip(texto, activo, extra) {
@@ -677,11 +696,6 @@ function limpiarTodo() {
   quitarAltitud();
 }
 $('#btn-reset').addEventListener('click', limpiarTodo);
-$('#btn-limpiar-filtros').addEventListener('click', function () {
-  F.q = ''; $('#q').value = ''; $('#limpiar').classList.add('oculto');
-  cerrarSug();
-  limpiarTodo();
-});
 
 $('#f-altitud').addEventListener('input', function (ev) {
   F.altitud = +ev.target.value;          // tocarlo lo activa; se apaga con Quitar
