@@ -848,7 +848,8 @@ document.addEventListener('click', function (ev) {
 
    El núcleo de la app (unos 400 KB) sí se guarda al entrar: sin él no hay
    nada que abrir, y ya está descargado. */
-var FOTOS = { total: 0, hechas: 0, faltan: [], bajando: false, cancelar: false };
+var FOTOS = { total: 0, hechas: 0, faltan: [], cache: '',
+              bajando: false, cancelar: false };
 
 function sw() {
   return navigator.serviceWorker && navigator.serviceWorker.controller;
@@ -858,34 +859,47 @@ function pedirEstado() {
 }
 
 function bajarFotos() {
-  if (FOTOS.bajando || !FOTOS.faltan.length) return;
+  if (FOTOS.bajando || !FOTOS.faltan.length || !FOTOS.cache) return;
   FOTOS.bajando = true;
   FOTOS.cancelar = false;
   // ahora sí tiene sentido pedirlo: vamos a ocupar sitio a propósito
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
   pintarGuardar();
 
-  var cola = FOTOS.faltan.slice();
-  var enCurso = 0, i = 0;
-  function siguiente() {
-    if (FOTOS.cancelar) { if (!enCurso) terminar(); return; }
-    while (enCurso < 6 && i < cola.length) {
-      enCurso++;
-      // el service worker se queda con la copia al pasar por él
-      fetch(cola[i++]).catch(function () {}).then(function () {
-        enCurso--;
-        FOTOS.hechas = Math.min(FOTOS.total, FOTOS.hechas + 1);
-        pintarGuardar();
-        if (i >= cola.length && !enCurso) terminar(); else siguiente();
-      });
+  caches.open(FOTOS.cache).then(function (c) {
+    var cola = FOTOS.faltan.slice();
+    var enCurso = 0, i = 0;
+
+    // las guarda la página, no el worker: el worker ya no toca las fotos, y
+    // así lo que hay en el teléfono es exactamente lo que se pidió
+    function una(u) {
+      return fetch(u).then(function (res) {
+        if (!res || !res.ok) return;
+        return c.put(u, res).then(function () {
+          FOTOS.hechas = Math.min(FOTOS.total, FOTOS.hechas + 1);
+        });
+      }).catch(function () {});
     }
-    if (!enCurso && i >= cola.length) terminar();
-  }
-  function terminar() {
-    FOTOS.bajando = false;
-    pedirEstado();                      // la cuenta buena la tiene el worker
-  }
-  siguiente();
+
+    function siguiente() {
+      if (FOTOS.cancelar) { if (!enCurso) terminar(); return; }
+      while (enCurso < 6 && i < cola.length) {
+        enCurso++;
+        una(cola[i++]).then(function () {
+          enCurso--;
+          pintarGuardar();
+          if (i >= cola.length && !enCurso) terminar(); else siguiente();
+        });
+      }
+      if (!enCurso && i >= cola.length) terminar();
+    }
+
+    function terminar() {
+      FOTOS.bajando = false;
+      pedirEstado();                    // la cuenta buena la tiene el worker
+    }
+    siguiente();
+  });
 }
 
 function cancelarFotos() { FOTOS.cancelar = true; }
@@ -1016,6 +1030,7 @@ $('#cerrar-guardar').addEventListener('click', function () { abrirGuardar(false)
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('message', function (ev) {
     if (!ev.data || ev.data.tipo !== 'estado') return;
+    FOTOS.cache = ev.data.cache;
     FOTOS.total = ev.data.total;
     FOTOS.hechas = ev.data.hechas;
     FOTOS.faltan = ev.data.faltan;

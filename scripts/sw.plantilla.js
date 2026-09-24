@@ -55,9 +55,12 @@ async function responder(req) {
   if (copia) return copia;
   try {
     var res = await fetch(req);
-    if (res && res.ok && res.type === 'basic') {
-      var donde = /\/img\//.test(new URL(req.url).pathname) ? FOTOS : NUCLEO;
-      (await caches.open(donde)).put(req, res.clone());
+    // el nucleo se completa solo; las fotos NO. Si se guardaran al verlas,
+    // abrir la portada dejaria una docena en el telefono sin que nadie lo
+    // haya pedido, y la vista diria «12 de 295» de una descarga que no fue.
+    if (res && res.ok && res.type === 'basic' &&
+        !/\/img\//.test(new URL(req.url).pathname)) {
+      (await caches.open(NUCLEO)).put(req, res.clone());
     }
     return res;
   } catch (e) {
@@ -82,6 +85,7 @@ async function estado() {
   var faltan = LISTA_FOTOS.filter(function (x) { return !guardadas[raiz + x]; });
   return {
     tipo: 'estado',
+    cache: FOTOS,                       // la pagina escribe ahi al descargar
     total: LISTA_FOTOS.length,
     hechas: LISTA_FOTOS.length - faltan.length,
     faltan: faltan
