@@ -880,7 +880,7 @@ if ('serviceWorker' in navigator) {
 var instalador = null;
 function ofrecerInstalar() {
   if (!instalador) return;
-  aviso('flower-lotus', 'Instalar en el teléfono',
+  aviso('flor-lomas', 'Instalar en el teléfono',
         'Queda como un icono más y abre a pantalla completa.',
         'Instalar', function () {
     cerrarAviso();

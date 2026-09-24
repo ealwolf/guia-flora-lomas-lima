@@ -99,7 +99,8 @@ Guía de Flora de las Lomas de Lima/
 │   ├── propio/             tus correcciones. Ningún script escribe aquí.
 │   │   ├── color_flor.csv
 │   │   └── sinonimos.csv
-│   └── iconos-phosphor.json
+│   ├── iconos-phosphor.json
+│   └── iconos-propios.json   los dibujados aquí (la flor de la app)
 │
 ├── scripts/
 │   ├── construir.py        datos/ → app/js/ y app/sw.js

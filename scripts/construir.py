@@ -195,12 +195,17 @@ def main():
     if os.path.exists(fi):
         ph = json.load(open(fi, encoding='utf-8'))
         cuerpo = {k: v['body'] for k, v in ph.get('icons', {}).items()}
+        # los propios van despues: dibujados aqui, no descargados
+        fp = os.path.join(RAIZ, 'datos', 'iconos-propios.json')
+        if os.path.exists(fp):
+            mios = json.load(open(fp, encoding='utf-8'))
+            cuerpo.update({k: v['body'] for k, v in mios.get('icons', {}).items()})
         pi = os.path.join(APPJS, 'iconos.js')
         with open(pi, 'w', encoding='utf-8') as fh:
             fh.write('window.ICONOS=')
             json.dump(cuerpo, fh, ensure_ascii=False, separators=(',', ':'))
             fh.write(';\n')
-        print('-> app/js/iconos.js %.0f KB  (%d iconos Phosphor)'
+        print('-> app/js/iconos.js %.0f KB  (%d iconos)'
               % (os.path.getsize(pi) / 1024, len(cuerpo)))
 
     # versión de un solo archivo, por si el navegador del teléfono no deja
