@@ -48,15 +48,29 @@ textos desde el PC va bien, pero para el campo la vía es la de arriba.
 Cualquier alojamiento estático con HTTPS sirve. La carpeta `app/` es la raíz
 del sitio: `index.html` tiene que quedar en `/`, no en `/app/`.
 
-**Lo más rápido** — [Netlify Drop](https://app.netlify.com/drop): arrastras la
-carpeta `app/` a la página y en un minuto tienes una dirección. Para volver a
-publicar, arrastras otra vez.
+**[Netlify Drop](https://app.netlify.com/drop)**: arrastras la carpeta `app/`
+a la página y en un minuto tienes una dirección. Para volver a publicar,
+arrastras otra vez. Sin cuenta, sin git, sin instalar nada.
 
-**Si quieres que sólo entres tú** — Cloudflare Pages: subes la carpeta igual, y
-en *Zero Trust → Access* pones una regla que exija tu correo. Cloudflare manda
-un código de un solo uso y nadie más puede abrirla. Es gratis hasta 50
-personas, y no estorba al uso sin conexión: la comprobación es al entrar con
-red, y en el campo la app ya está guardada en el teléfono.
+**Si algún día quieres que sólo entres tú** — Cloudflare Pages: subes la
+carpeta igual, y en *Zero Trust → Access* pones una regla que exija tu correo.
+Cloudflare manda un código de un solo uso y nadie más puede abrirla. Es gratis
+hasta 50 personas, y no estorba al uso sin conexión: la comprobación es al
+entrar con red, y en el campo la app ya está guardada en el teléfono.
+
+### Que no salga en los buscadores
+
+No depende del alojamiento: son dos archivos que ya están en `app/`.
+
+- **`app/_headers`** manda `X-Robots-Tag: noindex` en todo el sitio. Ésta es la
+  que cuenta: prohíbe indexar, y vale también para las 295 fotos. La leen tanto
+  Netlify como Cloudflare Pages, y el archivo en sí no se publica.
+- **`app/robots.txt`** pide que no lo rastreen, y `index.html` lleva además su
+  `<meta name="robots">`.
+
+Una dirección que no está enlazada en ningún sitio no la encuentra nadie, pero
+así queda dicho de las tres formas. El mismo `_headers` impide que `sw.js` se
+quede cacheado, que si no las actualizaciones no llegarían al teléfono.
 
 > Aunque la dirección no se enlace en ningún sitio, publicar es publicar. El
 > texto y las fotos son de SERFOR y de los fotógrafos. Para uso propio de

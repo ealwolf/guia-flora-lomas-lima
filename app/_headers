@@ -1,0 +1,9 @@
+# Lo lee Netlify (y tambien Cloudflare Pages) al publicar; el archivo en si
+# no se sirve. La cabecera es lo que de verdad mantiene el sitio fuera de los
+# buscadores: robots.txt solo pide que no lo rastreen, esto prohibe indexarlo.
+/*
+  X-Robots-Tag: noindex, nofollow, noarchive, noimageindex, nosnippet
+
+# El service worker no debe quedarse cacheado o las actualizaciones no llegan.
+/sw.js
+  Cache-Control: no-cache

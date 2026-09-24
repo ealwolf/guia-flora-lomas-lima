@@ -1,0 +1,3 @@
+# Sitio privado: la guia de campo de una sola persona.
+User-agent: *
+Disallow: /
