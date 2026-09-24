@@ -6,6 +6,17 @@
 <meta name="theme-color" content="#2f6b45">
 <meta name="robots" content="noindex, nofollow">
 <title>Guía de Flora de las Lomas de Lima</title>
+<script>
+/* Chrome avisa de que se puede instalar en cuanto comprueba el manifiesto, a
+   veces antes de que cargue app.js. Si nadie escucha, el aviso se pierde y no
+   vuelve en toda la visita: por eso se recoge aquí arriba, no abajo. */
+window.__instalador = null;
+window.addEventListener('beforeinstallprompt', function (ev) {
+  ev.preventDefault();                 // nada de ventanas encima sin pedirlo
+  window.__instalador = ev;
+  if (window.__alInstalable) window.__alInstalable();
+});
+</script>
 <link rel="stylesheet" href="css/estilos.css">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icono/apple-touch-icon.png">
@@ -145,7 +156,7 @@
       <h3><span data-ico="images" aria-hidden="true"></span> Fotos en el dispositivo</h3>
       <div class="offline" id="offline"></div>
     </div>
-    <div class="grupo oculto" id="grupo-instalar">
+    <div class="grupo" id="grupo-instalar">
       <h3><span data-ico="flor-lomas" aria-hidden="true"></span> Instalar como app</h3>
       <div class="offline" id="instalar"></div>
     </div>

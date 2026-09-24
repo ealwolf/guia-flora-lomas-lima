@@ -171,6 +171,10 @@ button {
 }
 .offline .barra i { display: block; height: 100%; width: 0;
   background: var(--acento); transition: width .25s; }
+.pasos { margin: 2px 0 10px; padding-left: 20px; font-size: 13px; line-height: 1.6; }
+.pasos li { margin-bottom: 3px; }
+.pasos b { font-weight: 600; }
+
 .ficha-libro { font-size: 13px; line-height: 1.55; color: var(--tenue); }
 .ficha-libro b { color: var(--texto); }
 .ficha-libro p { margin: 0 0 9px; }

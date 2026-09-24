@@ -976,40 +976,72 @@ function pintarFotos() {
   }
 }
 
-/* Saber si está instalada no se puede, y más vale no fingir que sí.
+/* Si está instalada o no, no se puede saber, y más vale no fingirlo.
    `display-mode: standalone` dice si ESTA ventana es la app instalada, no si
-   existe una instalación: abierta en una pestaña normal, una app instalada da
-   que no. Lo único seguro es al revés — `beforeinstallprompt` no se dispara
-   si ya está instalada — así que el botón sólo sale cuando el navegador
-   acaba de decir que se puede instalar. Entonces no hay duplicados posibles
-   ni afirmaciones falsas: sin esa señal, aquí no se dice nada.
-   iPhone es el caso aparte: Safari no dispara ese evento nunca, y ahí la
-   única vía es a mano. */
+   existe una instalación: abierta en una pestaña normal, una app instalada
+   contesta que no. Lo único seguro es al revés — el navegador no ofrece
+   instalar lo que ya está instalado.
+   Así que: botón cuando el navegador lo ofrece, y si no, el camino a mano
+   para ese navegador. Instrucciones no son afirmaciones, y la app no se queda
+   muda cuando el aviso no llega, que es lo corriente. */
+var UA = navigator.userAgent;
 function esIOS() {
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+  return /iPad|iPhone|iPod/.test(UA) ||
          (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+function esAndroid() { return /Android/.test(UA); }
+function esFirefox() { return /Firefox\//.test(UA); }
+function esMovil() { return esIOS() || esAndroid(); }
+
+function pasosAMano() {
+  if (esIOS()) {
+    return ['Toca <b>Compartir</b> (el cuadrado con la flecha).',
+            'Elige <b>Añadir a pantalla de inicio</b>.'];
+  }
+  if (esAndroid()) {
+    if (esFirefox()) {
+      return ['Abre el menú <b>⋮</b>.', 'Elige <b>Instalar</b> o ' +
+              '<b>Añadir a pantalla de inicio</b>.'];
+    }
+    return ['Abre el menú <b>⋮</b> de Chrome, arriba a la derecha.',
+            'Elige <b>Añadir a la pantalla principal</b> → <b>Instalar</b>.'];
+  }
+  if (esFirefox()) {
+    return ['Firefox de escritorio no instala este tipo de apps.',
+            'En el teléfono sí: ábrela allí con Chrome.'];
+  }
+  return ['Mira si hay un icono de instalar (<b>⊕</b> o una pantallita) a la ' +
+            'derecha de la barra de direcciones.',
+          'Si no, menú <b>⋮</b> → <b>Enviar, guardar y compartir</b> → ' +
+            '<b>Instalar página como aplicación</b>.'];
 }
 
 function pintarInstalar() {
-  var g = $('#grupo-instalar'), c = $('#instalar');
-  if (!g || !c) return;
-  var mostrar = instalada() || !!instalador || esIOS();
-  g.classList.toggle('oculto', !mostrar);
-  if (!mostrar) return;
+  var c = $('#instalar');
+  if (!c) return;
 
   if (instalada()) {
     c.innerHTML = '<p class="offline-est"><b>Estás en la app instalada.</b></p>' +
         '<p class="offline-nota">Se abre desde su icono, a pantalla completa.</p>';
-  } else if (instalador) {
+    return;
+  }
+  if (instalador) {
     c.innerHTML = '<p class="offline-est">Puede quedarse como un icono más.</p>' +
         '<p class="offline-nota">Abre a pantalla completa, sin barra de ' +
         'navegador, y no hace falta recordar la dirección.</p>' +
         '<div class="offline-botones"><button class="btn principal" data-off="instalar">' +
           svgIcono('flor-lomas') + 'Instalar en el dispositivo</button></div>';
-  } else {
-    c.innerHTML = '<p class="offline-est">Para tenerla como un icono más:</p>' +
-        '<p class="offline-nota">Compartir → <i>Añadir a pantalla de inicio</i>.</p>';
+    return;
   }
+  // sin aviso del navegador: ni se afirma que falte ni que sobre, se explica
+  var pasos = pasosAMano().map(function (p) { return '<li>' + p + '</li>'; }).join('');
+  c.innerHTML =
+      '<p class="offline-est">Para tenerla como un icono más' +
+        (esMovil() ? '' : ' en el escritorio') + ':</p>' +
+      '<ol class="pasos">' + pasos + '</ol>' +
+      '<p class="offline-nota">¿No aparece la opción? Puede que ya esté ' +
+        'instalada: búscala entre tus aplicaciones. El navegador no deja ' +
+        'preguntárselo, así que esto no se puede comprobar desde aquí.</p>';
 }
 
 /* El punto avisa sin interrumpir: quedan fotos por bajar, o está sin instalar. */
@@ -1035,6 +1067,7 @@ $('#instalar').addEventListener('click', function (ev) {
   if (!ev.target.closest('[data-off="instalar"]') || !instalador) return;
   instalador.prompt();
   instalador = null;
+  window.__instalador = null;         // usado: el navegador no lo repite
   pintarGuardar();
 });
 
@@ -1067,15 +1100,15 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Chrome avisa de que se puede instalar; se guarda para el boton de la vista
-var instalador = null;
-window.addEventListener('beforeinstallprompt', function (ev) {
-  ev.preventDefault();               // nada de ventanas encima sin pedirlo
-  instalador = ev;
+// el aviso lo recoge el script de la cabecera, que corre antes que esto
+var instalador = window.__instalador || null;
+window.__alInstalable = function () {
+  instalador = window.__instalador;
   pintarGuardar();
-});
+};
 window.addEventListener('appinstalled', function () {
   instalador = null;
+  window.__instalador = null;
   pintarGuardar();
 });
 
