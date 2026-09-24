@@ -143,10 +143,16 @@ def main():
     # se cuenta por 'colores' porque el filtro acepta cualquiera de ellos
     ccol, clom = cuenta('colores'), cuenta('lomas')
 
+    dimg = os.path.join(RAIZ, 'app', 'img')
+    pesomb = sum(os.path.getsize(os.path.join(dimg, f))
+                 for f in os.listdir(dimg)) / 1024 / 1024
+
     datos = {
         'meta': META | {'especies': len(especies),
                         'generado': datetime.date.today().isoformat(),
-                        'colorRevisado': revisados},
+                        'colorRevisado': revisados,
+                        'nFotos': len(os.listdir(dimg)),
+                        'pesoFotos': round(pesomb, 1)},
         'meses': MESES,
         'especies': especies,
         'lomas': [{'id': l['loma_id'], 'n': ent(l['legend_n']), 'nombre': l['nombre'],

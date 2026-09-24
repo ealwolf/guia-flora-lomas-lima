@@ -6,6 +6,10 @@
     "flor-lomas": {
       "_nota": "La flor del icono de la app, en línea: seis pétalos tangentes al corazón.",
       "body": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"16\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><ellipse cx=\"128\" cy=\"67\" rx=\"25\" ry=\"37\"/><ellipse cx=\"128\" cy=\"67\" rx=\"25\" ry=\"37\" transform=\"rotate(60 128 128)\"/><ellipse cx=\"128\" cy=\"67\" rx=\"25\" ry=\"37\" transform=\"rotate(120 128 128)\"/><ellipse cx=\"128\" cy=\"67\" rx=\"25\" ry=\"37\" transform=\"rotate(180 128 128)\"/><ellipse cx=\"128\" cy=\"67\" rx=\"25\" ry=\"37\" transform=\"rotate(240 128 128)\"/><ellipse cx=\"128\" cy=\"67\" rx=\"25\" ry=\"37\" transform=\"rotate(300 128 128)\"/><circle cx=\"128\" cy=\"128\" r=\"24\"/></g>"
+    },
+    "descargar": {
+      "_nota": "Flecha a la bandeja, al estilo de Phosphor regular.",
+      "body": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"16\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M128 32v116\"/><path d=\"M82 106l46 46l46-46\"/><path d=\"M40 168v40h176v-40\"/></g>"
     }
   }
 }

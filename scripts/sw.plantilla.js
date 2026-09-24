@@ -1,12 +1,18 @@
-/* Guarda la app entera en el teléfono para usarla sin señal.
+/* Guarda la app en el teléfono para usarla sin señal.
    Generado por scripts/construir.py a partir de scripts/sw.plantilla.js.
    No editar app/sw.js: se reescribe en cada construcción.
 
    Dos almacenes a propósito:
-     núcleo  html, css, js e iconos (~400 KB). Cambia cada vez que tocas
-             los datos, así que se rehace a menudo.
-     fotos   las 295 imágenes (12 MB). Casi nunca cambian.
-   Separados, corregir un color de flor vuelve a bajar 400 KB en vez de 12 MB.
+     núcleo  html, css, js e iconos (~400 KB). Se guarda solo al entrar: sin
+             él no hay app, y es pequeño.
+     fotos   las 295 imágenes (12 MB). NO se bajan solas. Son datos de alguien
+             y su plan de datos: las pide la persona desde el botón, y puede
+             pararlas o borrarlas cuando quiera.
+   Separados, corregir un color de flor vuelve a bajar 400 KB y no 12 MB.
+
+   La descarga de fotos la hace la página, no este archivo: el navegador puede
+   dormir un service worker a media faena, y son 12 MB. Aquí sólo se lleva la
+   cuenta y se sirve lo guardado.
 
    Aquí sí se usa async/await: un service worker sólo existe en navegadores
    que lo entienden. El resto de la app se mantiene en ES5 por prudencia. */
@@ -16,50 +22,14 @@ var FOTOS = '__FOTOS__';
 var LISTA_NUCLEO = __LISTA_NUCLEO__;
 var LISTA_FOTOS = __LISTA_FOTOS__;
 
-async function avisar(msg) {
-  var cs = await self.clients.matchAll({ includeUncontrolled: true, type: 'window' });
-  cs.forEach(function (c) { c.postMessage(msg); });
-}
-
-function base() {
-  return new URL('./', self.registration.scope).pathname;
-}
-
-async function cuantasFotos() {
-  var c = await caches.open(FOTOS);
-  return (await c.keys()).length;
-}
-
 self.addEventListener('install', function (ev) {
-  ev.waitUntil(instalar());
+  ev.waitUntil((async function () {
+    // el núcleo, todo o nada: sin él no hay app que abrir
+    var nucleo = await caches.open(NUCLEO);
+    await nucleo.addAll(LISTA_NUCLEO);
+    await self.skipWaiting();
+  })());
 });
-
-async function instalar() {
-  // el núcleo, todo o nada: sin él no hay app que abrir
-  var nucleo = await caches.open(NUCLEO);
-  await nucleo.addAll(LISTA_NUCLEO);
-
-  // las fotos, por tandas y aguantando fallos: una foto que no baje no debe
-  // impedir la instalación, y el manejador de fetch la recoge cuando se pida
-  var fotos = await caches.open(FOTOS);
-  var guardadas = {};
-  (await fotos.keys()).forEach(function (r) {
-    guardadas[new URL(r.url).pathname] = 1;
-  });
-  var raiz = base();
-  var faltan = LISTA_FOTOS.filter(function (x) { return !guardadas[raiz + x]; });
-
-  var total = LISTA_FOTOS.length;
-  await avisar({ tipo: 'fotos', hechas: total - faltan.length, total: total });
-  for (var i = 0; i < faltan.length; i += 10) {
-    await Promise.all(faltan.slice(i, i + 10).map(function (u) {
-      return fotos.add(u).catch(function () {});
-    }));
-    await avisar({ tipo: 'fotos', hechas: await cuantasFotos(), total: total });
-  }
-  await avisar({ tipo: 'fotos', hechas: await cuantasFotos(), total: total, fin: true });
-  await self.skipWaiting();
-}
 
 self.addEventListener('activate', function (ev) {
   ev.waitUntil((async function () {
@@ -100,12 +70,32 @@ async function responder(req) {
   }
 }
 
+/* ---------- lo que la página pregunta ---------- */
+
+async function estado() {
+  var fotos = await caches.open(FOTOS);
+  var guardadas = {};
+  (await fotos.keys()).forEach(function (r) {
+    guardadas[new URL(r.url).pathname] = 1;
+  });
+  var raiz = new URL('./', self.registration.scope).pathname;
+  var faltan = LISTA_FOTOS.filter(function (x) { return !guardadas[raiz + x]; });
+  return {
+    tipo: 'estado',
+    total: LISTA_FOTOS.length,
+    hechas: LISTA_FOTOS.length - faltan.length,
+    faltan: faltan
+  };
+}
+
 self.addEventListener('message', function (ev) {
   if (!ev.data) return;
+  var responder2 = function (msg) {
+    if (ev.source) ev.source.postMessage(msg);
+  };
   if (ev.data.tipo === 'estado') {
-    ev.waitUntil((async function () {
-      await avisar({ tipo: 'fotos', hechas: await cuantasFotos(),
-                     total: LISTA_FOTOS.length, fin: true });
-    })());
+    ev.waitUntil(estado().then(responder2));
+  } else if (ev.data.tipo === 'borrar') {
+    ev.waitUntil(caches.delete(FOTOS).then(estado).then(responder2));
   }
 });

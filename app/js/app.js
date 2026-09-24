@@ -640,15 +640,21 @@ $('#limpiar').addEventListener('click', function () {
   cerrarSug(); render(); $('#q').focus();
 });
 
-function abrirPanel(v) {
-  $('#panel').classList.toggle('abierto', v);
-  if (v) setTimeout(pintarRango, 30);
+var panelActual = null;
+function abrirPanel(v, cual) {
+  cual = cual || '#panel';
+  $(cual).classList.toggle('abierto', v);
+  if (v && cual === '#panel') setTimeout(pintarRango, 30);
+  panelActual = v ? cual : null;
   $('#velo').classList.toggle('abierto', v);
   document.body.style.overflow = v ? 'hidden' : '';
 }
+function cerrarPanelAbierto() {
+  if (panelActual) abrirPanel(false, panelActual);
+}
 $('#btn-filtros').addEventListener('click', function () { abrirPanel(true); });
 $('#cerrar-panel').addEventListener('click', function () { abrirPanel(false); });
-$('#velo').addEventListener('click', function () { abrirPanel(false); });
+$('#velo').addEventListener('click', cerrarPanelAbierto);
 $('#btn-aplicar').addEventListener('click', function () { abrirPanel(false); });
 
 function limpiarTodo() {
@@ -725,13 +731,25 @@ $$('.segmentado [data-modo]').forEach(function (b) {
   });
 });
 
-$('#btn-info').addEventListener('click', function () {
-  alert(G.meta.titulo + '\n' + G.meta.autores + '\n' + G.meta.editor + ', ' + G.meta.anio +
-        '\nISBN ' + G.meta.isbn +
-        '\n\n' + G.meta.especies + ' especies · 22 lomas' +
-        '\nFotografías: ' + G.meta.fotografias +
-        '\n\nEsta app reproduce el contenido de la guía. Los datos se extrajeron del PDF publicado por SERFOR.');
-});
+function abrirInfo(v) {
+  if (v) {
+    pintarOffline();
+    $('#info-libro').innerHTML =
+      '<h3>' + svgIcono('book-open') + 'El libro</h3>' +
+      '<div class="ficha-libro">' +
+        '<p><b>' + esc(G.meta.titulo) + '</b><br>' + esc(G.meta.autores) + '<br>' +
+          esc(G.meta.editor) + ', ' + G.meta.anio + '<br>ISBN ' + esc(G.meta.isbn) + '</p>' +
+        '<p>' + G.meta.especies + ' especies · ' + G.lomas.length + ' lomas · ' +
+          (G.meta.nFotos || '') + ' fotografías</p>' +
+        '<p>Fotografías: ' + esc(G.meta.fotografias) + '</p>' +
+        '<p>Esta app reproduce el contenido de la guía; los datos salen del PDF ' +
+          'publicado por SERFOR. El contenido y las fotografías son de sus autores.</p>' +
+      '</div>';
+  }
+  abrirPanel(v, '#panel-info');
+}
+$('#btn-info').addEventListener('click', function () { abrirInfo(true); });
+$('#cerrar-info').addEventListener('click', function () { abrirInfo(false); });
 
 window.addEventListener('resize', pintarRango);
 
@@ -740,7 +758,7 @@ document.addEventListener('keydown', function (ev) {
     if (!$('#sug').hidden) { cerrarSug(); return; }
     if (!$('#menu-tema').hidden) { abrirMenuTema(false); $('#btn-tema').focus(); return; }
     if ($('#visor').classList.contains('abierto')) { $('#visor').classList.remove('abierto'); return; }
-    if ($('#panel').classList.contains('abierto')) { abrirPanel(false); return; }
+    if (panelActual) { cerrarPanelAbierto(); return; }
     if ($('#ficha').classList.contains('abierta')) history.back();
   }
   if (ev.key === '/' && document.activeElement !== $('#q')) { ev.preventDefault(); $('#q').focus(); }
@@ -808,9 +826,123 @@ document.addEventListener('click', function (ev) {
   }
 });
 
-/* ---------- guardado para el campo ----------
-   El service worker baja las 295 fotos a la primera visita con wifi. Sin este
-   aviso no hay forma de saber cuando es seguro irse sin senal. */
+/* ---------- guardar para el campo ----------
+   Las fotos son 12 MB del plan de datos de quien la usa: no se bajan solas.
+   Se ofrecen una vez, y de ahí en adelante el control vive en «Sobre la guía»,
+   donde también se pueden borrar. El núcleo de la app (unos 400 KB) sí se
+   guarda al entrar: sin él no hay nada que abrir, y ya está descargado. */
+var FOTOS = { total: 0, hechas: 0, faltan: [], bajando: false, cancelar: false };
+
+function sw() {
+  return navigator.serviceWorker && navigator.serviceWorker.controller;
+}
+function pedirEstado() {
+  if (sw()) sw().postMessage({ tipo: 'estado' });
+}
+
+function bajarFotos() {
+  if (FOTOS.bajando || !FOTOS.faltan.length) return;
+  FOTOS.bajando = true;
+  FOTOS.cancelar = false;
+  // ahora sí tiene sentido pedirlo: vamos a ocupar sitio a propósito
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
+  pintarOffline();
+
+  var cola = FOTOS.faltan.slice();
+  var enCurso = 0, i = 0;
+  function siguiente() {
+    if (FOTOS.cancelar) { if (!enCurso) terminar(); return; }
+    while (enCurso < 6 && i < cola.length) {
+      enCurso++;
+      // el service worker se queda con la copia al pasar por él
+      fetch(cola[i++]).catch(function () {}).then(function () {
+        enCurso--;
+        FOTOS.hechas = Math.min(FOTOS.total, FOTOS.hechas + 1);
+        pintarOffline();
+        if (i >= cola.length && !enCurso) terminar(); else siguiente();
+      });
+    }
+    if (!enCurso && i >= cola.length) terminar();
+  }
+  function terminar() {
+    FOTOS.bajando = false;
+    pedirEstado();                      // la cuenta buena la tiene el worker
+    if (!FOTOS.cancelar && $('#aviso-tit').textContent) cerrarAviso();
+  }
+  siguiente();
+}
+
+function cancelarFotos() { FOTOS.cancelar = true; }
+
+function borrarFotos() {
+  if (!sw()) return;
+  FOTOS.cancelar = true;
+  sw().postMessage({ tipo: 'borrar' });
+}
+
+function pintarOffline() {
+  var c = $('#offline');
+  if (!c) return;
+  var f = FOTOS, mb = (G.meta.pesoFotos || 12) + ' MB';
+  var h = '';
+
+  if (!('serviceWorker' in navigator)) {
+    c.innerHTML = '<p class="offline-est">Este navegador no puede guardar la ' +
+        'app para usarla sin conexión.</p>';
+    return;
+  }
+  if (!sw()) {
+    // aun no controla la pagina: decir que ya funciona sin red seria mentira
+    c.innerHTML = '<p class="offline-est">Preparando el guardado…</p>' +
+        '<p class="offline-nota">Vuelve a abrir esta ventana en unos segundos. ' +
+        'Si sigue igual, la app no se está sirviendo por https y el navegador ' +
+        'no la deja guardar.</p>';
+    return;
+  }
+  if (f.bajando) {
+    var pct = f.total ? Math.round(f.hechas * 100 / f.total) : 0;
+    h = '<p class="offline-est"><b>Guardando fotos…</b> ' + f.hechas + ' de ' +
+          f.total + '</p>' +
+        '<div class="barra"><i style="width:' + pct + '%"></i></div>' +
+        '<p class="offline-nota">Puedes seguir usándola mientras tanto, pero no ' +
+          'cierres la app.</p>' +
+        '<div class="offline-botones"><button class="btn" data-off="cancelar">' +
+          'Cancelar</button></div>';
+  } else if (f.total && f.hechas >= f.total) {
+    h = '<p class="offline-est"><b>Lista para el campo.</b> Las ' + f.total +
+          ' fotos están guardadas.</p>' +
+        '<p class="offline-nota">Funciona sin señal. Ocupa unos ' + mb + '.</p>' +
+        '<div class="offline-botones"><button class="btn" data-off="borrar">' +
+          'Borrar las fotos</button></div>';
+  } else if (f.hechas) {
+    h = '<p class="offline-est"><b>' + f.hechas + ' de ' + f.total +
+          ' fotos</b> guardadas.</p>' +
+        '<p class="offline-nota">Los textos, el mapa y el perfil ya funcionan ' +
+          'sin conexión; faltan fotos.</p>' +
+        '<div class="offline-botones">' +
+          '<button class="btn principal" data-off="bajar">Seguir descargando</button>' +
+          '<button class="btn" data-off="borrar">Borrar</button></div>';
+  } else {
+    h = '<p class="offline-est">La app <b>ya funciona sin conexión</b>: textos, ' +
+          'mapa y perfiles se guardaron al entrar.</p>' +
+        '<p class="offline-nota">Las fotos no, porque son ' + mb +
+          '. Descárgalas con wifi antes de salir al campo.</p>' +
+        '<div class="offline-botones"><button class="btn principal" data-off="bajar">' +
+          svgIcono('descargar') + 'Descargar las ' + (f.total || G.meta.nFotos) +
+          ' fotos · ' + mb + '</button></div>';
+  }
+  c.innerHTML = h;
+}
+
+$('#offline').addEventListener('click', function (ev) {
+  var b = ev.target.closest('[data-off]');
+  if (!b) return;
+  if (b.dataset.off === 'bajar') bajarFotos();
+  else if (b.dataset.off === 'cancelar') cancelarFotos();
+  else if (b.dataset.off === 'borrar') borrarFotos();
+});
+
+/* ---------- avisos flotantes ---------- */
 var avisoTemp;
 function aviso(ico, tit, sub, btn, alPulsar) {
   $('#aviso-ico').innerHTML = svgIcono(ico);
@@ -823,55 +955,47 @@ function aviso(ico, tit, sub, btn, alPulsar) {
 }
 function cerrarAviso() {
   $('#aviso').classList.add('oculto');
+  $('#aviso-tit').textContent = '';
   clearTimeout(avisoTemp);
 }
-$('#aviso-x').addEventListener('click', cerrarAviso);
+$('#aviso-x').addEventListener('click', function () {
+  try { localStorage.setItem('ofrecido', '1'); } catch (e) {}
+  cerrarAviso();
+  if (instalador) ofrecerInstalar();
+});
 
-var descargando = false;
-function progresoFotos(hechas, total, fin) {
-  if (fin) {
-    if (!descargando) return;           // recuento de arranque: sin ruido
-    descargando = false;
-    $('#aviso-barra').classList.add('oculto');
-    if (hechas >= total) {
-      aviso('seal-check', 'Lista para el campo',
-            'Las ' + total + ' fotos están guardadas. Funciona sin señal.');
-    } else {
-      // alguna foto no bajó; se recupera sola la próxima vez que haya red
-      aviso('images', 'Guardadas ' + hechas + ' de ' + total + ' fotos',
-            'Vuelve a abrirla con wifi para completar las que faltan.');
-    }
-    clearTimeout(avisoTemp);
-    avisoTemp = setTimeout(seguirODespedirse, 5000);
-    return;
-  }
-  descargando = true;
-  aviso('images', 'Guardando las fotos', hechas + ' de ' + total +
-        ' · déjala abierta con wifi');
-  $('#aviso-barra').classList.remove('oculto');
-  $('#aviso-barra-int').style.width =
-      (total ? Math.round(hechas * 100 / total) : 0) + '%';
-}
-
-/* Si Chrome ofreció instalarla mientras bajaban las fotos, el ofrecimiento
-   esperaba su turno: los dos avisos comparten el mismo sitio. */
-function seguirODespedirse() {
-  if (instalador) ofrecerInstalar(); else cerrarAviso();
+/* Se ofrece una sola vez. Si dice que no, el botón sigue en «Sobre la guía»:
+   no se vuelve a insistir. */
+function ofrecerDescarga() {
+  var ya;
+  try { ya = localStorage.getItem('ofrecido'); } catch (e) { ya = null; }
+  if (ya || FOTOS.bajando || !FOTOS.faltan.length) return false;
+  aviso('descargar', 'Guárdala para el campo',
+        'Las ' + FOTOS.total + ' fotos ocupan ' + (G.meta.pesoFotos || 12) +
+        ' MB. Con wifi, ahora.', 'Descargar', function () {
+    try { localStorage.setItem('ofrecido', '1'); } catch (e) {}
+    bajarFotos();
+    cerrarAviso();
+    abrirInfo(true);                    // el progreso se ve ahí
+  });
+  return true;
 }
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('message', function (ev) {
-    if (ev.data && ev.data.tipo === 'fotos') {
-      progresoFotos(ev.data.hechas, ev.data.total, ev.data.fin);
+    if (!ev.data || ev.data.tipo !== 'estado') return;
+    FOTOS.total = ev.data.total;
+    FOTOS.hechas = ev.data.hechas;
+    FOTOS.faltan = ev.data.faltan;
+    pintarOffline();
+    if (!ofrecerDescarga() && instalador && $('#aviso').classList.contains('oculto')) {
+      ofrecerInstalar();
     }
   });
   window.addEventListener('load', function () {
     navigator.serviceWorker.register('sw.js').then(function () {
-      // que Android no borre los 12 MB cuando le falte espacio
-      if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
-      if (navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.postMessage({ tipo: 'estado' });
-      }
+      if (sw()) pedirEstado();
+      else navigator.serviceWorker.addEventListener('controllerchange', pedirEstado);
     }).catch(function () {});
   });
 }
@@ -891,7 +1015,8 @@ function ofrecerInstalar() {
 window.addEventListener('beforeinstallprompt', function (ev) {
   ev.preventDefault();
   instalador = ev;
-  if (!descargando) ofrecerInstalar();  // si no, se ofrece al terminar
+  // si hay un aviso puesto (la oferta de descarga), este espera su turno
+  if ($('#aviso').classList.contains('oculto')) ofrecerInstalar();
 });
 window.addEventListener('appinstalled', function () { instalador = null; cerrarAviso(); });
 

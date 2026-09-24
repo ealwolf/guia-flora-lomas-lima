@@ -18,11 +18,18 @@ todo lo demás, y en la loma ya no necesita señal para nada.
 1. Publica la carpeta **`app/`** como sitio (ver abajo). Tiene que ser
    **HTTPS**: es la única condición.
 2. Abre esa dirección con Chrome en el teléfono, **con wifi**.
-3. Sale un aviso abajo, *Guardando las fotos*, con su barra. Deja la app
-   abierta hasta que diga **«Lista para el campo»** (12 MB, un par de minutos).
-4. Cuando Chrome ofrezca **Instalar**, acepta: queda como un icono más, abre a
+3. Al entrar se guarda sola la app (textos, mapa, perfiles: unos 400 KB). Las
+   fotos **no**: sale un aviso abajo ofreciéndolas y **las bajas tú**, pulsando
+   *Descargar*. Son 12 MB del plan de datos de alguien, y esa decisión es suya.
+4. Deja la app abierta hasta que diga **«Lista para el campo»** (un par de
+   minutos con wifi). Se puede cancelar a media descarga y seguir después.
+5. Cuando Chrome ofrezca **Instalar**, acepta: queda como un icono más, abre a
    pantalla completa y sin barra de navegador.
-5. Comprueba que funciona: modo avión y ábrela.
+6. Comprueba que funciona: modo avión y ábrela.
+
+El aviso se ofrece **una sola vez**. A partir de ahí el control está en el
+botón **ⓘ → Sobre la guía → Uso sin conexión**: dice cuántas fotos hay
+guardadas, y desde ahí se descargan, se continúan o se borran.
 
 Después de eso no vuelve a necesitar internet. Si algún día hay wifi, se pone
 al día sola.
@@ -179,6 +186,8 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
 - **Tema**: el botón de la cabecera abre un menú con automático, claro y
   oscuro. Por defecto sigue al teléfono, y lo que elijas se recuerda.
 - **Funciona sin conexión** una vez guardada, y se instala con su propio icono.
+  Las fotos sólo se descargan si las pides: 12 MB no se bajan a espaldas de
+  nadie. Se pueden cancelar a medias y borrar después.
 
 Funciona en vertical y en horizontal; desde tableta la cabecera se reduce a una
 sola fila y la ficha se reparte en dos columnas.
