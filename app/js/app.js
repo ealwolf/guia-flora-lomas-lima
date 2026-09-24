@@ -279,6 +279,8 @@ function render() {
 
 /* Las fichas de lo puesto. Llevan data-f/data-v, asi que las quita el mismo
    manejador que ya destildaba las fichas del panel. */
+var TOPE_CHIPS = 8, chipsAbiertos = false;
+
 function pintarActivos() {
   var f = [];
   // la busqueda tambien es un filtro puesto, y asi «Quitar todo» tiene sitio
@@ -309,7 +311,10 @@ function pintarActivos() {
   });
 
   var caja = $('#activos');
-  var html = f.map(function (x) {
+  // con doce lomas puestas la fila se comia dos lineas y empujaba la rejilla
+  if (f.length <= TOPE_CHIPS) chipsAbiertos = false;
+  var sobran = (!chipsAbiertos && f.length > TOPE_CHIPS) ? f.length - TOPE_CHIPS : 0;
+  var html = (sobran ? f.slice(0, TOPE_CHIPS) : f).map(function (x) {
     var senas = x.quita ? 'id="' + x.quita + '"'
                         : 'data-f="' + x.f + '" data-v="' + esc('' + x.v) + '"';
     return '<button class="chip" ' + senas + ' ' +
@@ -327,6 +332,11 @@ function pintarActivos() {
         svgIcono('mountains') + txt + svgIcono('x', 'quita') + '</button>';
   }
 
+  if (sobran) {
+    html += '<button class="chip todo" id="mas-chips">+' + sobran + ' más</button>';
+  } else if (chipsAbiertos) {
+    html += '<button class="chip todo" id="menos-chips">Ver menos</button>';
+  }
   if (html) {
     html += '<button class="chip todo" id="quita-todo">' + svgIcono('x', 'quita') +
             'Quitar todo</button>';
@@ -336,7 +346,9 @@ function pintarActivos() {
 }
 
 $('#activos').addEventListener('click', function (ev) {
-  if (ev.target.closest('#quita-alt')) quitarAltitud();
+  if (ev.target.closest('#mas-chips')) { chipsAbiertos = true; pintarActivos(); }
+  else if (ev.target.closest('#menos-chips')) { chipsAbiertos = false; pintarActivos(); }
+  else if (ev.target.closest('#quita-alt')) quitarAltitud();
   else if (ev.target.closest('#quita-q')) quitarBusqueda();
   else if (ev.target.closest('#quita-todo')) { quitarBusqueda(true); limpiarTodo(); }
 });
@@ -560,7 +572,7 @@ function abrirFicha(id, empujar) {
       dato('calendar-blank', 'Floración', esc(e.florTxt || '—')) +
       dato('mountains', 'Altitud',
            e.altitud[0] != null ? e.altitud[0] + '–' + e.altitud[1] + ' <small>msnm</small>' : '—') +
-      dato('flower', 'Color', e.color ? '<span class="punto" style="display:inline-block;background:' +
+      dato('flower', 'Color de la flor', e.color ? '<span class="punto" style="display:inline-block;background:' +
            colorHex(e.color) + '"></span> ' + esc(e.color) : '—') +
     '</div>' +
 

@@ -169,7 +169,8 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
   por color.
 - Filtrar por grupo, mes de floración, altitud, loma, hábitat y familia.
 - Encima de la rejilla, **una ficha por cada filtro puesto**, con su icono y
-  quitable de una en una; el texto buscado es una más. Al final de la fila,
+  quitable de una en una; el texto buscado es una más. Pasadas ocho se pliegan
+  en un *+N más*, para que no empujen la rejilla. Al final de la fila,
   *Quitar todo*. Sin ellas, elegir una sugerencia cambiaba el número de
   resultados y nada más: no se veía por qué.
 - **Altitud**, de dos formas: *una cota* (las especies cuyo rango incluye esa
