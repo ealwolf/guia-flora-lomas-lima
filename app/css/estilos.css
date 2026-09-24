@@ -248,6 +248,9 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .resumen {
   display: flex; align-items: center; justify-content: space-between;
   gap: 10px; color: var(--tenue); font-size: 13px; margin: 2px 0 10px;
+  /* la altura del boton Quitar filtros, que aparece y desaparece: sin esto
+     la rejilla daba un salto de 16px cada vez que se ponia un filtro */
+  min-height: 36px;
 }
 /* ---------- lo que esta filtrando ahora mismo ----------
    Elegir una sugerencia aplicaba el filtro sin dejar rastro: la busqueda se
