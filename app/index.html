@@ -89,18 +89,17 @@ window.addEventListener('beforeinstallprompt', function (ev) {
       <div class="envoltura" id="f-mes"></div>
     </div>
     <div class="grupo">
-      <h3><span data-ico="mountains" aria-hidden="true"></span> Altitud
-        <button class="quitar oculto" id="alt-quitar">Quitar</button>
-      </h3>
-      <div class="segmentado" role="group" aria-label="Modo de filtro por altitud">
-        <button data-modo="cota" aria-pressed="true">Una cota</button>
+      <h3><span data-ico="mountains" aria-hidden="true"></span> Altitud</h3>
+      <div class="segmentado" role="group" aria-label="Filtro por altitud">
+        <button data-modo="todas" aria-pressed="true">Todas</button>
+        <button data-modo="cota" aria-pressed="false">Una cota</button>
         <button data-modo="rango" aria-pressed="false">Un rango</button>
       </div>
-      <div id="alt-cota">
+      <div id="alt-cota" class="oculto">
         <div class="rango">
           <input type="range" id="f-altitud" min="100" max="1000" step="50" value="550"
                  aria-label="Altitud a la que estás">
-          <output id="f-altitud-val">sin filtrar</output>
+          <output id="f-altitud-val">550 msnm</output>
         </div>
         <p class="pista">Deja sólo las especies cuyo rango incluye esa altura.</p>
       </div>

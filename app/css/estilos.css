@@ -336,14 +336,6 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   text-transform: uppercase; color: var(--tenue);
   display: flex; align-items: center; gap: 7px;
 }
-.quitar {
-  margin-left: auto; font-size: 11px; font-weight: 700; letter-spacing: .03em;
-  text-transform: none; padding: 3px 9px; border-radius: 7px;
-  color: var(--acento-txt); background: var(--acento-sua);
-}
-.quitar:hover { background: color-mix(in srgb, var(--acento) 22%, transparent); }
-#alt-cota.apagado input[type=range], #alt-rango.apagado { opacity: .55; }
-#alt-cota.apagado #f-altitud-val { color: var(--tenue); font-style: italic; }
 .envoltura { display: flex; flex-wrap: wrap; gap: 7px; }
 .panel-pie {
   display: flex; gap: 10px; padding: 12px 16px;

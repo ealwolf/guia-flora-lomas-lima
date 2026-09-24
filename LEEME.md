@@ -173,9 +173,11 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
   en un *+N más*, para que no empujen la rejilla. Al final de la fila,
   *Quitar todo*. Sin ellas, elegir una sugerencia cambiaba el número de
   resultados y nada más: no se veía por qué.
-- **Altitud**, de dos formas: *una cota* (las especies cuyo rango incluye esa
-  altura, útil cuando sabes dónde estás) o *un rango* (las que aparecen en algún
-  punto de ese tramo). Empieza sin filtrar y se apaga con el botón **Quitar**.
+- **Altitud**, con tres botones: *Todas*, *una cota* (las especies cuyo rango
+  incluye esa altura, útil cuando sabes dónde estás) o *un rango* (las que
+  aparecen en algún punto de ese tramo). *Todas* es una opción y no una
+  posición del deslizador: antes la cota arrancaba en mitad de la barra
+  diciendo «sin filtrar», y al volver a ese mismo punto ya significaba 550.
 - Las fotos son **las del PDF, sin tocar**: ni recortadas ni reescaladas en
   disco. En las tarjetas se encuadran a 4:3 para que la rejilla salga pareja,
   pero eso es sólo el encuadre de la miniatura. En la ficha se ven **enteras**

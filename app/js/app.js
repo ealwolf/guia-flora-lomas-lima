@@ -169,12 +169,15 @@ function elegirSug(i) {
 /* ---------- estado ---------- */
 var ALT_MIN = 100, ALT_MAX = 1000;
 var F = { q: '', color: [], grupo: [], mes: [], loma: [], habitat: [], familia: [],
-          altModo: 'cota', altitud: null, altDesde: ALT_MIN, altHasta: ALT_MAX };
+          altModo: 'todas', altitud: 550, altDesde: ALT_MIN, altHasta: ALT_MAX };
 
+/* «Todas» es una opción, no una posición del deslizador. Antes la cota
+   arrancaba en mitad de la barra diciendo «sin filtrar», y al volver a ese
+   mismo punto ya significaba 550: el mismo sitio, dos cosas distintas. */
 function altActiva() {
-  return F.altModo === 'cota'
-      ? F.altitud != null
-      : (F.altDesde > ALT_MIN || F.altHasta < ALT_MAX);
+  if (F.altModo === 'cota') return true;
+  if (F.altModo === 'rango') return F.altDesde > ALT_MIN || F.altHasta < ALT_MAX;
+  return false;
 }
 
 function activos() {
@@ -710,29 +713,28 @@ function limpiarTodo() {
 $('#btn-reset').addEventListener('click', limpiarTodo);
 
 $('#f-altitud').addEventListener('input', function (ev) {
-  F.altitud = +ev.target.value;          // tocarlo lo activa; se apaga con Quitar
+  F.altitud = +ev.target.value;
   pintarAltitud();
   render();
 });
 
 function quitarAltitud() {
-  F.altitud = null;
+  F.altModo = 'todas';
+  F.altitud = 550;
   F.altDesde = ALT_MIN; F.altHasta = ALT_MAX;
   $('#f-altitud').value = 550;
   $('#f-alt-min').value = ALT_MIN;
   $('#f-alt-max').value = ALT_MAX;
   pintarAltitud(); pintarRango(); render();
 }
-$('#alt-quitar').addEventListener('click', quitarAltitud);
 
 function pintarAltitud() {
-  var act = altActiva();
-  $('#alt-quitar').classList.toggle('oculto', !act);
-  $('#alt-cota').classList.toggle('apagado', F.altitud == null);
-  $('#alt-rango').classList.toggle('apagado',
-      F.altDesde === ALT_MIN && F.altHasta === ALT_MAX);
-  $('#f-altitud-val').textContent =
-      F.altitud == null ? 'sin filtrar' : F.altitud + ' msnm';
+  $$('.segmentado [data-modo]').forEach(function (b) {
+    b.setAttribute('aria-pressed', b.dataset.modo === F.altModo ? 'true' : 'false');
+  });
+  $('#alt-cota').classList.toggle('oculto', F.altModo !== 'cota');
+  $('#alt-rango').classList.toggle('oculto', F.altModo !== 'rango');
+  $('#f-altitud-val').textContent = F.altitud + ' msnm';
 }
 
 function pintarRango() {
@@ -762,13 +764,11 @@ $('#f-alt-max').addEventListener('input', function (ev) {
 });
 $$('.segmentado [data-modo]').forEach(function (b) {
   b.addEventListener('click', function () {
+    if (b.dataset.modo === 'todas') { quitarAltitud(); return; }
     F.altModo = b.dataset.modo;
-    $$('.segmentado [data-modo]').forEach(function (o) {
-      o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
-    });
-    $('#alt-cota').classList.toggle('oculto', F.altModo !== 'cota');
-    $('#alt-rango').classList.toggle('oculto', F.altModo !== 'rango');
-    pintarAltitud(); pintarRango(); render();
+    pintarAltitud();
+    setTimeout(pintarRango, 0);        // el bloque acaba de dejar de estar oculto
+    render();
   });
 });
 
