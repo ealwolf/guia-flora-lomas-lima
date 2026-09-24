@@ -473,6 +473,20 @@ function bloque(icono, titulo, texto) {
   return '<section class="bloque"><h3>' + svgIcono(icono) + titulo + '</h3><p>' + esc(texto) + '</p></section>';
 }
 
+/* El marco de la foto grande se amolda a la foto, en vez de la foto al marco.
+   Se limita cuanto puede estirarse: una vertical muy alta empujaria el texto
+   fuera de la pantalla, y ahi si aparecen franjas a los lados. */
+function amoldarMarco(img) {
+  if (!img || !img.naturalWidth) return;
+  var r = img.naturalWidth / img.naturalHeight;
+  img.parentNode.style.aspectRatio = Math.max(0.75, Math.min(1.9, r));
+}
+function vigilarFoto(img) {
+  if (!img) return;
+  img.onload = function () { amoldarMarco(img); };
+  if (img.complete) amoldarMarco(img);
+}
+
 function abrirFicha(id, empujar) {
   var e = null;
   for (var i = 0; i < G.especies.length; i++) if (G.especies[i].id === id) { e = G.especies[i]; break; }
@@ -559,6 +573,7 @@ function abrirFicha(id, empujar) {
     '</div>';
 
   $('#ficha-int').innerHTML = html;
+  vigilarFoto($('#foto-grande'));
   $('#ficha-titulo').textContent = e.comun;
   $('#ficha-int').scrollTop = 0;
   $('#ficha').scrollTop = 0;
@@ -586,7 +601,7 @@ $('#ficha-int').addEventListener('click', function (ev) {
     if (id) id.setAttribute('aria-current', 'false');
     m.setAttribute('aria-current', 'true');
     var g = $('#foto-grande');
-    if (g) g.src = m.querySelector('img').src;
+    if (g) { g.src = m.querySelector('img').src; vigilarFoto(g); }
     return;
   }
   if (ev.target.id === 'foto-grande') {

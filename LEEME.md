@@ -172,6 +172,10 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
 - **Altitud**, de dos formas: *una cota* (las especies cuyo rango incluye esa
   altura, útil cuando sabes dónde estás) o *un rango* (las que aparecen en algún
   punto de ese tramo). Empieza sin filtrar y se apaga con el botón **Quitar**.
+- Las fotos son **las del PDF, sin tocar**: ni recortadas ni reescaladas en
+  disco. En las tarjetas se encuadran a 4:3 para que la rejilla salga pareja,
+  pero eso es sólo el encuadre de la miniatura. En la ficha se ven **enteras**
+  —26 de las 295 son verticales— y al tocarlas se abren a tamaño completo.
 - Ficha con **todo lo que trae el libro**: las cuatro secciones de texto
   (Descripción, Hábitat, Distribución, Situación actual), altura, floración,
   origen, endemismo, categoría de amenaza, hábitats y las fotos.
