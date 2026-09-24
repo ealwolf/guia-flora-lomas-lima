@@ -267,6 +267,8 @@ def escribir_sw():
     # las fotos no se leen enteras: con los nombres y los tamaños basta para
     # saber si cambió algo, y son 12 MB que no hay que recorrer en cada build
     hf = hashlib.sha256()
+    # subir este numero tira las fotos guardadas con las reglas anteriores
+    hf.update(b'contrato-2')
     for f in fotos:
         hf.update(f.encode())
         hf.update(str(os.path.getsize(os.path.join(app, 'img', f))).encode())

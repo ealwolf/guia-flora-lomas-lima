@@ -851,11 +851,13 @@ document.addEventListener('click', function (ev) {
 var FOTOS = { total: 0, hechas: 0, faltan: [], cache: '',
               bajando: false, cancelar: false };
 
-function sw() {
-  return navigator.serviceWorker && navigator.serviceWorker.controller;
-}
+/* Vale el worker activo, no el que controla esta pestaña. Tras una recarga
+   forzada la página navega sin control aunque el worker esté puesto, y
+   entonces `controller` es null y no llega ningún controllerchange: la vista
+   se quedaba en «Preparando el guardado» hasta recargar otra vez. */
+var REG = null, SW_FALLO = false;
 function pedirEstado() {
-  if (sw()) sw().postMessage({ tipo: 'estado' });
+  if (REG && REG.active) REG.active.postMessage({ tipo: 'estado' });
 }
 
 function bajarFotos() {
@@ -905,9 +907,9 @@ function bajarFotos() {
 function cancelarFotos() { FOTOS.cancelar = true; }
 
 function borrarFotos() {
-  if (!sw()) return;
+  if (!REG || !REG.active) return;
   FOTOS.cancelar = true;
-  sw().postMessage({ tipo: 'borrar' });
+  REG.active.postMessage({ tipo: 'borrar' });
 }
 
 function instalada() {
@@ -925,12 +927,14 @@ function pintarFotos() {
         'app para usarla sin conexión.</p>';
     return;
   }
-  if (!sw()) {
-    // aun no controla la pagina: decir que ya funciona sin red seria mentira
-    c.innerHTML = '<p class="offline-est">Preparando el guardado…</p>' +
-        '<p class="offline-nota">Vuelve a abrir esta ventana en unos segundos. ' +
-        'Si sigue igual, la app no se está sirviendo por https y el navegador ' +
-        'no la deja guardar.</p>';
+  if (SW_FALLO) {
+    c.innerHTML = '<p class="offline-est">No se puede guardar en este ' +
+        'dispositivo.</p><p class="offline-nota">La app no se está sirviendo ' +
+        'por https, y sin eso el navegador no deja guardarla.</p>';
+    return;
+  }
+  if (!f.cache) {
+    c.innerHTML = '<p class="offline-est">Comprobando…</p>';
     return;
   }
   if (f.bajando) {
@@ -972,13 +976,30 @@ function pintarFotos() {
   }
 }
 
+/* Saber si está instalada no se puede, y más vale no fingir que sí.
+   `display-mode: standalone` dice si ESTA ventana es la app instalada, no si
+   existe una instalación: abierta en una pestaña normal, una app instalada da
+   que no. Lo único seguro es al revés — `beforeinstallprompt` no se dispara
+   si ya está instalada — así que el botón sólo sale cuando el navegador
+   acaba de decir que se puede instalar. Entonces no hay duplicados posibles
+   ni afirmaciones falsas: sin esa señal, aquí no se dice nada.
+   iPhone es el caso aparte: Safari no dispara ese evento nunca, y ahí la
+   única vía es a mano. */
+function esIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
 function pintarInstalar() {
-  var c = $('#instalar');
-  if (!c) return;
+  var g = $('#grupo-instalar'), c = $('#instalar');
+  if (!g || !c) return;
+  var mostrar = instalada() || !!instalador || esIOS();
+  g.classList.toggle('oculto', !mostrar);
+  if (!mostrar) return;
+
   if (instalada()) {
-    c.innerHTML = '<p class="offline-est"><b>Ya está instalada</b> en este ' +
-        'dispositivo.</p><p class="offline-nota">Se abre desde su icono, a ' +
-        'pantalla completa.</p>';
+    c.innerHTML = '<p class="offline-est"><b>Estás en la app instalada.</b></p>' +
+        '<p class="offline-nota">Se abre desde su icono, a pantalla completa.</p>';
   } else if (instalador) {
     c.innerHTML = '<p class="offline-est">Puede quedarse como un icono más.</p>' +
         '<p class="offline-nota">Abre a pantalla completa, sin barra de ' +
@@ -986,17 +1007,14 @@ function pintarInstalar() {
         '<div class="offline-botones"><button class="btn principal" data-off="instalar">' +
           svgIcono('flor-lomas') + 'Instalar en el dispositivo</button></div>';
   } else {
-    c.innerHTML = '<p class="offline-est">Este navegador no ofrece instalarla ' +
-        'desde aquí.</p><p class="offline-nota">En Chrome, desde el menú ⋮ → ' +
-        '<i>Instalar aplicación</i>. En iPhone, Compartir → <i>Añadir a ' +
-        'pantalla de inicio</i>.</p>';
+    c.innerHTML = '<p class="offline-est">Para tenerla como un icono más:</p>' +
+        '<p class="offline-nota">Compartir → <i>Añadir a pantalla de inicio</i>.</p>';
   }
 }
 
 /* El punto avisa sin interrumpir: quedan fotos por bajar, o está sin instalar. */
 function pintarPendiente() {
-  var falta = (FOTOS.total && FOTOS.hechas < FOTOS.total) ||
-              (!!instalador && !instalada());
+  var falta = (FOTOS.total && FOTOS.hechas < FOTOS.total) || !!instalador;
   $('#btn-guardar').querySelector('.pendiente').classList.toggle('oculto', !falta);
 }
 
@@ -1038,9 +1056,14 @@ if ('serviceWorker' in navigator) {
   });
   window.addEventListener('load', function () {
     navigator.serviceWorker.register('sw.js').then(function () {
-      if (sw()) pedirEstado();
-      else navigator.serviceWorker.addEventListener('controllerchange', pedirEstado);
-    }).catch(function () {});
+      return navigator.serviceWorker.ready;
+    }).then(function (reg) {
+      REG = reg;
+      pedirEstado();
+    }).catch(function () {
+      SW_FALLO = true;
+      pintarGuardar();
+    });
   });
 }
 

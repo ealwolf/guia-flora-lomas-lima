@@ -21,7 +21,8 @@ todo lo demás, y en la loma ya no necesita señal para nada.
 3. Al entrar se guarda sola la app (textos, mapa, perfiles: unos 400 KB). Las
    fotos **no**: son 12 MB del plan de datos de alguien, y esa decisión es suya.
 4. Pulsa el botón **↓** de la cabecera. Ahí está todo lo de guardar:
-   *Descargar las 295 fotos*, e *Instalar como app*.
+   *Descargar las 295 fotos* y, cuando el navegador lo permite,
+   *Instalar como app*.
 5. Deja la app abierta hasta que diga **«Lista para el campo»** (un par de
    minutos con wifi). Se puede cancelar a media descarga y seguir después.
 6. Comprueba que funciona: modo avión y ábrela.
@@ -231,6 +232,17 @@ Las 5 de criterio propio están marcadas `revisado = FALSE` con el motivo en
 `notas_color`: son lecturas del libro y de la foto, no de un botánico. El valor
 ya funciona en la app; falta que alguien las confirme. Para corregir cualquiera,
 edita `datos/propio/color_flor.csv` y vuelve a ejecutar `construir.py`.
+
+### Saber si ya está instalada no se puede
+
+Y por eso la app no lo afirma. `display-mode: standalone` dice si **esta
+ventana** es la app instalada, no si existe una instalación: abierta en una
+pestaña normal, una app instalada responde que no. Lo único fiable es lo
+contrario — el navegador **no** ofrece instalar lo que ya está instalado — así
+que el botón sale sólo cuando Chrome acaba de avisar de que se puede. Sin esa
+señal, la sección entera se esconde en vez de decir algo que podría ser falso.
+La excepción es el iPhone, donde Safari no avisa nunca y sólo queda explicar el
+camino a mano.
 
 ---
 
