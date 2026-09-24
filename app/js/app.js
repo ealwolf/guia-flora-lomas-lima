@@ -748,7 +748,6 @@ $$('.segmentado [data-modo]').forEach(function (b) {
 
 function abrirInfo(v) {
   if (v) {
-    pintarOffline();
     $('#info-libro').innerHTML =
       '<h3>' + svgIcono('book-open') + 'El libro</h3>' +
       '<div class="ficha-libro">' +
@@ -841,11 +840,14 @@ document.addEventListener('click', function (ev) {
   }
 });
 
-/* ---------- guardar para el campo ----------
-   Las fotos son 12 MB del plan de datos de quien la usa: no se bajan solas.
-   Se ofrecen una vez, y de ahí en adelante el control vive en «Sobre la guía»,
-   donde también se pueden borrar. El núcleo de la app (unos 400 KB) sí se
-   guarda al entrar: sin él no hay nada que abrir, y ya está descargado. */
+/* ---------- guardar en el dispositivo ----------
+   Vive en su propia vista, detrás del botón de la cabecera. No hay avisos
+   flotantes: las fotos son 12 MB del plan de datos de quien la usa, y la
+   instalación es cosa suya. El botón lleva un punto cuando queda algo por
+   hacer, y ahí se entra cuando se quiera, no cuando la app insista.
+
+   El núcleo de la app (unos 400 KB) sí se guarda al entrar: sin él no hay
+   nada que abrir, y ya está descargado. */
 var FOTOS = { total: 0, hechas: 0, faltan: [], bajando: false, cancelar: false };
 
 function sw() {
@@ -861,7 +863,7 @@ function bajarFotos() {
   FOTOS.cancelar = false;
   // ahora sí tiene sentido pedirlo: vamos a ocupar sitio a propósito
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
-  pintarOffline();
+  pintarGuardar();
 
   var cola = FOTOS.faltan.slice();
   var enCurso = 0, i = 0;
@@ -873,7 +875,7 @@ function bajarFotos() {
       fetch(cola[i++]).catch(function () {}).then(function () {
         enCurso--;
         FOTOS.hechas = Math.min(FOTOS.total, FOTOS.hechas + 1);
-        pintarOffline();
+        pintarGuardar();
         if (i >= cola.length && !enCurso) terminar(); else siguiente();
       });
     }
@@ -882,7 +884,6 @@ function bajarFotos() {
   function terminar() {
     FOTOS.bajando = false;
     pedirEstado();                      // la cuenta buena la tiene el worker
-    if (!FOTOS.cancelar && $('#aviso-tit').textContent) cerrarAviso();
   }
   siguiente();
 }
@@ -895,11 +896,15 @@ function borrarFotos() {
   sw().postMessage({ tipo: 'borrar' });
 }
 
-function pintarOffline() {
+function instalada() {
+  return window.matchMedia('(display-mode: standalone)').matches ||
+         window.navigator.standalone === true;
+}
+
+function pintarFotos() {
   var c = $('#offline');
   if (!c) return;
   var f = FOTOS, mb = (G.meta.pesoFotos || 12) + ' MB';
-  var h = '';
 
   if (!('serviceWorker' in navigator)) {
     c.innerHTML = '<p class="offline-est">Este navegador no puede guardar la ' +
@@ -916,7 +921,8 @@ function pintarOffline() {
   }
   if (f.bajando) {
     var pct = f.total ? Math.round(f.hechas * 100 / f.total) : 0;
-    h = '<p class="offline-est"><b>Guardando fotos…</b> ' + f.hechas + ' de ' +
+    c.innerHTML =
+        '<p class="offline-est"><b>Guardando fotos…</b> ' + f.hechas + ' de ' +
           f.total + '</p>' +
         '<div class="barra"><i style="width:' + pct + '%"></i></div>' +
         '<p class="offline-nota">Puedes seguir usándola mientras tanto, pero no ' +
@@ -924,13 +930,16 @@ function pintarOffline() {
         '<div class="offline-botones"><button class="btn" data-off="cancelar">' +
           'Cancelar</button></div>';
   } else if (f.total && f.hechas >= f.total) {
-    h = '<p class="offline-est"><b>Lista para el campo.</b> Las ' + f.total +
+    c.innerHTML =
+        '<p class="offline-est"><b>Lista para el campo.</b> Las ' + f.total +
           ' fotos están guardadas.</p>' +
-        '<p class="offline-nota">Funciona sin señal. Ocupa unos ' + mb + '.</p>' +
+        '<p class="offline-nota">Funciona sin señal. Ocupa unos ' + mb +
+          ' en el dispositivo.</p>' +
         '<div class="offline-botones"><button class="btn" data-off="borrar">' +
-          'Borrar las fotos</button></div>';
+          'Borrar las fotos del dispositivo</button></div>';
   } else if (f.hechas) {
-    h = '<p class="offline-est"><b>' + f.hechas + ' de ' + f.total +
+    c.innerHTML =
+        '<p class="offline-est"><b>' + f.hechas + ' de ' + f.total +
           ' fotos</b> guardadas.</p>' +
         '<p class="offline-nota">Los textos, el mapa y el perfil ya funcionan ' +
           'sin conexión; faltan fotos.</p>' +
@@ -938,7 +947,8 @@ function pintarOffline() {
           '<button class="btn principal" data-off="bajar">Seguir descargando</button>' +
           '<button class="btn" data-off="borrar">Borrar</button></div>';
   } else {
-    h = '<p class="offline-est">La app <b>ya funciona sin conexión</b>: textos, ' +
+    c.innerHTML =
+        '<p class="offline-est">La app <b>ya funciona sin conexión</b>: textos, ' +
           'mapa y perfiles se guardaron al entrar.</p>' +
         '<p class="offline-nota">Las fotos no, porque son ' + mb +
           '. Descárgalas con wifi antes de salir al campo.</p>' +
@@ -946,7 +956,40 @@ function pintarOffline() {
           svgIcono('descargar') + 'Descargar las ' + (f.total || G.meta.nFotos) +
           ' fotos · ' + mb + '</button></div>';
   }
-  c.innerHTML = h;
+}
+
+function pintarInstalar() {
+  var c = $('#instalar');
+  if (!c) return;
+  if (instalada()) {
+    c.innerHTML = '<p class="offline-est"><b>Ya está instalada</b> en este ' +
+        'dispositivo.</p><p class="offline-nota">Se abre desde su icono, a ' +
+        'pantalla completa.</p>';
+  } else if (instalador) {
+    c.innerHTML = '<p class="offline-est">Puede quedarse como un icono más.</p>' +
+        '<p class="offline-nota">Abre a pantalla completa, sin barra de ' +
+        'navegador, y no hace falta recordar la dirección.</p>' +
+        '<div class="offline-botones"><button class="btn principal" data-off="instalar">' +
+          svgIcono('flor-lomas') + 'Instalar en el dispositivo</button></div>';
+  } else {
+    c.innerHTML = '<p class="offline-est">Este navegador no ofrece instalarla ' +
+        'desde aquí.</p><p class="offline-nota">En Chrome, desde el menú ⋮ → ' +
+        '<i>Instalar aplicación</i>. En iPhone, Compartir → <i>Añadir a ' +
+        'pantalla de inicio</i>.</p>';
+  }
+}
+
+/* El punto avisa sin interrumpir: quedan fotos por bajar, o está sin instalar. */
+function pintarPendiente() {
+  var falta = (FOTOS.total && FOTOS.hechas < FOTOS.total) ||
+              (!!instalador && !instalada());
+  $('#btn-guardar').querySelector('.pendiente').classList.toggle('oculto', !falta);
+}
+
+function pintarGuardar() {
+  pintarFotos();
+  pintarInstalar();
+  pintarPendiente();
 }
 
 $('#offline').addEventListener('click', function (ev) {
@@ -956,45 +999,19 @@ $('#offline').addEventListener('click', function (ev) {
   else if (b.dataset.off === 'cancelar') cancelarFotos();
   else if (b.dataset.off === 'borrar') borrarFotos();
 });
-
-/* ---------- avisos flotantes ---------- */
-var avisoTemp;
-function aviso(ico, tit, sub, btn, alPulsar) {
-  $('#aviso-ico').innerHTML = svgIcono(ico);
-  $('#aviso-tit').textContent = tit;
-  $('#aviso-sub').textContent = sub || '';
-  var b = $('#aviso-btn');
-  b.classList.toggle('oculto', !btn);
-  if (btn) { b.textContent = btn; b.onclick = alPulsar; }
-  $('#aviso').classList.remove('oculto');
-}
-function cerrarAviso() {
-  $('#aviso').classList.add('oculto');
-  $('#aviso-tit').textContent = '';
-  clearTimeout(avisoTemp);
-}
-$('#aviso-x').addEventListener('click', function () {
-  try { localStorage.setItem('ofrecido', '1'); } catch (e) {}
-  cerrarAviso();
-  if (instalador) ofrecerInstalar();
+$('#instalar').addEventListener('click', function (ev) {
+  if (!ev.target.closest('[data-off="instalar"]') || !instalador) return;
+  instalador.prompt();
+  instalador = null;
+  pintarGuardar();
 });
 
-/* Se ofrece una sola vez. Si dice que no, el botón sigue en «Sobre la guía»:
-   no se vuelve a insistir. */
-function ofrecerDescarga() {
-  var ya;
-  try { ya = localStorage.getItem('ofrecido'); } catch (e) { ya = null; }
-  if (ya || FOTOS.bajando || !FOTOS.faltan.length) return false;
-  aviso('descargar', 'Guárdala para el campo',
-        'Las ' + FOTOS.total + ' fotos ocupan ' + (G.meta.pesoFotos || 12) +
-        ' MB. Con wifi, ahora.', 'Descargar', function () {
-    try { localStorage.setItem('ofrecido', '1'); } catch (e) {}
-    bajarFotos();
-    cerrarAviso();
-    abrirInfo(true);                    // el progreso se ve ahí
-  });
-  return true;
+function abrirGuardar(v) {
+  if (v) pintarGuardar();
+  abrirPanel(v, '#panel-guardar');
 }
+$('#btn-guardar').addEventListener('click', function () { abrirGuardar(true); });
+$('#cerrar-guardar').addEventListener('click', function () { abrirGuardar(false); });
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('message', function (ev) {
@@ -1002,10 +1019,7 @@ if ('serviceWorker' in navigator) {
     FOTOS.total = ev.data.total;
     FOTOS.hechas = ev.data.hechas;
     FOTOS.faltan = ev.data.faltan;
-    pintarOffline();
-    if (!ofrecerDescarga() && instalador && $('#aviso').classList.contains('oculto')) {
-      ofrecerInstalar();
-    }
+    pintarGuardar();
   });
   window.addEventListener('load', function () {
     navigator.serviceWorker.register('sw.js').then(function () {
@@ -1015,25 +1029,17 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Chrome deja instalarla como app; el aviso propio explica para que sirve
+// Chrome avisa de que se puede instalar; se guarda para el boton de la vista
 var instalador = null;
-function ofrecerInstalar() {
-  if (!instalador) return;
-  aviso('flor-lomas', 'Instalar en el teléfono',
-        'Queda como un icono más y abre a pantalla completa.',
-        'Instalar', function () {
-    cerrarAviso();
-    instalador.prompt();
-    instalador = null;
-  });
-}
 window.addEventListener('beforeinstallprompt', function (ev) {
-  ev.preventDefault();
+  ev.preventDefault();               // nada de ventanas encima sin pedirlo
   instalador = ev;
-  // si hay un aviso puesto (la oferta de descarga), este espera su turno
-  if ($('#aviso').classList.contains('oculto')) ofrecerInstalar();
+  pintarGuardar();
 });
-window.addEventListener('appinstalled', function () { instalador = null; cerrarAviso(); });
+window.addEventListener('appinstalled', function () {
+  instalador = null;
+  pintarGuardar();
+});
 
 /* ---------- arranque ---------- */
 aplicarTema(leerTema());
@@ -1042,6 +1048,7 @@ pintarFiltros();
 pintarAltitud();
 pintarRango();
 pintarIconos(document);
+pintarGuardar();
 render();
 
 })();

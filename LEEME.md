@@ -19,17 +19,18 @@ todo lo demás, y en la loma ya no necesita señal para nada.
    **HTTPS**: es la única condición.
 2. Abre esa dirección con Chrome en el teléfono, **con wifi**.
 3. Al entrar se guarda sola la app (textos, mapa, perfiles: unos 400 KB). Las
-   fotos **no**: sale un aviso abajo ofreciéndolas y **las bajas tú**, pulsando
-   *Descargar*. Son 12 MB del plan de datos de alguien, y esa decisión es suya.
-4. Deja la app abierta hasta que diga **«Lista para el campo»** (un par de
+   fotos **no**: son 12 MB del plan de datos de alguien, y esa decisión es suya.
+4. Pulsa el botón **↓** de la cabecera. Ahí está todo lo de guardar:
+   *Descargar las 295 fotos*, e *Instalar como app*.
+5. Deja la app abierta hasta que diga **«Lista para el campo»** (un par de
    minutos con wifi). Se puede cancelar a media descarga y seguir después.
-5. Cuando Chrome ofrezca **Instalar**, acepta: queda como un icono más, abre a
-   pantalla completa y sin barra de navegador.
 6. Comprueba que funciona: modo avión y ábrela.
 
-El aviso se ofrece **una sola vez**. A partir de ahí el control está en el
-botón **ⓘ → Sobre la guía → Uso sin conexión**: dice cuántas fotos hay
-guardadas, y desde ahí se descargan, se continúan o se borran.
+**Nada de ventanas flotantes.** La app no interrumpe para pedir que la
+instales ni para bajar las fotos: el botón **↓** lleva un punto verde cuando
+queda algo por hacer, y se entra cuando se quiera. Dentro se ve cuántas fotos
+hay guardadas y cuánto ocupan, y se pueden **descargar, continuar, cancelar o
+borrar del dispositivo** en cualquier momento.
 
 Después de eso no vuelve a necesitar internet. Si algún día hay wifi, se pone
 al día sola.
@@ -190,8 +191,9 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
 - **Tema**: el botón de la cabecera abre un menú con automático, claro y
   oscuro. Por defecto sigue al teléfono, y lo que elijas se recuerda.
 - **Funciona sin conexión** una vez guardada, y se instala con su propio icono.
-  Las fotos sólo se descargan si las pides: 12 MB no se bajan a espaldas de
-  nadie. Se pueden cancelar a medias y borrar después.
+  Todo eso se maneja desde el botón **↓** de la cabecera, en su propia vista:
+  las fotos sólo se descargan si las pides, y se pueden borrar del dispositivo
+  cuando quieras. 12 MB no se bajan a espaldas de nadie.
 
 Funciona en vertical y en horizontal; desde tableta la cabecera se reduce a una
 sola fila y la ficha se reparte en dos columnas.
