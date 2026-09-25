@@ -305,13 +305,20 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    aqui desde la cabecera, que se queda con lo de la app entera -apariencia,
    sobre la guia, guardar-; ordenar y filtrar son del contenido y su sitio es
    junto al recuento de lo que afectan. */
-.barra-int {
-  display: grid; grid-template-columns: 1fr auto;
-  grid-template-areas: 'cuenta herr' 'chips chips';
-  align-items: center; gap: 0 10px;
+/* Flex que se parte sola y no rejilla de dos columnas. Con la rejilla, la
+   fila de fichas caia en la celda de abajo a la izquierda -la columna 1fr- y
+   de ahi venian las dos rarezas: las fichas se apilaban de una en una porque
+   solo tenian media fila, y la ficha mas larga ensanchaba esa columna y
+   estrujaba los botones hasta dejarlos en «G...» y «Filt...».
+   Asi, si el recuento y los dos botones no caben juntos -pasa a 360 px con
+   «Nombre cientifico»- los botones bajan enteros a su linea y siguen pegados
+   a la derecha, en vez de encogerse hasta no decir nada. */
+.barra-int { display: flex; flex-wrap: wrap; align-items: center; gap: 0 10px; }
+.resumen { color: var(--tenue); font-size: var(--t-1); white-space: nowrap; }
+.herramientas {
+  display: flex; gap: 8px; padding: 6px 0 10px; flex: none; margin-left: auto;
 }
-.resumen { grid-area: cuenta; color: var(--tenue); font-size: var(--t-1); }
-.herramientas { grid-area: herr; display: flex; gap: 8px; padding: 6px 0 10px; }
+.activos { flex: 0 0 100%; }
 .btn-barra {
   display: inline-flex; align-items: center; gap: 7px; min-height: 38px;
   padding: 0 14px; border-radius: 999px; font-size: var(--t-1); font-weight: 600;
@@ -319,11 +326,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 }
 .btn-barra:hover { border-color: color-mix(in srgb, var(--acento) 45%, var(--borde)); }
 .btn-barra .ico { width: 17px; height: 17px; color: var(--tenue); flex: none; }
-/* el nombre del orden puede ser largo: que encoja antes que desbordar la fila */
-.btn-barra { min-width: 0; }
-.btn-barra .txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-#btn-orden { min-width: 0; }
-.herramientas { min-width: 0; }
+.btn-barra .txt { white-space: nowrap; }
 /* Al bajar, el recuento y los filtros puestos se quedan pegados bajo la
    cabecera y se aprietan en una sola fila que se desliza a los lados. Si no,
    desaparecen justo cuando hace falta saber por que se ve lo que se ve, y
@@ -344,7 +347,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 /* apretada, todo en una linea: recuento, fichas que se deslizan, y los dos
    botones al final para que filtrar siga a mano sin volver arriba */
 .barra-filtros.compacta .barra-int {
-  display: flex; align-items: center; gap: 10px;
+  display: flex; flex-wrap: nowrap; align-items: center; gap: 10px;
   max-width: 1400px; margin-inline: auto; padding: 7px 14px;
 }
 /* margin-left:auto y no solo el orden: sin fichas que ocupen el hueco -porque
