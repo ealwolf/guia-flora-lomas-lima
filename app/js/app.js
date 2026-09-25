@@ -532,7 +532,8 @@ function pintarActivos() {
              f: 'conserv', v: v });
   });
   F.cara.forEach(function (v) {
-    f.push({ ico: 'sun', et: v, tipo: 'Cara de la loma', f: 'cara', v: v });
+    f.push({ ico: 'sun', et: (cara(v) || {}).txt || v, tipo: 'Cara de la loma',
+             f: 'cara', v: v });
   });
   var tramo = tramoMeses();
   if (tramo) {
@@ -765,12 +766,11 @@ function pintarFiltros() {
         '<span class="cuenta">' + n + '</span></button>';
   }).join('');
 
-  var caras = [['Occidental', 'o'], ['Ambas caras', 'a'], ['Oriental', 'e']];
-  $('#f-cara').innerHTML = caras.map(function (c) {
-    var n = G.especies.filter(function (e) { return e._cara === c[0]; }).length;
-    return chip(miniPerfil(c[1]) + esc(c[0]) + ' <span class="cuenta">' + n + '</span>',
-                F.cara.indexOf(c[0]) >= 0,
-                'data-f="cara" data-v="' + esc(c[0]) + '"');
+  $('#f-cara').innerHTML = CARAS.map(function (c) {
+    var n = G.especies.filter(function (e) { return e._cara === c.v; }).length;
+    return chip(miniPerfil(c.lado) + esc(c.txt) + ' <span class="cuenta">' + n + '</span>',
+                F.cara.indexOf(c.v) >= 0,
+                'data-f="cara" data-v="' + esc(c.v) + '"');
   }).join('');
 
   $('#f-familia').innerHTML = G.familias.map(function (f) {
@@ -1363,11 +1363,9 @@ function svgPerfil(e) {
   var caras = '<text class="cara" x="11" y="' + (H - 1.2).toFixed(1) + '">Oeste</text>' +
               '<text class="cara" x="' + (W - 1) + '" y="' + (H - 1.2).toFixed(1) +
               '" text-anchor="end">Este</text>';
-  var c = caraDe(e);
-  var enCara = c === 'Ambas caras' ? 'en ambas caras de la loma'
-             : c ? 'en la cara ' + c.toLowerCase() : '';
+  var c = cara(caraDe(e));
   var desc = min != null
-      ? 'De ' + min + ' a ' + max + ' metros, ' + enCara
+      ? 'De ' + min + ' a ' + max + ' metros' + (c ? ', mirando ' + c.frase : '')
       : 'sin dato';
   return '<svg class="perfil" viewBox="0 0 ' + W + ' ' + (H + 2) + '" role="img" ' +
          'aria-label="Rango de altitud: ' + desc + '">' +
@@ -1381,6 +1379,20 @@ function svgPerfil(e) {
 /* de que lado del perfil cae el trazo (el valle separa las dos caras).
    Hay que leer todas las coordenadas, no solo las de M y L: los trazos son
    casi todos curvas, y en una C las x estan en las posiciones pares. */
+/* Dentro el dato sigue siendo «Occidental» y «Oriental», que es como lo llama
+   la guia y como se clasifica el dibujo. Fuera se dice hacia donde mira la
+   cara: no todo el mundo sabe de memoria que el mar cae al oeste, y la
+   neblina -que es de lo que va esto- viene del mar. La palabra de la guia se
+   queda en la pista del filtro, para quien tenga el libro delante. */
+var CARAS = [
+  { v: 'Occidental',  lado: 'o', txt: 'Al mar',          frase: 'al mar' },
+  { v: 'Ambas caras', lado: 'a', txt: 'Ambas caras',     frase: 'a las dos caras' },
+  { v: 'Oriental',    lado: 'e', txt: 'A la cordillera', frase: 'a la cordillera' }
+];
+function cara(v) {
+  return CARAS.filter(function (c) { return c.v === v; })[0];
+}
+
 function caraDe(e) {
   var d = e.perfil || '';
   if (!d) return '';
@@ -1538,7 +1550,9 @@ function abrirFicha(id, empujar) {
     '<div class="lateral">' +
       '<section class="bloque"><h3>' + svgIcono('mountains') + 'Rango de altitud</h3>' +
         '<figure class="figura">' + svgPerfil(e) +
-        '<figcaption><b>' + esc(caraDe(e) || '—') + '</b> según el perfil de la guía' +
+        '<figcaption>' + (cara(caraDe(e))
+            ? 'Mira <b>' + esc(cara(caraDe(e)).frase) + '</b>'
+            : '<b>—</b>') + ' según el perfil de la guía' +
         (e.altitudTxt ? '<br>En el texto: “' + esc(e.altitudTxt) + '”' : '') +
         '</figcaption></figure></section>' +
       '<section class="bloque"><h3>' + svgIcono('map-trifold') + 'Dónde se registró</h3>' +
