@@ -86,11 +86,14 @@ var SUG = [];
             f: 'mes', v: i + 1 });
   });
   G.especies.forEach(function (e) {
-    meter({ tipo: 'Especie', ico: 'flower-lotus', et: e.comun, sub: e.cientifico,
-            cursiva: true, id: e.id });
+    // los colores de la flor y no un icono: el loto era el mismo para las 134
+    // y no decia nada. El color es lo que se mira en campo.
+    var pts = coloresDe(e).slice(0, 3).map(colorHex).filter(Boolean);
+    meter({ tipo: 'Especie', puntos: pts, ico: 'flower-lotus', et: e.comun,
+            sub: e.cientifico, cursiva: true, id: e.id });
     // los sinonimos no vienen de la guia: salen de datos/propio/sinonimos.csv
     (e.sinonimos || []).forEach(function (s) {
-      meter({ tipo: 'Sinónimo', ico: 'flower-lotus', et: s,
+      meter({ tipo: 'Sinónimo', puntos: pts, ico: 'flower-lotus', et: s,
               sub: 'hoy ' + e.cientifico + ' · ' + e.comun, cursiva: true, id: e.id });
     });
   });
@@ -121,7 +124,11 @@ function pintarSug() {
   caja.innerHTML = sugActual.map(function (s, i) {
     var marca = s.punto
         ? '<span class="punto" style="background:' + s.punto + '"></span>'
-        : svgIcono(s.ico);
+        : (s.puntos && s.puntos.length
+            ? '<span class="puntos">' + s.puntos.map(function (h) {
+                return '<span class="punto" style="background:' + h + '"></span>';
+              }).join('') + '</span>'
+            : svgIcono(s.ico));
     var sub = s.sub
         ? '<small>' + (s.cursiva ? '<i>' + esc(s.sub) + '</i>' : esc(s.sub)) + '</small>'
         : '';

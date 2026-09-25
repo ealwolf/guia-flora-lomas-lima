@@ -251,8 +251,11 @@ button {
   padding: 8px 10px; border-radius: 10px; text-align: left; color: var(--texto);
 }
 .sug button:hover, .sug button[aria-selected="true"] { background: var(--superficie-2); }
-.sug-ico { display: grid; place-items: center; width: 20px; flex: none; color: var(--tenue); }
+.sug-ico { display: grid; place-items: center; width: 26px; flex: none; color: var(--tenue); }
 .sug-ico .punto { width: 13px; height: 13px; }
+/* hasta tres colores, montados como en las tarjetas */
+.sug-ico .puntos .punto { width: 11px; height: 11px; }
+.sug-ico .puntos .punto + .punto { margin-left: -4px; }
 .sug-txt { min-width: 0; flex: 1; }
 .sug-txt b { display: block; font-size: var(--t-2); font-weight: 600;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

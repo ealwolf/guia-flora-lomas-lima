@@ -156,7 +156,8 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
 - **Buscar** por nombre común, científico, familia, grupo, loma o hábitat. Sin
   tildes también encuentra: *amancaes* halla *Amancáes*.
 - Al escribir aparece una **lista de sugerencias que dice de qué tipo es cada
-  coincidencia**: *amarillo* es un color, *Malvaceae* una familia, *Amancáes*
+  coincidencia**, y las especies llevan **los colores de su flor** en vez de un
+  icono igual para todas: *amarillo* es un color, *Malvaceae* una familia, *Amancáes*
   una loma y a la vez una especie. Elegir una aplica el filtro en vez de dejar
   el texto suelto; elegir una especie abre su ficha. También con las flechas y
   Enter. *julio* enciende el filtro de floración aunque esa palabra no esté en
