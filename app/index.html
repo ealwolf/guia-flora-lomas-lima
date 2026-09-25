@@ -139,7 +139,7 @@ window.addEventListener('beforeinstallprompt', function (ev) {
         <button class="limpia oculto" data-limpia="mes">Quitar</button>
       </h3>
       <div class="segmentado" role="group" aria-label="Cómo elegir los meses">
-        <button data-mesmodo="sueltos" aria-pressed="true">Meses sueltos</button>
+        <button data-mesmodo="sueltos" aria-pressed="true">Meses</button>
         <button data-mesmodo="rango" aria-pressed="false">Un rango</button>
       </div>
       <div class="envoltura" id="f-mes"></div>
@@ -203,11 +203,13 @@ window.addEventListener('beforeinstallprompt', function (ev) {
         <button class="limpia oculto" data-limpia="cara">Quitar</button>
       </h3>
       <div class="envoltura caras" id="f-cara"></div>
-      <p class="pista"><b>Al mar</b>: la cara que recibe la neblina y reverdece.
-        <b>A la cordillera</b>: la que recibe muy poca y es más seca. En la guía
-        son la cara occidental y la oriental.</p>
-      <p class="pista">Según el dibujo del perfil, que está en las 134. El texto
-        de la guía sólo lo dice en 103, y en 12 no coinciden.</p>
+      <p class="pista"><b>Al mar</b>: la cara que recibe la neblina y reverdece.</p>
+      <p class="pista"><b>A la cordillera</b>: la que recibe muy poca neblina y
+        es más seca.</p>
+      <p class="nota"><span data-ico="info" aria-hidden="true"></span>
+        <span>El dato sale del dibujo del perfil, que está en las 134 especies;
+          el texto de la guía sólo lo dice en 103, y en 12 no coinciden. En la
+          guía estas caras son la <b>occidental</b> y la <b>oriental</b>.</span></p>
     </div>
     <div class="grupo">
       <h3><span data-ico="drop" aria-hidden="true"></span> Hábitat

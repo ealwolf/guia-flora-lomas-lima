@@ -729,6 +729,16 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 }
 .pista { margin: 8px 0 0; font-size: var(--t-1); color: var(--tenue); line-height: 1.45; }
 .pista + .pista { margin-top: 5px; }
+/* De donde sale el dato, al margen. Sin recuadro ni relleno a proposito: en
+   este panel todo lo que lleva borde entero y esquinas redondas se pulsa, y
+   esto no se pulsa. Una raya al costado se lee como acotacion. */
+.nota {
+  display: flex; gap: 9px; margin: 12px 0 0; padding: 2px 0 2px 11px;
+  border-left: 3px solid var(--borde);
+  font-size: var(--t-1); color: var(--tenue); line-height: 1.45;
+}
+.nota .ico { width: 15px; height: 15px; flex: none; margin-top: 2px; }
+.nota b { font-weight: 600; color: var(--texto); }
 
 /* El año es redondo y la floración también: de noviembre a febrero es un
    tramo, no dos cabos sueltos. En una fila de doce fichas eso sale partido en
