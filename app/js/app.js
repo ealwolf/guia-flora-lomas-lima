@@ -176,7 +176,34 @@ function elegirSug(i) {
 /* ---------- estado ---------- */
 var ALT_MIN = 100, ALT_MAX = 1000;
 var F = { q: '', color: [], grupo: [], mes: [], loma: [], habitat: [], familia: [],
+          conserv: [], cara: [], orden: 'guia',
           altModo: 'todas', altitud: 550, altDesde: ALT_MIN, altHasta: ALT_MAX };
+
+/* La cara sale del dibujo del perfil, que es el unico dato que tienen las 134
+   -el texto solo lo dice en 103-. Se calcula una vez y no en cada filtrado. */
+G.especies.forEach(function (e) { e._cara = caraDe(e); });
+
+var ORDENES = [
+  { id: 'guia',       txt: 'Orden de la guía' },
+  { id: 'comun',      txt: 'Nombre común' },
+  { id: 'cientifico', txt: 'Nombre científico' },
+  { id: 'altitud',    txt: 'Altitud, de la más baja' },
+  { id: 'rareza',     txt: 'De menos lomas a más' }
+];
+function leerOrden() {
+  try { return localStorage.getItem('orden') || 'guia'; } catch (e) { return 'guia'; }
+}
+F.orden = leerOrden();
+
+var CONSERV = [
+  { id: 'endemica',  txt: 'Endémica del Perú', ok: function (e) { return e.endemico; } },
+  { id: 'amenazada', txt: 'Amenazada',         ok: function (e) { return !!e.amenaza; } },
+  { id: 'nonativa',  txt: 'No nativa',         ok: function (e) { return e.origen !== 'Nat'; } }
+];
+function conservOk(e, id) {
+  for (var i = 0; i < CONSERV.length; i++) if (CONSERV[i].id === id) return CONSERV[i].ok(e);
+  return false;
+}
 
 /* «Todas» es una opción, no una posición del deslizador. Antes la cota
    arrancaba en mitad de la barra diciendo «sin filtrar», y al volver a ese
@@ -189,7 +216,8 @@ function altActiva() {
 
 function activos() {
   return F.color.length + F.grupo.length + F.mes.length + F.loma.length +
-         F.habitat.length + F.familia.length + (altActiva() ? 1 : 0);
+         F.habitat.length + F.familia.length + F.conserv.length + F.cara.length +
+         (altActiva() ? 1 : 0);
 }
 function alterna(lista, valor) {
   var i = lista.indexOf(valor);
@@ -214,6 +242,9 @@ function filtrar() {
     if (F.mes.length     && !F.mes.some(function (m) { return e.flor.indexOf(m) >= 0; })) return false;
     if (F.loma.length    && !F.loma.some(function (l) { return e.lomas.indexOf(l) >= 0; })) return false;
     if (F.habitat.length && !F.habitat.some(function (h) { return e.habitats.indexOf(h) >= 0; })) return false;
+    // dentro de un grupo vale con cumplir una, como en los demas filtros
+    if (F.conserv.length && !F.conserv.some(function (c) { return conservOk(e, c); })) return false;
+    if (F.cara.length && F.cara.indexOf(e._cara) < 0) return false;
     if (altActiva()) {
       var min = e.altitud[0], max = e.altitud[1];
       if (min == null || max == null) return false;
@@ -227,16 +258,27 @@ function filtrar() {
   });
 }
 
+var COMPARA = {
+  guia:       function (a, b) { return a.n - b.n; },
+  comun:      function (a, b) { return a.comun.localeCompare(b.comun, 'es'); },
+  cientifico: function (a, b) { return a.cientifico.localeCompare(b.cientifico, 'es'); },
+  altitud:    function (a, b) { return (a.altitud[0] - b.altitud[0]) ||
+                                       (a.altitud[1] - b.altitud[1]) || a.n - b.n; },
+  rareza:     function (a, b) { return (a.lomas.length - b.lomas.length) || a.n - b.n; }
+};
+
 /* Con un color activo, delante las que lo tienen como principal: las otras
    coinciden por un detalle (el centro amarillo de una flor blanca, por
-   ejemplo) y son menos probables. */
+   ejemplo) y son menos probables. Eso manda en el orden de la guia, que es el
+   de por defecto; si se ha pedido otro orden, manda el pedido y el color solo
+   desempata. */
 function ordenar(lista) {
-  if (!F.color.length) return lista;
-  return lista.slice().sort(function (a, b) {
-    var pa = F.color.indexOf(a.color) >= 0 ? 0 : 1;
-    var pb = F.color.indexOf(b.color) >= 0 ? 0 : 1;
-    return pa - pb || a.n - b.n;
-  });
+  var cmp = COMPARA[F.orden] || COMPARA.guia;
+  if (!F.color.length) return lista.slice().sort(cmp);
+  var pri = function (e) { return F.color.indexOf(e.color) >= 0 ? 0 : 1; };
+  return lista.slice().sort(F.orden === 'guia'
+      ? function (a, b) { return pri(a) - pri(b) || cmp(a, b); }
+      : function (a, b) { return cmp(a, b) || pri(a) - pri(b); });
 }
 
 /* ---------- tarjetas ---------- */
@@ -315,6 +357,14 @@ function pintarActivos() {
   F.habitat.forEach(function (v) {
     f.push({ ico: 'drop', et: v, tipo: 'Hábitat', f: 'habitat', v: v });
   });
+  F.conserv.forEach(function (v) {
+    var c = CONSERV.filter(function (x) { return x.id === v; })[0];
+    f.push({ ico: 'seal-check', et: c ? c.txt : v, tipo: 'Conservación',
+             f: 'conserv', v: v });
+  });
+  F.cara.forEach(function (v) {
+    f.push({ ico: 'sun', et: v, tipo: 'Cara de la loma', f: 'cara', v: v });
+  });
   F.mes.slice().sort(function (a, b) { return a - b; }).forEach(function (v) {
     f.push({ ico: 'calendar-blank', et: 'En flor en ' + G.meses[v - 1],
              tipo: 'Floración', f: 'mes', v: v });
@@ -335,6 +385,13 @@ function pintarActivos() {
         'aria-label="Quitar el filtro ' + esc(x.tipo + ': ' + x.et) + '">' +
         (x.marca || svgIcono(x.ico)) + esc(x.et) + svgIcono('x', 'quita') + '</button>';
   }).join('');
+
+  if (F.orden !== 'guia') {
+    var o = ORDENES.filter(function (x) { return x.id === F.orden; })[0];
+    html += '<button class="chip" id="quita-orden" title="Orden: ' + esc(o.txt) +
+        '" aria-label="Volver al orden de la guía">' + svgIcono('rows') +
+        esc(o.txt) + svgIcono('x', 'quita') + '</button>';
+  }
 
   if (altActiva()) {
     var txt = F.altModo === 'cota'
@@ -362,9 +419,19 @@ $('#activos').addEventListener('click', function (ev) {
   if (ev.target.closest('#mas-chips')) { chipsAbiertos = true; pintarActivos(); }
   else if (ev.target.closest('#menos-chips')) { chipsAbiertos = false; pintarActivos(); }
   else if (ev.target.closest('#quita-alt')) quitarAltitud();
+  else if (ev.target.closest('#quita-orden')) elegirOrden('guia');
   else if (ev.target.closest('#quita-q')) quitarBusqueda();
   else if (ev.target.closest('#quita-todo')) { quitarBusqueda(true); limpiarTodo(); }
 });
+
+function elegirOrden(id) {
+  F.orden = id;
+  try { localStorage.setItem('orden', id); } catch (e) {}
+  $$('[data-orden]').forEach(function (x) {
+    x.setAttribute('aria-pressed', x.dataset.orden === id ? 'true' : 'false');
+  });
+  render();
+}
 
 function quitarBusqueda(callado) {
   F.q = ''; $('#q').value = ''; $('#limpiar').classList.add('oculto');
@@ -393,7 +460,7 @@ if (window.ResizeObserver) new ResizeObserver(medirCabecera).observe($('.cab'));
 
 function mirarBarra() {
   var barra = $('#barra-filtros');
-  var hay = activos() > 0 || !!F.q;
+  var hay = activos() > 0 || !!F.q || F.orden !== 'guia';
   var tope = parseFloat(getComputedStyle(document.documentElement)
       .getPropertyValue('--alto-cab')) || 0;
   /* Contra su sitio en el documento, no contra su posicion en pantalla: una
@@ -467,6 +534,25 @@ function pintarFiltros() {
     return chip(esc(h.nombre) + ' <span class="cuenta">' + h.n + '</span>',
                 F.habitat.indexOf(h.nombre) >= 0,
                 'data-f="habitat" data-v="' + esc(h.nombre) + '"');
+  }).join('');
+
+  $('#f-orden').innerHTML = ORDENES.map(function (o) {
+    return chip(esc(o.txt), F.orden === o.id, 'data-orden="' + o.id + '"');
+  }).join('');
+
+  $('#f-conserv').innerHTML = CONSERV.map(function (c) {
+    var n = G.especies.filter(c.ok).length;
+    return chip(esc(c.txt) + ' <span class="cuenta">' + n + '</span>',
+                F.conserv.indexOf(c.id) >= 0,
+                'data-f="conserv" data-v="' + c.id + '"');
+  }).join('');
+
+  var caras = ['Occidental', 'Ambas caras', 'Oriental'];
+  $('#f-cara').innerHTML = caras.map(function (c) {
+    var n = G.especies.filter(function (e) { return e._cara === c; }).length;
+    return chip(esc(c) + ' <span class="cuenta">' + n + '</span>',
+                F.cara.indexOf(c) >= 0,
+                'data-f="cara" data-v="' + esc(c) + '"');
   }).join('');
 
   $('#f-familia').innerHTML = G.familias.map(function (f) {
@@ -797,6 +883,16 @@ function sincronizarChips() {
 }
 
 document.addEventListener('click', function (ev) {
+  var o = ev.target.closest('[data-orden]');
+  if (o) {
+    F.orden = o.dataset.orden;
+    try { localStorage.setItem('orden', F.orden); } catch (e) {}
+    $$('[data-orden]').forEach(function (x) {
+      x.setAttribute('aria-pressed', x === o ? 'true' : 'false');
+    });
+    render();
+    return;
+  }
   var b = ev.target.closest('[data-f]');
   if (!b) return;
   var f = b.dataset.f, v = b.dataset.v;
@@ -1162,7 +1258,8 @@ $('#btn-aplicar').addEventListener('click', function () { abrirPanel(false); });
 
 function limpiarTodo() {
   F.color = []; F.grupo = []; F.mes = []; F.loma = []; F.habitat = []; F.familia = [];
-  quitarAltitud();
+  F.conserv = []; F.cara = [];
+  quitarAltitud();   // repinta
 }
 $('#btn-reset').addEventListener('click', limpiarTodo);
 

@@ -429,6 +429,9 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   min-height: 27px;
 }
 .envoltura { display: flex; flex-wrap: wrap; gap: 7px; }
+/* el orden elegido, que es una sola opcion y no una lista */
+.chip[data-orden][aria-pressed="true"] .cuenta { display: none; }
+
 /* quitar un solo campo, sin tocar los demas */
 .limpia {
   margin-left: auto; font-size: var(--t-0); font-weight: 700; letter-spacing: .03em;

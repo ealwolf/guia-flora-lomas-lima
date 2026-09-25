@@ -170,8 +170,23 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
   las que lo tienen como color principal; detrás, las que sólo lo tienen en un
   detalle (el centro amarillo de una flor blanca). La tarjeta muestra un punto
   por color.
-- Filtrar por grupo, mes de floración, altitud, loma, hábitat y familia. Cada
-  campo se **quita por separado** desde su propio *Quitar*, sin tocar los demás.
+- Filtrar por grupo, mes de floración, altitud, loma, hábitat, familia,
+  **conservación** y **cara de la loma**. Cada campo se **quita por separado**
+  desde su propio *Quitar*, sin tocar los demás.
+- **Conservación**: endémicas del Perú (39), amenazadas (3, las tres VU) y no
+  nativas (24 entre exóticas e introducidas). De las 39 endémicas, 10 viven en
+  una sola loma.
+- **Cara de la loma**: occidental (85), ambas (32) u oriental (17). Sale del
+  **dibujo** del perfil, que es el único dato que tienen las 134; el texto sólo
+  lo dice en 103 y en 12 no coinciden.
+- **Ordenar** de cinco maneras: orden de la guía, nombre común, nombre
+  científico, altitud de la más baja, y de menos lomas a más —que saca delante
+  lo más raro: 31 especies viven en una única loma—. Se recuerda entre visitas
+  y, si no es el de la guía, sale como una ficha más para que no se olvide.
+
+  Con un color puesto, el orden de la guía sigue poniendo delante las que lo
+  tienen como color principal; si has pedido otro orden, manda el tuyo y el
+  color sólo desempata.
 - **La loma se elige de dos maneras**: por lista alfabética o **tocándola en el
   mapa**, que es como piensa quien conoce la zona —«las de por aquí»— en vez de
   buscar un nombre. Las dos vistas comparten la selección, así que se cambia de
