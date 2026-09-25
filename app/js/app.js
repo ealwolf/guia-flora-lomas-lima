@@ -883,7 +883,13 @@ $('#mapa-menos').addEventListener('click', function () { acercar(1 / 1.7); });
   var raton = null;      // arrastre con raton
   var sostenido = null;  // doble toque mantenido, como en un mapa de verdad
   var ultimo = 0, ultimoP = null;
-  var tragar = false;    // el click que sigue a un gesto no elige nada
+  /* El click que el navegador se inventa al acabar un gesto no debe elegir
+     nada. Pero el aviso duraba hasta que alguien lo consumiera, y un pellizco
+     no genera ningun click -touchmove lo impide-, asi que se quedaba puesto y
+     se comia el toque siguiente, que era de verdad. Ahora lo borra el
+     principio de cada pulsacion: lo que llega sin haber tocado otra vez es el
+     click del gesto; lo que llega despues de tocar, no. */
+  var tragar = false;
 
   function porPixel() {
     var r = caja.getBoundingClientRect();
@@ -901,6 +907,7 @@ $('#mapa-menos').addEventListener('click', function () { acercar(1 / 1.7); });
 
   /* ---------- dedos ---------- */
   caja.addEventListener('touchstart', function (ev) {
+    tragar = false;                  // empieza una pulsacion nueva
     if (!MV) return;
     if (ev.touches.length === 2) { dedos = medio(ev.touches); sostenido = null; return; }
     if (ev.touches.length !== 1) return;
@@ -953,7 +960,9 @@ $('#mapa-menos').addEventListener('click', function () { acercar(1 / 1.7); });
 
   /* ---------- raton ---------- */
   caja.addEventListener('pointerdown', function (ev) {
-    if (ev.pointerType !== 'mouse' || !MV || MV.z <= 1.001) return;
+    if (ev.pointerType !== 'mouse') return;
+    tragar = false;                  // igual con el raton: arrastrar y no
+    if (!MV || MV.z <= 1.001) return;   // llegar a pulsar dejaba el aviso puesto
     // sin capturar todavia: capturar aqui desviaba el click al contenedor y
     // no habia forma de elegir una loma con el mapa ampliado
     raton = { x: ev.clientX, y: ev.clientY, movido: 0, id: ev.pointerId, activo: false };
