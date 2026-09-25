@@ -25,13 +25,6 @@ APPJS = os.path.join(RAIZ, 'app', 'js')
 MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
          'Jul', 'Ago', 'Set', 'Oct', 'Nov', 'Dic']
 
-# Con punto y en minuscula: una abreviatura «siempre se cierra con un punto» y
-# lleva la caja de la palabra abreviada, que aqui es un nombre comun (DPD,
-# «abreviatura» 1 y 2c). «set.» y no «sept.»: el DPD da setiembre como la forma
-# preferida en el Peru. Las del calendario se quedan sin punto: son rotulos de
-# una tira de doce celdas de 26 px, no texto seguido.
-MESES_ABR = ['ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.',
-             'jul.', 'ago.', 'set.', 'oct.', 'nov.', 'dic.']
 
 # muestras para los filtros por color
 COLORES = [
@@ -60,17 +53,24 @@ META = {
 
 
 def rango_meses(ini, fin):
-    """«ago.-oct.», con guion y sin espacios, igual que los intervalos de cifras.
+    """«Ago - Oct», igual que las celdas del calendario que hay justo debajo.
 
-    Se arma con los numeros de mes y no con el texto del PDF, que trae
-    «Ago - Oct», «Jul -Oct» y «---» segun la pagina. Los numeros aguantan
-    tambien el caso que cruza el ano: «Dic - Mar» es 12 y 3, no un minimo y un
-    maximo.
+    Excepcion a proposito. Por la norma tocaria «ago.-oct.»: una abreviatura
+    «siempre se cierra con un punto» y lleva la caja de la palabra abreviada,
+    que aqui es un nombre comun (DPD, «abreviatura» 1 y 2c), y el intervalo
+    iria con guion pegado. Pero al lado de la tira de meses —Ene, Feb, Mar…—
+    ese «ago.-oct.» desentona, y en la ficha mandan las dos cosas juntas. Las
+    cifras (altura, altitud) si siguen la norma: «10-40 cm», «100-550 msnm».
+
+    Lo que si se arregla es el desorden: se arma con los numeros de mes y no
+    con el texto del PDF, que traia «Ago - Oct», «Jul -Oct» y «---» segun la
+    pagina. Los numeros aguantan ademas el caso que cruza el ano: «Dic - Mar»
+    es 12 y 3, no un minimo y un maximo.
     """
     if not ini:
         return ''
-    a = MESES_ABR[ini - 1]
-    return a if (not fin or fin == ini) else a + '-' + MESES_ABR[fin - 1]
+    a = MESES[ini - 1]
+    return a if (not fin or fin == ini) else a + ' - ' + MESES[fin - 1]
 
 
 def intervalo(a, b, unidad):
