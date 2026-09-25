@@ -393,9 +393,14 @@ function mirarBarra() {
      vez fija su borde coincide con el de la cabecera igual que arriba del
      todo, asi que mirar la pantalla decia «fija» siempre. Los 6 px de holgura
      evitan que parpadee justo en el limite. */
-  // del hueco, que se queda en el flujo: la barra, ya fija, devolveria su
-  // propio top y el umbral se cumpliria siempre
-  var desde = $('#barra-hueco').offsetTop - tope;
+  /* Desde que pasa la ULTIMA fila, no la primera. Las fichas se van con el
+     resto de la pagina, como cualquier contenido, y solo cuando el bloque
+     entero ha desaparecido tras la cabecera aparece la version apretada. Asi
+     el hueco que queda reservado nunca se ve: para entonces esta del todo por
+     encima del borde de arriba. Midiendo desde el principio del bloque, lo
+     que se veia era el agujero que dejaban las fichas al irse. */
+  var h = $('#barra-hueco');
+  var desde = h.offsetTop + h.offsetHeight - tope;
   var toca = hay && (compacto ? window.scrollY > desde - 6
                               : window.scrollY > desde + 6);
   if (toca === compacto) return;

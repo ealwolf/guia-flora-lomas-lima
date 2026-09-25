@@ -188,8 +188,10 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
   quitable de una en una; el texto buscado es una más. Pasadas ocho se pliegan
   en un *+N más*, para que no empujen la rejilla. Al final de la fila,
   *Quitar todo*.
-- **Al bajar, esa fila se queda pegada bajo la cabecera** y se aprieta en una
-  sola línea que se desliza a los lados, con el recuento en corto (*124/134*).
+- **Cuando se ha pasado la última fila de fichas**, éstas reaparecen pegadas
+  bajo la cabecera, apretadas en una sola línea que se desliza a los lados y
+  con el recuento en corto (*124/134*). Hasta entonces se van con la página,
+  como cualquier otro contenido: el cambio llega cuando ya no se veían.
   Así no hay que volver arriba para recordar por qué se está viendo lo que se
   ve. El *+N más* sigue valiendo en los dos sitios: arriba ahorra filas que
   habría que pasar antes de llegar a las tarjetas, y apretada alarga la fila
