@@ -303,10 +303,16 @@ lo publicado y otra lo observado, y la ficha las distingue.
 |---|---|---|
 | N.º 46 *Calceolaria pinnata* (Zapatito) | Villa María | observación propia |
 
-En la ficha, la loma propia lleva **el borde punteado** —lo justo para que se
-note que no viene del libro— y el pie dice «7 de 22 lomas visitadas por la guía
-+ 1 de observación propia». En el mapa se pinta de verde en vez de rojo. Y
-cuenta para el filtro: buscar *Villa María* devuelve 57 especies en vez de 56.
+En la ficha va **en violeta**, en el mapa y en su etiqueta, con el borde
+punteado encima porque el color solo no vale para todo el mundo. El pie lleva
+una muestra del color y dice «7 de 22 lomas visitadas por la guía + 1 de
+observación propia», así que se ve de qué es ese violeta. Y cuenta para el
+filtro: buscar *Villa María* devuelve 57 especies en vez de 56.
+
+Violeta y no azul, que el mar del mapa ya es azul; y no otro verde, porque dos
+verdes en siluetas de tres píxeles no se distinguen. Contra la tierra del mapa
+da 6,8:1 —el verde claro de antes se quedaba en 2,2— y simulando daltonismo
+rojo-verde los dos siguen separándose.
 
 Para añadir más, pon el `loma_id` en la fila de la especie —varios separados
 por punto y coma— y vuelve a ejecutar `construir.py`. Los identificadores

@@ -999,7 +999,8 @@ function abrirFicha(id, empujar) {
         '<figure class="figura">' + svgMapa(e) +
         '<figcaption>' + (e.lomas.length - propias.length) + ' de ' + G.lomas.length +
           ' lomas visitadas por la guía' +
-          (propias.length ? '<br>+ ' + propias.length + ' de observación propia' : '') +
+          (propias.length ? '<br><span class="pie-propia">+ ' + propias.length +
+            ' de observación propia</span>' : '') +
         '</figcaption></figure>' +
         '<div class="lista-lomas">' + lomasEti + '</div></section>' +
       (e.flor.length ? '<section class="bloque"><h3>' + svgIcono('calendar-blank') + 'Calendario de floración</h3>' + cal + '</section>' : '') +

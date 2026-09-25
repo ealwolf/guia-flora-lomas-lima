@@ -28,6 +28,12 @@
   --t-4: calc(1.3125rem * var(--escala));   /* 21  ficha, dos columnas */
   --t-5: calc(1.5625rem * var(--escala));   /* 25  ficha, móvil */
   --t-6: calc(1.875rem  * var(--escala));   /* 30  ficha, escritorio */
+  /* lo observado por nosotros, que la guia no cita. Violeta y no azul: el mar
+     del mapa ya es azul. Tampoco otro verde: dos verdes en siluetas de tres
+     pixeles no se distinguen, que es justo lo que pasaba. */
+  --propia:     #5a3f91;
+  --propia-sua: #ece8f6;
+  --propia-txt: #574491;
   --mar:    #cfe0e6;
   --tierra: #edeae1;
   --costa:  #8d968c;
@@ -50,6 +56,9 @@
     --rojo:       #e8695f;
     --ambar:      #d8a545;
     --sobre-acento: #0f140f;
+    --propia:     #b49ae8;
+    --propia-sua: #241d33;
+    --propia-txt: #c7b3f0;
     --mar:    #10242b;
     --tierra: #222720;
     --costa:  #566055;
@@ -70,6 +79,9 @@
     --rojo:       #e8695f;
     --ambar:      #d8a545;
     --sobre-acento: #0f140f;
+    --propia:     #b49ae8;
+    --propia-sua: #241d33;
+    --propia-txt: #c7b3f0;
     --mar:    #10242b;
     --tierra: #222720;
     --costa:  #566055;
@@ -783,11 +795,22 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 }
 .mapa-lomas .loma { fill: color-mix(in srgb, var(--tenue) 42%, transparent); stroke: none; transition: fill .2s; }
 .mapa-lomas .loma.activa { fill: var(--acento); }
-/* lo que hemos visto nosotros y la guia no cita: el mismo verde, mas claro */
-.mapa-lomas .loma.propia { fill: color-mix(in srgb, var(--acento) 55%, transparent); }
-/* la loma propia: el mismo chip, con el borde punteado. Lo justo para que se
-   note que no viene del libro, sin ponerle una etiqueta encima */
-.lista-lomas .eti.propia { border: 1px dashed currentColor; }
+/* lo que hemos visto nosotros y la guia no cita */
+.mapa-lomas .loma.propia { fill: var(--propia); }
+/* la loma propia lleva el color del mapa, para que se vea que son la misma.
+   El borde punteado va encima, que el color solo no vale para todo el mundo */
+/* .activa va despues en el archivo y ganaba por orden con la misma
+   especificidad, asi que el chip seguia saliendo verde */
+.lista-lomas .eti.activa.propia {
+  background: var(--propia-sua); color: var(--propia-txt);
+  border: 1px dashed color-mix(in srgb, var(--propia) 55%, transparent);
+}
+/* la leyenda del pie: sin ella el color no dice de que es */
+.pie-propia { display: inline-flex; align-items: center; gap: 5px; }
+.pie-propia::before {
+  content: ''; width: 9px; height: 9px; border-radius: 2px;
+  background: var(--propia); flex: none;
+}
 .lista-lomas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .lista-lomas .eti.activa {
   background: var(--acento-sua); color: var(--acento-txt); border-color: transparent;
