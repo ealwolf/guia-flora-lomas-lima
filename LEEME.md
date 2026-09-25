@@ -308,6 +308,18 @@ Hacía falta porque el PDF trae la altura de cinco maneras distintas:
 (1) y `60 a 80 cm` (1). Las 134 especies tienen las dos cifras, así que
 componerlo desde ellas no pierde nada y sale igual en todas.
 
+La floración sigue la misma regla: `ago.-oct.`, armada con los números de mes.
+El PDF la traía de 23 formas —«Ago - Oct», «Jul -Oct», «---»— y los números
+aguantan además el caso que cruza el año: «Dic - Mar» son el 12 y el 3, no un
+mínimo y un máximo.
+
+Las abreviaturas van **en minúscula y con punto**, porque una abreviatura
+«siempre se cierra con un punto» y lleva la caja de la palabra abreviada, que
+aquí es un nombre común (DPD, «abreviatura» 1 y 2 c). Y **`set.`, no `sept.`**:
+el DPD da *setiembre* como la forma preferida en el Perú. Las del calendario de
+floración se quedan sin punto: son rótulos de una tira de doce celdas de 26 px,
+no texto seguido.
+
 En la prosa no se toca nada: allí un espacio entre cifras suele ser el
 separador de millares —«1 050 msnm»— y es un espacio normal, así que al
 copiarlo se copia tal cual.

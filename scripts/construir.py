@@ -25,6 +25,14 @@ APPJS = os.path.join(RAIZ, 'app', 'js')
 MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
          'Jul', 'Ago', 'Set', 'Oct', 'Nov', 'Dic']
 
+# Con punto y en minuscula: una abreviatura «siempre se cierra con un punto» y
+# lleva la caja de la palabra abreviada, que aqui es un nombre comun (DPD,
+# «abreviatura» 1 y 2c). «set.» y no «sept.»: el DPD da setiembre como la forma
+# preferida en el Peru. Las del calendario se quedan sin punto: son rotulos de
+# una tira de doce celdas de 26 px, no texto seguido.
+MESES_ABR = ['ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.',
+             'jul.', 'ago.', 'set.', 'oct.', 'nov.', 'dic.']
+
 # muestras para los filtros por color
 COLORES = [
     ('Blanco',           '#f8f7f4'),
@@ -49,6 +57,20 @@ META = {
              'Lima, Perú. 162 pp.'),
     'fotografias': 'M. Lleellish, J. Odar, H. Castillo, G. Pino y D. Mac Donald',
 }
+
+
+def rango_meses(ini, fin):
+    """«ago.-oct.», con guion y sin espacios, igual que los intervalos de cifras.
+
+    Se arma con los numeros de mes y no con el texto del PDF, que trae
+    «Ago - Oct», «Jul -Oct» y «---» segun la pagina. Los numeros aguantan
+    tambien el caso que cruza el ano: «Dic - Mar» es 12 y 3, no un minimo y un
+    maximo.
+    """
+    if not ini:
+        return ''
+    a = MESES_ABR[ini - 1]
+    return a if (not fin or fin == ini) else a + '-' + MESES_ABR[fin - 1]
 
 
 def intervalo(a, b, unidad):
@@ -160,7 +182,8 @@ def main():
             'altitudTxt': r['altitud_texto'],
             'flor': [MESES.index(m) + 1 for m in lista(r['floracion_meses'], ';')
                      if m in MESES],
-            'florTxt': r['floracion_texto'],
+            'florTxt': rango_meses(ent(r['floracion_inicio_mes']),
+                                   ent(r['floracion_fin_mes'])),
             'habitats': lista(r['habitats']),
             'cara': r['cara'],
             'lomas': deguia + propia,
