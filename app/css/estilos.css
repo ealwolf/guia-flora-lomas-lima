@@ -893,7 +893,14 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 }
 @media (min-width: 800px) {
   .ficha-int { display: grid; grid-template-columns: minmax(0,1fr) 340px;
-    grid-template-areas: "gal lat" "cab lat" "dat lat" "txt lat" "sig lat"; gap: 0 24px;
+    /* Fila de sobra al final. Sin ella, cuando la columna de al lado es mas
+       alta que la principal -y lo es en cuanto la especie tiene muchas lomas-
+       el sobrante se reparte entre las cinco filas: la tabla de datos crecia
+       26 px y el encabezado dejaba un hueco bajo las etiquetas. La misma
+       ficha se veia distinta segun la especie. Ahora el sobrante cae entero
+       en la fila vacia. */
+    grid-template-areas: "gal lat" "cab lat" "dat lat" "txt lat" "sig lat" ".   lat";
+    grid-template-rows: auto auto auto auto auto 1fr; gap: 0 24px;
     padding-inline: 14px; }
   .galeria   { grid-area: gal; border-radius: var(--r); overflow: hidden; margin-top: 14px; }
   .encabezado{ grid-area: cab; padding-inline: 0; }
