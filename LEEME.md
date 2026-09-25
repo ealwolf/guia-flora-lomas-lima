@@ -176,11 +176,12 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
   una a otra sin perder nada. Cada loma lleva una zona de toque de 28 px,
   porque las siluetas reales son diminutas, y debajo se leen los nombres de
   las que llevas elegidas.
-- El mapa del filtro se **acerca** con los botones + y −, y una vez ampliado se
-  mueve **con dos dedos**. Con uno se sigue desplazando el panel, igual que en
-  el resto de la app: así el mapa no le roba el gesto al desplazamiento. Se
-  amplía moviendo el `viewBox`, no con `transform`, para que las zonas de toque
-  crezcan con el dibujo.
+- El mapa del filtro se **acerca** de cuatro maneras: los botones + y −, doble
+  toque, doble toque sostenido y arrastrando arriba o abajo, y pellizco. Una
+  vez ampliado se mueve **con dos dedos** (o arrastrando con el ratón). Con un
+  dedo se sigue desplazando el panel, igual que en el resto de la app: así el
+  mapa no le roba el gesto al desplazamiento. Se amplía moviendo el `viewBox`,
+  no con `transform`, para que las zonas de toque crezcan con el dibujo.
 - Encima de la rejilla, **una ficha por cada filtro puesto**, con su icono y
   quitable de una en una; el texto buscado es una más. Pasadas ocho se pliegan
   en un *+N más*, para que no empujen la rejilla. Al final de la fila,

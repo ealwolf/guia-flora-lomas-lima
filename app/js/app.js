@@ -413,10 +413,10 @@ function pintarFiltros() {
    Quien conoce la zona piensa «las de por aquí», no en una lista alfabética.
    Las dos vistas leen y escriben el mismo F.loma, así que cambiar de una a
    otra no pierde nada de lo elegido. */
-var mapaPuesto = false;
+var mapaPuesto = false, toquesPuestos = false;
 
 function montarMapaLomas() {
-  if (mapaPuesto) return;
+  if (mapaPuesto) { ponerToques(); return; }
   var caja = $('#mapa-elige');
   caja.innerHTML = window.MAPA_SVG || '';
   var svg = caja.querySelector('svg');
@@ -425,21 +425,36 @@ function montarMapaLomas() {
   svg.setAttribute('aria-label', 'Mapa de las lomas');
   var vb = (svg.getAttribute('viewBox') || '0 0 91 128').split(/[\s,]+/).map(Number);
   MV = { x0: vb[0], y0: vb[1], w0: vb[2], h0: vb[3], x: vb[0], y: vb[1], z: 1 };
-  // un circulo invisible por loma: las siluetas son diminutas y el dedo no
-  var R = 4.2;
+  mapaPuesto = true;
+  ponerToques();
+}
+
+/* Un circulo invisible por loma: las siluetas son diminutas y el dedo no.
+   Hay que hacerlo con el mapa ya visible: con display:none, getBBox() devuelve
+   ceros y los circulos acaban todos amontonados en el origen. */
+function ponerToques() {
+  if (toquesPuestos) return;
+  var svg = $('#mapa-elige svg');
+  if (!svg) return;
+  var R = 4.2, hechos = 0;
   $$('#mapa-elige [data-loma]').forEach(function (p) {
     var c = p.getBBox();
+    if (!c.width && !c.height) return;  // aun sin medidas: se reintenta luego
     var t = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     t.setAttribute('cx', (c.x + c.width / 2).toFixed(2));
     t.setAttribute('cy', (c.y + c.height / 2).toFixed(2));
+    // la mitad real de la silueta; la ayuda se le suma aparte y encoge al
+    // acercar, o al ampliar los circulos se comerian a los vecinos
+    t.setAttribute('data-mitad', (Math.max(c.width, c.height) / 2).toFixed(2));
     t.setAttribute('r', Math.max(R, Math.max(c.width, c.height) / 2).toFixed(2));
     t.setAttribute('class', 'toque');
     t.setAttribute('data-loma', p.getAttribute('data-loma'));
     t.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'title'))
      .textContent = nombreLoma[p.getAttribute('data-loma')] || '';
     svg.appendChild(t);                 // encima de todo, para recibir el toque
+    hechos++;
   });
-  mapaPuesto = true;
+  toquesPuestos = hechos > 0;
 }
 
 /* ---------- acercar el mapa ----------
@@ -457,6 +472,11 @@ function aplicarVista() {
   svg.setAttribute('viewBox', [MV.x, MV.y, w, h].map(function (n) {
     return n.toFixed(2);
   }).join(' '));
+  // el radio de ayuda en pixeles de pantalla se mantiene: 4.2 unidades a 1x
+  $$('#mapa-elige circle.toque').forEach(function (t) {
+    var m = parseFloat(t.getAttribute('data-mitad')) || 0;
+    t.setAttribute('r', Math.max(m, 4.2 / MV.z).toFixed(2));
+  });
   var ampliado = MV.z > 1.001;
   $('#mapa-elige').classList.toggle('ampliado', ampliado);
   $('#mapa-menos').disabled = !ampliado;
@@ -484,62 +504,122 @@ $('#mapa-menos').addEventListener('click', function () { acercar(1 / 1.7); });
 
 (function () {
   var caja = $('#mapa-elige');
-  var dedos = null;
+  var dedos = null;      // los dos dedos que mueven o pellizcan
+  var raton = null;      // arrastre con raton
+  var sostenido = null;  // doble toque mantenido, como en un mapa de verdad
+  var ultimo = 0, ultimoP = null;
+  var tragar = false;    // el click que sigue a un gesto no elige nada
 
+  function porPixel() {
+    var r = caja.getBoundingClientRect();
+    return r.width ? (MV.w0 / MV.z) / r.width : 0;
+  }
+  function enMapa(cx, cy) {
+    var r = caja.getBoundingClientRect(), k = porPixel();
+    return { x: MV.x + (cx - r.left) * k, y: MV.y + (cy - r.top) * k };
+  }
   function medio(t) {
     return { x: (t[0].clientX + t[1].clientX) / 2,
              y: (t[0].clientY + t[1].clientY) / 2,
              d: Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY) };
   }
-  function porPixel() {
-    var r = caja.getBoundingClientRect();
-    return r.width ? (MV.w0 / MV.z) / r.width : 0;
-  }
 
+  /* ---------- dedos ---------- */
   caja.addEventListener('touchstart', function (ev) {
-    dedos = (MV && ev.touches.length === 2) ? medio(ev.touches) : null;
+    if (!MV) return;
+    if (ev.touches.length === 2) { dedos = medio(ev.touches); sostenido = null; return; }
+    if (ev.touches.length !== 1) return;
+    var t = ev.touches[0], ahora = Date.now();
+    var cerca = ultimoP && Math.hypot(t.clientX - ultimoP.x, t.clientY - ultimoP.y) < 30;
+    if (ahora - ultimo < 300 && cerca) {
+      // segundo toque: si se suelta, acerca un paso; si se mantiene y se
+      // arrastra, acerca de forma continua segun cuanto se suba o se baje
+      sostenido = { y: t.clientY, z0: MV.z, p: enMapa(t.clientX, t.clientY), movido: false };
+      ultimo = 0;
+    } else {
+      ultimo = ahora;
+      ultimoP = { x: t.clientX, y: t.clientY };
+    }
   }, { passive: true });
 
   caja.addEventListener('touchmove', function (ev) {
+    if (!MV) return;
+    if (sostenido && ev.touches.length === 1) {
+      ev.preventDefault();
+      var dy = sostenido.y - ev.touches[0].clientY;
+      if (Math.abs(dy) > 3) sostenido.movido = true;
+      var z = Math.max(1, Math.min(4, sostenido.z0 * Math.pow(2, dy / 140)));
+      acercar(z / MV.z, sostenido.p.x, sostenido.p.y);
+      return;
+    }
     if (!dedos || ev.touches.length !== 2) return;
     ev.preventDefault();               // con dos dedos manda el mapa
     var m = medio(ev.touches), k = porPixel();
     MV.x -= (m.x - dedos.x) * k;
     MV.y -= (m.y - dedos.y) * k;
     if (dedos.d > 10 && m.d > 10) {
-      var w = MV.w0 / MV.z;
-      var r = caja.getBoundingClientRect();
-      var cx = MV.x + (m.x - r.left) * k, cy = MV.y + (m.y - r.top) * k;
-      acercar(m.d / dedos.d, cx, cy);
+      var c = enMapa(m.x, m.y);
+      acercar(m.d / dedos.d, c.x, c.y);
     } else {
       aplicarVista();
     }
     dedos = m;
   }, { passive: false });
 
-  caja.addEventListener('touchend', function () { dedos = null; });
+  caja.addEventListener('touchend', function () {
+    if (sostenido) {
+      if (!sostenido.movido) acercar(1.8, sostenido.p.x, sostenido.p.y);
+      sostenido = null;
+      tragar = true;
+    }
+    if (dedos) tragar = true;
+    dedos = null;
+  });
 
-  // raton: arrastrar cuando esta ampliado
-  var raton = null;
+  /* ---------- raton ---------- */
   caja.addEventListener('pointerdown', function (ev) {
     if (ev.pointerType !== 'mouse' || !MV || MV.z <= 1.001) return;
-    raton = { x: ev.clientX, y: ev.clientY, movido: 0 };
-    caja.setPointerCapture(ev.pointerId);
+    // sin capturar todavia: capturar aqui desviaba el click al contenedor y
+    // no habia forma de elegir una loma con el mapa ampliado
+    raton = { x: ev.clientX, y: ev.clientY, movido: 0, id: ev.pointerId, activo: false };
   });
   caja.addEventListener('pointermove', function (ev) {
-    if (!raton) return;
+    if (!raton || ev.pointerId !== raton.id) return;
+    var dx = ev.clientX - raton.x, dy = ev.clientY - raton.y;
+    raton.movido += Math.abs(dx) + Math.abs(dy);
+    if (!raton.activo) {
+      if (raton.movido < 5) return;    // aun podria ser un click
+      raton.activo = true;
+      try { caja.setPointerCapture(raton.id); } catch (e) {}
+    }
     var k = porPixel();
-    MV.x -= (ev.clientX - raton.x) * k;
-    MV.y -= (ev.clientY - raton.y) * k;
-    raton.movido += Math.abs(ev.clientX - raton.x) + Math.abs(ev.clientY - raton.y);
+    MV.x -= dx * k; MV.y -= dy * k;
     raton.x = ev.clientX; raton.y = ev.clientY;
     aplicarVista();
   });
-  caja.addEventListener('pointerup', function (ev) {
-    if (raton && raton.movido > 4) caja.dataset.arrastrado = '1';
+  function soltar(ev) {
+    if (!raton) return;
+    if (raton.activo) {
+      tragar = true;
+      try { caja.releasePointerCapture(raton.id); } catch (e) {}
+    }
     raton = null;
-    caja.releasePointerCapture && ev.pointerId && caja.releasePointerCapture(ev.pointerId);
+  }
+  caja.addEventListener('pointerup', soltar);
+  caja.addEventListener('pointercancel', soltar);
+
+  caja.addEventListener('dblclick', function (ev) {
+    if (!MV) return;
+    ev.preventDefault();
+    var p = enMapa(ev.clientX, ev.clientY);
+    acercar(1.8, p.x, p.y);
   });
+
+  caja.tragaClick = function () {
+    var t = tragar;
+    tragar = false;
+    return t;
+  };
 })();
 
 function sincronizarMapa() {
@@ -551,11 +631,11 @@ function sincronizarMapa() {
   $('#mapa-pista').textContent = n
       ? F.loma.map(function (id) { return nombreLoma[id] || id; }).join(' · ')
       : (MV && MV.z > 1.001 ? 'Dos dedos para mover el mapa.'
-                            : 'Toca las lomas que te interesen.');
+                            : 'Toca una loma. Doble toque para acercar.');
 }
 
 $('#mapa-elige').addEventListener('click', function (ev) {
-  if (this.dataset.arrastrado) { delete this.dataset.arrastrado; return; }
+  if (this.tragaClick && this.tragaClick()) return;   // venia de un gesto
   var t = ev.target.closest('[data-loma]');
   if (!t) return;
   alterna(F.loma, t.getAttribute('data-loma'));
@@ -568,9 +648,10 @@ $$('[data-vista]').forEach(function (b) {
     $$('[data-vista]').forEach(function (o) {
       o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
     });
-    if (mapa) montarMapaLomas();
+    // visible primero, montar despues: getBBox necesita que este dibujado
     $('#f-loma').classList.toggle('oculto', mapa);
     $('#f-loma-mapa').classList.toggle('oculto', !mapa);
+    if (mapa) montarMapaLomas();
     sincronizarMapa();
   });
 });

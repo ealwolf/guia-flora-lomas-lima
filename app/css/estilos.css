@@ -377,12 +377,15 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    tocan, asi que arrastrar encima desplaza el panel como en cualquier otro
    sitio. Las lomas son diminutas, asi que cada una lleva ademas un circulo
    invisible de buen tamaño en su centro. */
-.mapa-caja { position: relative; max-width: 300px; margin: 2px auto 0; }
+.mapa-caja { position: relative; max-width: 420px; margin: 2px auto 0; }
 .mapa-elige { overflow: hidden; border-radius: var(--r-s); }
-/* pan-y: un dedo sigue desplazando el panel como en cualquier otro sitio.
-   El mapa solo se mueve con dos, y asi no le roba el gesto al scroll. */
-.mapa-elige.ampliado { touch-action: pan-y; cursor: grab; }
+/* pan-y siempre: un dedo desplaza el panel como en cualquier otro sitio, y de
+   paso el navegador deja de quedarse con el doble toque, que aqui hace falta */
+.mapa-elige { touch-action: pan-y; }
+.mapa-elige.ampliado { cursor: grab; }
 .mapa-elige.ampliado:active { cursor: grabbing; }
+/* el puntero manda sobre la mano: encima de una loma se elige, no se arrastra */
+#mapa-elige .toque { cursor: pointer; }
 .mapa-zoom {
   position: absolute; top: 6px; right: 6px; display: flex; flex-direction: column;
   gap: 4px; background: var(--superficie); border: 1px solid var(--borde);
