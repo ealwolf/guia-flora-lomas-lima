@@ -276,6 +276,27 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   display: flex; align-items: center; justify-content: space-between;
   gap: 10px; color: var(--tenue); font-size: var(--t-1); margin: 2px 0 10px;
 }
+/* Al bajar, el recuento y los filtros puestos se quedan pegados bajo la
+   cabecera y se aprietan en una sola fila que se desliza a los lados. Si no,
+   desaparecen justo cuando hace falta saber por que se ve lo que se ve, y
+   habia que volver arriba del todo para mirarlos. */
+.barra-filtros.compacta {
+  position: sticky; top: var(--alto-cab, 0px); z-index: 30;
+  display: flex; align-items: center; gap: 10px;
+  background: var(--fondo); border-bottom: 1px solid var(--borde);
+  padding-block: 6px; margin-bottom: 8px;
+}
+.barra-filtros.compacta .resumen {
+  margin: 0; flex: none; font-variant-numeric: tabular-nums; font-weight: 600;
+}
+.barra-filtros.compacta .activos {
+  margin: 0; flex: 1; min-width: 0; flex-wrap: nowrap;
+  overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none;
+  padding-block: 2px;
+}
+.barra-filtros.compacta .activos::-webkit-scrollbar { display: none; }
+.barra-filtros.compacta .chip { flex: none; }
+
 /* ---------- lo que esta filtrando ahora mismo ----------
    Elegir una sugerencia aplicaba el filtro sin dejar rastro: la busqueda se
    vaciaba y solo cambiaba el numero de resultados. Estas fichas dicen por que

@@ -55,9 +55,11 @@ window.addEventListener('beforeinstallprompt', function (ev) {
 </header>
 
 <main>
-  <div class="resumen"><span id="cuenta">—</span></div>
-  <div class="activos oculto" id="activos" aria-live="polite"
-       aria-label="Filtros puestos"></div>
+  <div class="barra-filtros" id="barra-filtros">
+    <div class="resumen"><span id="cuenta">—</span></div>
+    <div class="activos oculto" id="activos" aria-live="polite"
+         aria-label="Filtros puestos"></div>
+  </div>
   <div class="rejilla" id="rejilla"></div>
   <div class="vacio oculto" id="vacio">
     <div data-ico="list-magnifying-glass" aria-hidden="true"></div>

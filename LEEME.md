@@ -187,7 +187,12 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
 - Encima de la rejilla, **una ficha por cada filtro puesto**, con su icono y
   quitable de una en una; el texto buscado es una más. Pasadas ocho se pliegan
   en un *+N más*, para que no empujen la rejilla. Al final de la fila,
-  *Quitar todo*. Sin ellas, elegir una sugerencia cambiaba el número de
+  *Quitar todo*.
+- **Al bajar, esa fila se queda pegada bajo la cabecera** y se aprieta en una
+  sola línea que se desliza a los lados, con el recuento en corto (*124/134*).
+  Así no hay que volver arriba para recordar por qué se está viendo lo que se
+  ve. Apretada caben todas las fichas, así que ahí no se pliega ninguna: el
+  *+N más* sólo aparece arriba del todo, donde la fila puede crecer. Sin ellas, elegir una sugerencia cambiaba el número de
   resultados y nada más: no se veía por qué.
 - **Altitud**, con tres botones: *Todas*, *una cota* (las especies cuyo rango
   incluye esa altura, útil cuando sabes dónde estás) o *un rango* (las que

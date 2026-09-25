@@ -269,20 +269,20 @@ function render() {
   ultimo = r;
   $('#rejilla').innerHTML = r.map(tarjeta).join('');
   $('#vacio').classList.toggle('oculto', r.length > 0);
+  ultimoN = r.length;
+  pintarCuenta();
   var tot = G.especies.length;
-  $('#cuenta').textContent = r.length === tot
-      ? tot + ' especies'
-      : r.length + ' de ' + tot + ' especies';
   $('#btn-aplicar').textContent = r.length === tot
       ? 'Ver las ' + tot
       : 'Ver ' + r.length + (r.length === 1 ? ' resultado' : ' resultados');
   pintarActivos();
   sincronizarChips();
+  mirarBarra();
 }
 
 /* Las fichas de lo puesto. Llevan data-f/data-v, asi que las quita el mismo
    manejador que ya destildaba las fichas del panel. */
-var TOPE_CHIPS = 8, chipsAbiertos = false;
+var TOPE_CHIPS = 8, chipsAbiertos = false, compacto = false;
 
 function pintarActivos() {
   var f = [];
@@ -316,7 +316,9 @@ function pintarActivos() {
   var caja = $('#activos');
   // con doce lomas puestas la fila se comia dos lineas y empujaba la rejilla
   if (f.length <= TOPE_CHIPS) chipsAbiertos = false;
-  var sobran = (!chipsAbiertos && f.length > TOPE_CHIPS) ? f.length - TOPE_CHIPS : 0;
+  // apretados caben todos: la fila se desliza, asi que no hay que plegar nada
+  var sobran = (!chipsAbiertos && !compacto && f.length > TOPE_CHIPS)
+      ? f.length - TOPE_CHIPS : 0;
   var html = (sobran ? f.slice(0, TOPE_CHIPS) : f).map(function (x) {
     var senas = x.quita ? 'id="' + x.quita + '"'
                         : 'data-f="' + x.f + '" data-v="' + esc('' + x.v) + '"';
@@ -361,6 +363,52 @@ function quitarBusqueda(callado) {
   cerrarSug();
   if (!callado) render();             // limpiarTodo ya repinta por su cuenta
 }
+
+/* ---------- la barra que se queda arriba al bajar ---------- */
+var ultimoN = 0;
+function pintarCuenta() {
+  var tot = G.especies.length, n = ultimoN;
+  $('#cuenta').textContent = compacto
+      ? (n === tot ? '' + tot : n + '/' + tot)
+      : (n === tot ? tot + ' especies' : n + ' de ' + tot + ' especies');
+}
+
+/* La cabecera es pegajosa y su alto cambia con el tema, el tamaño del texto y
+   el ancho, asi que se mide en vez de darlo por sabido. */
+function medirCabecera() {
+  var cab = $('.cab');
+  if (cab) {
+    document.documentElement.style.setProperty('--alto-cab', cab.offsetHeight + 'px');
+  }
+}
+if (window.ResizeObserver) new ResizeObserver(medirCabecera).observe($('.cab'));
+
+function mirarBarra() {
+  var barra = $('#barra-filtros');
+  var hay = activos() > 0 || !!F.q;
+  var tope = parseFloat(getComputedStyle(document.documentElement)
+      .getPropertyValue('--alto-cab')) || 0;
+  /* Contra su sitio en el documento, no contra su posicion en pantalla: una
+     vez pegada su borde ya coincide con el de la cabecera, asi que mirar la
+     pantalla decia «pegada» tambien arriba del todo y no se soltaba nunca.
+     offsetTop no cambia al pegarse. Los 6 px de holgura evitan que parpadee
+     justo en el limite, porque compactarse acorta la propia barra. */
+  var desde = barra.offsetTop - tope;
+  var toca = hay && (compacto ? window.scrollY > desde - 6
+                              : window.scrollY > desde + 6);
+  if (toca === compacto) return;
+  compacto = toca;
+  barra.classList.toggle('compacta', compacto);
+  pintarCuenta();
+  pintarActivos();
+}
+
+/* Directo, sin requestAnimationFrame: el navegador ya limita los eventos de
+   desplazamiento a uno por fotograma, y son dos lecturas y un cambio de clase
+   solo cuando hace falta. Con rAF, ademas, no se actualizaba nada mientras la
+   pagina no estuviera pintandose. */
+window.addEventListener('scroll', mirarBarra, { passive: true });
+window.addEventListener('resize', function () { medirCabecera(); mirarBarra(); });
 
 /* ---------- filtros: interfaz ---------- */
 function chip(texto, activo, extra) {
@@ -1481,5 +1529,6 @@ pintarRango();
 pintarIconos(document);
 pintarGuardar();
 render();
+medirCabecera();
 
 })();
