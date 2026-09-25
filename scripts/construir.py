@@ -51,19 +51,23 @@ META = {
 }
 
 
-def altura_legible(t):
-    """Junta las cifras que el PDF trae partidas: «2 5 - 5 0 cm» -> «25 - 50 cm».
+def intervalo(a, b, unidad):
+    """«25-50 cm», como pide la RAE para los intervalos.
 
-    En el PDF esas cuatro alturas van en objetos de texto sueltos, una cifra
-    cada uno, sobre la misma linea de base; al recomponer el renglon quedan
-    separadas por un espacio. Los numeros ya salian bien porque el extractor
-    hace esta misma limpieza para calcularlos; lo que se quedaba crudo era el
-    texto que se muestra.
+    Diccionario panhispanico de dudas, guion2 3.1b: «Indica intervalos
+    expresados tanto en numeros arabigos como en romanos: las paginas 23-45».
+    Guion, sin espacios, y no raya ni semirraya.
 
-    Solo se toca este campo. En la prosa un espacio entre cifras suele ser el
-    separador de millares —«1 050 msnm»— y juntarlas lo estropearia.
+    Se arma con las cifras y no con el texto del PDF, que venia de cinco
+    maneras distintas: «20 - 30 cm», «10- 40 cm», «2 5 - 5 0 cm» (cifras en
+    objetos de texto sueltos), «20 - 30 cm.» y «60 a 80 cm». Las 134 especies
+    tienen las dos cifras, asi que no se pierde nada.
     """
-    return re.sub(r'(?<=\d)\s+(?=\d)', '', t or '')
+    if a is None:
+        return ''
+    if b is None or b == a:
+        return '%d %s' % (a, unidad)
+    return '%d-%d %s' % (a, b, unidad)
 
 
 def leer(ruta):
@@ -98,12 +102,25 @@ def main():
     # mezclarlas con lo que dice el libro
     propias = {r['especie_id']: lista(r.get('lomas_anadidas', ''), ';')
                for r in leer(os.path.join(PROPIO, 'loma_propia.csv'))}
+    # erratas de la extraccion que no se pueden arreglar con una regla general
+    correcciones = leer(os.path.join(PROPIO, 'correcciones_texto.csv'))
 
     # fotos por especie, principales primero
     fotos = collections.defaultdict(list)
     for m in sorted(img, key=lambda m: (m['tipo'] != 'principal', int(m['orden']))):
         if m['tipo'] in ('principal', 'detalle'):
             fotos[m['especie_id']].append(os.path.basename(m['archivo']))
+
+    porid = {r['especie_id']: r for r in esp}
+    for c in correcciones:
+        fila = porid.get(c['especie_id'])
+        if fila is None or c['campo'] not in fila:
+            print('   aviso: correccion sin destino:', c['especie_id'], c['campo'])
+        elif c['buscar'] not in fila[c['campo']]:
+            # o ya se arreglo aguas arriba, o el texto cambio: mejor saberlo
+            print('   aviso: ya no aparece y se puede quitar:', repr(c['buscar']))
+        else:
+            fila[c['campo']] = fila[c['campo']].replace(c['buscar'], c['reemplazar'])
 
     idpor = {l['nombre']: l['loma_id'] for l in lomas}
     ids = {l['loma_id'] for l in lomas}
@@ -138,7 +155,7 @@ def main():
             'endemico': r['endemico'] == 'true',
             'amenaza': r['amenaza'],
             'altura': [ent(r['altura_min_cm']), ent(r['altura_max_cm'])],
-            'alturaTxt': altura_legible(r['altura_texto']),
+            'alturaTxt': intervalo(ent(r['altura_min_cm']), ent(r['altura_max_cm']), 'cm'),
             'altitud': [ent(r['altitud_min_msnm']), ent(r['altitud_max_msnm'])],
             'altitudTxt': r['altitud_texto'],
             'flor': [MESES.index(m) + 1 for m in lista(r['floracion_meses'], ';')

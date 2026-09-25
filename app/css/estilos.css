@@ -739,6 +739,9 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 /* interlineado corto y algo mas de margen: asi el valor se despega de su
    etiqueta sin arrastrar hueco por debajo */
 .dato .va { font-size: var(--t-2); font-weight: 600; margin-top: 7px; line-height: 1.3; }
+/* el punto de color, separado de su nombre. En flex el hueco se lo comia
+   tambien la unidad de al lado («450-600   msnm»), asi que va solo aqui. */
+.dato .va .punto { display: inline-block; vertical-align: -1px; margin-right: 7px; }
 .dato .va small { font-weight: 400; color: var(--tenue); font-size: var(--t-1); }
 
 .bloque { padding: 16px; }

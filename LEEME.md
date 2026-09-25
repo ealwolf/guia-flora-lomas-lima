@@ -122,7 +122,8 @@ Guía de Flora de las Lomas de Lima/
 │   ├── propio/             tus correcciones. Ningún script escribe aquí.
 │   │   ├── color_flor.csv
 │   │   ├── sinonimos.csv
-│   │   └── loma_propia.csv
+│   │   ├── loma_propia.csv
+│   │   └── correcciones_texto.csv
 │   ├── iconos-phosphor.json
 │   └── iconos-propios.json   los dibujados aquí (la flor de la app)
 │
@@ -291,6 +292,38 @@ que el botón sale sólo cuando Chrome acaba de avisar de que se puede. Sin esa
 señal, la sección entera se esconde en vez de decir algo que podría ser falso.
 La excepción es el iPhone, donde Safari no avisa nunca y sólo queda explicar el
 camino a mano.
+
+---
+
+## Los intervalos, como los escribe la RAE
+
+Altura y altitud se arman con las cifras y se escriben **con guion y sin
+espacios**: `25-50 cm`, `450-600 msnm`. Es lo que dice el *Diccionario
+panhispánico de dudas* en «guion²», 3.1 b: «Indica intervalos expresados tanto
+en números arábigos como en romanos: las páginas 23-45». Guion, no raya (—) ni
+semirraya (–).
+
+Hacía falta porque el PDF trae la altura de cinco maneras distintas:
+`20 - 30 cm` (123 veces), `10- 40 cm` (5), `2 5 - 5 0 cm` (4), `20 - 30 cm.`
+(1) y `60 a 80 cm` (1). Las 134 especies tienen las dos cifras, así que
+componerlo desde ellas no pierde nada y sale igual en todas.
+
+En la prosa no se toca nada: allí un espacio entre cifras suele ser el
+separador de millares —«1 050 msnm»— y es un espacio normal, así que al
+copiarlo se copia tal cual.
+
+### Erratas sueltas de la extracción
+
+Las que no se arreglan con una regla general van en
+`datos/propio/correcciones_texto.csv`, una por fila, con el motivo:
+
+| Especie | Dice | Debería decir |
+|---|---|---|
+| N.º 94 *Nicotiana paniculata* | las 2 2 lomas visitadas | las 22 lomas visitadas |
+| N.º 104 *Phyla canescens* | entre los 400 800 msnm | entre los 400-800 msnm |
+
+Si alguna deja de hacer falta —porque se arregle en la extracción—
+`construir.py` avisa de que se puede quitar.
 
 ---
 

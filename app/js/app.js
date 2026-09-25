@@ -990,10 +990,11 @@ function abrirFicha(id, empujar) {
     '<div class="datos">' +
       dato('ruler', 'Altura', esc(e.alturaTxt || '—')) +
       dato('calendar-blank', 'Floración', esc(e.florTxt || '—')) +
+      // guion y sin espacios, como los intervalos de la RAE (guion2 3.1b)
       dato('mountains', 'Altitud',
-           e.altitud[0] != null ? e.altitud[0] + '–' + e.altitud[1] + ' <small>msnm</small>' : '—') +
-      dato('flower', 'Color de la flor', e.color ? '<span class="punto" style="display:inline-block;background:' +
-           colorHex(e.color) + '"></span> ' + esc(e.color) : '—') +
+           e.altitud[0] != null ? e.altitud[0] + '-' + e.altitud[1] + ' <small>msnm</small>' : '—') +
+      dato('flower', 'Color de la flor', e.color ? '<span class="punto" style="background:' +
+           colorHex(e.color) + '"></span>' + esc(e.color) : '—') +
     '</div>' +
 
     '<div class="lateral">' +
