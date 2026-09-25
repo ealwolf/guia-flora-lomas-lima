@@ -449,8 +449,9 @@ function ponerToques() {
     t.setAttribute('r', Math.max(R, Math.max(c.width, c.height) / 2).toFixed(2));
     t.setAttribute('class', 'toque');
     t.setAttribute('data-loma', p.getAttribute('data-loma'));
-    t.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'title'))
-     .textContent = nombreLoma[p.getAttribute('data-loma')] || '';
+    // aria-label y no <title>: el <title> saca ademas el globo del sistema,
+    // que se solaparia con nuestra etiqueta y llega tarde
+    t.setAttribute('aria-label', nombreLoma[p.getAttribute('data-loma')] || '');
     svg.appendChild(t);                 // encima de todo, para recibir el toque
     hechos++;
   });
@@ -584,7 +585,12 @@ $('#mapa-menos').addEventListener('click', function () { acercar(1 / 1.7); });
     raton = { x: ev.clientX, y: ev.clientY, movido: 0, id: ev.pointerId, activo: false };
   });
   caja.addEventListener('pointermove', function (ev) {
+    if (ev.pointerType === 'mouse' && !(raton && raton.activo)) {
+      var l = ev.target.closest && ev.target.closest('[data-loma]');
+      etiquetaMapa(l && l.getAttribute('data-loma'), ev.clientX, ev.clientY);
+    }
     if (!raton || ev.pointerId !== raton.id) return;
+    if (raton.activo) etiquetaMapa(null);
     var dx = ev.clientX - raton.x, dy = ev.clientY - raton.y;
     raton.movido += Math.abs(dx) + Math.abs(dy);
     if (!raton.activo) {
@@ -607,6 +613,7 @@ $('#mapa-menos').addEventListener('click', function () { acercar(1 / 1.7); });
   }
   caja.addEventListener('pointerup', soltar);
   caja.addEventListener('pointercancel', soltar);
+  caja.addEventListener('pointerleave', function () { etiquetaMapa(null); });
 
   caja.addEventListener('dblclick', function (ev) {
     if (!MV) return;
@@ -621,6 +628,40 @@ $('#mapa-menos').addEventListener('click', function () { acercar(1 / 1.7); });
     return t;
   };
 })();
+
+/* El nombre sobre el mapa: al pasar el raton, y un momento al elegir. */
+function puntoDeLoma(id) {
+  var c = $('#mapa-elige circle.toque[data-loma="' + id + '"]') ||
+          $('#mapa-elige [data-loma="' + id + '"]');
+  if (!c) return null;
+  var r = c.getBoundingClientRect(), m = $('.mapa-caja').getBoundingClientRect();
+  return { x: r.left + r.width / 2 - m.left, y: r.top + r.height / 2 - m.top };
+}
+
+function etiquetaMapa(id, cx, cy) {
+  var e = $('#mapa-etiqueta');
+  if (!e) return;
+  if (!id) { e.classList.remove('visible'); return; }
+  var m = $('.mapa-caja').getBoundingClientRect();
+  e.textContent = nombreLoma[id] || id;
+  e.style.left = (cx - m.left) + 'px';
+  e.style.top = (cy - m.top) + 'px';
+  e.classList.add('visible');
+}
+
+var avisoLomaT;
+function avisarLoma(id, puesta) {
+  var a = $('#mapa-aviso'), p = puntoDeLoma(id);
+  if (!a || !p) return;
+  a.style.left = p.x + 'px';
+  a.style.top = p.y + 'px';
+  a.className = 'mapa-aviso' + (puesta ? '' : ' no');
+  a.innerHTML = svgIcono(puesta ? 'check' : 'x') + esc(nombreLoma[id] || id);
+  void a.offsetWidth;                   // reinicia la animacion si se repite
+  a.classList.add('vuela');
+  clearTimeout(avisoLomaT);
+  avisoLomaT = setTimeout(function () { a.classList.remove('vuela'); }, 1100);
+}
 
 function sincronizarMapa() {
   if (!mapaPuesto) return;
@@ -638,8 +679,10 @@ $('#mapa-elige').addEventListener('click', function (ev) {
   if (this.tragaClick && this.tragaClick()) return;   // venia de un gesto
   var t = ev.target.closest('[data-loma]');
   if (!t) return;
-  alterna(F.loma, t.getAttribute('data-loma'));
+  var id = t.getAttribute('data-loma');
+  alterna(F.loma, id);
   render();
+  avisarLoma(id, F.loma.indexOf(id) >= 0);
 });
 
 $$('[data-vista]').forEach(function (b) {

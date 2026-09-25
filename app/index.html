@@ -135,9 +135,11 @@ window.addEventListener('beforeinstallprompt', function (ev) {
         <div class="mapa-caja">
           <div class="mapa-elige" id="mapa-elige"></div>
           <div class="mapa-zoom">
-            <button id="mapa-mas" aria-label="Acercar el mapa">+</button>
-            <button id="mapa-menos" aria-label="Alejar el mapa" disabled>−</button>
+            <button id="mapa-mas" aria-label="Acercar el mapa" data-ico="plus"></button>
+            <button id="mapa-menos" aria-label="Alejar el mapa" data-ico="minus" disabled></button>
           </div>
+          <div class="mapa-etiqueta" id="mapa-etiqueta" aria-hidden="true"></div>
+          <div class="mapa-aviso" id="mapa-aviso" aria-hidden="true"></div>
         </div>
         <p class="pista" id="mapa-pista"></p>
       </div>

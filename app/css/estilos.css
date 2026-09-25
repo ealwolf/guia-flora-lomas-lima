@@ -362,6 +362,9 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   margin: 0 0 9px; font-size: var(--t-0); font-weight: 700; letter-spacing: .07em;
   text-transform: uppercase; color: var(--tenue);
   display: flex; align-items: center; gap: 7px;
+  /* la altura del boton Quitar, que aparece y desaparece: sin esto la fila
+     del titulo daba un salto al poner el primer filtro de cada campo */
+  min-height: 27px;
 }
 .envoltura { display: flex; flex-wrap: wrap; gap: 7px; }
 /* quitar un solo campo, sin tocar los demas */
@@ -392,9 +395,10 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   border-radius: 9px; padding: 3px; box-shadow: var(--sombra);
 }
 .mapa-zoom button {
-  width: 30px; height: 30px; border-radius: 6px; font-size: var(--t-2);
-  font-weight: 700; line-height: 1; color: var(--texto);
+  width: 34px; height: 34px; border-radius: 7px; color: var(--texto);
+  display: grid; place-items: center;
 }
+.mapa-zoom .ico { width: 22px; height: 22px; }
 .mapa-zoom button:hover:not(:disabled) { background: var(--superficie-2); }
 .mapa-zoom button:disabled { opacity: .35; cursor: default; }
 .mapa-elige svg { width: 100%; height: auto; display: block; border-radius: var(--r-s); }
@@ -417,6 +421,47 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    la loma recien elegida se veia mas palida que las demas elegidas */
 #mapa-elige .loma:not(.activa):hover { fill: color-mix(in srgb, var(--acento) 55%, transparent); }
 #mapa-pista { text-align: center; }
+
+/* El nombre al pasar el ratón. pointer-events:none es lo que impide que se
+   pueda pasar por encima de la propia etiqueta: sin eso, el puntero entra en
+   ella, deja de estar sobre la loma, la etiqueta se esconde, el puntero vuelve
+   a la loma... y parpadea sin parar. Tampoco se puede seleccionar su texto. */
+.mapa-etiqueta, .mapa-aviso {
+  position: absolute; pointer-events: none; -webkit-user-select: none;
+  user-select: none; white-space: nowrap; z-index: 3;
+}
+.mapa-etiqueta {
+  padding: 3px 9px; border-radius: 7px;
+  font-size: var(--t-0); font-weight: 600;
+  background: var(--texto); color: var(--fondo);
+  transform: translate(-50%, -155%); opacity: 0; transition: opacity .12s;
+}
+.mapa-etiqueta.visible { opacity: .95; }
+
+/* Al elegir, el nombre sale un momento sobre la propia loma: la lista de
+   elegidas está debajo, y en un mapa no apetece bajar la vista para
+   comprobar qué acabas de tocar. */
+.mapa-aviso {
+  z-index: 4; display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 999px;
+  font-size: var(--t-0); font-weight: 700;
+  background: var(--acento); color: var(--sobre-acento);
+  opacity: 0; transform: translate(-50%, -50%);
+}
+.mapa-aviso .ico { width: 13px; height: 13px; }
+.mapa-aviso.no { background: var(--superficie-2); color: var(--tenue); }
+.mapa-aviso.vuela { animation: avisoLoma 1.1s ease-out; }
+@keyframes avisoLoma {
+  0%   { opacity: 0; transform: translate(-50%, -25%) scale(.85); }
+  16%  { opacity: 1; transform: translate(-50%, -95%) scale(1); }
+  68%  { opacity: 1; transform: translate(-50%, -110%); }
+  100% { opacity: 0; transform: translate(-50%, -150%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mapa-aviso.vuela { animation: avisoLomaQuieto 1.1s steps(1, end); }
+  @keyframes avisoLomaQuieto { 0%, 90% { opacity: 1; transform: translate(-50%, -95%); }
+    100% { opacity: 0; } }
+}
 .panel-pie {
   display: flex; gap: 10px; padding: 12px 16px;
   padding-bottom: calc(12px + env(safe-area-inset-bottom));

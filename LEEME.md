@@ -175,7 +175,9 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
   buscar un nombre. Las dos vistas comparten la selección, así que se cambia de
   una a otra sin perder nada. Cada loma lleva una zona de toque de 28 px,
   porque las siluetas reales son diminutas, y debajo se leen los nombres de
-  las que llevas elegidas.
+  las que llevas elegidas. Con el ratón, el nombre aparece al pasar por encima;
+  al elegir una, su nombre sale un momento sobre la propia loma, para no tener
+  que bajar la vista a la lista.
 - El mapa del filtro se **acerca** de cuatro maneras: los botones + y −, doble
   toque, doble toque sostenido y arrastrando arriba o abajo, y pellizco. Una
   vez ampliado se mueve **con dos dedos** (o arrastrando con el ratón). Con un
