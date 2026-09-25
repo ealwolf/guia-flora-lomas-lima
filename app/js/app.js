@@ -200,7 +200,10 @@ function ordenActual() {
 function guardado(clave, porDefecto) {
   try { return localStorage.getItem(clave) || porDefecto; } catch (e) { return porDefecto; }
 }
-F.orden = guardado('orden', 'guia');
+/* De entrada, por nombre comun: el orden del libro sirve a quien tenga el
+   libro delante, y no es el caso casi nunca. Quien lo quiera lo tiene en la
+   lista. */
+F.orden = guardado('orden', 'comun');
 F.dir = guardado('ordenDir', 'asc');
 
 var CONSERV = [
@@ -608,14 +611,15 @@ function pintarOrden() {
   pintarIconos($('#panel-orden'));
 }
 
-/* El boton lo dice todo: con el orden del libro pone «Ordenar», y con
-   cualquier otro se marca y lleva su nombre. Antes salia como una ficha en la
-   fila de filtros puestos y parecia un filtro mas, que no lo es: un filtro
-   quita especies y un orden solo las mueve. */
+/* El boton lleva siempre el criterio puesto, porque ordenar siempre lo esta:
+   la lista sale en algun orden, se haya elegido o no. Antes con «Guia» de
+   arriba abajo ponia «Ordenar» y se quedaba apagado, como si no hubiera nada
+   elegido, y el mismo «Guia» al reves si se marcaba: el mismo criterio se
+   veia de dos maneras. Tampoco se marca en color: el color es de lo que quita
+   especies, y un orden solo las mueve. El nombre ya dice cual es. */
 function pintarBotonOrden() {
   var o = ordenActual();
   var i = F.dir === 'desc' ? 1 : 0;
-  var propio = F.orden !== 'guia' || F.dir !== 'asc';
   var b = $('#btn-orden');
   /* El icono lleva el sentido: sort-ascending o sort-descending. Se sigue
      leyendo como «ordenar» —son rayas de distinto largo con su flecha— pero
@@ -623,8 +627,7 @@ function pintarBotonOrden() {
      entero a la vista: criterio y sentido. */
   b.querySelector('.ico').outerHTML =
       svgIcono(F.dir === 'desc' ? 'sort-descending' : 'sort-ascending');
-  $('#btn-orden-txt').textContent = propio ? o.txt : 'Ordenar';
-  b.classList.toggle('puesto', propio);
+  $('#btn-orden-txt').textContent = o.txt;
   b.setAttribute('aria-label', 'Ordenar. Ahora: ' + o.txt + ', ' + o.dir[i]);
 }
 

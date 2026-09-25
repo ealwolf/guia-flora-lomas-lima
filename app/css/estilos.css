@@ -324,12 +324,6 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .btn-barra .txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #btn-orden { min-width: 0; }
 .herramientas { min-width: 0; }
-/* con un orden distinto al del libro, el boton lo dice y se marca: asi no hace
-   falta una ficha que parezca un filtro mas */
-.btn-barra.puesto {
-  background: var(--acento-sua); border-color: transparent; color: var(--acento-txt);
-}
-.btn-barra.puesto .ico { color: var(--acento-txt); }
 /* Al bajar, el recuento y los filtros puestos se quedan pegados bajo la
    cabecera y se aprietan en una sola fila que se desliza a los lados. Si no,
    desaparecen justo cuando hace falta saber por que se ve lo que se ve, y
