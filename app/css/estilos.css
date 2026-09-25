@@ -377,11 +377,30 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    tocan, asi que arrastrar encima desplaza el panel como en cualquier otro
    sitio. Las lomas son diminutas, asi que cada una lleva ademas un circulo
    invisible de buen tamaño en su centro. */
-.mapa-elige { max-width: 300px; margin: 2px auto 0; }
+.mapa-caja { position: relative; max-width: 300px; margin: 2px auto 0; }
+.mapa-elige { overflow: hidden; border-radius: var(--r-s); }
+/* pan-y: un dedo sigue desplazando el panel como en cualquier otro sitio.
+   El mapa solo se mueve con dos, y asi no le roba el gesto al scroll. */
+.mapa-elige.ampliado { touch-action: pan-y; cursor: grab; }
+.mapa-elige.ampliado:active { cursor: grabbing; }
+.mapa-zoom {
+  position: absolute; top: 6px; right: 6px; display: flex; flex-direction: column;
+  gap: 4px; background: var(--superficie); border: 1px solid var(--borde);
+  border-radius: 9px; padding: 3px; box-shadow: var(--sombra);
+}
+.mapa-zoom button {
+  width: 30px; height: 30px; border-radius: 6px; font-size: var(--t-2);
+  font-weight: 700; line-height: 1; color: var(--texto);
+}
+.mapa-zoom button:hover:not(:disabled) { background: var(--superficie-2); }
+.mapa-zoom button:disabled { opacity: .35; cursor: default; }
 .mapa-elige svg { width: 100%; height: auto; display: block; border-radius: var(--r-s); }
 .mapa-elige .mapa-mar { fill: var(--mar); stroke: none; }
 .mapa-elige .mapa-tierra, .mapa-elige .mapa-relleno { fill: var(--tierra); stroke: none; }
-.mapa-elige .mapa-linea { fill: none; stroke: var(--costa); stroke-width: .35; }
+.mapa-elige .mapa-linea {
+  fill: none; stroke-width: .2; vector-effect: non-scaling-stroke;
+  stroke: color-mix(in srgb, var(--costa) 65%, transparent);
+}
 .mapa-elige .loma {
   fill: color-mix(in srgb, var(--tenue) 45%, transparent);
   stroke: none; transition: fill .15s;
@@ -511,11 +530,11 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 }
 .ficha-cab-int {
   display: flex; align-items: center; gap: 8px; width: 100%;
-  max-width: 1100px; margin-inline: auto; padding-inline: 12px;
+  max-width: 1400px; margin-inline: auto; padding-inline: 14px;
 }
 .ficha-cab .titulo { font-weight: 600; font-size: var(--t-2); flex: 1; min-width: 0;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ficha-int { max-width: 1100px; margin: 0 auto; padding: 0 0 60px; }
+.ficha-int { max-width: 1400px; margin: 0 auto; padding: 0 0 60px; }
 
 .galeria { position: relative; background: var(--superficie-2); }
 .galeria .grande { aspect-ratio: 4/3; position: relative; margin-inline: auto; }
@@ -620,16 +639,21 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 .mapa-lomas .mapa-mar { fill: var(--mar); stroke: none; }
 .mapa-lomas .mapa-tierra { fill: var(--tierra); stroke: none; }
 .mapa-lomas .mapa-relleno { fill: var(--tierra); stroke: none; }
-.mapa-lomas .mapa-linea { fill: none; stroke: var(--costa); stroke-width: .35; }
+.mapa-lomas .mapa-linea {
+  fill: none; stroke-width: .2; vector-effect: non-scaling-stroke;
+  stroke: color-mix(in srgb, var(--costa) 65%, transparent);
+}
 .mapa-lomas .loma { fill: color-mix(in srgb, var(--tenue) 42%, transparent); stroke: none; transition: fill .2s; }
-.mapa-lomas .loma.activa { fill: var(--rojo); }
-/* lo que hemos visto nosotros y la guia no cita, en el verde de la app */
-.mapa-lomas .loma.propia { fill: var(--acento); }
+.mapa-lomas .loma.activa { fill: var(--acento); }
+/* lo que hemos visto nosotros y la guia no cita: el mismo verde, mas claro */
+.mapa-lomas .loma.propia { fill: color-mix(in srgb, var(--acento) 55%, transparent); }
 /* la loma propia: el mismo chip, con el borde punteado. Lo justo para que se
    note que no viene del libro, sin ponerle una etiqueta encima */
 .lista-lomas .eti.propia { border: 1px dashed currentColor; }
 .lista-lomas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.lista-lomas .eti.activa { background: color-mix(in srgb, var(--rojo) 15%, transparent); color: var(--rojo); border-color: transparent; }
+.lista-lomas .eti.activa {
+  background: var(--acento-sua); color: var(--acento-txt); border-color: transparent;
+}
 
 .fuente {
   padding: 16px; border-top: 1px solid var(--borde); color: var(--tenue); font-size: var(--t-1);
@@ -691,10 +715,9 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
   .figura .mapa-lomas { max-width: 180px; }
 }
 @media (min-width: 800px) {
-  .ficha-cab-int { padding-inline: 20px; }
   .ficha-int { display: grid; grid-template-columns: minmax(0,1fr) 340px;
     grid-template-areas: "gal lat" "cab lat" "dat lat" "txt lat"; gap: 0 24px;
-    padding-inline: 20px; }
+    padding-inline: 14px; }
   .galeria   { grid-area: gal; border-radius: var(--r); overflow: hidden; margin-top: 14px; }
   .encabezado{ grid-area: cab; padding-inline: 0; }
   .datos     { grid-area: dat; border: 1px solid var(--borde); border-radius: var(--r); overflow: hidden; }
@@ -704,8 +727,7 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
   .fuente    { padding-inline: 0; }
 }
 @media (min-width: 1300px) {
-  .ficha-int { max-width: 1240px; grid-template-columns: minmax(0,1fr) 400px; gap: 0 32px; }
-  .ficha-cab-int { max-width: 1240px; padding-inline: 20px; }
+  .ficha-int { grid-template-columns: minmax(0,1fr) 400px; gap: 0 32px; }
   .galeria .grande { max-height: min(56vh, 450px); }
   .figura .perfil { max-width: 360px; }
   .figura .mapa-lomas { max-width: 290px; }

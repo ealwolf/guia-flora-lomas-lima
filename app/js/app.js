@@ -423,6 +423,8 @@ function montarMapaLomas() {
   if (!svg) return;
   svg.setAttribute('role', 'group');
   svg.setAttribute('aria-label', 'Mapa de las lomas');
+  var vb = (svg.getAttribute('viewBox') || '0 0 91 128').split(/[\s,]+/).map(Number);
+  MV = { x0: vb[0], y0: vb[1], w0: vb[2], h0: vb[3], x: vb[0], y: vb[1], z: 1 };
   // un circulo invisible por loma: las siluetas son diminutas y el dedo no
   var R = 4.2;
   $$('#mapa-elige [data-loma]').forEach(function (p) {
@@ -440,6 +442,106 @@ function montarMapaLomas() {
   mapaPuesto = true;
 }
 
+/* ---------- acercar el mapa ----------
+   Las siluetas reales son diminutas y en el sur se solapan. Se amplia moviendo
+   el viewBox, no con transform, para que los circulos de toque crezcan igual.
+   Mover: dos dedos. Con uno se desplaza el panel, como en el resto de la app. */
+var MV = null;
+
+function aplicarVista() {
+  var svg = $('#mapa-elige svg');
+  if (!svg || !MV) return;
+  var w = MV.w0 / MV.z, h = MV.h0 / MV.z;
+  MV.x = Math.max(MV.x0, Math.min(MV.x0 + MV.w0 - w, MV.x));
+  MV.y = Math.max(MV.y0, Math.min(MV.y0 + MV.h0 - h, MV.y));
+  svg.setAttribute('viewBox', [MV.x, MV.y, w, h].map(function (n) {
+    return n.toFixed(2);
+  }).join(' '));
+  var ampliado = MV.z > 1.001;
+  $('#mapa-elige').classList.toggle('ampliado', ampliado);
+  $('#mapa-menos').disabled = !ampliado;
+  $('#mapa-mas').disabled = MV.z >= 3.99;
+  sincronizarMapa();
+}
+
+function acercar(f, cx, cy) {
+  if (!MV) return;
+  var w = MV.w0 / MV.z, h = MV.h0 / MV.z;
+  if (cx == null) { cx = MV.x + w / 2; cy = MV.y + h / 2; }
+  var z = Math.max(1, Math.min(4, MV.z * f));
+  if (z === MV.z) return;
+  // el punto bajo los dedos se queda donde estaba
+  var k = MV.z / z;
+  MV.x = cx - (cx - MV.x) * k;
+  MV.y = cy - (cy - MV.y) * k;
+  MV.z = z;
+  if (MV.z <= 1.001) { MV.z = 1; MV.x = MV.x0; MV.y = MV.y0; }
+  aplicarVista();
+}
+
+$('#mapa-mas').addEventListener('click', function () { acercar(1.7); });
+$('#mapa-menos').addEventListener('click', function () { acercar(1 / 1.7); });
+
+(function () {
+  var caja = $('#mapa-elige');
+  var dedos = null;
+
+  function medio(t) {
+    return { x: (t[0].clientX + t[1].clientX) / 2,
+             y: (t[0].clientY + t[1].clientY) / 2,
+             d: Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY) };
+  }
+  function porPixel() {
+    var r = caja.getBoundingClientRect();
+    return r.width ? (MV.w0 / MV.z) / r.width : 0;
+  }
+
+  caja.addEventListener('touchstart', function (ev) {
+    dedos = (MV && ev.touches.length === 2) ? medio(ev.touches) : null;
+  }, { passive: true });
+
+  caja.addEventListener('touchmove', function (ev) {
+    if (!dedos || ev.touches.length !== 2) return;
+    ev.preventDefault();               // con dos dedos manda el mapa
+    var m = medio(ev.touches), k = porPixel();
+    MV.x -= (m.x - dedos.x) * k;
+    MV.y -= (m.y - dedos.y) * k;
+    if (dedos.d > 10 && m.d > 10) {
+      var w = MV.w0 / MV.z;
+      var r = caja.getBoundingClientRect();
+      var cx = MV.x + (m.x - r.left) * k, cy = MV.y + (m.y - r.top) * k;
+      acercar(m.d / dedos.d, cx, cy);
+    } else {
+      aplicarVista();
+    }
+    dedos = m;
+  }, { passive: false });
+
+  caja.addEventListener('touchend', function () { dedos = null; });
+
+  // raton: arrastrar cuando esta ampliado
+  var raton = null;
+  caja.addEventListener('pointerdown', function (ev) {
+    if (ev.pointerType !== 'mouse' || !MV || MV.z <= 1.001) return;
+    raton = { x: ev.clientX, y: ev.clientY, movido: 0 };
+    caja.setPointerCapture(ev.pointerId);
+  });
+  caja.addEventListener('pointermove', function (ev) {
+    if (!raton) return;
+    var k = porPixel();
+    MV.x -= (ev.clientX - raton.x) * k;
+    MV.y -= (ev.clientY - raton.y) * k;
+    raton.movido += Math.abs(ev.clientX - raton.x) + Math.abs(ev.clientY - raton.y);
+    raton.x = ev.clientX; raton.y = ev.clientY;
+    aplicarVista();
+  });
+  caja.addEventListener('pointerup', function (ev) {
+    if (raton && raton.movido > 4) caja.dataset.arrastrado = '1';
+    raton = null;
+    caja.releasePointerCapture && ev.pointerId && caja.releasePointerCapture(ev.pointerId);
+  });
+})();
+
 function sincronizarMapa() {
   if (!mapaPuesto) return;
   $$('#mapa-elige .loma').forEach(function (p) {
@@ -448,10 +550,12 @@ function sincronizarMapa() {
   var n = F.loma.length;
   $('#mapa-pista').textContent = n
       ? F.loma.map(function (id) { return nombreLoma[id] || id; }).join(' · ')
-      : 'Toca las lomas que te interesen.';
+      : (MV && MV.z > 1.001 ? 'Dos dedos para mover el mapa.'
+                            : 'Toca las lomas que te interesen.');
 }
 
 $('#mapa-elige').addEventListener('click', function (ev) {
+  if (this.dataset.arrastrado) { delete this.dataset.arrastrado; return; }
   var t = ev.target.closest('[data-loma]');
   if (!t) return;
   alterna(F.loma, t.getAttribute('data-loma'));
