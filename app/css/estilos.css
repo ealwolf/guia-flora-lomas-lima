@@ -470,6 +470,8 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .btn {
   flex: 1; padding: 12px; border-radius: 12px; font-weight: 600; font-size: var(--t-2);
   border: 1px solid var(--borde); background: var(--superficie); color: var(--texto);
+  /* los que llevan icono lo tenian pegado a la palabra */
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
 }
 .btn.principal { background: var(--acento); border-color: var(--acento); color: var(--sobre-acento); }
 
