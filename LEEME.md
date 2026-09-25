@@ -168,7 +168,15 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
   las que lo tienen como color principal; detrás, las que sólo lo tienen en un
   detalle (el centro amarillo de una flor blanca). La tarjeta muestra un punto
   por color.
-- Filtrar por grupo, mes de floración, altitud, loma, hábitat y familia.
+- Filtrar por grupo, mes de floración, altitud, loma, hábitat y familia. Cada
+  campo se **quita por separado** desde su propio *Quitar*, sin tocar los demás.
+- **La loma se elige de dos maneras**: por lista alfabética o **tocándola en el
+  mapa**, que es como piensa quien conoce la zona —«las de por aquí»— en vez de
+  buscar un nombre. Las dos vistas comparten la selección, así que se cambia de
+  una a otra sin perder nada. El mapa no tiene desplazamiento ni zoom propios:
+  es un dibujo fijo, así que arrastrar encima desplaza el panel como siempre.
+  Cada loma lleva una zona de toque de 28 px, porque las siluetas reales son
+  diminutas, y debajo se leen los nombres de las que llevas elegidas.
 - Encima de la rejilla, **una ficha por cada filtro puesto**, con su icono y
   quitable de una en una; el texto buscado es una más. Pasadas ocho se pliegan
   en un *+N más*, para que no empujen la rejilla. Al final de la fila,
@@ -268,10 +276,10 @@ lo publicado y otra lo observado, y la ficha las distingue.
 |---|---|---|
 | N.º 46 *Calceolaria pinnata* (Zapatito) | Villa María | observación propia |
 
-En la ficha, la loma propia sale **en verde y marcada «propia»** junto a las
-del libro en rojo, y el pie dice «7 de 22 lomas visitadas por la guía + 1 de
-observación propia». En el mapa se pinta del mismo verde. Y cuenta para el
-filtro: buscar *Villa María* ahora devuelve 57 especies en vez de 56.
+En la ficha, la loma propia lleva **el borde punteado** —lo justo para que se
+note que no viene del libro— y el pie dice «7 de 22 lomas visitadas por la guía
++ 1 de observación propia». En el mapa se pinta de verde en vez de rojo. Y
+cuenta para el filtro: buscar *Villa María* devuelve 57 especies en vez de 56.
 
 Para añadir más, pon el `loma_id` en la fila de la especie —varios separados
 por punto y coma— y vuelve a ejecutar `construir.py`. Los identificadores

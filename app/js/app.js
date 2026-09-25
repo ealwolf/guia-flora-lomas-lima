@@ -386,7 +386,11 @@ function pintarFiltros() {
     return chip(m, F.mes.indexOf(i + 1) >= 0, 'data-f="mes" data-v="' + (i + 1) + '"');
   }).join('');
 
-  $('#f-loma').innerHTML = G.lomas.map(function (l) {
+  // alfabetico: G.lomas viene en el orden de la leyenda del libro, que aqui
+  // no dice nada a quien busca su loma
+  $('#f-loma').innerHTML = G.lomas.slice().sort(function (a, b) {
+    return a.nombre.localeCompare(b.nombre, 'es');
+  }).map(function (l) {
     return chip(esc(l.nombre) + ' <span class="cuenta">' + l.nEsp + '</span>',
                 F.loma.indexOf(l.id) >= 0,
                 'data-f="loma" data-v="' + l.id + '"');
@@ -405,6 +409,76 @@ function pintarFiltros() {
   }).join('');
 }
 
+/* ---------- elegir lomas sobre el mapa ----------
+   Quien conoce la zona piensa «las de por aquí», no en una lista alfabética.
+   Las dos vistas leen y escriben el mismo F.loma, así que cambiar de una a
+   otra no pierde nada de lo elegido. */
+var mapaPuesto = false;
+
+function montarMapaLomas() {
+  if (mapaPuesto) return;
+  var caja = $('#mapa-elige');
+  caja.innerHTML = window.MAPA_SVG || '';
+  var svg = caja.querySelector('svg');
+  if (!svg) return;
+  svg.setAttribute('role', 'group');
+  svg.setAttribute('aria-label', 'Mapa de las lomas');
+  // un circulo invisible por loma: las siluetas son diminutas y el dedo no
+  var R = 4.2;
+  $$('#mapa-elige [data-loma]').forEach(function (p) {
+    var c = p.getBBox();
+    var t = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    t.setAttribute('cx', (c.x + c.width / 2).toFixed(2));
+    t.setAttribute('cy', (c.y + c.height / 2).toFixed(2));
+    t.setAttribute('r', Math.max(R, Math.max(c.width, c.height) / 2).toFixed(2));
+    t.setAttribute('class', 'toque');
+    t.setAttribute('data-loma', p.getAttribute('data-loma'));
+    t.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'title'))
+     .textContent = nombreLoma[p.getAttribute('data-loma')] || '';
+    svg.appendChild(t);                 // encima de todo, para recibir el toque
+  });
+  mapaPuesto = true;
+}
+
+function sincronizarMapa() {
+  if (!mapaPuesto) return;
+  $$('#mapa-elige .loma').forEach(function (p) {
+    p.classList.toggle('activa', F.loma.indexOf(p.getAttribute('data-loma')) >= 0);
+  });
+  var n = F.loma.length;
+  $('#mapa-pista').textContent = n
+      ? F.loma.map(function (id) { return nombreLoma[id] || id; }).join(' · ')
+      : 'Toca las lomas que te interesen.';
+}
+
+$('#mapa-elige').addEventListener('click', function (ev) {
+  var t = ev.target.closest('[data-loma]');
+  if (!t) return;
+  alterna(F.loma, t.getAttribute('data-loma'));
+  render();
+});
+
+$$('[data-vista]').forEach(function (b) {
+  b.addEventListener('click', function () {
+    var mapa = b.dataset.vista === 'mapa';
+    $$('[data-vista]').forEach(function (o) {
+      o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
+    });
+    if (mapa) montarMapaLomas();
+    $('#f-loma').classList.toggle('oculto', mapa);
+    $('#f-loma-mapa').classList.toggle('oculto', !mapa);
+    sincronizarMapa();
+  });
+});
+
+/* ---------- quitar un solo campo ---------- */
+$$('[data-limpia]').forEach(function (b) {
+  b.addEventListener('click', function () {
+    F[b.dataset.limpia] = [];
+    render();
+  });
+});
+
 /* fichas rápidas bajo el buscador: los colores, que es lo que se busca en campo */
 function pintarChipsRapidos() {
   var h = G.colores.map(function (c) {
@@ -421,6 +495,10 @@ function sincronizarChips() {
     var on = f === 'mes' ? F.mes.indexOf(+v) >= 0 : F[f].indexOf(v) >= 0;
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
+  $$('[data-limpia]').forEach(function (b) {
+    b.classList.toggle('oculto', !F[b.dataset.limpia].length);
+  });
+  sincronizarMapa();
 }
 
 document.addEventListener('click', function (ev) {
@@ -554,9 +632,9 @@ function abrirFicha(id, empujar) {
   var propias = e.lomasPropias || [];
   var lomasEti = e.lomas.map(function (id2) {
     var mia = propias.indexOf(id2) >= 0;
-    return '<span class="eti activa' + (mia ? ' propia' : '') + '">' +
-           svgIcono('map-pin') + esc(nombreLoma[id2] || id2) +
-           (mia ? ' <small>propia</small>' : '') + '</span>';
+    return '<span class="eti activa' + (mia ? ' propia' : '') + '"' +
+           (mia ? ' title="Observación propia: no figura en la guía"' : '') + '>' +
+           svgIcono('map-pin') + esc(nombreLoma[id2] || id2) + '</span>';
   }).join('');
 
   var html =

@@ -74,15 +74,21 @@ window.addEventListener('beforeinstallprompt', function (ev) {
   </div>
   <div class="panel-cuerpo">
     <div class="grupo">
-      <h3><span data-ico="flower" aria-hidden="true"></span> Color de la flor</h3>
+      <h3><span data-ico="flower" aria-hidden="true"></span> Color de la flor
+        <button class="limpia oculto" data-limpia="color">Quitar</button>
+      </h3>
       <div class="envoltura" id="f-color"></div>
     </div>
     <div class="grupo">
-      <h3><span data-ico="plant" aria-hidden="true"></span> Grupo</h3>
+      <h3><span data-ico="plant" aria-hidden="true"></span> Grupo
+        <button class="limpia oculto" data-limpia="grupo">Quitar</button>
+      </h3>
       <div class="envoltura" id="f-grupo"></div>
     </div>
     <div class="grupo">
-      <h3><span data-ico="calendar-blank" aria-hidden="true"></span> En flor durante</h3>
+      <h3><span data-ico="calendar-blank" aria-hidden="true"></span> En flor durante
+        <button class="limpia oculto" data-limpia="mes">Quitar</button>
+      </h3>
       <div class="envoltura" id="f-mes"></div>
     </div>
     <div class="grupo">
@@ -117,15 +123,29 @@ window.addEventListener('beforeinstallprompt', function (ev) {
       </div>
     </div>
     <div class="grupo">
-      <h3><span data-ico="map-trifold" aria-hidden="true"></span> Loma</h3>
+      <h3><span data-ico="map-trifold" aria-hidden="true"></span> Loma
+        <button class="limpia oculto" data-limpia="loma">Quitar</button>
+      </h3>
+      <div class="segmentado" role="group" aria-label="Cómo elegir la loma">
+        <button data-vista="lista" aria-pressed="true">Lista</button>
+        <button data-vista="mapa" aria-pressed="false">Mapa</button>
+      </div>
       <div class="envoltura" id="f-loma"></div>
+      <div id="f-loma-mapa" class="oculto">
+        <div class="mapa-elige" id="mapa-elige"></div>
+        <p class="pista" id="mapa-pista"></p>
+      </div>
     </div>
     <div class="grupo">
-      <h3><span data-ico="drop" aria-hidden="true"></span> Hábitat</h3>
+      <h3><span data-ico="drop" aria-hidden="true"></span> Hábitat
+        <button class="limpia oculto" data-limpia="habitat">Quitar</button>
+      </h3>
       <div class="envoltura" id="f-habitat"></div>
     </div>
     <div class="grupo">
-      <h3><span data-ico="leaf" aria-hidden="true"></span> Familia</h3>
+      <h3><span data-ico="leaf" aria-hidden="true"></span> Familia
+        <button class="limpia oculto" data-limpia="familia">Quitar</button>
+      </h3>
       <div class="envoltura" id="f-familia"></div>
     </div>
   </div>

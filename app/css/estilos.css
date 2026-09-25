@@ -364,6 +364,37 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   display: flex; align-items: center; gap: 7px;
 }
 .envoltura { display: flex; flex-wrap: wrap; gap: 7px; }
+/* quitar un solo campo, sin tocar los demas */
+.limpia {
+  margin-left: auto; font-size: var(--t-0); font-weight: 700; letter-spacing: .03em;
+  text-transform: none; padding: 4px 10px; border-radius: 8px;
+  color: var(--acento-txt); background: var(--acento-sua);
+}
+.limpia:hover { background: color-mix(in srgb, var(--acento) 22%, transparent); }
+
+/* ---------- elegir lomas sobre el mapa ----------
+   Sin desplazamiento ni zoom propios: es un dibujo fijo con zonas que se
+   tocan, asi que arrastrar encima desplaza el panel como en cualquier otro
+   sitio. Las lomas son diminutas, asi que cada una lleva ademas un circulo
+   invisible de buen tamaño en su centro. */
+.mapa-elige { max-width: 300px; margin: 2px auto 0; }
+.mapa-elige svg { width: 100%; height: auto; display: block; border-radius: var(--r-s); }
+.mapa-elige .mapa-mar { fill: var(--mar); stroke: none; }
+.mapa-elige .mapa-tierra, .mapa-elige .mapa-relleno { fill: var(--tierra); stroke: none; }
+.mapa-elige .mapa-linea { fill: none; stroke: var(--costa); stroke-width: .35; }
+.mapa-elige .loma {
+  fill: color-mix(in srgb, var(--tenue) 45%, transparent);
+  stroke: none; transition: fill .15s;
+}
+/* por id: el svg trae la clase mapa-lomas y esas reglas, que van despues en
+   el archivo, ganaban por orden y pintaban de rojo lo elegido. Aqui el rojo
+   significa otra cosa -donde vive la especie-, y esto es una seleccion */
+#mapa-elige .loma.activa { fill: var(--acento); }
+#mapa-elige .toque { fill: transparent; cursor: pointer; }
+/* solo las no elegidas: en el movil el hover se queda pegado tras el toque, y
+   la loma recien elegida se veia mas palida que las demas elegidas */
+#mapa-elige .loma:not(.activa):hover { fill: color-mix(in srgb, var(--acento) 55%, transparent); }
+#mapa-pista { text-align: center; }
 .panel-pie {
   display: flex; gap: 10px; padding: 12px 16px;
   padding-bottom: calc(12px + env(safe-area-inset-bottom));
@@ -594,8 +625,9 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 .mapa-lomas .loma.activa { fill: var(--rojo); }
 /* lo que hemos visto nosotros y la guia no cita, en el verde de la app */
 .mapa-lomas .loma.propia { fill: var(--acento); }
-.eti.propia { background: var(--acento-sua); color: var(--acento-txt);
-  border-color: transparent; }
+/* la loma propia: el mismo chip, con el borde punteado. Lo justo para que se
+   note que no viene del libro, sin ponerle una etiqueta encima */
+.lista-lomas .eti.propia { border: 1px dashed currentColor; }
 .lista-lomas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .lista-lomas .eti.activa { background: color-mix(in srgb, var(--rojo) 15%, transparent); color: var(--rojo); border-color: transparent; }
 
