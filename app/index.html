@@ -47,7 +47,6 @@ window.addEventListener('beforeinstallprompt', function (ev) {
       <button class="btn-icono" id="btn-info" aria-label="Sobre la guía" data-ico="info"></button>
       <button class="btn-icono" id="btn-guardar" aria-label="Usar sin conexión"
               data-ico="descargar"><i class="pendiente oculto" aria-hidden="true"></i></button>
-      <button class="btn-icono" id="btn-filtros" aria-label="Filtros" data-ico="sliders-horizontal"></button>
     </div>
   </div>
 
@@ -59,6 +58,16 @@ window.addEventListener('beforeinstallprompt', function (ev) {
     <div class="barra-filtros" id="barra-filtros">
       <div class="barra-int">
         <div class="resumen"><span id="cuenta">—</span></div>
+        <div class="herramientas">
+          <button class="btn-barra" id="btn-orden" aria-haspopup="dialog">
+            <span data-ico="rows" aria-hidden="true"></span>
+            <span class="txt" id="btn-orden-txt">Ordenar</span>
+          </button>
+          <button class="btn-barra" id="btn-filtros" aria-haspopup="dialog">
+            <span data-ico="sliders-horizontal" aria-hidden="true"></span>
+            <span class="txt">Filtros</span>
+          </button>
+        </div>
         <div class="activos oculto" id="activos" aria-live="polite"
              aria-label="Filtros puestos"></div>
       </div>
@@ -79,10 +88,6 @@ window.addEventListener('beforeinstallprompt', function (ev) {
     <button class="btn-icono" id="cerrar-panel" aria-label="Cerrar" data-ico="x"></button>
   </div>
   <div class="panel-cuerpo">
-    <div class="grupo">
-      <h3><span data-ico="rows" aria-hidden="true"></span> Ordenar</h3>
-      <div class="envoltura" id="f-orden"></div>
-    </div>
     <div class="grupo">
       <h3><span data-ico="flower" aria-hidden="true"></span> Color de la flor
         <button class="limpia oculto" data-limpia="color">Quitar</button>
@@ -187,6 +192,16 @@ window.addEventListener('beforeinstallprompt', function (ev) {
     <button class="btn" id="btn-reset">Limpiar</button>
     <button class="btn principal" id="btn-aplicar">Ver resultados</button>
   </div>
+</section>
+
+<!-- ---------- ordenar ---------- -->
+<section class="panel" id="panel-orden" role="dialog" aria-modal="true"
+         aria-labelledby="orden-tit">
+  <div class="panel-cab">
+    <h2 id="orden-tit">Ordenar</h2>
+    <button class="btn-icono" id="cerrar-orden" aria-label="Cerrar" data-ico="x"></button>
+  </div>
+  <div class="panel-cuerpo" id="orden-lista" role="radiogroup" aria-label="Ordenar por"></div>
 </section>
 
 <!-- ---------- apariencia ---------- -->

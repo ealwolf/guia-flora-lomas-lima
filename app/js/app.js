@@ -388,13 +388,6 @@ function pintarActivos() {
         (x.marca || svgIcono(x.ico)) + esc(x.et) + svgIcono('x', 'quita') + '</button>';
   }).join('');
 
-  if (F.orden !== 'guia') {
-    var o = ORDENES.filter(function (x) { return x.id === F.orden; })[0];
-    html += '<button class="chip" id="quita-orden" title="Orden: ' + esc(o.txt) +
-        '" aria-label="Volver al orden de la guía">' + svgIcono('rows') +
-        esc(o.txt) + svgIcono('x', 'quita') + '</button>';
-  }
-
   if (altActiva()) {
     var txt = F.altModo === 'cota'
         ? F.altitud + ' msnm'
@@ -421,19 +414,49 @@ $('#activos').addEventListener('click', function (ev) {
   if (ev.target.closest('#mas-chips')) { chipsAbiertos = true; pintarActivos(); }
   else if (ev.target.closest('#menos-chips')) { chipsAbiertos = false; pintarActivos(); }
   else if (ev.target.closest('#quita-alt')) quitarAltitud();
-  else if (ev.target.closest('#quita-orden')) elegirOrden('guia');
   else if (ev.target.closest('#quita-q')) quitarBusqueda();
   else if (ev.target.closest('#quita-todo')) { quitarBusqueda(true); limpiarTodo(); }
 });
 
+function pintarOrden() {
+  $('#orden-lista').innerHTML = ORDENES.map(function (o) {
+    return '<button class="opcion" role="radio" data-orden="' + o.id +
+        '" aria-checked="' + (F.orden === o.id) + '">' +
+        svgIcono(o.id === 'guia' ? 'book-open' : 'rows') +
+        '<span>' + esc(o.txt) + '</span>' + svgIcono('check', 'visto') + '</button>';
+  }).join('');
+}
+
+/* El boton lo dice todo: con el orden del libro pone «Ordenar», y con
+   cualquier otro se marca y lleva su nombre. Antes salia como una ficha en la
+   fila de filtros puestos y parecia un filtro mas, que no lo es: un filtro
+   quita especies y un orden solo las mueve. */
+function pintarBotonOrden() {
+  var o = ORDENES.filter(function (x) { return x.id === F.orden; })[0] || ORDENES[0];
+  var propio = F.orden !== 'guia';
+  $('#btn-orden-txt').textContent = propio ? o.txt : 'Ordenar';
+  $('#btn-orden').classList.toggle('puesto', propio);
+  $('#btn-orden').setAttribute('aria-label', 'Ordenar. Ahora: ' + o.txt);
+}
+
 function elegirOrden(id) {
   F.orden = id;
   try { localStorage.setItem('orden', id); } catch (e) {}
-  $$('[data-orden]').forEach(function (x) {
-    x.setAttribute('aria-pressed', x.dataset.orden === id ? 'true' : 'false');
-  });
+  pintarOrden();
+  pintarBotonOrden();
   render();
 }
+
+function abrirOrden(v) {
+  if (v) pintarOrden();
+  abrirPanel(v, '#panel-orden');
+}
+$('#btn-orden').addEventListener('click', function () { abrirOrden(true); });
+$('#cerrar-orden').addEventListener('click', function () { abrirOrden(false); });
+$('#orden-lista').addEventListener('click', function (ev) {
+  var b = ev.target.closest('[data-orden]');
+  if (b) elegirOrden(b.dataset.orden);
+});
 
 function quitarBusqueda(callado) {
   F.q = ''; $('#q').value = ''; $('#limpiar').classList.add('oculto');
@@ -462,7 +485,7 @@ if (window.ResizeObserver) new ResizeObserver(medirCabecera).observe($('.cab'));
 
 function mirarBarra() {
   var barra = $('#barra-filtros');
-  var hay = activos() > 0 || !!F.q || F.orden !== 'guia';
+  var hay = activos() > 0 || !!F.q;
   var tope = parseFloat(getComputedStyle(document.documentElement)
       .getPropertyValue('--alto-cab')) || 0;
   /* Contra su sitio en el documento, no contra su posicion en pantalla: una
@@ -536,10 +559,6 @@ function pintarFiltros() {
     return chip(esc(h.nombre) + ' <span class="cuenta">' + h.n + '</span>',
                 F.habitat.indexOf(h.nombre) >= 0,
                 'data-f="habitat" data-v="' + esc(h.nombre) + '"');
-  }).join('');
-
-  $('#f-orden').innerHTML = ORDENES.map(function (o) {
-    return chip(esc(o.txt), F.orden === o.id, 'data-orden="' + o.id + '"');
   }).join('');
 
   $('#f-conserv').innerHTML = CONSERV.map(function (c) {
@@ -889,16 +908,6 @@ function sincronizarChips() {
 }
 
 document.addEventListener('click', function (ev) {
-  var o = ev.target.closest('[data-orden]');
-  if (o) {
-    F.orden = o.dataset.orden;
-    try { localStorage.setItem('orden', F.orden); } catch (e) {}
-    $$('[data-orden]').forEach(function (x) {
-      x.setAttribute('aria-pressed', x === o ? 'true' : 'false');
-    });
-    render();
-    return;
-  }
   var b = ev.target.closest('[data-f]');
   if (!b) return;
   var f = b.dataset.f, v = b.dataset.v;
@@ -1723,6 +1732,7 @@ pintarFiltros();
 pintarAltitud();
 pintarRango();
 pintarIconos(document);
+pintarBotonOrden();
 pintarGuardar();
 render();
 medirCabecera();

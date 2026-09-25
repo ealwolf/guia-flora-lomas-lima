@@ -301,10 +301,30 @@ button {
 
 /* ---------- resultados ---------- */
 main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
-.resumen {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 10px; color: var(--tenue); font-size: var(--t-1); margin: 2px 0 10px;
+/* La barra del contenido: cuantas hay, ordenar y filtrar. Estos dos bajaron
+   aqui desde la cabecera, que se queda con lo de la app entera -apariencia,
+   sobre la guia, guardar-; ordenar y filtrar son del contenido y su sitio es
+   junto al recuento de lo que afectan. */
+.barra-int {
+  display: grid; grid-template-columns: 1fr auto;
+  grid-template-areas: 'cuenta herr' 'chips chips';
+  align-items: center; gap: 0 10px;
 }
+.resumen { grid-area: cuenta; color: var(--tenue); font-size: var(--t-1); }
+.herramientas { grid-area: herr; display: flex; gap: 8px; padding: 6px 0 10px; }
+.btn-barra {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 38px;
+  padding: 0 14px; border-radius: 999px; font-size: var(--t-1); font-weight: 600;
+  border: 1px solid var(--borde); background: var(--superficie); color: var(--texto);
+}
+.btn-barra:hover { border-color: color-mix(in srgb, var(--acento) 45%, var(--borde)); }
+.btn-barra .ico { width: 17px; height: 17px; color: var(--tenue); }
+/* con un orden distinto al del libro, el boton lo dice y se marca: asi no hace
+   falta una ficha que parezca un filtro mas */
+.btn-barra.puesto {
+  background: var(--acento-sua); border-color: transparent; color: var(--acento-txt);
+}
+.btn-barra.puesto .ico { color: var(--acento-txt); }
 /* Al bajar, el recuento y los filtros puestos se quedan pegados bajo la
    cabecera y se aprietan en una sola fila que se desliza a los lados. Si no,
    desaparecen justo cuando hace falta saber por que se ve lo que se ve, y
@@ -322,10 +342,15 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   position: fixed; top: var(--alto-cab, 0px); left: 0; right: 0; z-index: 30;
   background: var(--fondo); border-bottom: 1px solid var(--borde);
 }
+/* apretada, todo en una linea: recuento, fichas que se deslizan, y los dos
+   botones al final para que filtrar siga a mano sin volver arriba */
 .barra-filtros.compacta .barra-int {
-  display: flex; align-items: center; gap: 12px;
+  display: flex; align-items: center; gap: 10px;
   max-width: 1400px; margin-inline: auto; padding: 7px 14px;
 }
+.barra-filtros.compacta .herramientas { padding: 0; order: 3; flex: none; }
+.barra-filtros.compacta .btn-barra { padding: 0 11px; }
+.barra-filtros.compacta .btn-barra .txt { display: none; }
 .barra-filtros.compacta .resumen {
   margin: 0; flex: none; font-variant-numeric: tabular-nums; font-weight: 600;
   color: var(--texto);
