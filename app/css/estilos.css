@@ -817,6 +817,21 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
   .textos    { grid-area: txt; }
   .lateral   { grid-area: lat; padding-top: 14px; display: flex; flex-direction: column; gap: 14px; }
   .bloque    { padding-inline: 0; }
+  /* Los cuatro textos, en dos columnas cuando hay sitio. A 940 px de columna,
+     una linea de 70ch dejaba vacio un tercio del ancho, y estirarla a noventa
+     y pico caracteres se lee peor: el ojo pierde el renglon. Partidos en dos
+     salen a unos 48ch, que es una medida comoda, y no sobra nada.
+     Con columns no hace falta punto de corte: caben dos o se queda en una.
+     break-inside mantiene entero cada bloque, que son secciones sueltas y no
+     un texto corrido. */
+  .textos { columns: 400px 2; column-gap: 34px; }
+  .textos .bloque {
+    break-inside: avoid; padding-block: 0 16px; margin-bottom: 16px;
+    border-top: 0; border-bottom: 1px solid var(--borde);
+  }
+  .textos .bloque:last-of-type { border-bottom: 0; margin-bottom: 0; }
+  .textos .bloque p { max-width: none; }
+  .fuente { column-span: all; }
   .fuente    { padding-inline: 0; }
 }
 @media (min-width: 1300px) {

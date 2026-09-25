@@ -206,6 +206,10 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
   disco. En las tarjetas se encuadran a 4:3 para que la rejilla salga pareja,
   pero eso es sólo el encuadre de la miniatura. En la ficha se ven **enteras**
   —26 de las 295 son verticales— y al tocarlas se abren a tamaño completo.
+- En pantallas anchas los cuatro textos se reparten en **dos columnas**: a 940
+  px, una línea de 70 caracteres dejaba vacío un tercio del ancho, y estirarla
+  a noventa y pico se lee peor. Partidos salen a unos 48 caracteres. No hay
+  punto de corte: caben dos columnas o se quedan en una.
 - Ficha con **todo lo que trae el libro**: las cuatro secciones de texto
   (Descripción, Hábitat, Distribución, Situación actual), altura, floración,
   origen, endemismo, categoría de amenaza, hábitats y las fotos.
