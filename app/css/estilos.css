@@ -79,6 +79,15 @@
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
+/* El sitio de la barra de desplazamiento se reserva siempre. Si no, filtrar a
+   pocos resultados hace que la pagina deje de desbordar, la barra desaparece y
+   todo se corre 15 px a la derecha: con Blanco (53) la habia y con Anaranjado
+   (5) no. Tambien evita el salto al abrir un panel, que bloquea el
+   desplazamiento del fondo. En el movil las barras van superpuestas y no
+   ocupan sitio, asi que ahi no cambia nada.
+   scrollbar-gutter:stable seria lo suyo, pero en este Chrome no reserva nada
+   -medido: 966 px con y sin el-, asi que se deja la barra siempre puesta. */
+html { overflow-y: scroll; }
 body {
   background: var(--fondo);
   color: var(--texto);
