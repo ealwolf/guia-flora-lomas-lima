@@ -318,7 +318,12 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   border: 1px solid var(--borde); background: var(--superficie); color: var(--texto);
 }
 .btn-barra:hover { border-color: color-mix(in srgb, var(--acento) 45%, var(--borde)); }
-.btn-barra .ico { width: 17px; height: 17px; color: var(--tenue); }
+.btn-barra .ico { width: 17px; height: 17px; color: var(--tenue); flex: none; }
+/* el nombre del orden puede ser largo: que encoja antes que desbordar la fila */
+.btn-barra { min-width: 0; }
+.btn-barra .txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#btn-orden { min-width: 0; }
+.herramientas { min-width: 0; }
 /* con un orden distinto al del libro, el boton lo dice y se marca: asi no hace
    falta una ficha que parezca un filtro mas */
 .btn-barra.puesto {
@@ -607,6 +612,8 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   display: inline-flex; gap: 3px; padding: 3px; margin-bottom: 10px;
   background: var(--superficie-2); border-radius: 11px;
 }
+.segmentado button .ico { width: 14px; height: 14px; margin-right: 5px;
+  vertical-align: -2px; }
 .segmentado button {
   padding: 6px 13px; border-radius: 8px; font-size: var(--t-1); font-weight: 600;
   color: var(--tenue); transition: background .15s, color .15s;

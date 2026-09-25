@@ -187,12 +187,16 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
 - **Cara de la loma**: occidental (85), ambas (32) u oriental (17). Sale del
   **dibujo** del perfil, que es el único dato que tienen las 134; el texto sólo
   lo dice en 103 y en 12 no coinciden.
-- **Ordenar** de cinco maneras, desde su propio botón: orden de la guía,
-  nombre común, nombre científico, altitud de la más baja, y de menos lomas a
-  más —que saca delante lo más raro: 31 especies viven en una única loma—. Se
-  recuerda entre visitas, y cuando no es el de la guía el botón lleva el nombre
-  del orden puesto y se marca. No sale como ficha: un filtro quita especies y
-  un orden sólo las mueve, y mezclarlos confunde.
+- **Ordenar** desde su propio botón, con el criterio y el sentido separados:
+  *Guía*, *Nombre común*, *Nombre científico*, *Altitud* o *N.º de lomas*, y
+  debajo un interruptor para el sentido. Son cinco criterios y un interruptor
+  en vez de diez opciones, y el sentido se nombra según el criterio —«A → Z»,
+  «1 → 134», «Menos / Más»— que dice bastante más que «ascendente».
+
+  *N.º de lomas* con «Menos» delante es el que más saca del dato: 31 especies
+  viven en una única loma. Los dos ajustes se recuerdan entre visitas, y cuando
+  no es el orden del libro el botón lleva el nombre del criterio y se marca. No
+  sale como ficha: un filtro quita especies y un orden sólo las mueve.
 - **Ordenar y Filtros viven en la barra del contenido**, junto al recuento al
   que afectan. La cabecera se queda con lo de la app entera: apariencia, sobre
   la guía y guardar. Al bajar, esos dos botones se encogen a su icono y se

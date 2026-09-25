@@ -183,17 +183,24 @@ var F = { q: '', color: [], grupo: [], mes: [], loma: [], habitat: [], familia: 
    -el texto solo lo dice en 103-. Se calcula una vez y no en cada filtrado. */
 G.especies.forEach(function (e) { e._cara = caraDe(e); });
 
+/* El criterio y el sentido van aparte: antes «de menos lomas a más» metia las
+   dos cosas en una opcion, y para verlo al reves hacia falta otra opcion mas.
+   Asi son cinco criterios y un interruptor, y no diez opciones. */
 var ORDENES = [
-  { id: 'guia',       txt: 'Orden de la guía' },
-  { id: 'comun',      txt: 'Nombre común' },
-  { id: 'cientifico', txt: 'Nombre científico' },
-  { id: 'altitud',    txt: 'Altitud, de la más baja' },
-  { id: 'rareza',     txt: 'De menos lomas a más' }
+  { id: 'guia',       txt: 'Guía',              ico: 'book-open', dir: ['1 → 134', '134 → 1'] },
+  { id: 'comun',      txt: 'Nombre común',      ico: 'text-aa',   dir: ['A → Z', 'Z → A'] },
+  { id: 'cientifico', txt: 'Nombre científico', ico: 'leaf',      dir: ['A → Z', 'Z → A'] },
+  { id: 'altitud',    txt: 'Altitud',           ico: 'mountains', dir: ['Más baja', 'Más alta'] },
+  { id: 'lomas',      txt: 'N.º de lomas',      ico: 'map-pin',   dir: ['Menos', 'Más'] }
 ];
-function leerOrden() {
-  try { return localStorage.getItem('orden') || 'guia'; } catch (e) { return 'guia'; }
+function ordenActual() {
+  return ORDENES.filter(function (x) { return x.id === F.orden; })[0] || ORDENES[0];
 }
-F.orden = leerOrden();
+function guardado(clave, porDefecto) {
+  try { return localStorage.getItem(clave) || porDefecto; } catch (e) { return porDefecto; }
+}
+F.orden = guardado('orden', 'guia');
+F.dir = guardado('ordenDir', 'asc');
 
 var CONSERV = [
   { id: 'endemica',  txt: 'Endémica del Perú', ok: function (e) { return e.endemico; } },
@@ -266,7 +273,7 @@ var COMPARA = {
   cientifico: function (a, b) { return a.cientifico.localeCompare(b.cientifico, 'es'); },
   altitud:    function (a, b) { return (a.altitud[0] - b.altitud[0]) ||
                                        (a.altitud[1] - b.altitud[1]) || a.n - b.n; },
-  rareza:     function (a, b) { return (a.lomas.length - b.lomas.length) || a.n - b.n; }
+  lomas:      function (a, b) { return (a.lomas.length - b.lomas.length) || a.n - b.n; }
 };
 
 /* Con un color activo, delante las que lo tienen como principal: las otras
@@ -275,7 +282,9 @@ var COMPARA = {
    de por defecto; si se ha pedido otro orden, manda el pedido y el color solo
    desempata. */
 function ordenar(lista) {
-  var cmp = COMPARA[F.orden] || COMPARA.guia;
+  var base = COMPARA[F.orden] || COMPARA.guia;
+  // el sentido invierte el criterio, no la prioridad del color
+  var cmp = F.dir === 'desc' ? function (a, b) { return -base(a, b); } : base;
   if (!F.color.length) return lista.slice().sort(cmp);
   var pri = function (e) { return F.color.indexOf(e.color) >= 0 ? 0 : 1; };
   return lista.slice().sort(F.orden === 'guia'
@@ -421,10 +430,16 @@ $('#activos').addEventListener('click', function (ev) {
 function pintarOrden() {
   $('#orden-lista').innerHTML = ORDENES.map(function (o) {
     return '<button class="opcion" role="radio" data-orden="' + o.id +
-        '" aria-checked="' + (F.orden === o.id) + '">' +
-        svgIcono(o.id === 'guia' ? 'book-open' : 'rows') +
+        '" aria-checked="' + (F.orden === o.id) + '">' + svgIcono(o.ico) +
         '<span>' + esc(o.txt) + '</span>' + svgIcono('check', 'visto') + '</button>';
   }).join('');
+  // el sentido se nombra segun el criterio: «A → Z» dice mas que «ascendente»
+  var d = ordenActual().dir;
+  $('#orden-dir').innerHTML = ['asc', 'desc'].map(function (s, i) {
+    return '<button data-dir="' + s + '" aria-pressed="' + (F.dir === s) + '">' +
+        svgIcono(s === 'asc' ? 'arrow-up' : 'arrow-down') + esc(d[i]) + '</button>';
+  }).join('');
+  pintarIconos($('#panel-orden'));
 }
 
 /* El boton lo dice todo: con el orden del libro pone «Ordenar», y con
@@ -432,16 +447,18 @@ function pintarOrden() {
    fila de filtros puestos y parecia un filtro mas, que no lo es: un filtro
    quita especies y un orden solo las mueve. */
 function pintarBotonOrden() {
-  var o = ORDENES.filter(function (x) { return x.id === F.orden; })[0] || ORDENES[0];
-  var propio = F.orden !== 'guia';
+  var o = ordenActual();
+  var i = F.dir === 'desc' ? 1 : 0;
+  var propio = F.orden !== 'guia' || F.dir !== 'asc';
   $('#btn-orden-txt').textContent = propio ? o.txt : 'Ordenar';
   $('#btn-orden').classList.toggle('puesto', propio);
-  $('#btn-orden').setAttribute('aria-label', 'Ordenar. Ahora: ' + o.txt);
+  $('#btn-orden').setAttribute('aria-label',
+      'Ordenar. Ahora: ' + o.txt + ', ' + o.dir[i]);
 }
 
-function elegirOrden(id) {
-  F.orden = id;
-  try { localStorage.setItem('orden', id); } catch (e) {}
+function elegirOrden(id, dir) {
+  if (id) { F.orden = id; try { localStorage.setItem('orden', id); } catch (e) {} }
+  if (dir) { F.dir = dir; try { localStorage.setItem('ordenDir', dir); } catch (e) {} }
   pintarOrden();
   pintarBotonOrden();
   render();
@@ -455,7 +472,11 @@ $('#btn-orden').addEventListener('click', function () { abrirOrden(true); });
 $('#cerrar-orden').addEventListener('click', function () { abrirOrden(false); });
 $('#orden-lista').addEventListener('click', function (ev) {
   var b = ev.target.closest('[data-orden]');
-  if (b) elegirOrden(b.dataset.orden);
+  if (b) elegirOrden(b.dataset.orden, null);
+});
+$('#orden-dir').addEventListener('click', function (ev) {
+  var b = ev.target.closest('[data-dir]');
+  if (b) elegirOrden(null, b.dataset.dir);
 });
 
 function quitarBusqueda(callado) {

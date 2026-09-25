@@ -60,7 +60,7 @@ window.addEventListener('beforeinstallprompt', function (ev) {
         <div class="resumen"><span id="cuenta">—</span></div>
         <div class="herramientas">
           <button class="btn-barra" id="btn-orden" aria-haspopup="dialog">
-            <span data-ico="rows" aria-hidden="true"></span>
+            <span data-ico="arrows-down-up" aria-hidden="true"></span>
             <span class="txt" id="btn-orden-txt">Ordenar</span>
           </button>
           <button class="btn-barra" id="btn-filtros" aria-haspopup="dialog">
@@ -201,7 +201,13 @@ window.addEventListener('beforeinstallprompt', function (ev) {
     <h2 id="orden-tit">Ordenar</h2>
     <button class="btn-icono" id="cerrar-orden" aria-label="Cerrar" data-ico="x"></button>
   </div>
-  <div class="panel-cuerpo" id="orden-lista" role="radiogroup" aria-label="Ordenar por"></div>
+  <div class="panel-cuerpo">
+    <div class="grupo" id="orden-lista" role="radiogroup" aria-label="Ordenar por"></div>
+    <div class="grupo">
+      <h3><span data-ico="arrows-down-up" aria-hidden="true"></span> Sentido</h3>
+      <div class="segmentado" id="orden-dir" role="group" aria-label="Sentido del orden"></div>
+    </div>
+  </div>
 </section>
 
 <!-- ---------- apariencia ---------- -->
