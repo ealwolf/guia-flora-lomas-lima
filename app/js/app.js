@@ -1013,8 +1013,11 @@ function abrirFicha(id, empujar) {
       (e.flor.length ? '<section class="bloque"><h3>' + svgIcono('calendar-blank') + 'Calendario de floración</h3>' + cal + '</section>' : '') +
       (e.habitats.length ? '<section class="bloque"><h3>' + svgIcono('drop') + 'Hábitats</h3><div class="envoltura">' +
         e.habitats.map(function (h) { return '<span class="eti">' + esc(h) + '</span>'; }).join('') +
-        (e.cara ? '<span class="eti">' + svgIcono('sun') + 'Cara ' + esc(e.cara.toLowerCase()) +
-          ' <small>(texto)</small></span>' : '') +
+        (e.cara ? '<span class="eti" title="La guía dice la cara en dos sitios: ' +
+          'el dibujo del perfil y el texto. Ésta es la del texto; la del dibujo ' +
+          'va bajo el perfil de altitud. En 12 de 103 especies no coinciden.">' +
+          svgIcono('sun') + 'Cara ' + esc(e.cara.toLowerCase()) +
+          ' <small>según el texto</small></span>' : '') +
         '</div></section>' : '') +
     '</div>' +
 

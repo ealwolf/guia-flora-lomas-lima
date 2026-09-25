@@ -251,7 +251,8 @@ sola fila y la ficha se reparte en dos columnas.
 ## La cara de la loma se dice dos veces
 
 El pie del perfil indica la cara según **el dibujo**; la ficha de Hábitats, la
-que menciona **el texto**. Coinciden en 91 de 103 especies. En 12 la guía se
+que menciona **el texto**, y cada una lo dice con todas las letras —«según el
+perfil de la guía» y «según el texto»— con la explicación al posarse encima. Coinciden en 91 de 103 especies. En 12 la guía se
 contradice a sí misma (por ejemplo *Tillandsia latifolia*: el perfil la pinta en
 la cara occidental y el texto la describe en la oriental), así que se muestran
 las dos con su procedencia en vez de elegir una por ti.
