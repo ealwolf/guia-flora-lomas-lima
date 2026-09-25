@@ -41,12 +41,14 @@ window.addEventListener('beforeinstallprompt', function (ev) {
       <div class="sug" id="sug" role="listbox" aria-label="Sugerencias" hidden></div>
     </div>
 
+    <!-- de menos a mas usado, y lo mas usado en el extremo, que es donde
+         llega el pulgar con el telefono en una mano -->
     <div class="acciones">
-      <button class="btn-icono" id="btn-tema" aria-label="Apariencia"
-              aria-haspopup="dialog"></button>
-      <button class="btn-icono" id="btn-info" aria-label="Sobre la guía" data-ico="info"></button>
       <button class="btn-icono" id="btn-guardar" aria-label="Usar sin conexión"
               data-ico="descargar"><i class="pendiente oculto" aria-hidden="true"></i></button>
+      <button class="btn-icono" id="btn-info" aria-label="Sobre la guía" data-ico="info"></button>
+      <button class="btn-icono" id="btn-tema" aria-label="Apariencia"
+              aria-haspopup="dialog"></button>
     </div>
   </div>
 
