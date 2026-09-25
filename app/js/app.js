@@ -489,7 +489,9 @@ function quitarBusqueda(callado) {
 var ultimoN = 0;
 function pintarCuenta() {
   var tot = G.especies.length, n = ultimoN;
-  $('#cuenta').textContent = compacto
+  // la forma corta es para dejarle sitio a las fichas; sin fichas no hace falta
+  var apretar = compacto && (activos() > 0 || !!F.q);
+  $('#cuenta').textContent = apretar
       ? (n === tot ? '' + tot : n + '/' + tot)
       : (n === tot ? tot + ' especies' : n + ' de ' + tot + ' especies');
 }
@@ -506,7 +508,9 @@ if (window.ResizeObserver) new ResizeObserver(medirCabecera).observe($('.cab'));
 
 function mirarBarra() {
   var barra = $('#barra-filtros');
-  var hay = activos() > 0 || !!F.q;
+  /* Siempre, haya filtros o no. Antes solo se pegaba si habia algo filtrando,
+     porque solo llevaba las fichas; ahora lleva Ordenar y Filtros, y sin ella
+     pegada habria que volver arriba del todo para usarlos. */
   var tope = parseFloat(getComputedStyle(document.documentElement)
       .getPropertyValue('--alto-cab')) || 0;
   /* Contra su sitio en el documento, no contra su posicion en pantalla: una
@@ -521,8 +525,7 @@ function mirarBarra() {
      que se veia era el agujero que dejaban las fichas al irse. */
   var h = $('#barra-hueco');
   var desde = h.offsetTop + h.offsetHeight - tope;
-  var toca = hay && (compacto ? window.scrollY > desde - 6
-                              : window.scrollY > desde + 6);
+  var toca = compacto ? window.scrollY > desde - 6 : window.scrollY > desde + 6;
   if (toca === compacto) return;
   var hueco = $('#barra-hueco');
   // del hueco y no de la barra: asi entran tambien los margenes que se
