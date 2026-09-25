@@ -841,7 +841,6 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 /* ---------- adaptación ---------- */
 @media (min-width: 560px) {
   .rejilla { grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)); gap: 14px; }
-  .datos { grid-template-columns: repeat(4, 1fr); }
 }
 @media (min-width: 700px) {
   .rejilla { grid-template-columns: repeat(auto-fill, minmax(164px, 1fr)); }
@@ -913,17 +912,17 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 }
 @media (min-width: 1300px) {
   .ficha-int { grid-template-columns: minmax(0,1fr) 400px; gap: 0 32px; }
+  /* Los cuatro datos en fila solo aqui. «COLOR DE LA FLOR» mide 129 px con el
+     texto normal y 166 con el mayor; la columna tiene que dejar eso mas 32 de
+     relleno, y por debajo de este ancho no llega. Antes se ponian en fila
+     desde 560, y entre 560 y 670 la etiqueta se partia en dos. */
+  .datos { grid-template-columns: repeat(4, 1fr); }
   .galeria .grande { max-height: min(56vh, 450px); }
   .figura .perfil { max-width: 360px; }
   .figura .mapa-lomas { max-width: 290px; }
   .encabezado h2 { font-size: var(--t-6); }
 }
 
-/* con la ficha a dos columnas la columna de contenido se queda estrecha:
-   cuatro datos en fila obligan a partir "30 - 60 cm" en dos lineas */
-@media (min-width: 800px) and (max-width: 1150px) {
-  .datos { grid-template-columns: repeat(2, 1fr); }
-}
 
 /* movil en horizontal: la foto no puede comerse la pantalla */
 @media (max-height: 560px) and (orientation: landscape) {
