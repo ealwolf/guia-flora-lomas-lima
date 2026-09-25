@@ -806,7 +806,17 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
      de largo antes de leer nada */
   .galeria .grande { max-height: min(52vh, 400px); }
   .miniaturas button { width: 62px; height: 62px; }
-  .bloque p { max-width: 70ch; }
+  /* Los cuatro textos, repartidos en cuanto hay sitio. Sin tope de 70ch: lo
+     que antes sobraba a la derecha en tableta era justo ese tope contra un
+     contenedor mas ancho. Con columns no hace falta punto de corte — a 736 px
+     salen dos de 351, a 940 dos de 453, y por debajo una sola que ya mide
+     unos 70 caracteres de por si. */
+  .bloque p { max-width: none; }
+  .textos { columns: 340px 2; column-gap: 34px; padding-top: 20px; }
+  .textos .bloque {
+    break-inside: avoid; border: 0; padding-block: 0; margin-bottom: 22px;
+  }
+  .fuente { column-span: all; }
 }
 /* tableta y escritorio: todo en una fila y tarjetas mas holgadas */
 @media (min-width: 900px) {
@@ -849,21 +859,6 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
   .vecinas   { grid-area: sig; padding-inline: 0; }
   .lateral   { grid-area: lat; padding-top: 14px; display: flex; flex-direction: column; gap: 14px; }
   .bloque    { padding-inline: 0; }
-  /* Los cuatro textos, en dos columnas cuando hay sitio. A 940 px de columna,
-     una linea de 70ch dejaba vacio un tercio del ancho, y estirarla a noventa
-     y pico caracteres se lee peor: el ojo pierde el renglon. Partidos en dos
-     salen a unos 48ch, que es una medida comoda, y no sobra nada.
-     Con columns no hace falta punto de corte: caben dos o se queda en una.
-     break-inside mantiene entero cada bloque, que son secciones sueltas y no
-     un texto corrido. */
-  .textos { columns: 400px 2; column-gap: 34px; }
-  .textos .bloque {
-    break-inside: avoid; padding-block: 0 16px; margin-bottom: 16px;
-    border-top: 0; border-bottom: 1px solid var(--borde);
-  }
-  .textos .bloque:last-of-type { border-bottom: 0; margin-bottom: 0; }
-  .textos .bloque p { max-width: none; }
-  .fuente { column-span: all; }
   .fuente    { padding-inline: 0; }
 }
 @media (min-width: 1300px) {
