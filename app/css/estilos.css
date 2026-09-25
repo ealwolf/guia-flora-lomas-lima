@@ -629,14 +629,12 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
   display: flex; align-items: center; gap: 8px; width: 100%;
   max-width: 1400px; margin-inline: auto; padding-inline: 14px;
 }
-.ficha-cab .titulo { font-weight: 600; font-size: var(--t-2); flex: 0 1 auto; min-width: 0;
+.ficha-cab .titulo { font-weight: 600; font-size: var(--t-2); flex: 1; min-width: 0;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ficha-int { max-width: 1400px; margin: 0 auto; padding: 0 0 60px; }
-/* Junto al titulo, no en la otra punta. Pegados al borde derecho quedaban
-   alineados con el contenedor pero no con nada que se vea: la columna de la
-   derecha acaba antes, asi que parecian corridos. Y en 1400 px de barra, los
-   mandos quedaban a medio metro unos de otros. */
-.ficha-pasar { display: flex; gap: 2px; margin-right: auto; }
+/* A la derecha y fijos: junto al titulo se movian con cada nombre. Ahora el
+   borde de la columna de al lado si llega hasta aqui, asi que coinciden. */
+.ficha-pasar { display: flex; gap: 2px; margin-left: auto; }
 
 /* pasar a la siguiente al terminar de leer, que es donde se acaba */
 /* rejilla y no flex: con una sola vecina -la primera o la ultima de la
@@ -739,7 +737,14 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 }
 .calendario span.on { background: var(--acento); color: var(--sobre-acento); }
 
-.figura { background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--r); padding: 12px; }
+/* margin 0: <figure> trae del navegador un margin de 1em 40px. Con el, estas
+   tarjetas acababan 40 px antes que las etiquetas de lomas y que el borde de
+   la columna, y todo lo que se alineara con ese borde -los chevrones de la
+   cabecera- parecia corrido a la derecha. */
+.figura {
+  margin: 0; background: var(--superficie); border: 1px solid var(--borde);
+  border-radius: var(--r); padding: 12px;
+}
 /* los SVG se escalan al ancho: sin tope se comen la pantalla en horizontal */
 .figura svg { display: block; margin: 0 auto; width: 100%; height: auto; }
 .figura .perfil { max-width: 330px; }
