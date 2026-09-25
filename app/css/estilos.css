@@ -15,6 +15,19 @@
   --ambar:      #b07d1a;
   --sobre-acento: #ffffff;
   --tirador: 20px;
+
+  /* Escala tipográfica. Antes había dieciocho tamaños sueltos, cinco de ellos
+     en medios píxeles: se habían ido afinando a ojo. Estos siete cubren todo.
+     Van en rem para que respeten el tamaño de letra del navegador, y --escala
+     es el multiplicador del menú de apariencia. */
+  --escala: 1;
+  --t-0: calc(0.6875rem * var(--escala));   /* 11  versalitas y cuentas */
+  --t-1: calc(0.8125rem * var(--escala));   /* 13  secundario */
+  --t-2: calc(0.9375rem * var(--escala));   /* 15  cuerpo */
+  --t-3: calc(1.0625rem * var(--escala));   /* 17  subtítulos y marca */
+  --t-4: calc(1.3125rem * var(--escala));   /* 21  ficha, dos columnas */
+  --t-5: calc(1.5625rem * var(--escala));   /* 25  ficha, móvil */
+  --t-6: calc(1.875rem  * var(--escala));   /* 30  ficha, escritorio */
   --mar:    #cfe0e6;
   --tierra: #edeae1;
   --costa:  #8d968c;
@@ -69,7 +82,8 @@ html, body { margin: 0; padding: 0; }
 body {
   background: var(--fondo);
   color: var(--texto);
-  font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: var(--t-2); line-height: 1.55;
   -webkit-text-size-adjust: 100%;
   overscroll-behavior-y: none;
 }
@@ -103,17 +117,26 @@ button {
 .menu-envoltura { position: relative; }
 .menu {
   position: absolute; top: calc(100% + 8px); right: 0; z-index: 50;
-  min-width: 182px; padding: 6px;
+  min-width: 208px; padding: 6px;
   background: var(--superficie); border: 1px solid var(--borde);
   border-radius: 13px; box-shadow: var(--sombra);
 }
 .menu button {
   display: flex; align-items: center; gap: 10px; width: 100%;
-  padding: 9px 10px; border-radius: 9px; font-size: 14px; text-align: left;
+  padding: 9px 10px; border-radius: 9px; font-size: var(--t-2); text-align: left;
   color: var(--texto);
 }
 .menu button:hover, .menu button:focus-visible { background: var(--superficie-2); }
 .menu button[aria-checked="true"] { color: var(--acento-txt); font-weight: 600; }
+.menu-tit {
+  font-size: var(--t-0); font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--tenue); padding: 8px 10px 4px;
+}
+.menu-raya { height: 1px; background: var(--borde); margin: 7px 4px 2px; }
+/* la muestra dice el tamaño mejor que la palabra */
+.menu-aa { width: 24px; text-align: center; font-weight: 700; flex: none;
+  color: var(--tenue); line-height: 1; }
+.menu button[aria-checked="true"] .menu-aa { color: var(--acento-txt); }
 .menu .visto { margin-left: auto; opacity: 0; }
 .menu button[aria-checked="true"] .visto { opacity: 1; }
 /* colocacion explicita: si no, el buscador (que va antes en el html) empuja
@@ -123,18 +146,26 @@ button {
 .buscador { grid-area: 2 / 1 / 3 / 3; }
 .marca { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
 .marca h1 {
-  font: 600 16px/1.2 Georgia, "Iowan Old Style", "Times New Roman", serif;
+  font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  /* el logotipo no crece con --escala: es rotulo, no contenido, y el sitio
+     que ganase se lo quitaria a los cuatro botones de al lado */
+  font-size: 1.0625rem; font-weight: 600; line-height: 1.2;
   margin: 0; letter-spacing: -.01em; white-space: nowrap;
   overflow: hidden; text-overflow: ellipsis;
 }
-.marca span { color: var(--tenue); font-size: 12px; white-space: nowrap; }
+.marca span { color: var(--tenue); font-size: 0.8125rem; white-space: nowrap; }
 /* con cuatro botones al lado, en un movil estrecho el titulo se cortaba */
 @media (max-width: 430px) { .marca span { display: none; } }
 .btn-icono {
-  width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center;
+  width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
   color: var(--tenue); flex: none;
 }
 .btn-icono:hover, .btn-icono:focus-visible { background: var(--superficie-2); color: var(--texto); }
+/* el icono es todo el mensaje: estos botones no llevan texto */
+.btn-icono .ico { width: 24px; height: 24px; }
+/* cuatro botones de 44 no caben junto al titulo en un movil estrecho; 40
+   sigue muy por encima del minimo, y el glifo se queda en 24 */
+@media (max-width: 430px) { .btn-icono { width: 40px; height: 40px; } }
 
 .buscador { position: relative; }
 .buscador .ico-lupa {
@@ -145,7 +176,8 @@ button {
   width: 100%; padding: 11px 40px 11px 40px;
   background: var(--superficie); color: var(--texto);
   border: 1px solid var(--borde); border-radius: 12px;
-  font-size: 16px; /* evita el zoom automático en iOS */
+  /* por debajo de 16px iOS hace zoom al enfocar el campo */
+  font-size: max(16px, var(--t-3));
   outline: none; transition: border-color .15s, box-shadow .15s;
 }
 #q:focus { border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-sua); }
@@ -154,15 +186,15 @@ button {
 #q::-webkit-search-cancel-button,
 #q::-webkit-search-decoration { -webkit-appearance: none; appearance: none; }
 .encabezado .sinon {
-  margin: 4px 0 0; font-size: 13px; color: var(--tenue);
+  margin: 4px 0 0; font-size: var(--t-1); color: var(--tenue);
   display: flex; align-items: center; gap: 5px;
 }
 .encabezado .sinon .ico { width: 14px; height: 14px; flex: none; }
 
 /* ---------- uso sin conexion, dentro de Sobre la guia ---------- */
-.offline-est { font-size: 14px; margin: 0 0 4px; }
+.offline-est { font-size: var(--t-2); margin: 0 0 4px; }
 .offline-est b { font-weight: 600; }
-.offline-nota { font-size: 12.5px; color: var(--tenue); margin: 0 0 12px; }
+.offline-nota { font-size: var(--t-1); color: var(--tenue); margin: 0 0 12px; }
 .offline-botones { display: flex; flex-wrap: wrap; gap: 8px; }
 .offline .barra {
   height: 6px; border-radius: 999px; background: var(--superficie-2);
@@ -170,11 +202,11 @@ button {
 }
 .offline .barra i { display: block; height: 100%; width: 0;
   background: var(--acento); transition: width .25s; }
-.pasos { margin: 2px 0 10px; padding-left: 20px; font-size: 13px; line-height: 1.6; }
+.pasos { margin: 2px 0 10px; padding-left: 20px; font-size: var(--t-1); line-height: 1.6; }
 .pasos li { margin-bottom: 3px; }
 .pasos b { font-weight: 600; }
 
-.ficha-libro { font-size: 13px; line-height: 1.55; color: var(--tenue); }
+.ficha-libro { font-size: var(--t-1); line-height: 1.55; color: var(--tenue); }
 .ficha-libro b { color: var(--texto); }
 .ficha-libro p { margin: 0 0 9px; }
 
@@ -202,13 +234,13 @@ button {
 .sug-ico { display: grid; place-items: center; width: 20px; flex: none; color: var(--tenue); }
 .sug-ico .punto { width: 13px; height: 13px; }
 .sug-txt { min-width: 0; flex: 1; }
-.sug-txt b { display: block; font-size: 14px; font-weight: 600;
+.sug-txt b { display: block; font-size: var(--t-2); font-weight: 600;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sug-txt small { display: block; font-size: 12px; color: var(--tenue);
+.sug-txt small { display: block; font-size: var(--t-1); color: var(--tenue);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sug-txt i { font-style: italic; }
 .sug-tipo {
-  flex: none; font-size: 11px; font-weight: 600; letter-spacing: .02em;
+  flex: none; font-size: var(--t-0); font-weight: 600; letter-spacing: .02em;
   color: var(--tenue); background: var(--superficie-2);
   border: 1px solid var(--borde); border-radius: 999px; padding: 2px 8px;
 }
@@ -233,7 +265,7 @@ button {
   display: inline-flex; align-items: center; gap: 6px; flex: none;
   padding: 7px 12px; border-radius: 999px;
   border: 1px solid var(--borde); background: var(--superficie);
-  font-size: 13px; font-weight: 500; color: var(--texto);
+  font-size: var(--t-1); font-weight: 500; color: var(--texto);
   white-space: nowrap; transition: background .15s, border-color .15s, color .15s;
 }
 .chip:hover { border-color: color-mix(in srgb, var(--acento) 45%, var(--borde)); }
@@ -248,7 +280,7 @@ button {
 main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .resumen {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 10px; color: var(--tenue); font-size: 13px; margin: 2px 0 10px;
+  gap: 10px; color: var(--tenue); font-size: var(--t-1); margin: 2px 0 10px;
 }
 /* ---------- lo que esta filtrando ahora mismo ----------
    Elegir una sugerencia aplicaba el filtro sin dejar rastro: la busqueda se
@@ -257,7 +289,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .activos { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
 .activos .chip {
   /* mismo alto que los de la cabecera y los del panel: son la misma cosa */
-  min-height: 36px; padding: 5px 8px 5px 12px; font-size: 13px;
+  min-height: 36px; padding: 5px 8px 5px 12px; font-size: var(--t-1);
   background: var(--acento-sua); border-color: transparent; color: var(--acento-txt);
 }
 .activos .chip:hover { border-color: var(--acento); }
@@ -291,17 +323,18 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 }
 .marcas { position: absolute; top: 7px; left: 7px; display: flex; gap: 5px; }
 .marca-p {
-  font-size: 10px; font-weight: 700; letter-spacing: .03em;
+  font-size: var(--t-0); font-weight: 700; letter-spacing: .03em;
   padding: 3px 7px; border-radius: 999px; background: rgba(0,0,0,.62);
   color: #fff; backdrop-filter: blur(3px);
 }
 .marca-p.vu { background: var(--ambar); color: #1c1403; }
 .tarjeta .cuerpo { padding: 9px 11px 11px; display: flex; flex-direction: column; gap: 1px; flex: 1; }
-.tarjeta .comun { font-weight: 600; font-size: 14px; line-height: 1.25; }
+.tarjeta .comun { font-weight: 600; font-size: var(--t-2); line-height: 1.25; }
 .tarjeta .cient {
-  font: italic 12.5px/1.3 Georgia, "Iowan Old Style", serif; color: var(--tenue);
+  font-family: Georgia, "Iowan Old Style", serif; font-style: italic;
+  font-size: var(--t-1); line-height: 1.3; color: var(--tenue);
 }
-.tarjeta .pie { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 11.5px; color: var(--tenue); }
+.tarjeta .pie { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: var(--t-0); color: var(--tenue); }
 .puntos { display: inline-flex; flex: none; }
 .puntos .punto + .punto { margin-left: -4px; }
 
@@ -327,12 +360,12 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   display: flex; align-items: center; gap: 10px;
   padding: 14px 16px 10px; border-bottom: 1px solid var(--borde);
 }
-.panel-cab h2 { margin: 0; font-size: 16px; font-weight: 600; flex: 1; }
+.panel-cab h2 { margin: 0; font-size: var(--t-3); font-weight: 600; flex: 1; }
 .panel-cuerpo { overflow-y: auto; padding: 4px 16px 16px; -webkit-overflow-scrolling: touch; }
 .grupo { padding: 14px 0; border-bottom: 1px solid var(--borde); }
 .grupo:last-child { border-bottom: 0; }
 .grupo h3 {
-  margin: 0 0 9px; font-size: 11px; font-weight: 700; letter-spacing: .07em;
+  margin: 0 0 9px; font-size: var(--t-0); font-weight: 700; letter-spacing: .07em;
   text-transform: uppercase; color: var(--tenue);
   display: flex; align-items: center; gap: 7px;
 }
@@ -343,7 +376,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   border-top: 1px solid var(--borde); background: var(--superficie);
 }
 .btn {
-  flex: 1; padding: 12px; border-radius: 12px; font-weight: 600; font-size: 15px;
+  flex: 1; padding: 12px; border-radius: 12px; font-weight: 600; font-size: var(--t-2);
   border: 1px solid var(--borde); background: var(--superficie); color: var(--texto);
 }
 .btn.principal { background: var(--acento); border-color: var(--acento); color: var(--sobre-acento); }
@@ -368,14 +401,14 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   background: var(--superficie-2); border-radius: 11px;
 }
 .segmentado button {
-  padding: 6px 13px; border-radius: 8px; font-size: 13px; font-weight: 600;
+  padding: 6px 13px; border-radius: 8px; font-size: var(--t-1); font-weight: 600;
   color: var(--tenue); transition: background .15s, color .15s;
 }
 .segmentado button[aria-pressed="true"] {
   background: var(--superficie); color: var(--texto); box-shadow: 0 1px 2px rgba(0,0,0,.08);
 }
 .rango { display: flex; align-items: center; gap: 10px; }
-.rango label { font-size: 12px; color: var(--tenue); min-width: 42px; }
+.rango label { font-size: var(--t-1); color: var(--tenue); min-width: 42px; }
 
 /* Deslizadores con estilo propio. El nativo pinta de color la parte izquierda,
    y eso hace leer "cuanto" cuando aqui lo que se marca es "donde". */
@@ -428,13 +461,13 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 }
 .doble-val {
   display: flex; justify-content: space-between; margin-top: 2px;
-  font-size: 12.5px; font-weight: 600; color: var(--texto);
+  font-size: var(--t-1); font-weight: 600; color: var(--texto);
   font-variant-numeric: tabular-nums;
 }
-.pista { margin: 8px 0 0; font-size: 12px; color: var(--tenue); line-height: 1.45; }
+.pista { margin: 8px 0 0; font-size: var(--t-1); color: var(--tenue); line-height: 1.45; }
 .rango input[type=range] { flex: 1; accent-color: var(--acento); }
 .rango output {
-  font-variant-numeric: tabular-nums; font-size: 13px; color: var(--tenue);
+  font-variant-numeric: tabular-nums; font-size: var(--t-1); color: var(--tenue);
   min-width: 96px; text-align: right;
 }
 
@@ -455,7 +488,7 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
   display: flex; align-items: center; gap: 8px; width: 100%;
   max-width: 1100px; margin-inline: auto; padding-inline: 12px;
 }
-.ficha-cab .titulo { font-weight: 600; font-size: 15px; flex: 1; min-width: 0;
+.ficha-cab .titulo { font-weight: 600; font-size: var(--t-2); flex: 1; min-width: 0;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ficha-int { max-width: 1100px; margin: 0 auto; padding: 0 0 60px; }
 
@@ -478,22 +511,24 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 
 .encabezado { padding: 14px 16px 10px; }
 .encabezado .num {
-  font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--acento-txt);
+  font-size: var(--t-0); font-weight: 700; letter-spacing: .08em; color: var(--acento-txt);
   text-transform: uppercase;
 }
 .encabezado h2 {
   margin: 3px 0 2px;
-  font: 600 25px/1.18 Georgia, "Iowan Old Style", "Times New Roman", serif;
+  font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  font-size: var(--t-5); font-weight: 600; line-height: 1.18;
   letter-spacing: -.015em;
 }
 .encabezado .cient {
-  font: italic 17px/1.3 Georgia, "Iowan Old Style", serif; color: var(--tenue); margin: 0;
+  font-family: Georgia, "Iowan Old Style", serif; font-style: italic;
+  font-size: var(--t-3); line-height: 1.3; color: var(--tenue); margin: 0;
 }
-.encabezado .cient .aut { font-style: normal; font-size: 13px; }
+.encabezado .cient .aut { font-style: normal; font-size: var(--t-1); }
 .etiquetas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .eti {
   display: inline-flex; align-items: center; gap: 5px;
-  font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 999px;
+  font-size: var(--t-1); font-weight: 600; padding: 5px 10px; border-radius: 999px;
   background: var(--superficie-2); color: var(--texto); border: 1px solid var(--borde);
 }
 .eti.verde { background: var(--acento-sua); color: var(--acento-txt); border-color: transparent; }
@@ -505,24 +540,24 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 }
 .dato { background: var(--fondo); padding: 11px 16px; }
 .dato .et {
-  font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  font-size: var(--t-0); font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
   color: var(--tenue); display: flex; align-items: center; gap: 5px;
 }
-.dato .va { font-size: 15px; font-weight: 600; margin-top: 3px; }
-.dato .va small { font-weight: 400; color: var(--tenue); font-size: 12px; }
+.dato .va { font-size: var(--t-2); font-weight: 600; margin-top: 3px; }
+.dato .va small { font-weight: 400; color: var(--tenue); font-size: var(--t-1); }
 
 .bloque { padding: 16px; }
 .bloque h3 {
-  margin: 0 0 8px; font-size: 11px; font-weight: 700; letter-spacing: .07em;
+  margin: 0 0 8px; font-size: var(--t-0); font-weight: 700; letter-spacing: .07em;
   text-transform: uppercase; color: var(--tenue);
   display: flex; align-items: center; gap: 7px;
 }
-.bloque p { margin: 0; font-size: 14.5px; line-height: 1.62; }
+.bloque p { margin: 0; font-size: var(--t-2); line-height: 1.62; }
 .bloque + .bloque { border-top: 1px solid var(--borde); }
 
 .calendario { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; }
 .calendario span {
-  text-align: center; font-size: 9.5px; font-weight: 600; padding: 6px 0 5px;
+  text-align: center; font-size: var(--t-0); font-weight: 600; padding: 6px 0 5px;
   border-radius: 6px; background: var(--superficie-2); color: var(--tenue);
 }
 .calendario span.on { background: var(--acento); color: var(--sobre-acento); }
@@ -533,7 +568,7 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 .figura .perfil { max-width: 330px; }
 .figura .mapa-lomas { max-width: 250px; }
 .figura figcaption {
-  font-size: 12px; color: var(--tenue); margin-top: 8px; text-align: center;
+  font-size: var(--t-1); color: var(--tenue); margin-top: 8px; text-align: center;
   line-height: 1.45;
 }
 .figura figcaption b { color: var(--texto); font-weight: 600; }
@@ -571,7 +606,7 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 .lista-lomas .eti.activa { background: color-mix(in srgb, var(--rojo) 15%, transparent); color: var(--rojo); border-color: transparent; }
 
 .fuente {
-  padding: 16px; border-top: 1px solid var(--borde); color: var(--tenue); font-size: 12px;
+  padding: 16px; border-top: 1px solid var(--borde); color: var(--tenue); font-size: var(--t-1);
 }
 .fuente b { color: var(--texto); font-weight: 600; }
 
@@ -590,7 +625,6 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 @media (min-width: 560px) {
   .rejilla { grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)); gap: 14px; }
   .datos { grid-template-columns: repeat(4, 1fr); }
-  .marca h1 { font-size: 18px; }
 }
 @media (min-width: 700px) {
   .rejilla { grid-template-columns: repeat(auto-fill, minmax(164px, 1fr)); }
@@ -612,8 +646,6 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 }
 @media (min-width: 1300px) {
   .rejilla { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 18px; }
-  .tarjeta .comun { font-size: 15px; }
-  .tarjeta .cient { font-size: 13.5px; }
 }
 /* horizontal en móvil: cabecera compacta, más columnas */
 @media (max-height: 520px) and (orientation: landscape) {
@@ -628,7 +660,7 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
   .chips { padding: 7px 0; }
   .panel { max-height: 94vh; }
   .encabezado { padding-block: 10px 8px; }
-  .encabezado h2 { font-size: 21px; }
+  .encabezado h2 { font-size: var(--t-4); }
   .figura .perfil { max-width: 260px; }
   .figura .mapa-lomas { max-width: 180px; }
 }
@@ -651,8 +683,7 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
   .galeria .grande { max-height: min(56vh, 450px); }
   .figura .perfil { max-width: 360px; }
   .figura .mapa-lomas { max-width: 290px; }
-  .encabezado h2 { font-size: 30px; }
-  .bloque p { font-size: 15px; }
+  .encabezado h2 { font-size: var(--t-6); }
 }
 
 /* con la ficha a dos columnas la columna de contenido se queda estrecha:

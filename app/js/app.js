@@ -831,20 +831,47 @@ function aplicarTema(id) {
   else document.documentElement.setAttribute('data-tema', t.id);
   var b = $('#btn-tema');
   b.innerHTML = svgIcono(t.ico);
-  b.setAttribute('aria-label', t.txt);
-  b.setAttribute('title', t.txt);
+  b.setAttribute('aria-label', 'Apariencia. ' + t.txt);
+  b.setAttribute('title', 'Apariencia · ' + t.txt.replace('Tema: ', 'tema '));
   if (!$('#menu-tema').hidden) pintarMenuTema();
   try { localStorage.setItem('tema', t.id); } catch (e) {}
 }
-/* menu de tema: tres opciones no se adivinan pulsando un boton que rota */
+/* ---------- tamaño del texto ----------
+   Instalada como app no hay barra de navegador, y por tanto no hay zoom del
+   navegador donde agarrarse. Con el sol de la loma y unas gafas de cerca eso
+   se nota, asi que el tamaño se elige aqui dentro. */
+var TEXTOS = [
+  { id: 'normal', corto: 'Normal',     v: 1,    muestra: '13px' },
+  { id: 'grande', corto: 'Grande',     v: 1.15, muestra: '15px' },
+  { id: 'mayor',  corto: 'Muy grande', v: 1.3,  muestra: '17px' }
+];
+function leerTexto() {
+  try { return localStorage.getItem('texto') || 'normal'; } catch (e) { return 'normal'; }
+}
+function aplicarTexto(id) {
+  var t = TEXTOS.filter(function (x) { return x.id === id; })[0] || TEXTOS[0];
+  document.documentElement.style.setProperty('--escala', t.v);
+  try { localStorage.setItem('texto', t.id); } catch (e) {}
+  if (!$('#menu-tema').hidden) pintarMenuTema();
+  pintarRango();                      // el doble deslizador mide en píxeles
+}
+
+/* menu de apariencia: tres opciones no se adivinan pulsando un boton que rota */
 function pintarMenuTema() {
-  var actual = leerTema();
-  $('#menu-tema').innerHTML = TEMAS.map(function (t) {
-    return '<button role="menuitemradio" data-tema="' + t.id + '" aria-checked="' +
-           (t.id === actual) + '">' + svgIcono(t.ico) +
-           '<span>' + t.corto + '</span>' +
-           svgIcono('check', 'visto') + '</button>';
-  }).join('');
+  var opcion = function (t, clave, actual) {
+    var marca = t.ico ? svgIcono(t.ico)
+        : '<span class="menu-aa" style="font-size:' + t.muestra + '">Aa</span>';
+    return '<button role="menuitemradio" data-' + clave + '="' + t.id + '" aria-checked="' +
+           (t.id === actual) + '">' + marca +
+           '<span>' + t.corto + '</span>' + svgIcono('check', 'visto') + '</button>';
+  };
+  var tema = leerTema(), texto = leerTexto();
+  $('#menu-tema').innerHTML =
+      '<div class="menu-tit">Tema</div>' +
+      TEMAS.map(function (t) { return opcion(t, 'tema', tema); }).join('') +
+      '<div class="menu-raya"></div>' +
+      '<div class="menu-tit">Tamaño del texto</div>' +
+      TEXTOS.map(function (t) { return opcion(t, 'texto', texto); }).join('');
 }
 
 function abrirMenuTema(v) {
@@ -864,6 +891,12 @@ $('#btn-tema').addEventListener('click', function (ev) {
 });
 
 $('#menu-tema').addEventListener('click', function (ev) {
+  var t = ev.target.closest('[data-texto]');
+  if (t) {
+    // el menu se queda abierto: asi se compara un tamaño con otro
+    aplicarTexto(t.dataset.texto);
+    return;
+  }
   var b = ev.target.closest('[data-tema]');
   if (!b) return;
   aplicarTema(b.dataset.tema);
@@ -1151,6 +1184,7 @@ window.addEventListener('appinstalled', function () {
 
 /* ---------- arranque ---------- */
 aplicarTema(leerTema());
+aplicarTexto(leerTexto());
 pintarChipsRapidos();
 pintarFiltros();
 pintarAltitud();

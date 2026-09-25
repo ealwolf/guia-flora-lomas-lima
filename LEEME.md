@@ -194,8 +194,14 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
   134 aparecen sólo en la occidental (la que mira al mar), 15 sólo en la
   oriental y 34 en ambas.
 
-- **Tema**: el botón de la cabecera abre un menú con automático, claro y
-  oscuro. Por defecto sigue al teléfono, y lo que elijas se recuerda.
+- **Apariencia**: el botón de la cabecera abre un menú con el **tema**
+  (automático, claro u oscuro; por defecto sigue al teléfono) y el **tamaño
+  del texto** (normal, grande, muy grande). Instalada como app no hay barra de
+  navegador y por tanto no hay zoom donde agarrarse: con sol y gafas de cerca
+  eso se nota. Lo que elijas se recuerda.
+
+  Los tamaños van en `rem` sobre una escala de siete pasos, así que la app
+  respeta además el tamaño de letra que tengas puesto en el navegador.
 - **Funciona sin conexión** una vez guardada, y se instala con su propio icono.
   Todo eso se maneja desde el botón **↓** de la cabecera, en su propia vista:
   las fotos sólo se descargan si las pides, y se pueden borrar del dispositivo
