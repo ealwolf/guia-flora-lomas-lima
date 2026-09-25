@@ -88,6 +88,10 @@ html, body { margin: 0; padding: 0; }
    scrollbar-gutter:stable seria lo suyo, pero en este Chrome no reserva nada
    -medido: 966 px con y sin el-, asi que se deja la barra siempre puesta. */
 html { overflow-y: scroll; }
+/* Con algo abierto encima salian dos barras, y la de fuera no movia nada. Se
+   quita, y se compensa su ancho con relleno para que el catalogo de debajo no
+   se corra ni un pixel al abrir y cerrar. */
+html.bloqueado { overflow: hidden; padding-right: var(--barra, 0px); }
 body {
   background: var(--fondo);
   color: var(--texto);
@@ -628,6 +632,33 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 .ficha-cab .titulo { font-weight: 600; font-size: var(--t-2); flex: 1; min-width: 0;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ficha-int { max-width: 1400px; margin: 0 auto; padding: 0 0 60px; }
+.ficha-pasar { display: flex; gap: 2px; margin-left: auto; }
+
+/* pasar a la siguiente al terminar de leer, que es donde se acaba */
+.vecinas { display: flex; gap: 12px; padding: 20px 16px 0; }
+.vecina {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 11px;
+  padding: 10px; border: 1px solid var(--borde); border-radius: var(--r);
+  background: var(--superficie); text-align: left; color: var(--texto);
+}
+.vecina:hover { border-color: var(--acento); }
+.vecina.sig { flex-direction: row-reverse; text-align: right; }
+.vecina img { width: 48px; height: 48px; border-radius: 9px; object-fit: cover; flex: none; }
+.vecina .ico { color: var(--tenue); flex: none; }
+.vecina-txt { min-width: 0; flex: 1; }
+.vecina-txt small {
+  display: block; font-size: var(--t-0); font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--tenue);
+}
+.vecina-txt b { display: block; font-size: var(--t-2); font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vecina-txt i { display: block; font-size: var(--t-1); color: var(--tenue);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 560px) {
+  .vecinas { flex-direction: column; }
+  .vecina.sig { flex-direction: row; text-align: left; }
+  .vecina.sig .ico { order: 3; margin-left: auto; }
+}
 
 .galeria { position: relative; background: var(--superficie-2); }
 .galeria .grande { aspect-ratio: 4/3; position: relative; margin-inline: auto; }
@@ -809,12 +840,13 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 }
 @media (min-width: 800px) {
   .ficha-int { display: grid; grid-template-columns: minmax(0,1fr) 340px;
-    grid-template-areas: "gal lat" "cab lat" "dat lat" "txt lat"; gap: 0 24px;
+    grid-template-areas: "gal lat" "cab lat" "dat lat" "txt lat" "sig lat"; gap: 0 24px;
     padding-inline: 14px; }
   .galeria   { grid-area: gal; border-radius: var(--r); overflow: hidden; margin-top: 14px; }
   .encabezado{ grid-area: cab; padding-inline: 0; }
   .datos     { grid-area: dat; border: 1px solid var(--borde); border-radius: var(--r); overflow: hidden; }
   .textos    { grid-area: txt; }
+  .vecinas   { grid-area: sig; padding-inline: 0; }
   .lateral   { grid-area: lat; padding-top: 14px; display: flex; flex-direction: column; gap: 14px; }
   .bloque    { padding-inline: 0; }
   /* Los cuatro textos, en dos columnas cuando hay sitio. A 940 px de columna,

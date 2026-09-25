@@ -210,6 +210,13 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
   px, una línea de 70 caracteres dejaba vacío un tercio del ancho, y estirarla
   a noventa y pico se lee peor. Partidos salen a unos 48 caracteres. No hay
   punto de corte: caben dos columnas o se quedan en una.
+- Desde una ficha se pasa **a la especie siguiente sin volver al catálogo**:
+  con las flechas de la cabecera, con las tarjetas del final —que dicen cuál
+  viene, con su foto— o con ← y → en el teclado. Sigue la lista que estás
+  viendo, filtrada y ordenada, no la numeración del libro, y se para en los
+  extremos. **Nada de deslizar con el dedo**: en Android y en iPhone ese gesto
+  desde el borde es el de volver, y perderlo a veces sale más caro que el
+  atajo. Atrás lleva siempre al catálogo, no a la especie anterior.
 - Ficha con **todo lo que trae el libro**: las cuatro secciones de texto
   (Descripción, Hábitat, Distribución, Situación actual), altura, floración,
   origen, endemismo, categoría de amenaza, hábitats y las fotos.

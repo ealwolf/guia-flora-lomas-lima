@@ -890,10 +890,46 @@ function vigilarFoto(img) {
   if (img.complete) amoldarMarco(img);
 }
 
+/* Pasar a la siguiente sin volver al catalogo. Sigue la lista que se esta
+   viendo -filtrada y ordenada-, no la numeracion del libro, que es lo que
+   espera quien esta repasando unos resultados.
+   Nada de deslizar con el dedo: en Android e iOS ese gesto desde el borde es
+   el de volver del sistema, y perder el «atras» a veces es peor negocio que
+   el atajo. */
+var indiceFicha = -1;
+
+function vecina(paso) {
+  if (indiceFicha < 0) return null;
+  var i = indiceFicha + paso;
+  return (i >= 0 && i < ultimo.length) ? ultimo[i] : null;
+}
+
+function pasarA(paso) {
+  var e = vecina(paso);
+  if (!e) return;
+  abrirFicha(e.id, false);
+  // se sustituye, no se apila: atras vuelve al catalogo desde donde sea
+  history.replaceState({ ficha: e.id }, '');
+}
+
+function tarjetaVecina(e, paso) {
+  if (!e) return '';
+  var foto = e.fotos[0] ? 'img/' + e.fotos[0] : '';
+  var flecha = svgIcono(paso < 0 ? 'caret-left' : 'caret-right');
+  return '<button class="vecina' + (paso > 0 ? ' sig' : '') + '" data-paso="' + paso + '">' +
+      flecha +
+      (foto ? '<img loading="lazy" src="' + foto + '" alt="">' : '') +
+      '<span class="vecina-txt"><small>' + (paso < 0 ? 'Anterior' : 'Siguiente') + '</small>' +
+        '<b>' + esc(e.comun) + '</b><i>' + esc(e.cientifico) + '</i></span>' +
+    '</button>';
+}
+
 function abrirFicha(id, empujar) {
   var e = null;
   for (var i = 0; i < G.especies.length; i++) if (G.especies[i].id === id) { e = G.especies[i]; break; }
   if (!e) return;
+  indiceFicha = -1;
+  for (var k = 0; k < ultimo.length; k++) if (ultimo[k].id === id) { indiceFicha = k; break; }
 
   var origen = (G.origenes.filter(function (o) { return o.codigo === e.origen; })[0] || {}).nombre || e.origen;
   var amenaza = (G.amenazas.filter(function (a) { return a.codigo === e.amenaza; })[0] || {}).nombre || '';
@@ -981,21 +1017,27 @@ function abrirFicha(id, empujar) {
       bloque('info', 'Situación actual e importancia', e.sit) +
       '<div class="fuente"><b>' + esc(G.meta.titulo) + '</b>, p. ' + e.pag + '.<br>' +
         esc(G.meta.cita) + '</div>' +
-    '</div>';
+    '</div>' +
+
+    '<div class="vecinas">' + tarjetaVecina(vecina(-1), -1) +
+      tarjetaVecina(vecina(1), 1) + '</div>';
 
   $('#ficha-int').innerHTML = html;
   vigilarFoto($('#foto-grande'));
   $('#ficha-titulo').textContent = e.comun;
   $('#ficha-int').scrollTop = 0;
   $('#ficha').scrollTop = 0;
+  $('#ficha-antes').disabled = !vecina(-1);
+  $('#ficha-sig').disabled = !vecina(1);
   $('#ficha').classList.add('abierta');
-  document.body.style.overflow = 'hidden';
+  bloquearFondo(true);
   if (empujar !== false) history.pushState({ ficha: id }, '');
 }
 
 function cerrarFicha() {
   $('#ficha').classList.remove('abierta');
-  document.body.style.overflow = '';
+  indiceFicha = -1;
+  bloquearFondo(false);
 }
 
 /* ---------- eventos ---------- */
@@ -1027,6 +1069,12 @@ $('#visor').addEventListener('click', function () {
 });
 
 $('#volver').addEventListener('click', function () { history.back(); });
+$('#ficha-antes').addEventListener('click', function () { pasarA(-1); });
+$('#ficha-sig').addEventListener('click', function () { pasarA(1); });
+$('#ficha-int').addEventListener('click', function (ev) {
+  var b = ev.target.closest('[data-paso]');
+  if (b) pasarA(+b.dataset.paso);
+});
 window.addEventListener('popstate', function () {
   if ($('#visor').classList.contains('abierto')) { $('#visor').classList.remove('abierto'); return; }
   cerrarFicha();
@@ -1067,13 +1115,30 @@ $('#limpiar').addEventListener('click', function () {
 });
 
 var panelActual = null;
+/* Con una capa encima, la barra de la pagina no mueve nada y sobra. Se quita
+   y se compensa su ancho con relleno en el html: asi el catalogo de debajo no
+   se corre al abrir ni al cerrar. */
+function bloquearFondo(v) {
+  var d = document.documentElement;
+  if (v) {
+    // solo se mide la primera vez: ya bloqueado, la cuenta daria cero y el
+    // relleno que compensa se perderia
+    if (!d.classList.contains('bloqueado')) {
+      d.style.setProperty('--barra', (window.innerWidth - d.clientWidth) + 'px');
+    }
+    d.classList.add('bloqueado');
+  } else if (!$('#ficha').classList.contains('abierta') && !panelActual) {
+    d.classList.remove('bloqueado');   // puede quedar otra capa abierta
+  }
+}
+
 function abrirPanel(v, cual) {
   cual = cual || '#panel';
   $(cual).classList.toggle('abierto', v);
   if (v && cual === '#panel') setTimeout(pintarRango, 30);
   panelActual = v ? cual : null;
   $('#velo').classList.toggle('abierto', v);
-  document.body.style.overflow = v ? 'hidden' : '';
+  bloquearFondo(v);
 }
 function cerrarPanelAbierto() {
   if (panelActual) abrirPanel(false, panelActual);
@@ -1178,6 +1243,10 @@ document.addEventListener('keydown', function (ev) {
     if ($('#ficha').classList.contains('abierta')) history.back();
   }
   if (ev.key === '/' && document.activeElement !== $('#q')) { ev.preventDefault(); $('#q').focus(); }
+  if ($('#ficha').classList.contains('abierta') && !$('#visor').classList.contains('abierto')) {
+    if (ev.key === 'ArrowLeft') pasarA(-1);
+    if (ev.key === 'ArrowRight') pasarA(1);
+  }
 });
 
 /* ---------- tema ---------- */

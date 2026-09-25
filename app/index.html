@@ -214,8 +214,15 @@ window.addEventListener('beforeinstallprompt', function (ev) {
 <article class="ficha" id="ficha" role="dialog" aria-modal="true" aria-label="Ficha de especie">
   <div class="ficha-cab">
     <div class="ficha-cab-int">
-      <button class="btn-icono" id="volver" aria-label="Volver" data-ico="arrow-left"></button>
+      <button class="btn-icono" id="volver" aria-label="Volver al catálogo"
+              data-ico="arrow-left"></button>
       <span class="titulo" id="ficha-titulo"></span>
+      <div class="ficha-pasar">
+        <button class="btn-icono" id="ficha-antes" data-ico="caret-left"
+                aria-label="Especie anterior"></button>
+        <button class="btn-icono" id="ficha-sig" data-ico="caret-right"
+                aria-label="Especie siguiente"></button>
+      </div>
     </div>
   </div>
   <div class="ficha-int" id="ficha-int"></div>
