@@ -79,6 +79,10 @@ def main():
     # los sinonimos no estan en la guia: son aporte propio
     sinon = {r['especie_id']: lista(r.get('sinonimos', ''), ';')
              for r in leer(os.path.join(PROPIO, 'sinonimos.csv'))}
+    # lomas vistas por nosotros que la guia no cita: van aparte para no
+    # mezclarlas con lo que dice el libro
+    propias = {r['especie_id']: lista(r.get('lomas_anadidas', ''), ';')
+               for r in leer(os.path.join(PROPIO, 'loma_propia.csv'))}
 
     # fotos por especie, principales primero
     fotos = collections.defaultdict(list)
@@ -87,9 +91,17 @@ def main():
             fotos[m['especie_id']].append(os.path.basename(m['archivo']))
 
     idpor = {l['nombre']: l['loma_id'] for l in lomas}
+    ids = {l['loma_id'] for l in lomas}
     especies, revisados = [], 0
     for r in esp:
         eid = r['especie_id']
+        deguia = [idpor[x] for x in lista(r['lomas'], ';') if x in idpor]
+        propia = []
+        for x in propias.get(eid, []):
+            if x not in ids:
+                print('   aviso: loma desconocida en loma_propia.csv:', x)
+            elif x not in deguia:
+                propia.append(x)
         a = colauto.get(eid, {})
         v = colrev.get(eid, {})
         color = (v.get('color_flor') or '').strip() or a.get('color_flor_auto', '')
@@ -119,7 +131,8 @@ def main():
             'florTxt': r['floracion_texto'],
             'habitats': lista(r['habitats']),
             'cara': r['cara'],
-            'lomas': [idpor[x] for x in lista(r['lomas'], ';') if x in idpor],
+            'lomas': deguia + propia,
+            'lomasPropias': propia,
             'color': color,
             'colores': todos,
             'desc': r['descripcion'],
@@ -234,6 +247,9 @@ def main():
     escribir_sw()
 
     nimg = len(os.listdir(os.path.join(RAIZ, 'app', 'img')))
+    nprop = sum(len(e['lomasPropias']) for e in especies)
+    if nprop:
+        print('\nlomas añadidas por observación propia: %d' % nprop)
     print('\nrevisión de color: %d/%d especies marcadas como revisadas'
           % (revisados, len(especies)))
     print('imágenes en app/img: %d' % nimg)

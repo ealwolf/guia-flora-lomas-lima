@@ -121,7 +121,8 @@ Guía de Flora de las Lomas de Lima/
 │   ├── crudo/              copia congelada del PDF. NO EDITAR.
 │   ├── propio/             tus correcciones. Ningún script escribe aquí.
 │   │   ├── color_flor.csv
-│   │   └── sinonimos.csv
+│   │   ├── sinonimos.csv
+│   │   └── loma_propia.csv
 │   ├── iconos-phosphor.json
 │   └── iconos-propios.json   los dibujados aquí (la flor de la app)
 │
@@ -247,6 +248,29 @@ que el botón sale sólo cuando Chrome acaba de avisar de que se puede. Sin esa
 señal, la sección entera se esconde en vez de decir algo que podría ser falso.
 La excepción es el iPhone, donde Safari no avisa nunca y sólo queda explicar el
 camino a mano.
+
+---
+
+## Lomas que la guía no cita
+
+La guía visitó 22 lomas entre 2013 y 2014, y lo que no vieron entonces no
+está. Lo que vamos encontrando en campo se añade en
+`datos/propio/loma_propia.csv`, **sin tocar la lista del libro**: una cosa es
+lo publicado y otra lo observado, y la ficha las distingue.
+
+| Especie | Loma añadida | Fuente |
+|---|---|---|
+| N.º 46 *Calceolaria pinnata* (Zapatito) | Villa María | observación propia |
+
+En la ficha, la loma propia sale **en verde y marcada «propia»** junto a las
+del libro en rojo, y el pie dice «7 de 22 lomas visitadas por la guía + 1 de
+observación propia». En el mapa se pinta del mismo verde. Y cuenta para el
+filtro: buscar *Villa María* ahora devuelve 57 especies en vez de 56.
+
+Para añadir más, pon el `loma_id` en la fila de la especie —varios separados
+por punto y coma— y vuelve a ejecutar `construir.py`. Los identificadores
+están en `datos/crudo/loma.csv`; si escribes uno que no existe, el script
+avisa y lo ignora.
 
 ---
 

@@ -563,6 +563,10 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 .mapa-lomas .mapa-linea { fill: none; stroke: var(--costa); stroke-width: .35; }
 .mapa-lomas .loma { fill: color-mix(in srgb, var(--tenue) 42%, transparent); stroke: none; transition: fill .2s; }
 .mapa-lomas .loma.activa { fill: var(--rojo); }
+/* lo que hemos visto nosotros y la guia no cita, en el verde de la app */
+.mapa-lomas .loma.propia { fill: var(--acento); }
+.eti.propia { background: var(--acento-sua); color: var(--acento-txt);
+  border-color: transparent; }
 .lista-lomas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .lista-lomas .eti.activa { background: color-mix(in srgb, var(--rojo) 15%, transparent); color: var(--rojo); border-color: transparent; }
 

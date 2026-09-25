@@ -488,9 +488,12 @@ function svgMapa(e) {
   cont.innerHTML = window.MAPA_SVG || '';
   var svg = cont.querySelector('svg');
   if (!svg) return '';
+  var propias = e.lomasPropias || [];
   e.lomas.forEach(function (id) {
     var p = svg.querySelector('[data-loma="' + id + '"]');
-    if (p) p.classList.add('activa');
+    if (!p) return;
+    p.classList.add('activa');
+    if (propias.indexOf(id) >= 0) p.classList.add('propia');
   });
   return cont.innerHTML;
 }
@@ -547,8 +550,13 @@ function abrirFicha(id, empujar) {
            '<img loading="lazy" src="img/' + f + '" alt=""></button>';
   }).join('');
 
+  // se distingue lo que dice la guia de lo que hemos visto nosotros
+  var propias = e.lomasPropias || [];
   var lomasEti = e.lomas.map(function (id2) {
-    return '<span class="eti activa">' + svgIcono('map-pin') + esc(nombreLoma[id2] || id2) + '</span>';
+    var mia = propias.indexOf(id2) >= 0;
+    return '<span class="eti activa' + (mia ? ' propia' : '') + '">' +
+           svgIcono('map-pin') + esc(nombreLoma[id2] || id2) +
+           (mia ? ' <small>propia</small>' : '') + '</span>';
   }).join('');
 
   var html =
@@ -587,7 +595,10 @@ function abrirFicha(id, empujar) {
         '</figcaption></figure></section>' +
       '<section class="bloque"><h3>' + svgIcono('map-trifold') + 'Dónde se registró</h3>' +
         '<figure class="figura">' + svgMapa(e) +
-        '<figcaption>' + e.lomas.length + ' de ' + G.lomas.length + ' lomas visitadas</figcaption></figure>' +
+        '<figcaption>' + (e.lomas.length - propias.length) + ' de ' + G.lomas.length +
+          ' lomas visitadas por la guía' +
+          (propias.length ? '<br>+ ' + propias.length + ' de observación propia' : '') +
+        '</figcaption></figure>' +
         '<div class="lista-lomas">' + lomasEti + '</div></section>' +
       (e.flor.length ? '<section class="bloque"><h3>' + svgIcono('calendar-blank') + 'Calendario de floración</h3>' + cal + '</section>' : '') +
       (e.habitats.length ? '<section class="bloque"><h3>' + svgIcono('drop') + 'Hábitats</h3><div class="envoltura">' +
