@@ -42,11 +42,8 @@ window.addEventListener('beforeinstallprompt', function (ev) {
     </div>
 
     <div class="acciones">
-      <div class="menu-envoltura">
-        <button class="btn-icono" id="btn-tema" aria-label="Apariencia"
-                aria-haspopup="menu" aria-expanded="false"></button>
-        <div class="menu" id="menu-tema" role="menu" aria-label="Apariencia" hidden></div>
-      </div>
+      <button class="btn-icono" id="btn-tema" aria-label="Apariencia"
+              aria-haspopup="dialog"></button>
       <button class="btn-icono" id="btn-info" aria-label="Sobre la guía" data-ico="info"></button>
       <button class="btn-icono" id="btn-guardar" aria-label="Usar sin conexión"
               data-ico="descargar"><i class="pendiente oculto" aria-hidden="true"></i></button>
@@ -136,6 +133,16 @@ window.addEventListener('beforeinstallprompt', function (ev) {
     <button class="btn" id="btn-reset">Limpiar</button>
     <button class="btn principal" id="btn-aplicar">Ver resultados</button>
   </div>
+</section>
+
+<!-- ---------- apariencia ---------- -->
+<section class="panel" id="panel-apariencia" role="dialog" aria-modal="true"
+         aria-labelledby="apar-tit">
+  <div class="panel-cab">
+    <h2 id="apar-tit">Apariencia</h2>
+    <button class="btn-icono" id="cerrar-apariencia" aria-label="Cerrar" data-ico="x"></button>
+  </div>
+  <div class="panel-cuerpo" id="apariencia"></div>
 </section>
 
 <!-- ---------- usar sin conexion ---------- -->

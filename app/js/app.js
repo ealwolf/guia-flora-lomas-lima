@@ -807,7 +807,6 @@ window.addEventListener('resize', pintarRango);
 document.addEventListener('keydown', function (ev) {
   if (ev.key === 'Escape') {
     if (!$('#sug').hidden) { cerrarSug(); return; }
-    if (!$('#menu-tema').hidden) { abrirMenuTema(false); $('#btn-tema').focus(); return; }
     if ($('#visor').classList.contains('abierto')) { $('#visor').classList.remove('abierto'); return; }
     if (panelActual) { cerrarPanelAbierto(); return; }
     if ($('#ficha').classList.contains('abierta')) history.back();
@@ -833,8 +832,10 @@ function aplicarTema(id) {
   b.innerHTML = svgIcono(t.ico);
   b.setAttribute('aria-label', 'Apariencia. ' + t.txt);
   b.setAttribute('title', 'Apariencia · ' + t.txt.replace('Tema: ', 'tema '));
-  if (!$('#menu-tema').hidden) pintarMenuTema();
+  // guardar antes de repintar: pintarApariencia lee el tema de localStorage,
+  // y al reves la marca se quedaba en la opcion anterior
   try { localStorage.setItem('tema', t.id); } catch (e) {}
+  if (panelActual === '#panel-apariencia') pintarApariencia();
 }
 /* ---------- tamaño del texto ----------
    Instalada como app no hay barra de navegador, y por tanto no hay zoom del
@@ -852,62 +853,44 @@ function aplicarTexto(id) {
   var t = TEXTOS.filter(function (x) { return x.id === id; })[0] || TEXTOS[0];
   document.documentElement.style.setProperty('--escala', t.v);
   try { localStorage.setItem('texto', t.id); } catch (e) {}
-  if (!$('#menu-tema').hidden) pintarMenuTema();
+  if (panelActual === '#panel-apariencia') pintarApariencia();
   pintarRango();                      // el doble deslizador mide en píxeles
 }
 
-/* menu de apariencia: tres opciones no se adivinan pulsando un boton que rota */
-function pintarMenuTema() {
+/* tres opciones no se adivinan pulsando un boton que rota */
+function pintarApariencia() {
   var opcion = function (t, clave, actual) {
     var marca = t.ico ? svgIcono(t.ico)
-        : '<span class="menu-aa" style="font-size:' + t.muestra + '">Aa</span>';
-    return '<button role="menuitemradio" data-' + clave + '="' + t.id + '" aria-checked="' +
-           (t.id === actual) + '">' + marca +
+        : '<span class="opcion-aa" style="font-size:' + t.muestra + '">Aa</span>';
+    return '<button class="opcion" role="radio" data-' + clave + '="' + t.id +
+           '" aria-checked="' + (t.id === actual) + '">' + marca +
            '<span>' + t.corto + '</span>' + svgIcono('check', 'visto') + '</button>';
   };
   var tema = leerTema(), texto = leerTexto();
-  $('#menu-tema').innerHTML =
-      '<div class="menu-tit">Tema</div>' +
-      TEMAS.map(function (t) { return opcion(t, 'tema', tema); }).join('') +
-      '<div class="menu-raya"></div>' +
-      '<div class="menu-tit">Tamaño del texto</div>' +
-      TEXTOS.map(function (t) { return opcion(t, 'texto', texto); }).join('');
+  $('#apariencia').innerHTML =
+      '<div class="grupo" role="radiogroup" aria-label="Tema">' +
+        '<h3>' + svgIcono('circle-half-tilt') + 'Tema</h3>' +
+        TEMAS.map(function (t) { return opcion(t, 'tema', tema); }).join('') +
+      '</div>' +
+      '<div class="grupo" role="radiogroup" aria-label="Tamaño del texto">' +
+        '<h3>' + svgIcono('book-open') + 'Tamaño del texto</h3>' +
+        TEXTOS.map(function (t) { return opcion(t, 'texto', texto); }).join('') +
+      '</div>';
 }
 
-function abrirMenuTema(v) {
-  var m = $('#menu-tema');
-  m.hidden = !v;
-  $('#btn-tema').setAttribute('aria-expanded', v ? 'true' : 'false');
-  if (v) {
-    pintarMenuTema();
-    var sel = m.querySelector('[aria-checked="true"]') || m.querySelector('button');
-    if (sel) sel.focus();
-  }
+function abrirApariencia(v) {
+  if (v) pintarApariencia();
+  abrirPanel(v, '#panel-apariencia');
 }
+$('#btn-tema').addEventListener('click', function () { abrirApariencia(true); });
+$('#cerrar-apariencia').addEventListener('click', function () { abrirApariencia(false); });
 
-$('#btn-tema').addEventListener('click', function (ev) {
-  ev.stopPropagation();
-  abrirMenuTema($('#menu-tema').hidden);
-});
-
-$('#menu-tema').addEventListener('click', function (ev) {
+$('#apariencia').addEventListener('click', function (ev) {
   var t = ev.target.closest('[data-texto]');
-  if (t) {
-    // el menu se queda abierto: asi se compara un tamaño con otro
-    aplicarTexto(t.dataset.texto);
-    return;
-  }
+  // el panel se queda abierto en los dos casos: asi se comparan las opciones
+  if (t) { aplicarTexto(t.dataset.texto); return; }
   var b = ev.target.closest('[data-tema]');
-  if (!b) return;
-  aplicarTema(b.dataset.tema);
-  abrirMenuTema(false);
-  $('#btn-tema').focus();
-});
-
-document.addEventListener('click', function (ev) {
-  if (!$('#menu-tema').hidden && !ev.target.closest('.menu-envoltura')) {
-    abrirMenuTema(false);
-  }
+  if (b) aplicarTema(b.dataset.tema);
 });
 
 /* ---------- guardar en el dispositivo ----------
