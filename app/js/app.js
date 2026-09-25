@@ -177,7 +177,7 @@ function elegirSug(i) {
 var ALT_MIN = 100, ALT_MAX = 1000;
 var F = { q: '', color: [], grupo: [], mes: [], loma: [], habitat: [], familia: [],
           conserv: [], cara: [], orden: 'guia',
-          mesModo: 'sueltos', mesIni: 0,
+          mesModo: 'sueltos', mesDesde: 1, mesHasta: 12,
           altModo: 'todas', altitud: 550, altDesde: ALT_MIN, altHasta: ALT_MAX };
 
 /* La cara sale del dibujo del perfil, que es el unico dato que tienen las 134
@@ -345,10 +345,41 @@ function render() {
    la loma en la que uno esta parado. Dejar la loma fuera del borrado la
    convertiria en un filtro aparte; es mas honesto borrarlo todo y ofrecer
    devolverlo. Vale para cualquier filtro, no solo para la loma. */
+/* La tostada: un aviso de abajo que se va solo y lleva su cuenta atras a la
+   vista. No va en la fila de fichas porque no es un filtro puesto; es algo que
+   acaba de pasar y que caduca. */
+var relojTostada = 0, accionTostada = null;
+
+function tostada(texto, accion, fn, ms) {
+  var t = $('#tostada');
+  $('#tostada-txt').textContent = texto;
+  $('#tostada-accion').textContent = accion;
+  accionTostada = fn;
+  t.classList.remove('oculto', 'corriendo');
+  void t.offsetWidth;                         // reiniciar la barra
+  $('#tostada-barra').style.animationDuration = ms + 'ms';
+  t.classList.add('corriendo');
+  clearTimeout(relojTostada);
+  relojTostada = setTimeout(quitarTostada, ms);
+}
+
+function quitarTostada() {
+  clearTimeout(relojTostada);
+  accionTostada = null;
+  $('#tostada').classList.add('oculto');
+  $('#tostada').classList.remove('corriendo');
+}
+
+$('#tostada-accion').addEventListener('click', function () {
+  var fn = accionTostada;
+  quitarTostada();
+  if (fn) fn();
+});
+
 var borrado = null, relojBorrado = 0, huellaBorrado = null;
 var GUARDABLES = ['q', 'color', 'grupo', 'mes', 'loma', 'habitat', 'familia',
-                  'conserv', 'cara', 'mesModo', 'altModo', 'altitud',
-                  'altDesde', 'altHasta'];
+                  'conserv', 'cara', 'mesModo', 'mesDesde', 'mesHasta',
+                  'altModo', 'altitud', 'altDesde', 'altHasta'];
 
 function huellaFiltros() {
   return GUARDABLES.map(function (k) { return F[k]; }).join('|');
@@ -368,14 +399,17 @@ function tirarFiltros(tambienBusqueda) {
   huellaBorrado = null;
   if (tambienBusqueda) quitarBusqueda(true);
   limpiarTodo();                     // repinta
-  if (borrado) { huellaBorrado = huellaFiltros(); pintarActivos(); }
+  if (borrado) {
+    huellaBorrado = huellaFiltros();
+    tostada('Se quitaron los filtros', 'Deshacer', devolverBorrado, 12000);
+  }
 }
 
 function olvidarBorrado() {
   clearTimeout(relojBorrado);
   if (!borrado) return;
   borrado = null; huellaBorrado = null;
-  pintarActivos();
+  quitarTostada();
 }
 
 function devolverBorrado() {
@@ -383,8 +417,8 @@ function devolverBorrado() {
   var v = borrado;
   clearTimeout(relojBorrado);
   borrado = null; huellaBorrado = null;
+  quitarTostada();
   GUARDABLES.forEach(function (k) { F[k] = v[k]; });
-  F.mesIni = 0;
   $('#q').value = F.q;
   $('#limpiar').classList.toggle('oculto', !F.q);
   $('#f-altitud').value = F.altitud;
@@ -403,6 +437,7 @@ function pintarActivos() {
   // sitio donde se comprueba, en vez de en cada manejador
   if (borrado && huellaBorrado !== null && huellaFiltros() !== huellaBorrado) {
     clearTimeout(relojBorrado); borrado = null; huellaBorrado = null;
+    quitarTostada();
   }
   var f = [];
   // la busqueda tambien es un filtro puesto, y asi «Quitar todo» tiene sitio
@@ -480,12 +515,6 @@ function pintarActivos() {
     html += '<button class="chip todo" id="quita-todo">' + svgIcono('x', 'quita') +
             'Quitar todo</button>';
   }
-  // tambien cuando queda algo en la fila: se puede limpiar los filtros y
-  // conservar la busqueda, y aun asi haber borrado de mas
-  if (borrado) {
-    html += '<button class="chip todo deshacer" id="deshacer">' +
-        svgIcono('arrow-counter-clockwise') + 'Deshacer</button>';
-  }
   caja.innerHTML = html;
   caja.classList.toggle('oculto', !html);
 }
@@ -494,9 +523,8 @@ $('#activos').addEventListener('click', function (ev) {
   if (ev.target.closest('#mas-chips')) { chipsAbiertos = true; pintarActivos(); }
   else if (ev.target.closest('#menos-chips')) { chipsAbiertos = false; pintarActivos(); }
   else if (ev.target.closest('#quita-alt')) quitarAltitud();
-  else if (ev.target.closest('#quita-mes')) { F.mes = []; F.mesIni = 0; render(); }
+  else if (ev.target.closest('#quita-mes')) { F.mes = []; F.mesDesde = 1; F.mesHasta = 12; render(); }
   else if (ev.target.closest('#quita-q')) quitarBusqueda();
-  else if (ev.target.closest('#deshacer')) devolverBorrado();
   else if (ev.target.closest('#quita-todo')) tirarFiltros(true);
 });
 
@@ -982,7 +1010,7 @@ $$('[data-vista]').forEach(function (b) {
 $$('[data-limpia]').forEach(function (b) {
   b.addEventListener('click', function () {
     F[b.dataset.limpia] = [];
-    if (b.dataset.limpia === 'mes') F.mesIni = 0;
+    if (b.dataset.limpia === 'mes') { F.mesDesde = 1; F.mesHasta = 12; }
     render();
   });
 });
@@ -1019,8 +1047,7 @@ document.addEventListener('click', function (ev) {
   // la misma ficha significa cosas distintas segun donde este: en el panel
   // elige un mes -o un extremo del rango-, y en la fila de arriba lo quita
   if (f !== 'mes') alterna(F[f], v);
-  else if (b.closest('#f-mes')) tocarMes(+v);
-  else { alterna(F.mes, +v); F.mesIni = 0; }
+  else alterna(F.mes, +v);
   render();
 });
 
@@ -1059,7 +1086,7 @@ function rangoMeses(a, b) {
    nueve. Hay tramo cuando solo un mes no tiene al anterior marcado. */
 function tramoMeses() {
   var ms = F.mes;
-  if (ms.length < 3 || ms.length > 11) return null;
+  if (ms.length < 2 || ms.length > 11) return null;
   var hay = {}, ini = 0, fin = 0, cabos = 0;
   ms.forEach(function (m) { hay[m] = 1; });
   ms.forEach(function (m) {
@@ -1069,36 +1096,155 @@ function tramoMeses() {
   return cabos === 1 ? [ini, fin] : null;
 }
 
-function tocarMes(m) {
-  if (F.mesModo !== 'rango') { alterna(F.mes, m); return; }
-  if (!F.mesIni) { F.mesIni = m; F.mes = [m]; }
-  else { F.mes = rangoMeses(F.mesIni, m); F.mesIni = 0; }
+/* En modo rango los duenos del dato son los dos cabos, y F.mes se deriva de
+   ellos: por eso no puede quedar un hueco en medio. Antes F.mes era el dueno y
+   al volver de «meses sueltos» el rango heredaba los agujeros. */
+function aplicarRango() {
+  var r = rangoMeses(F.mesDesde, F.mesHasta);
+  F.mes = r.length === 12 ? [] : r;      // el ano entero no filtra nada
 }
 
+/* Al pasar a rango, el arco mas corto que cubre lo marcado: el hueco mas
+   ancho es el que se queda fuera. Con meses seguidos sale el mismo tramo. */
+function arcoDeMeses(ms) {
+  if (!ms.length || ms.length === 12) return [1, 12];
+  var s = ms.slice().sort(function (a, b) { return a - b; });
+  var mejor = -1, corte = 0;
+  s.forEach(function (m, i) {
+    var hueco = (s[(i + 1) % s.length] - m + 12) % 12;
+    if (hueco > mejor) { mejor = hueco; corte = i; }
+  });
+  return [s[(corte + 1) % s.length], s[corte]];
+}
+
+function tocarMes(m) { alterna(F.mes, m); }
+
 function pintarModoMes() {
+  var rango = F.mesModo === 'rango';
   $$('[data-mesmodo]').forEach(function (b) {
     b.setAttribute('aria-pressed', b.dataset.mesmodo === F.mesModo ? 'true' : 'false');
   });
-  $('#mes-pista').textContent = F.mesModo !== 'rango'
-      ? 'Deja las especies que florecen en alguno de los meses marcados.'
-      : F.mesIni
-        ? 'Ahora toca el mes en que acaba.'
-        : 'Toca el mes en que empieza y luego aquel en que acaba. De Nov a Feb '
-          + 'también vale: el rango da la vuelta al año.';
+  $('#f-mes').classList.toggle('oculto', rango);
+  $('#mes-rango').classList.toggle('oculto', !rango);
+  $('#mes-pista').textContent = rango
+      ? 'Arrastra los dos extremos, o toca un mes y se moverá el más cercano.'
+      : 'Deja las especies que florecen en alguno de los meses marcados.';
+  if (rango) pintarAnillo();
 }
 
 $$('[data-mesmodo]').forEach(function (b) {
   b.addEventListener('click', function () {
     F.mesModo = b.dataset.mesmodo;
-    F.mesIni = 0;
+    if (F.mesModo === 'rango') {
+      var a = arcoDeMeses(F.mes);
+      F.mesDesde = a[0]; F.mesHasta = a[1];
+      aplicarRango();
+    }
     render();
   });
 });
 
 $$('[data-meses]').forEach(function (b) {
   b.addEventListener('click', function () {
-    F.mes = b.dataset.meses.split(',').map(Number);
-    F.mesIni = 0;
+    var ms = b.dataset.meses.split(',').map(Number);
+    F.mesDesde = ms[0]; F.mesHasta = ms[ms.length - 1];
+    F.mes = ms;
+    render();
+  });
+});
+
+/* ---------- el anillo del ano ---------- */
+var ANI = { cx: 100, cy: 100, rIn: 52, rOut: 80, rTxt: 66, rCabo: 89 };
+
+function polar(r, grados) {
+  var a = grados * Math.PI / 180;
+  return [ANI.cx + r * Math.cos(a), ANI.cy + r * Math.sin(a)];
+}
+function anguloMes(i) { return -90 + i * 30; }          // Ene arriba
+
+function sectorMes(i) {
+  var a0 = anguloMes(i) - 14, a1 = anguloMes(i) + 14;   // 2 grados de aire
+  var p1 = polar(ANI.rOut, a0), p2 = polar(ANI.rOut, a1),
+      p3 = polar(ANI.rIn, a1), p4 = polar(ANI.rIn, a0);
+  var n = function (p) { return p[0].toFixed(2) + ' ' + p[1].toFixed(2); };
+  return 'M' + n(p1) + 'A' + ANI.rOut + ' ' + ANI.rOut + ' 0 0 1 ' + n(p2) +
+         'L' + n(p3) + 'A' + ANI.rIn + ' ' + ANI.rIn + ' 0 0 0 ' + n(p4) + 'Z';
+}
+
+function pintarAnillo() {
+  var meses = rangoMeses(F.mesDesde, F.mesHasta), dentro = {};
+  meses.forEach(function (m) { dentro[m] = 1; });
+  var h = '', i, p;
+  for (i = 0; i < 12; i++) {
+    h += '<path class="seg' + (dentro[i + 1] ? ' on' : '') + '" data-mes="' +
+         (i + 1) + '" d="' + sectorMes(i) + '"/>';
+  }
+  for (i = 0; i < 12; i++) {
+    p = polar(ANI.rTxt, anguloMes(i));
+    h += '<text class="rot' + (dentro[i + 1] ? ' on' : '') + '" x="' + p[0].toFixed(1) +
+         '" y="' + (p[1] + 3.3).toFixed(1) + '" text-anchor="middle">' +
+         G.meses[i] + '</text>';
+  }
+  [F.mesDesde, F.mesHasta].forEach(function (m) {
+    var q = polar(ANI.rCabo, anguloMes(m - 1));
+    h += '<circle class="cabo" cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) +
+         '" r="4.5"/>';
+  });
+  var todo = meses.length === 12;
+  h += '<text class="centro" x="100" y="97" text-anchor="middle">' +
+       (todo ? 'Todo el año'
+             : G.meses[F.mesDesde - 1] + ' - ' + G.meses[F.mesHasta - 1]) + '</text>' +
+       '<text class="centro-2" x="100" y="112" text-anchor="middle">' +
+       (todo ? 'sin filtrar' : meses.length + (meses.length === 1 ? ' mes' : ' meses')) +
+       '</text>';
+  $('#anillo').innerHTML = h;
+  $('#mes-desde').value = F.mesDesde;
+  $('#mes-hasta').value = F.mesHasta;
+}
+
+function mesEnPunto(ev) {
+  var r = $('#anillo').getBoundingClientRect();
+  var x = ev.clientX - r.left - r.width / 2, y = ev.clientY - r.top - r.height / 2;
+  // el agujero del centro no manda: ahi no hay meses
+  if (Math.sqrt(x * x + y * y) < r.width * 0.2) return 0;
+  var g = ((Math.atan2(y, x) * 180 / Math.PI + 90) % 360 + 360) % 360;
+  return Math.round(g / 30) % 12 + 1;
+}
+function distMes(a, b) { var d = Math.abs(a - b) % 12; return Math.min(d, 12 - d); }
+
+var caboVivo = null;
+function moverCabo(m) {
+  if (!m || !caboVivo || F[caboVivo] === m) return;
+  F[caboVivo] = m;
+  aplicarRango();
+  render();
+}
+$('#anillo').addEventListener('pointerdown', function (ev) {
+  var m = mesEnPunto(ev);
+  if (!m) return;
+  // el cabo mas cercano, y no «el primero que toques»: asi no hay que llevar
+  // la cuenta de por cual vas, ni hay un sentido que adivinar
+  caboVivo = distMes(m, F.mesDesde) <= distMes(m, F.mesHasta) ? 'mesDesde' : 'mesHasta';
+  try { ev.currentTarget.setPointerCapture(ev.pointerId); } catch (e) {}
+  moverCabo(m);
+  ev.preventDefault();
+});
+$('#anillo').addEventListener('pointermove', function (ev) {
+  if (caboVivo) moverCabo(mesEnPunto(ev));
+});
+['pointerup', 'pointercancel'].forEach(function (t) {
+  $('#anillo').addEventListener(t, function () { caboVivo = null; });
+});
+
+/* el mismo dato en palabras: exacto, y alcanzable con el teclado */
+['#mes-desde', '#mes-hasta'].forEach(function (sel) {
+  var e = $(sel);
+  e.innerHTML = G.meses.map(function (m, i) {
+    return '<option value="' + (i + 1) + '">' + m + '</option>';
+  }).join('');
+  e.addEventListener('change', function () {
+    F[sel === '#mes-desde' ? 'mesDesde' : 'mesHasta'] = +e.value;
+    aplicarRango();
     render();
   });
 });
@@ -1461,7 +1607,7 @@ $('#btn-aplicar').addEventListener('click', function () { abrirPanel(false); });
 
 function limpiarTodo() {
   F.color = []; F.grupo = []; F.mes = []; F.loma = []; F.habitat = []; F.familia = [];
-  F.conserv = []; F.cara = []; F.mesIni = 0;
+  F.conserv = []; F.cara = []; F.mesDesde = 1; F.mesHasta = 12;
   quitarAltitud();   // repinta
 }
 // el panel es de filtros: «Limpiar» no toca el texto del buscador

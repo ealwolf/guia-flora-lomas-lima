@@ -83,6 +83,14 @@ window.addEventListener('beforeinstallprompt', function (ev) {
 </main>
 
 <!-- ---------- panel de filtros ---------- -->
+<!-- Lo que se acaba de deshacer vive abajo y se va solo: no es un filtro
+     puesto, asi que no tiene sitio en la fila de fichas. -->
+<div class="tostada oculto" id="tostada" role="status" aria-live="polite">
+  <span id="tostada-txt"></span>
+  <button class="tostada-btn" id="tostada-accion"></button>
+  <i class="tostada-barra" id="tostada-barra" aria-hidden="true"></i>
+</div>
+
 <div class="velo" id="velo"></div>
 <section class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="panel-tit">
   <div class="panel-cab">
@@ -101,23 +109,6 @@ window.addEventListener('beforeinstallprompt', function (ev) {
         <button class="limpia oculto" data-limpia="grupo">Quitar</button>
       </h3>
       <div class="envoltura" id="f-grupo"></div>
-    </div>
-    <div class="grupo">
-      <h3><span data-ico="calendar-blank" aria-hidden="true"></span> En flor durante
-        <button class="limpia oculto" data-limpia="mes">Quitar</button>
-      </h3>
-      <div class="segmentado" role="group" aria-label="Cómo elegir los meses">
-        <button data-mesmodo="sueltos" aria-pressed="true">Meses sueltos</button>
-        <button data-mesmodo="rango" aria-pressed="false">Un rango</button>
-      </div>
-      <div class="envoltura" id="f-mes"></div>
-      <p class="pista" id="mes-pista"></p>
-      <div class="atajos">
-        <button class="atajo" data-meses="5,6,7,8,9,10">Estación húmeda
-          <span>May - Oct</span></button>
-        <button class="atajo" data-meses="12,1,2,3">Estación seca
-          <span>Dic - Mar</span></button>
-      </div>
     </div>
     <div class="grupo">
       <h3><span data-ico="map-trifold" aria-hidden="true"></span> Loma
@@ -139,6 +130,31 @@ window.addEventListener('beforeinstallprompt', function (ev) {
           <div class="mapa-aviso" id="mapa-aviso" aria-hidden="true"></div>
         </div>
         <p class="pista" id="mapa-pista"></p>
+      </div>
+    </div>
+    <div class="grupo">
+      <h3><span data-ico="calendar-blank" aria-hidden="true"></span> En flor durante
+        <button class="limpia oculto" data-limpia="mes">Quitar</button>
+      </h3>
+      <div class="segmentado" role="group" aria-label="Cómo elegir los meses">
+        <button data-mesmodo="sueltos" aria-pressed="true">Meses sueltos</button>
+        <button data-mesmodo="rango" aria-pressed="false">Un rango</button>
+      </div>
+      <div class="envoltura" id="f-mes"></div>
+      <div id="mes-rango" class="oculto">
+        <svg class="anillo" id="anillo" viewBox="0 0 200 200"
+             aria-hidden="true"></svg>
+        <p class="mes-selec">De
+          <select id="mes-desde" aria-label="Mes en que empieza"></select> a
+          <select id="mes-hasta" aria-label="Mes en que acaba"></select>
+        </p>
+      </div>
+      <p class="pista" id="mes-pista"></p>
+      <div class="atajos">
+        <button class="atajo" data-meses="5,6,7,8,9,10">Estación húmeda
+          <span>May - Oct</span></button>
+        <button class="atajo" data-meses="12,1,2,3">Estación seca
+          <span>Dic - Mar</span></button>
       </div>
     </div>
     <div class="grupo">
