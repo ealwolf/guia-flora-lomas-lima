@@ -353,7 +353,10 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   display: flex; align-items: center; gap: 10px;
   max-width: 1400px; margin-inline: auto; padding: 7px 14px;
 }
-.barra-filtros.compacta .herramientas { padding: 0; order: 3; flex: none; }
+/* margin-left:auto y no solo el orden: sin fichas que ocupen el hueco -porque
+   .oculto las quita del flujo- los botones se quedaban pegados al recuento, a
+   la izquierda. Con fichas el auto no hace nada, que ya empujan ellas. */
+.barra-filtros.compacta .herramientas { padding: 0; order: 3; flex: none; margin-left: auto; }
 .barra-filtros.compacta .btn-barra { padding: 0 11px; }
 .barra-filtros.compacta .btn-barra .txt { display: none; }
 .barra-filtros.compacta .resumen {
