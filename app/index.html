@@ -106,7 +106,18 @@ window.addEventListener('beforeinstallprompt', function (ev) {
       <h3><span data-ico="calendar-blank" aria-hidden="true"></span> En flor durante
         <button class="limpia oculto" data-limpia="mes">Quitar</button>
       </h3>
+      <div class="segmentado" role="group" aria-label="Cómo elegir los meses">
+        <button data-mesmodo="sueltos" aria-pressed="true">Meses sueltos</button>
+        <button data-mesmodo="rango" aria-pressed="false">Un rango</button>
+      </div>
       <div class="envoltura" id="f-mes"></div>
+      <p class="pista" id="mes-pista"></p>
+      <div class="atajos">
+        <button class="atajo" data-meses="5,6,7,8,9,10">Estación húmeda
+          <span>May - Oct</span></button>
+        <button class="atajo" data-meses="12,1,2,3">Estación seca
+          <span>Dic - Mar</span></button>
+      </div>
     </div>
     <div class="grupo">
       <h3><span data-ico="mountains" aria-hidden="true"></span> Altitud</h3>
@@ -179,7 +190,10 @@ window.addEventListener('beforeinstallprompt', function (ev) {
       <h3><span data-ico="sun" aria-hidden="true"></span> Cara de la loma
         <button class="limpia oculto" data-limpia="cara">Quitar</button>
       </h3>
-      <div class="envoltura" id="f-cara"></div>
+      <div class="envoltura caras" id="f-cara"></div>
+      <p class="pista">El flanco que mira al mar —el <b>frente costero</b>— recibe
+        la neblina y reverdece; el que mira a la cordillera —el <b>frente
+        andino</b>— recibe muy poca y es más seco.</p>
       <p class="pista">Según el dibujo del perfil, que está en las 134. El texto
         de la guía sólo lo dice en 103, y en 12 no coinciden.</p>
     </div>

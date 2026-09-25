@@ -177,6 +177,7 @@ function elegirSug(i) {
 var ALT_MIN = 100, ALT_MAX = 1000;
 var F = { q: '', color: [], grupo: [], mes: [], loma: [], habitat: [], familia: [],
           conserv: [], cara: [], orden: 'guia',
+          mesModo: 'sueltos', mesIni: 0,
           altModo: 'todas', altitud: 550, altDesde: ALT_MIN, altHasta: ALT_MAX };
 
 /* La cara sale del dibujo del perfil, que es el unico dato que tienen las 134
@@ -376,10 +377,16 @@ function pintarActivos() {
   F.cara.forEach(function (v) {
     f.push({ ico: 'sun', et: v, tipo: 'Cara de la loma', f: 'cara', v: v });
   });
-  F.mes.slice().sort(function (a, b) { return a - b; }).forEach(function (v) {
-    f.push({ ico: 'calendar-blank', et: 'En flor en ' + G.meses[v - 1],
-             tipo: 'Floración', f: 'mes', v: v });
-  });
+  var tramo = tramoMeses();
+  if (tramo) {
+    f.push({ ico: 'calendar-blank', quita: 'quita-mes', tipo: 'Floración',
+             et: 'En flor de ' + G.meses[tramo[0] - 1] + ' a ' + G.meses[tramo[1] - 1] });
+  } else {
+    F.mes.slice().sort(function (a, b) { return a - b; }).forEach(function (v) {
+      f.push({ ico: 'calendar-blank', et: 'En flor en ' + G.meses[v - 1],
+               tipo: 'Floración', f: 'mes', v: v });
+    });
+  }
 
   var caja = $('#activos');
   // con doce lomas puestas la fila se comia dos lineas y empujaba la rejilla
@@ -423,6 +430,7 @@ $('#activos').addEventListener('click', function (ev) {
   if (ev.target.closest('#mas-chips')) { chipsAbiertos = true; pintarActivos(); }
   else if (ev.target.closest('#menos-chips')) { chipsAbiertos = false; pintarActivos(); }
   else if (ev.target.closest('#quita-alt')) quitarAltitud();
+  else if (ev.target.closest('#quita-mes')) { F.mes = []; F.mesIni = 0; render(); }
   else if (ev.target.closest('#quita-q')) quitarBusqueda();
   else if (ev.target.closest('#quita-todo')) { quitarBusqueda(true); limpiarTodo(); }
 });
@@ -600,12 +608,12 @@ function pintarFiltros() {
         '<span class="cuenta">' + n + '</span></button>';
   }).join('');
 
-  var caras = ['Occidental', 'Ambas caras', 'Oriental'];
+  var caras = [['Occidental', 'o'], ['Ambas caras', 'a'], ['Oriental', 'e']];
   $('#f-cara').innerHTML = caras.map(function (c) {
-    var n = G.especies.filter(function (e) { return e._cara === c; }).length;
-    return chip(esc(c) + ' <span class="cuenta">' + n + '</span>',
-                F.cara.indexOf(c) >= 0,
-                'data-f="cara" data-v="' + esc(c) + '"');
+    var n = G.especies.filter(function (e) { return e._cara === c[0]; }).length;
+    return chip(miniPerfil(c[1]) + esc(c[0]) + ' <span class="cuenta">' + n + '</span>',
+                F.cara.indexOf(c[0]) >= 0,
+                'data-f="cara" data-v="' + esc(c[0]) + '"');
   }).join('');
 
   $('#f-familia').innerHTML = G.familias.map(function (f) {
@@ -909,6 +917,7 @@ $$('[data-vista]').forEach(function (b) {
 $$('[data-limpia]').forEach(function (b) {
   b.addEventListener('click', function () {
     F[b.dataset.limpia] = [];
+    if (b.dataset.limpia === 'mes') F.mesIni = 0;
     render();
   });
 });
@@ -934,6 +943,7 @@ function sincronizarChips() {
   $$('[data-limpia]').forEach(function (b) {
     b.classList.toggle('oculto', !F[b.dataset.limpia].length);
   });
+  pintarModoMes();
   sincronizarMapa();
 }
 
@@ -941,8 +951,91 @@ document.addEventListener('click', function (ev) {
   var b = ev.target.closest('[data-f]');
   if (!b) return;
   var f = b.dataset.f, v = b.dataset.v;
-  alterna(F[f], f === 'mes' ? +v : v);
+  // la misma ficha significa cosas distintas segun donde este: en el panel
+  // elige un mes -o un extremo del rango-, y en la fila de arriba lo quita
+  if (f !== 'mes') alterna(F[f], v);
+  else if (b.closest('#f-mes')) tocarMes(+v);
+  else { alterna(F.mes, +v); F.mesIni = 0; }
   render();
+});
+
+/* El mismo cerro de la ficha, en miniatura y con un flanco encendido. La cara
+   es un dato dibujado, no escrito: ensenarlo dibujado ahorra la explicacion.
+   El corte va por la ensillada -entre las dos cumbres-, que es donde el ojo
+   parte el cerro; caraDe() usa 27 para clasificar el trazo, que es otra cosa. */
+var SILLA = 34;
+function miniPerfil(lado) {
+  var P = G.perfil, H = P.viewBox[3];
+  var n = (P.silueta.match(/-?\d*\.?\d+/g) || []).map(parseFloat);
+  var x0 = n[0], xN = n[n.length - 2], suelo = 42;
+  var relleno = P.silueta + ' L' + xN + ' ' + suelo + ' L' + x0 + ' ' + suelo + ' Z';
+  var id = 'mp-' + lado;
+  var corte = lado === 'o' ? '<rect x="0" y="0" width="' + SILLA + '" height="' + H + '"/>'
+            : lado === 'e' ? '<rect x="' + SILLA + '" y="0" width="' + P.viewBox[2] +
+                             '" height="' + H + '"/>' : '';
+  return '<svg class="mini-perfil" viewBox="5 9 60 34" aria-hidden="true">' +
+      (corte ? '<clipPath id="' + id + '">' + corte + '</clipPath>' : '') +
+      '<path class="fondo" d="' + relleno + '"/>' +
+      '<path class="lado" d="' + relleno + '"' +
+      (corte ? ' clip-path="url(#' + id + ')"' : '') + '/></svg>';
+}
+
+/* ---------- meses: sueltos o de corrido ---------- */
+/* Nueve meses seguidos eran nueve toques. En modo rango son dos: el mes en que
+   empieza y el mes en que acaba. Y da la vuelta al ano, porque la floracion la
+   da: de noviembre a febrero es un rango, no un error. */
+function rangoMeses(a, b) {
+  var r = [], m = a;
+  for (var i = 0; i < 12; i++) { r.push(m); if (m === b) break; m = m % 12 + 1; }
+  return r;
+}
+
+/* Si los meses puestos son un tramo seguido, una sola ficha lo dice mejor que
+   nueve. Hay tramo cuando solo un mes no tiene al anterior marcado. */
+function tramoMeses() {
+  var ms = F.mes;
+  if (ms.length < 3 || ms.length > 11) return null;
+  var hay = {}, ini = 0, fin = 0, cabos = 0;
+  ms.forEach(function (m) { hay[m] = 1; });
+  ms.forEach(function (m) {
+    if (!hay[m === 1 ? 12 : m - 1]) { ini = m; cabos++; }
+    if (!hay[m % 12 + 1]) fin = m;
+  });
+  return cabos === 1 ? [ini, fin] : null;
+}
+
+function tocarMes(m) {
+  if (F.mesModo !== 'rango') { alterna(F.mes, m); return; }
+  if (!F.mesIni) { F.mesIni = m; F.mes = [m]; }
+  else { F.mes = rangoMeses(F.mesIni, m); F.mesIni = 0; }
+}
+
+function pintarModoMes() {
+  $$('[data-mesmodo]').forEach(function (b) {
+    b.setAttribute('aria-pressed', b.dataset.mesmodo === F.mesModo ? 'true' : 'false');
+  });
+  $('#mes-pista').textContent = F.mesModo !== 'rango'
+      ? 'Deja las especies que florecen en alguno de los meses marcados.'
+      : F.mesIni
+        ? 'Ahora toca el mes en que acaba.'
+        : 'Toca el mes en que empieza y luego aquel en que acaba. De Nov a Feb '
+          + 'también vale: el rango da la vuelta al año.';
+}
+
+$$('[data-mesmodo]').forEach(function (b) {
+  b.addEventListener('click', function () {
+    F.mesModo = b.dataset.mesmodo;
+    F.mesIni = 0;
+    render();
+  });
+});
+
+$$('[data-meses]').forEach(function (b) {
+  b.addEventListener('click', function () {
+    F.mes = b.dataset.meses.split(',').map(Number);
+    F.mesIni = 0;
+    render();
+  });
 });
 
 /* ---------- perfil de altitud ---------- */
@@ -1303,7 +1396,7 @@ $('#btn-aplicar').addEventListener('click', function () { abrirPanel(false); });
 
 function limpiarTodo() {
   F.color = []; F.grupo = []; F.mes = []; F.loma = []; F.habitat = []; F.familia = [];
-  F.conserv = []; F.cara = [];
+  F.conserv = []; F.cara = []; F.mesIni = 0;
   quitarAltitud();   // repinta
 }
 $('#btn-reset').addEventListener('click', limpiarTodo);
