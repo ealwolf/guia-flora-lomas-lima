@@ -316,9 +316,10 @@ function pintarActivos() {
   var caja = $('#activos');
   // con doce lomas puestas la fila se comia dos lineas y empujaba la rejilla
   if (f.length <= TOPE_CHIPS) chipsAbiertos = false;
-  // apretados caben todos: la fila se desliza, asi que no hay que plegar nada
-  var sobran = (!chipsAbiertos && !compacto && f.length > TOPE_CHIPS)
-      ? f.length - TOPE_CHIPS : 0;
+  // el tope vale en los dos modos: arriba ahorra filas que habria que pasar
+  // antes de llegar a las tarjetas, y apretada alarga la fila que se desliza
+  // en vez de crear otra
+  var sobran = (!chipsAbiertos && f.length > TOPE_CHIPS) ? f.length - TOPE_CHIPS : 0;
   var html = (sobran ? f.slice(0, TOPE_CHIPS) : f).map(function (x) {
     var senas = x.quita ? 'id="' + x.quita + '"'
                         : 'data-f="' + x.f + '" data-v="' + esc('' + x.v) + '"';
@@ -389,16 +390,22 @@ function mirarBarra() {
   var tope = parseFloat(getComputedStyle(document.documentElement)
       .getPropertyValue('--alto-cab')) || 0;
   /* Contra su sitio en el documento, no contra su posicion en pantalla: una
-     vez pegada su borde ya coincide con el de la cabecera, asi que mirar la
-     pantalla decia «pegada» tambien arriba del todo y no se soltaba nunca.
-     offsetTop no cambia al pegarse. Los 6 px de holgura evitan que parpadee
-     justo en el limite, porque compactarse acorta la propia barra. */
-  var desde = barra.offsetTop - tope;
+     vez fija su borde coincide con el de la cabecera igual que arriba del
+     todo, asi que mirar la pantalla decia «fija» siempre. Los 6 px de holgura
+     evitan que parpadee justo en el limite. */
+  // del hueco, que se queda en el flujo: la barra, ya fija, devolveria su
+  // propio top y el umbral se cumpliria siempre
+  var desde = $('#barra-hueco').offsetTop - tope;
   var toca = hay && (compacto ? window.scrollY > desde - 6
                               : window.scrollY > desde + 6);
   if (toca === compacto) return;
+  var hueco = $('#barra-hueco');
+  // del hueco y no de la barra: asi entran tambien los margenes que se
+  // escapan por fuera, y el documento no cambia de alto ni un pixel
+  if (toca) hueco.style.height = hueco.offsetHeight + 'px';   // medir antes
   compacto = toca;
   barra.classList.toggle('compacta', compacto);
+  if (!toca) hueco.style.height = '';
   pintarCuenta();
   pintarActivos();
 }

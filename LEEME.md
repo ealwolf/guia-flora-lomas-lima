@@ -191,8 +191,9 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
 - **Al bajar, esa fila se queda pegada bajo la cabecera** y se aprieta en una
   sola línea que se desliza a los lados, con el recuento en corto (*124/134*).
   Así no hay que volver arriba para recordar por qué se está viendo lo que se
-  ve. Apretada caben todas las fichas, así que ahí no se pliega ninguna: el
-  *+N más* sólo aparece arriba del todo, donde la fila puede crecer. Sin ellas, elegir una sugerencia cambiaba el número de
+  ve. El *+N más* sigue valiendo en los dos sitios: arriba ahorra filas que
+  habría que pasar antes de llegar a las tarjetas, y apretada alarga la fila
+  que se desliza en vez de crear otra. Sin ellas, elegir una sugerencia cambiaba el número de
   resultados y nada más: no se veía por qué.
 - **Altitud**, con tres botones: *Todas*, *una cota* (las especies cuyo rango
   incluye esa altura, útil cuando sabes dónde estás) o *un rango* (las que

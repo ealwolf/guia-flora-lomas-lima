@@ -99,8 +99,9 @@ button {
 /* ---------- cabecera ---------- */
 .cab {
   position: sticky; top: 0; z-index: 40;
-  background: color-mix(in srgb, var(--fondo) 88%, transparent);
-  backdrop-filter: saturate(1.4) blur(12px);
+  /* opaca: translucida se veian las tarjetas por debajo y la barra pegada
+     parecia tener un borde donde no lo hay, con el recuento apretado contra el */
+  background: var(--fondo);
   border-bottom: 1px solid var(--borde);
   padding: 10px 0 0;
 }
@@ -280,14 +281,26 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    cabecera y se aprietan en una sola fila que se desliza a los lados. Si no,
    desaparecen justo cuando hace falta saber por que se ve lo que se ve, y
    habia que volver arriba del todo para mirarlos. */
+/* Fija, no pegajosa, y con el hueco reservado al alto que tenia: si la barra
+   encogiera dentro del flujo, la pagina se acortaria de golpe, el navegador
+   corregiria el desplazamiento para compensar, eso cruzaria otra vez el
+   umbral... y se quedaba entrando y saliendo del modo sin parar. Reservando
+   el hueco, la altura del documento no cambia y no hay nada que corregir. */
+/* flow-root para que los margenes de dentro cuenten en su alto: si se
+   escapan, lo que se reserva al fijar la barra se queda 14 px corto y el
+   documento pega un salto al cambiar de modo */
+.barra-hueco { overflow-anchor: none; display: flow-root; }
 .barra-filtros.compacta {
-  position: sticky; top: var(--alto-cab, 0px); z-index: 30;
-  display: flex; align-items: center; gap: 10px;
+  position: fixed; top: var(--alto-cab, 0px); left: 0; right: 0; z-index: 30;
   background: var(--fondo); border-bottom: 1px solid var(--borde);
-  padding-block: 6px; margin-bottom: 8px;
+}
+.barra-filtros.compacta .barra-int {
+  display: flex; align-items: center; gap: 12px;
+  max-width: 1400px; margin-inline: auto; padding: 7px 14px;
 }
 .barra-filtros.compacta .resumen {
   margin: 0; flex: none; font-variant-numeric: tabular-nums; font-weight: 600;
+  color: var(--texto);
 }
 .barra-filtros.compacta .activos {
   margin: 0; flex: 1; min-width: 0; flex-wrap: nowrap;
