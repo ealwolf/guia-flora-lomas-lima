@@ -176,6 +176,14 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
 - **Conservación**: endémicas del Perú (39), amenazadas (3, las tres VU) y no
   nativas (24 entre exóticas e introducidas). De las 39 endémicas, 10 viven en
   una sola loma.
+
+  Éstas se **cruzan**, no se suman: «endémica + amenazada» son 2 —*Amancaes* y
+  *Rabo de zorro*—, no 40. Son tres atributos sueltos de cada especie, así que
+  marcarlos es pedirlos todos, y marcar dos que se contradicen —endémica y no
+  nativa— devuelve 0, que es la respuesta honesta. Por eso se dibujan como
+  **casillas** y no como fichas: una lista de casillas se lee «todas las que
+  marque», y una fila de fichas «cualquiera de estas». El resto de grupos se
+  suman, como en cualquier buscador con filtros.
 - **Cara de la loma**: occidental (85), ambas (32) u oriental (17). Sale del
   **dibujo** del perfil, que es el único dato que tienen las 134; el texto sólo
   lo dice en 103 y en 12 no coinciden.

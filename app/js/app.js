@@ -242,8 +242,10 @@ function filtrar() {
     if (F.mes.length     && !F.mes.some(function (m) { return e.flor.indexOf(m) >= 0; })) return false;
     if (F.loma.length    && !F.loma.some(function (l) { return e.lomas.indexOf(l) >= 0; })) return false;
     if (F.habitat.length && !F.habitat.some(function (h) { return e.habitats.indexOf(h) >= 0; })) return false;
-    // dentro de un grupo vale con cumplir una, como en los demas filtros
-    if (F.conserv.length && !F.conserv.some(function (c) { return conservOk(e, c); })) return false;
+    // aqui SI se cruzan: son atributos sueltos y marcarlos es pedirlos todos.
+    // «Endemica + Amenazada» son 2 especies, no 40. Por eso se dibujan como
+    // casillas y no como fichas.
+    if (F.conserv.length && !F.conserv.every(function (c) { return conservOk(e, c); })) return false;
     if (F.cara.length && F.cara.indexOf(e._cara) < 0) return false;
     if (altActiva()) {
       var min = e.altitud[0], max = e.altitud[1];
@@ -542,9 +544,11 @@ function pintarFiltros() {
 
   $('#f-conserv').innerHTML = CONSERV.map(function (c) {
     var n = G.especies.filter(c.ok).length;
-    return chip(esc(c.txt) + ' <span class="cuenta">' + n + '</span>',
-                F.conserv.indexOf(c.id) >= 0,
-                'data-f="conserv" data-v="' + c.id + '"');
+    return '<button class="casilla" role="checkbox" aria-checked="' +
+        (F.conserv.indexOf(c.id) >= 0) + '" data-f="conserv" data-v="' + c.id + '">' +
+        '<span class="caja">' + svgIcono('check') + '</span>' +
+        '<span>' + esc(c.txt) + '</span>' +
+        '<span class="cuenta">' + n + '</span></button>';
   }).join('');
 
   var caras = ['Occidental', 'Ambas caras', 'Oriental'];
@@ -874,7 +878,9 @@ function sincronizarChips() {
   $$('[data-f]').forEach(function (b) {
     var f = b.dataset.f, v = b.dataset.v;
     var on = f === 'mes' ? F.mes.indexOf(+v) >= 0 : F[f].indexOf(v) >= 0;
-    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    // las casillas dicen marcada/sin marcar; las fichas, pulsada/sin pulsar
+    b.setAttribute(b.getAttribute('role') === 'checkbox' ? 'aria-checked' : 'aria-pressed',
+                   on ? 'true' : 'false');
   });
   $$('[data-limpia]').forEach(function (b) {
     b.classList.toggle('oculto', !F[b.dataset.limpia].length);

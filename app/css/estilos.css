@@ -429,6 +429,29 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   min-height: 27px;
 }
 .envoltura { display: flex; flex-wrap: wrap; gap: 7px; }
+/* Casillas y no fichas: estas tres son atributos sueltos de cada especie y se
+   suman entre si -endemica Y amenazada-, mientras que las fichas de los demas
+   grupos son alternativas -este color O este otro-. La forma lo dice sin
+   tener que leerlo: una lista de casillas se entiende como «todas las que
+   marque», y una fila de fichas como «cualquiera de estas». */
+.casillas { display: flex; flex-direction: column; gap: 2px; }
+.casilla {
+  display: flex; align-items: center; gap: 11px; width: 100%;
+  min-height: 42px; padding: 6px 10px; border-radius: 10px;
+  font-size: var(--t-1); font-weight: 500; color: var(--texto); text-align: left;
+}
+.casilla:hover, .casilla:focus-visible { background: var(--superficie-2); }
+.casilla .caja {
+  width: 20px; height: 20px; flex: none; border-radius: 6px;
+  border: 1.5px solid var(--borde); background: var(--superficie);
+  display: grid; place-items: center; transition: background .12s, border-color .12s;
+}
+.casilla .caja .ico { width: 14px; height: 14px; color: var(--sobre-acento); opacity: 0; }
+.casilla[aria-checked="true"] .caja { background: var(--acento); border-color: var(--acento); }
+.casilla[aria-checked="true"] .caja .ico { opacity: 1; }
+.casilla[aria-checked="true"] { font-weight: 600; }
+.casilla .cuenta { margin-left: auto; }
+
 /* el orden elegido, que es una sola opcion y no una lista */
 .chip[data-orden][aria-pressed="true"] .cuenta { display: none; }
 
