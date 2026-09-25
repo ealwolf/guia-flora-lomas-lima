@@ -498,8 +498,13 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   background: var(--texto); color: var(--fondo); font-size: var(--t-1);
   box-shadow: 0 10px 30px -8px rgba(10,14,11,.5);
 }
-/* con el panel abierto se pone encima de su pie, no debajo */
-html.bloqueado .tostada { bottom: calc(88px + env(safe-area-inset-bottom)); }
+/* Solo cuando el panel es la hoja de abajo y su pie llega al borde: entonces
+   la tostada se pone encima de ese pie. En pantalla ancha el panel flota en el
+   medio y la tostada se queda abajo del todo, que es de donde cuelga; si se
+   subia, parecia enganchada al panel. */
+@media (max-width: 719px) {
+  html.bloqueado .tostada { bottom: calc(88px + env(safe-area-inset-bottom)); }
+}
 .tostada-btn {
   flex: none; padding: 6px 12px; border-radius: 999px; font-size: var(--t-1);
   font-weight: 700; color: inherit;
@@ -742,13 +747,22 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 /* Las dos estaciones que nombra la guía: nueve meses de rango se piden de una
    vez, no mes a mes. No son filtros aparte, sólo rellenan los de arriba. */
 .atajos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+/* centrado y no por la linea base: con baseline el texto se subia dentro de
+   los 36 px del boton y quedaba pegado al borde de arriba */
 .atajo {
-  display: inline-flex; align-items: baseline; gap: 6px; min-height: 34px;
-  padding: 0 12px; border-radius: 999px; font-size: var(--t-1); font-weight: 600;
+  display: inline-flex; align-items: center; gap: 7px; min-height: 36px;
+  padding: 0 13px; border-radius: 999px; font-size: var(--t-1); font-weight: 600;
   border: 1px dashed var(--borde); color: var(--texto);
 }
-.atajo span { font-weight: 400; color: var(--tenue); }
-.atajo:hover { border-style: solid; border-color: var(--acento); }
+.atajo .mes { font-weight: 400; color: var(--tenue); }
+.atajo .ico { width: 15px; height: 15px; flex: none; }
+/* el borde sigue de trazos porque son atajos, no un estado; lo que las separa
+   es el color: la gota del reverdecimiento y el sol de cuando la loma duerme */
+.atajo.humeda .ico { color: var(--acento); }
+.atajo.humeda { border-color: color-mix(in srgb, var(--acento) 45%, var(--borde)); }
+.atajo.seca .ico { color: var(--ambar); }
+.atajo.seca { border-color: color-mix(in srgb, var(--ambar) 45%, var(--borde)); }
+.atajo:hover { border-style: solid; }
 
 /* El perfil en pequeño, dentro de la ficha: enseña de qué lado se habla sin
    tener que leerlo. Es el mismo dibujo del que sale el dato. */

@@ -1185,15 +1185,18 @@ function pintarAnillo() {
          '" y="' + (p[1] + 3.3).toFixed(1) + '" text-anchor="middle">' +
          G.meses[i] + '</text>';
   }
-  [F.mesDesde, F.mesHasta].forEach(function (m) {
+  var todo = meses.length === 12;
+  // con el ano entero no hay extremos que senalar: dos puntos pegados arriba
+  // parecian una costura en un anillo que no esta cortado
+  if (!todo) [F.mesDesde, F.mesHasta].forEach(function (m) {
     var q = polar(ANI.rCabo, anguloMes(m - 1));
     h += '<circle class="cabo" cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) +
          '" r="4.5"/>';
   });
-  var todo = meses.length === 12;
   h += '<text class="centro" x="100" y="97" text-anchor="middle">' +
        (todo ? 'Todo el año'
-             : G.meses[F.mesDesde - 1] + ' - ' + G.meses[F.mesHasta - 1]) + '</text>' +
+        : F.mesDesde === F.mesHasta ? G.meses[F.mesDesde - 1]
+        : G.meses[F.mesDesde - 1] + ' - ' + G.meses[F.mesHasta - 1]) + '</text>' +
        '<text class="centro-2" x="100" y="112" text-anchor="middle">' +
        (todo ? 'sin filtrar' : meses.length + (meses.length === 1 ? ' mes' : ' meses')) +
        '</text>';
@@ -1212,28 +1215,54 @@ function mesEnPunto(ev) {
 }
 function distMes(a, b) { var d = Math.abs(a - b) % 12; return Math.min(d, 12 - d); }
 
-var caboVivo = null;
-function moverCabo(m) {
-  if (!m || !caboVivo || F[caboVivo] === m) return;
-  F[caboVivo] = m;
-  aplicarRango();
-  render();
+/* Mientras se arrastra, el cabo quieto es el ancla y del que se mueve se
+   lleva la cuenta en pasos con signo: cuantos meses esta por delante (+) o por
+   detras (-) del ancla. Asi, al pasar uno por encima del otro, el tramo se da
+   la vuelta en vez de irse por el camino largo: con Nov-Mar, arrastrando el
+   cabo de Nov en el sentido de las agujas, se pasa por Dic-Mar, Ene-Mar,
+   Feb-Mar, Mar, Mar-Abr, Mar-May. Sin la cuenta con signo, al cruzar Mar el
+   tramo saltaba a once meses. */
+var arrastre = null;
+
+function fijarPasos(ancla, pasos) {
+  pasos = Math.max(-11, Math.min(11, pasos));    // no da la vuelta entera
+  var m = (ancla - 1 + pasos + 24) % 12 + 1;
+  if (pasos >= 0) { F.mesDesde = ancla; F.mesHasta = m; }
+  else            { F.mesDesde = m;     F.mesHasta = ancla; }
+  return { pasos: pasos, mes: m };
 }
+
 $('#anillo').addEventListener('pointerdown', function (ev) {
   var m = mesEnPunto(ev);
   if (!m) return;
-  // el cabo mas cercano, y no «el primero que toques»: asi no hay que llevar
-  // la cuenta de por cual vas, ni hay un sentido que adivinar
-  caboVivo = distMes(m, F.mesDesde) <= distMes(m, F.mesHasta) ? 'mesDesde' : 'mesHasta';
+  // se coge el cabo mas cercano, no «el primero que toques»: nada que recordar
+  var esDesde = distMes(m, F.mesDesde) <= distMes(m, F.mesHasta);
+  var ancla = esDesde ? F.mesHasta : F.mesDesde;
+  var pasos = esDesde ? -((ancla - m + 12) % 12) : ((m - ancla + 12) % 12);
+  arrastre = { ancla: ancla };
+  var r = fijarPasos(ancla, pasos);
+  arrastre.pasos = r.pasos; arrastre.mes = r.mes;
   try { ev.currentTarget.setPointerCapture(ev.pointerId); } catch (e) {}
-  moverCabo(m);
+  aplicarRango();
+  render();
   ev.preventDefault();
 });
+
 $('#anillo').addEventListener('pointermove', function (ev) {
-  if (caboVivo) moverCabo(mesEnPunto(ev));
+  if (!arrastre) return;
+  var m = mesEnPunto(ev);
+  if (!m || m === arrastre.mes) return;
+  var d = (m - arrastre.mes + 12) % 12;
+  if (d > 6) d -= 12;                            // el salto mas corto
+  var r = fijarPasos(arrastre.ancla, arrastre.pasos + d);
+  if (r.pasos === arrastre.pasos) return;        // topado en los once
+  arrastre.pasos = r.pasos; arrastre.mes = r.mes;
+  aplicarRango();
+  render();
 });
+
 ['pointerup', 'pointercancel'].forEach(function (t) {
-  $('#anillo').addEventListener(t, function () { caboVivo = null; });
+  $('#anillo').addEventListener(t, function () { arrastre = null; });
 });
 
 /* el mismo dato en palabras: exacto, y alcanzable con el teclado */
