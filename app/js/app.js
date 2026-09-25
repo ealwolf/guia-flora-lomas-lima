@@ -916,7 +916,7 @@ function tarjetaVecina(e, paso) {
   if (!e) return '';
   var foto = e.fotos[0] ? 'img/' + e.fotos[0] : '';
   var flecha = svgIcono(paso < 0 ? 'caret-left' : 'caret-right');
-  return '<button class="vecina' + (paso > 0 ? ' sig' : '') + '" data-paso="' + paso + '">' +
+  return '<button class="vecina ' + (paso > 0 ? 'sig' : 'ant') + '" data-paso="' + paso + '">' +
       flecha +
       (foto ? '<img loading="lazy" src="' + foto + '" alt="">' : '') +
       '<span class="vecina-txt"><small>' + (paso < 0 ? 'Anterior' : 'Siguiente') + '</small>' +

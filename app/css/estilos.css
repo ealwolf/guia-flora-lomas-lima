@@ -629,15 +629,23 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
   display: flex; align-items: center; gap: 8px; width: 100%;
   max-width: 1400px; margin-inline: auto; padding-inline: 14px;
 }
-.ficha-cab .titulo { font-weight: 600; font-size: var(--t-2); flex: 1; min-width: 0;
+.ficha-cab .titulo { font-weight: 600; font-size: var(--t-2); flex: 0 1 auto; min-width: 0;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ficha-int { max-width: 1400px; margin: 0 auto; padding: 0 0 60px; }
-.ficha-pasar { display: flex; gap: 2px; margin-left: auto; }
+/* Junto al titulo, no en la otra punta. Pegados al borde derecho quedaban
+   alineados con el contenedor pero no con nada que se vea: la columna de la
+   derecha acaba antes, asi que parecian corridos. Y en 1400 px de barra, los
+   mandos quedaban a medio metro unos de otros. */
+.ficha-pasar { display: flex; gap: 2px; margin-right: auto; }
 
 /* pasar a la siguiente al terminar de leer, que es donde se acaba */
-.vecinas { display: flex; gap: 12px; padding: 20px 16px 0; }
+/* rejilla y no flex: con una sola vecina -la primera o la ultima de la
+   lista- flex la estiraba a todo lo ancho. Cada una tiene su mitad. */
+.vecinas { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 20px 16px 0; }
+.vecina.ant { grid-column: 1; }
+.vecina.sig { grid-column: 2; }
 .vecina {
-  flex: 1; min-width: 0; display: flex; align-items: center; gap: 11px;
+  min-width: 0; display: flex; align-items: center; gap: 11px;
   padding: 10px; border: 1px solid var(--borde); border-radius: var(--r);
   background: var(--superficie); text-align: left; color: var(--texto);
 }
@@ -655,7 +663,8 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 .vecina-txt i { display: block; font-size: var(--t-1); color: var(--tenue);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @media (max-width: 560px) {
-  .vecinas { flex-direction: column; }
+  .vecinas { grid-template-columns: 1fr; }
+  .vecina.ant, .vecina.sig { grid-column: 1; }
   .vecina.sig { flex-direction: row; text-align: left; }
   .vecina.sig .ico { order: 3; margin-left: auto; }
 }
@@ -781,6 +790,7 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 
 .fuente {
   padding: 16px; border-top: 1px solid var(--borde); color: var(--tenue); font-size: var(--t-1);
+  margin-top: 14px;   /* la raya iba pegada al ultimo parrafo */
 }
 .fuente b { color: var(--texto); font-weight: 600; }
 
