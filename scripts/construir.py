@@ -51,6 +51,21 @@ META = {
 }
 
 
+def altura_legible(t):
+    """Junta las cifras que el PDF trae partidas: «2 5 - 5 0 cm» -> «25 - 50 cm».
+
+    En el PDF esas cuatro alturas van en objetos de texto sueltos, una cifra
+    cada uno, sobre la misma linea de base; al recomponer el renglon quedan
+    separadas por un espacio. Los numeros ya salian bien porque el extractor
+    hace esta misma limpieza para calcularlos; lo que se quedaba crudo era el
+    texto que se muestra.
+
+    Solo se toca este campo. En la prosa un espacio entre cifras suele ser el
+    separador de millares —«1 050 msnm»— y juntarlas lo estropearia.
+    """
+    return re.sub(r'(?<=\d)\s+(?=\d)', '', t or '')
+
+
 def leer(ruta):
     if not os.path.exists(ruta):
         return []
@@ -123,7 +138,7 @@ def main():
             'endemico': r['endemico'] == 'true',
             'amenaza': r['amenaza'],
             'altura': [ent(r['altura_min_cm']), ent(r['altura_max_cm'])],
-            'alturaTxt': r['altura_texto'],
+            'alturaTxt': altura_legible(r['altura_texto']),
             'altitud': [ent(r['altitud_min_msnm']), ent(r['altitud_max_msnm'])],
             'altitudTxt': r['altitud_texto'],
             'flor': [MESES.index(m) + 1 for m in lista(r['floracion_meses'], ';')
