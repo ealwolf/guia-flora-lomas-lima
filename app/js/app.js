@@ -348,35 +348,104 @@ function render() {
 /* La tostada: un aviso de abajo que se va solo y lleva su cuenta atras a la
    vista. No va en la fila de fichas porque no es un filtro puesto; es algo que
    acaba de pasar y que caduca. */
-var relojTostada = 0, accionTostada = null;
+var relojTostada = 0, msTostada = 0, accionTostada = null, alCerrarTostada = null;
 
-function tostada(texto, accion, fn, ms) {
+function tostada(texto, accion, fn, ms, alCerrar) {
   var t = $('#tostada');
   $('#tostada-txt').textContent = texto;
   $('#tostada-accion').textContent = accion;
   accionTostada = fn;
-  t.classList.remove('oculto', 'corriendo');
+  alCerrarTostada = alCerrar || null;
+  msTostada = ms;
+  t.style.removeProperty('--fuga');
+  t.classList.remove('oculto', 'corriendo', 'yendose');
   void t.offsetWidth;                         // reiniciar la barra
   $('#tostada-barra').style.animationDuration = ms + 'ms';
   t.classList.add('corriendo');
   clearTimeout(relojTostada);
-  relojTostada = setTimeout(quitarTostada, ms);
+  relojTostada = setTimeout(function () { quitarTostada(); }, ms);
 }
 
-function quitarTostada() {
+/* Cerrarla es cerrarla: si el aviso se va, lo que ofrecia se va con el. Por
+   eso quien la muestra le pasa que hacer al cerrarse, y no hay dos relojes
+   contando por su cuenta. */
+function quitarTostada(deslizando) {
   clearTimeout(relojTostada);
-  accionTostada = null;
-  $('#tostada').classList.add('oculto');
-  $('#tostada').classList.remove('corriendo');
+  var t = $('#tostada'), fn = alCerrarTostada;
+  accionTostada = null; alCerrarTostada = null;
+  t.classList.remove('corriendo');
+  if (deslizando) {
+    t.classList.add('yendose');
+    setTimeout(function () { t.classList.add('oculto'); }, 200);
+  } else {
+    t.classList.add('oculto');
+  }
+  if (fn) fn();
 }
 
 $('#tostada-accion').addEventListener('click', function () {
   var fn = accionTostada;
-  quitarTostada();
+  accionTostada = null;
+  alCerrarTostada = null;                     // se acepto: no es un cierre
+  clearTimeout(relojTostada);
+  $('#tostada').classList.add('oculto');
+  $('#tostada').classList.remove('corriendo');
   if (fn) fn();
 });
 
-var borrado = null, relojBorrado = 0, huellaBorrado = null;
+$('#tostada-cerrar').addEventListener('click', function () { quitarTostada(); });
+
+/* Y con el dedo: un empujon de lado se la lleva, como cualquier aviso de
+   movil. Menos de 55 px no cuenta, y un arrastre mas vertical que horizontal
+   tampoco: eso es la pagina moviendose. */
+var fuga = null;
+$('#tostada').addEventListener('pointerdown', function (ev) {
+  if (ev.target.closest('button')) return;
+  fuga = { x: ev.clientX, y: ev.clientY, dx: 0, listo: false };
+  clearTimeout(relojTostada);
+  $('#tostada').classList.remove('corriendo');
+});
+$('#tostada').addEventListener('pointermove', function (ev) {
+  if (!fuga) return;
+  fuga.dx = ev.clientX - fuga.x;
+  var dy = Math.abs(ev.clientY - fuga.y);
+  if (!fuga.listo && Math.abs(fuga.dx) > 8 && Math.abs(fuga.dx) > dy) {
+    fuga.listo = true;
+    try { ev.currentTarget.setPointerCapture(ev.pointerId); } catch (e) {}
+  }
+  if (!fuga.listo) return;
+  var t = $('#tostada');
+  t.style.transition = 'none';
+  t.style.transform = 'translateX(' + fuga.dx + 'px)';
+  t.style.opacity = Math.max(0, 1 - Math.abs(fuga.dx) / 220);
+});
+['pointerup', 'pointercancel'].forEach(function (tipo) {
+  $('#tostada').addEventListener(tipo, function () {
+    if (!fuga) return;
+    var dx = fuga.dx, listo = fuga.listo;
+    fuga = null;
+    var t = $('#tostada');
+    t.style.removeProperty('transition');
+    t.style.removeProperty('transform');
+    t.style.removeProperty('opacity');
+    if (listo && Math.abs(dx) > 55) {
+      t.style.setProperty('--fuga', (dx > 0 ? 340 : -340) + 'px');
+      quitarTostada(true);
+    } else if (accionTostada || alCerrarTostada) {
+      // vuelve a su sitio y la cuenta empieza de nuevo: si la has tocado, es
+      // que la estabas mirando
+      void t.offsetWidth;
+      t.classList.add('corriendo');
+      clearTimeout(relojTostada);
+      relojTostada = setTimeout(function () { quitarTostada(); }, msTostada);
+    }
+  });
+});
+
+/* Seis segundos y no doce: es el tiempo que se mira un aviso, y ademas se
+   puede cerrar a mano o de un manotazo. */
+var ESPERA_DESHACER = 6000;
+var borrado = null, huellaBorrado = null;
 var GUARDABLES = ['q', 'color', 'grupo', 'mes', 'loma', 'habitat', 'familia',
                   'conserv', 'cara', 'mesModo', 'mesDesde', 'mesHasta',
                   'altModo', 'altitud', 'altDesde', 'altHasta'];
@@ -393,31 +462,26 @@ function tirarFiltros(tambienBusqueda) {
     GUARDABLES.forEach(function (k) {
       borrado[k] = F[k] instanceof Array ? F[k].slice() : F[k];
     });
-    clearTimeout(relojBorrado);
-    relojBorrado = setTimeout(olvidarBorrado, 12000);
   }
   huellaBorrado = null;
   if (tambienBusqueda) quitarBusqueda(true);
   limpiarTodo();                     // repinta
   if (borrado) {
     huellaBorrado = huellaFiltros();
-    tostada('Se quitaron los filtros', 'Deshacer', devolverBorrado, 12000);
+    tostada('Se quitaron los filtros', 'Deshacer', devolverBorrado,
+            ESPERA_DESHACER, olvidarBorrado);
   }
 }
 
 function olvidarBorrado() {
-  clearTimeout(relojBorrado);
-  if (!borrado) return;
   borrado = null; huellaBorrado = null;
-  quitarTostada();
+  pintarActivos();
 }
 
 function devolverBorrado() {
   if (!borrado) return;
   var v = borrado;
-  clearTimeout(relojBorrado);
   borrado = null; huellaBorrado = null;
-  quitarTostada();
   GUARDABLES.forEach(function (k) { F[k] = v[k]; });
   $('#q').value = F.q;
   $('#limpiar').classList.toggle('oculto', !F.q);
@@ -436,7 +500,7 @@ function pintarActivos() {
   // en cuanto se vuelve a filtrar, lo borrado deja de estar a mano: el unico
   // sitio donde se comprueba, en vez de en cada manejador
   if (borrado && huellaBorrado !== null && huellaFiltros() !== huellaBorrado) {
-    clearTimeout(relojBorrado); borrado = null; huellaBorrado = null;
+    borrado = null; huellaBorrado = null;
     quitarTostada();
   }
   var f = [];

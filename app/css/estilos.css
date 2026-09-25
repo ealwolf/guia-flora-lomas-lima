@@ -493,7 +493,10 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   position: fixed; left: 14px; right: 14px; margin-inline: auto;
   width: max-content; max-width: min(420px, calc(100vw - 28px));
   bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 80;
-  display: flex; align-items: center; gap: 12px; overflow: hidden;
+  display: flex; align-items: center; gap: 10px; overflow: hidden;
+  /* el dedo puede llevarsela de lado; hacia arriba y abajo manda la pagina */
+  touch-action: pan-y;
+  transition: transform .18s ease-out, opacity .18s ease-out;
   padding: 11px 11px 13px 16px; border-radius: 12px;
   background: var(--texto); color: var(--fondo); font-size: var(--t-1);
   box-shadow: 0 10px 30px -8px rgba(10,14,11,.5);
@@ -511,6 +514,16 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   border: 1px solid color-mix(in srgb, var(--fondo) 45%, transparent);
 }
 .tostada-btn:hover { background: color-mix(in srgb, var(--fondo) 18%, transparent); }
+/* cerrar el aviso no es deshacer ni descartar nada: solo lo quita de en medio,
+   y por eso es una aspa callada y no una segunda palabra que compita con
+   «Deshacer» */
+.tostada-x {
+  flex: none; width: 30px; height: 30px; margin-right: -2px; border-radius: 999px;
+  display: grid; place-items: center; color: inherit; opacity: .7;
+}
+.tostada-x .ico { width: 16px; height: 16px; }
+.tostada-x:hover { opacity: 1; background: color-mix(in srgb, var(--fondo) 18%, transparent); }
+.tostada.yendose { transform: translateX(var(--fuga, 0px)); opacity: 0; }
 .tostada-barra {
   position: absolute; left: 0; bottom: 0; height: 3px; width: 100%;
   background: currentColor; opacity: .5; transform-origin: left;

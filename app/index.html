@@ -88,6 +88,8 @@ window.addEventListener('beforeinstallprompt', function (ev) {
 <div class="tostada oculto" id="tostada" role="status" aria-live="polite">
   <span id="tostada-txt"></span>
   <button class="tostada-btn" id="tostada-accion"></button>
+  <button class="tostada-x" id="tostada-cerrar" aria-label="Cerrar el aviso"
+          data-ico="x"></button>
   <i class="tostada-barra" id="tostada-barra" aria-hidden="true"></i>
 </div>
 
@@ -151,12 +153,12 @@ window.addEventListener('beforeinstallprompt', function (ev) {
       </div>
       <p class="pista" id="mes-pista"></p>
       <div class="atajos">
-        <button class="atajo humeda" data-meses="5,6,7,8,9,10">
+        <button class="atajo humeda" data-meses="6,7,8,9,10,11">
           <span data-ico="drop" aria-hidden="true"></span>
-          <b>Estación húmeda</b><span class="mes">May - Oct</span></button>
-        <button class="atajo seca" data-meses="12,1,2,3">
+          <b>Estación húmeda</b><span class="mes">Jun - Nov</span></button>
+        <button class="atajo seca" data-meses="12,1,2,3,4,5">
           <span data-ico="sun" aria-hidden="true"></span>
-          <b>Estación seca</b><span class="mes">Dic - Mar</span></button>
+          <b>Estación seca</b><span class="mes">Dic - May</span></button>
       </div>
     </div>
     <div class="grupo">
