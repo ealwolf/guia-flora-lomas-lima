@@ -450,10 +450,16 @@ function pintarBotonOrden() {
   var o = ordenActual();
   var i = F.dir === 'desc' ? 1 : 0;
   var propio = F.orden !== 'guia' || F.dir !== 'asc';
+  var b = $('#btn-orden');
+  /* El icono lleva el sentido: sort-ascending o sort-descending. Se sigue
+     leyendo como «ordenar» —son rayas de distinto largo con su flecha— pero
+     ademas dice hacia donde, que con la etiqueta al lado deja el estado
+     entero a la vista: criterio y sentido. */
+  b.querySelector('.ico').outerHTML =
+      svgIcono(F.dir === 'desc' ? 'sort-descending' : 'sort-ascending');
   $('#btn-orden-txt').textContent = propio ? o.txt : 'Ordenar';
-  $('#btn-orden').classList.toggle('puesto', propio);
-  $('#btn-orden').setAttribute('aria-label',
-      'Ordenar. Ahora: ' + o.txt + ', ' + o.dir[i]);
+  b.classList.toggle('puesto', propio);
+  b.setAttribute('aria-label', 'Ordenar. Ahora: ' + o.txt + ', ' + o.dir[i]);
 }
 
 function elegirOrden(id, dir) {

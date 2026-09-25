@@ -197,6 +197,10 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
   viven en una única loma. Los dos ajustes se recuerdan entre visitas, y cuando
   no es el orden del libro el botón lleva el nombre del criterio y se marca. No
   sale como ficha: un filtro quita especies y un orden sólo las mueve.
+
+  El icono del botón cambia con el sentido —`sort-ascending` o
+  `sort-descending`—, así que entre el icono y la etiqueta se ve el estado
+  entero sin abrir nada: qué criterio y hacia dónde.
 - **Ordenar y Filtros viven en la barra del contenido**, junto al recuento al
   que afectan. La cabecera se queda con lo de la app entera: apariencia, sobre
   la guía y guardar. Al bajar, esos dos botones se encogen a su icono y se
