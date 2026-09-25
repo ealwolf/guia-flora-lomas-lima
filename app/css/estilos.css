@@ -391,6 +391,13 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   background: transparent; border-color: var(--borde); color: var(--tenue);
 }
 .activos .todo:hover { border-color: var(--tenue); color: var(--texto); }
+/* devolver lo borrado no es quitar nada: se marca, y es lo unico que queda en
+   la fila mientras dura */
+.activos .deshacer {
+  border-style: solid; border-color: var(--acento);
+  color: var(--acento-txt); background: var(--acento-sua);
+}
+.activos .deshacer:hover { border-color: var(--acento); color: var(--acento-txt); }
 
 .rejilla {
   display: grid; gap: 12px;

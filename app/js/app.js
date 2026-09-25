@@ -341,11 +341,69 @@ function render() {
   mirarBarra();
 }
 
+/* Quitar todo borraba de golpe lo que habia costado varios toques, y con ello
+   la loma en la que uno esta parado. Dejar la loma fuera del borrado la
+   convertiria en un filtro aparte; es mas honesto borrarlo todo y ofrecer
+   devolverlo. Vale para cualquier filtro, no solo para la loma. */
+var borrado = null, relojBorrado = 0, huellaBorrado = null;
+var GUARDABLES = ['q', 'color', 'grupo', 'mes', 'loma', 'habitat', 'familia',
+                  'conserv', 'cara', 'mesModo', 'altModo', 'altitud',
+                  'altDesde', 'altHasta'];
+
+function huellaFiltros() {
+  return GUARDABLES.map(function (k) { return F[k]; }).join('|');
+}
+
+/* Borrar y, acto seguido, apuntar como queda: mientras siga asi, lo borrado se
+   puede devolver; al primer toque en cualquier filtro, ya no. */
+function tirarFiltros(tambienBusqueda) {
+  if (activos() || F.q) {
+    borrado = {};
+    GUARDABLES.forEach(function (k) {
+      borrado[k] = F[k] instanceof Array ? F[k].slice() : F[k];
+    });
+    clearTimeout(relojBorrado);
+    relojBorrado = setTimeout(olvidarBorrado, 12000);
+  }
+  huellaBorrado = null;
+  if (tambienBusqueda) quitarBusqueda(true);
+  limpiarTodo();                     // repinta
+  if (borrado) { huellaBorrado = huellaFiltros(); pintarActivos(); }
+}
+
+function olvidarBorrado() {
+  clearTimeout(relojBorrado);
+  if (!borrado) return;
+  borrado = null; huellaBorrado = null;
+  pintarActivos();
+}
+
+function devolverBorrado() {
+  if (!borrado) return;
+  var v = borrado;
+  clearTimeout(relojBorrado);
+  borrado = null; huellaBorrado = null;
+  GUARDABLES.forEach(function (k) { F[k] = v[k]; });
+  F.mesIni = 0;
+  $('#q').value = F.q;
+  $('#limpiar').classList.toggle('oculto', !F.q);
+  $('#f-altitud').value = F.altitud;
+  $('#f-alt-min').value = F.altDesde;
+  $('#f-alt-max').value = F.altHasta;
+  pintarAltitud(); pintarRango();
+  render();
+}
+
 /* Las fichas de lo puesto. Llevan data-f/data-v, asi que las quita el mismo
    manejador que ya destildaba las fichas del panel. */
 var TOPE_CHIPS = 8, chipsAbiertos = false, compacto = false;
 
 function pintarActivos() {
+  // en cuanto se vuelve a filtrar, lo borrado deja de estar a mano: el unico
+  // sitio donde se comprueba, en vez de en cada manejador
+  if (borrado && huellaBorrado !== null && huellaFiltros() !== huellaBorrado) {
+    clearTimeout(relojBorrado); borrado = null; huellaBorrado = null;
+  }
   var f = [];
   // la busqueda tambien es un filtro puesto, y asi «Quitar todo» tiene sitio
   // aunque lo unico activo sea el texto
@@ -422,6 +480,12 @@ function pintarActivos() {
     html += '<button class="chip todo" id="quita-todo">' + svgIcono('x', 'quita') +
             'Quitar todo</button>';
   }
+  // tambien cuando queda algo en la fila: se puede limpiar los filtros y
+  // conservar la busqueda, y aun asi haber borrado de mas
+  if (borrado) {
+    html += '<button class="chip todo deshacer" id="deshacer">' +
+        svgIcono('arrow-counter-clockwise') + 'Deshacer</button>';
+  }
   caja.innerHTML = html;
   caja.classList.toggle('oculto', !html);
 }
@@ -432,7 +496,8 @@ $('#activos').addEventListener('click', function (ev) {
   else if (ev.target.closest('#quita-alt')) quitarAltitud();
   else if (ev.target.closest('#quita-mes')) { F.mes = []; F.mesIni = 0; render(); }
   else if (ev.target.closest('#quita-q')) quitarBusqueda();
-  else if (ev.target.closest('#quita-todo')) { quitarBusqueda(true); limpiarTodo(); }
+  else if (ev.target.closest('#deshacer')) devolverBorrado();
+  else if (ev.target.closest('#quita-todo')) tirarFiltros(true);
 });
 
 function pintarOrden() {
@@ -1399,7 +1464,8 @@ function limpiarTodo() {
   F.conserv = []; F.cara = []; F.mesIni = 0;
   quitarAltitud();   // repinta
 }
-$('#btn-reset').addEventListener('click', limpiarTodo);
+// el panel es de filtros: «Limpiar» no toca el texto del buscador
+$('#btn-reset').addEventListener('click', function () { tirarFiltros(false); });
 
 $('#f-altitud').addEventListener('input', function (ev) {
   F.altitud = +ev.target.value;

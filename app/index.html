@@ -120,6 +120,36 @@ window.addEventListener('beforeinstallprompt', function (ev) {
       </div>
     </div>
     <div class="grupo">
+      <h3><span data-ico="map-trifold" aria-hidden="true"></span> Loma
+        <button class="limpia oculto" data-limpia="loma">Quitar</button>
+      </h3>
+      <div class="segmentado" role="group" aria-label="Cómo elegir la loma">
+        <button data-vista="lista" aria-pressed="true">Lista</button>
+        <button data-vista="mapa" aria-pressed="false">Mapa</button>
+      </div>
+      <div class="envoltura" id="f-loma"></div>
+      <div id="f-loma-mapa" class="oculto">
+        <div class="mapa-caja">
+          <div class="mapa-elige" id="mapa-elige"></div>
+          <div class="mapa-zoom">
+            <button id="mapa-mas" aria-label="Acercar el mapa" data-ico="plus"></button>
+            <button id="mapa-menos" aria-label="Alejar el mapa" data-ico="minus" disabled></button>
+          </div>
+          <div class="mapa-etiqueta" id="mapa-etiqueta" aria-hidden="true"></div>
+          <div class="mapa-aviso" id="mapa-aviso" aria-hidden="true"></div>
+        </div>
+        <p class="pista" id="mapa-pista"></p>
+      </div>
+    </div>
+    <div class="grupo">
+      <h3><span data-ico="seal-check" aria-hidden="true"></span> Conservación
+        <button class="limpia oculto" data-limpia="conserv">Quitar</button>
+      </h3>
+      <div class="casillas" id="f-conserv"></div>
+      <p class="pista">Se cumplen <b>todas</b> las marcadas. Los demás filtros
+        valen con cumplir una.</p>
+    </div>
+    <div class="grupo">
       <h3><span data-ico="mountains" aria-hidden="true"></span> Altitud</h3>
       <div class="segmentado" role="group" aria-label="Filtro por altitud">
         <button data-modo="todas" aria-pressed="true">Todas</button>
@@ -151,42 +181,6 @@ window.addEventListener('beforeinstallprompt', function (ev) {
       </div>
     </div>
     <div class="grupo">
-      <h3><span data-ico="map-trifold" aria-hidden="true"></span> Loma
-        <button class="limpia oculto" data-limpia="loma">Quitar</button>
-      </h3>
-      <div class="segmentado" role="group" aria-label="Cómo elegir la loma">
-        <button data-vista="lista" aria-pressed="true">Lista</button>
-        <button data-vista="mapa" aria-pressed="false">Mapa</button>
-      </div>
-      <div class="envoltura" id="f-loma"></div>
-      <div id="f-loma-mapa" class="oculto">
-        <div class="mapa-caja">
-          <div class="mapa-elige" id="mapa-elige"></div>
-          <div class="mapa-zoom">
-            <button id="mapa-mas" aria-label="Acercar el mapa" data-ico="plus"></button>
-            <button id="mapa-menos" aria-label="Alejar el mapa" data-ico="minus" disabled></button>
-          </div>
-          <div class="mapa-etiqueta" id="mapa-etiqueta" aria-hidden="true"></div>
-          <div class="mapa-aviso" id="mapa-aviso" aria-hidden="true"></div>
-        </div>
-        <p class="pista" id="mapa-pista"></p>
-      </div>
-    </div>
-    <div class="grupo">
-      <h3><span data-ico="drop" aria-hidden="true"></span> Hábitat
-        <button class="limpia oculto" data-limpia="habitat">Quitar</button>
-      </h3>
-      <div class="envoltura" id="f-habitat"></div>
-    </div>
-    <div class="grupo">
-      <h3><span data-ico="seal-check" aria-hidden="true"></span> Conservación
-        <button class="limpia oculto" data-limpia="conserv">Quitar</button>
-      </h3>
-      <div class="casillas" id="f-conserv"></div>
-      <p class="pista">Se cumplen <b>todas</b> las marcadas. Los demás filtros
-        valen con cumplir una.</p>
-    </div>
-    <div class="grupo">
       <h3><span data-ico="sun" aria-hidden="true"></span> Cara de la loma
         <button class="limpia oculto" data-limpia="cara">Quitar</button>
       </h3>
@@ -196,6 +190,12 @@ window.addEventListener('beforeinstallprompt', function (ev) {
         andino</b>— recibe muy poca y es más seco.</p>
       <p class="pista">Según el dibujo del perfil, que está en las 134. El texto
         de la guía sólo lo dice en 103, y en 12 no coinciden.</p>
+    </div>
+    <div class="grupo">
+      <h3><span data-ico="drop" aria-hidden="true"></span> Hábitat
+        <button class="limpia oculto" data-limpia="habitat">Quitar</button>
+      </h3>
+      <div class="envoltura" id="f-habitat"></div>
     </div>
     <div class="grupo">
       <h3><span data-ico="leaf" aria-hidden="true"></span> Familia
