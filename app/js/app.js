@@ -191,8 +191,14 @@ var ORDENES = [
   { id: 'guia',       txt: 'Guía',              ico: 'book-open', dir: ['1 → 134', '134 → 1'] },
   { id: 'comun',      txt: 'Nombre común',      ico: 'text-aa',   dir: ['A → Z', 'Z → A'] },
   { id: 'cientifico', txt: 'Nombre científico', ico: 'flask',     dir: ['A → Z', 'Z → A'] },
-  { id: 'altitud',    txt: 'Altitud',           ico: 'mountains', dir: ['Más baja', 'Más alta'] },
-  { id: 'lomas',      txt: 'N.º de lomas',      ico: 'map-pin',   dir: ['Menos', 'Más'] }
+  { id: 'altitud',    txt: 'Altitud',           ico: 'mountains',
+    dir: ['Baja → Alta', 'Alta → Baja'] },
+  /* Lo que se ordena es en cuantas de las 22 lomas se registro la especie:
+     arriba, con «Pocas → Muchas», salen las que solo estan en una o dos.
+     «N.º de lomas» nombraba la cuenta; «Presencia en lomas» nombra lo que
+     esa cuenta significa. */
+  { id: 'lomas',      txt: 'Presencia en lomas', ico: 'map-pin',
+    dir: ['Pocas → Muchas', 'Muchas → Pocas'] }
 ];
 function ordenActual() {
   return ORDENES.filter(function (x) { return x.id === F.orden; })[0] || ORDENES[0];
