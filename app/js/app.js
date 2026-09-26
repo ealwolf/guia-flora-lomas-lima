@@ -190,7 +190,7 @@ G.especies.forEach(function (e) { e._cara = caraDe(e); });
 var ORDENES = [
   { id: 'guia',       txt: 'Guía',              ico: 'book-open', dir: ['1 → 134', '134 → 1'] },
   { id: 'comun',      txt: 'Nombre común',      ico: 'text-aa',   dir: ['A → Z', 'Z → A'] },
-  { id: 'cientifico', txt: 'Nombre científico', ico: 'leaf',      dir: ['A → Z', 'Z → A'] },
+  { id: 'cientifico', txt: 'Nombre científico', ico: 'flask',     dir: ['A → Z', 'Z → A'] },
   { id: 'altitud',    txt: 'Altitud',           ico: 'mountains', dir: ['Más baja', 'Más alta'] },
   { id: 'lomas',      txt: 'N.º de lomas',      ico: 'map-pin',   dir: ['Menos', 'Más'] }
 ];
@@ -596,6 +596,14 @@ $('#activos').addEventListener('click', function (ev) {
   else if (ev.target.closest('#quita-todo')) tirarFiltros(true);
 });
 
+/* «1 → 134» llevaba la flecha en texto, y la del tipo de letra se apoya en la
+   linea base: al lado de las cifras se veia caida. Va la del juego de iconos,
+   que se centra con ellas. */
+function conFlecha(txt) {
+  return esc(txt).split('→').map(function (t) { return t.trim(); })
+      .join(svgIcono('arrow-right', 'flechita'));
+}
+
 function pintarOrden() {
   $('#orden-lista').innerHTML = ORDENES.map(function (o) {
     return '<button class="opcion" role="radio" data-orden="' + o.id +
@@ -606,7 +614,7 @@ function pintarOrden() {
   var d = ordenActual().dir;
   $('#orden-dir').innerHTML = ['asc', 'desc'].map(function (s, i) {
     return '<button data-dir="' + s + '" aria-pressed="' + (F.dir === s) + '">' +
-        svgIcono(s === 'asc' ? 'arrow-up' : 'arrow-down') + esc(d[i]) + '</button>';
+        svgIcono(s === 'asc' ? 'arrow-up' : 'arrow-down') + conFlecha(d[i]) + '</button>';
   }).join('');
   pintarIconos($('#panel-orden'));
 }
