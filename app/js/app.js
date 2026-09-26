@@ -613,8 +613,10 @@ function pintarOrden() {
   // el sentido se nombra segun el criterio: «A → Z» dice mas que «ascendente»
   var d = ordenActual().dir;
   $('#orden-dir').innerHTML = ['asc', 'desc'].map(function (s, i) {
+    // sin flecha de subir o bajar delante: al lado de «1 → 134» eran dos
+    // flechas que apuntaban a cosas distintas, y la horizontal ya lo dice todo
     return '<button data-dir="' + s + '" aria-pressed="' + (F.dir === s) + '">' +
-        svgIcono(s === 'asc' ? 'arrow-up' : 'arrow-down') + conFlecha(d[i]) + '</button>';
+        conFlecha(d[i]) + '</button>';
   }).join('');
   pintarIconos($('#panel-orden'));
 }
