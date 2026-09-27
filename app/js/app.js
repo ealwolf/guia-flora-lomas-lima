@@ -1139,6 +1139,7 @@ document.addEventListener('click', function (ev) {
   // la misma ficha significa cosas distintas segun donde este: en el panel
   // elige un mes -o un extremo del rango-, y en la fila de arriba lo quita
   if (f !== 'mes') alterna(F[f], v);
+  else if (tragarMes) { tragarMes = false; return; }   // venia de un arrastre
   else alterna(F.mes, +v);
   render();
 });
@@ -1250,10 +1251,87 @@ $$('[data-meses]').forEach(function (b) {
   });
 });
 
+/* ---------- mantener y arrastrar sobre los meses ----------
+   Como en Google Fotos: se mantiene pulsado un mes, y a partir de ahi el dedo
+   va marcando -o desmarcando, segun lo que hiciera el primero- los que pisa.
+   Solo aqui, y solo despues de la espera: antes de eso el dedo sigue siendo
+   para desplazar el panel, que es lo que se hace el 99 % de las veces. */
+var ESPERA_PINTAR = 380;
+var pintado = null, relojPintar = 0;
+
+function mesBajoElDedo(ev) {
+  var e = document.elementFromPoint(ev.clientX, ev.clientY);
+  var c = e && e.closest && e.closest('#f-mes [data-f="mes"]');
+  return c ? +c.dataset.v : 0;
+}
+
+function soltarPintado() {
+  clearTimeout(relojPintar);
+  if (pintado && pintado.vivo) $('#f-mes').classList.remove('pintando');
+  pintado = null;
+}
+
+$('#f-mes').addEventListener('pointerdown', function (ev) {
+  var m = mesBajoElDedo(ev);
+  if (!m) return;
+  pintado = { x: ev.clientX, y: ev.clientY, id: ev.pointerId, vivo: false, hubo: false };
+  clearTimeout(relojPintar);
+  relojPintar = setTimeout(function () {
+    if (!pintado) return;
+    pintado.vivo = true;
+    pintado.pone = F.mes.indexOf(m) < 0;     // lo que haga el primero manda
+    $('#f-mes').classList.add('pintando');
+    try { $('#f-mes').setPointerCapture(pintado.id); } catch (e) {}
+    try { navigator.vibrate && navigator.vibrate(12); } catch (e) {}
+    ponerMes(m);
+  }, ESPERA_PINTAR);
+});
+
+function ponerMes(m) {
+  var hay = F.mes.indexOf(m) >= 0;
+  if (hay === pintado.pone) return;
+  if (pintado.pone) F.mes.push(m); else F.mes.splice(F.mes.indexOf(m), 1);
+  pintado.hubo = true;
+  render();
+}
+
+$('#f-mes').addEventListener('pointermove', function (ev) {
+  if (!pintado) return;
+  if (!pintado.vivo) {
+    // si se mueve antes de tiempo era un desplazamiento, no una pulsacion
+    if (Math.abs(ev.clientX - pintado.x) + Math.abs(ev.clientY - pintado.y) > 10) {
+      clearTimeout(relojPintar); pintado = null;
+    }
+    return;
+  }
+  var m = mesBajoElDedo(ev);
+  if (m) ponerMes(m);
+});
+
+// con el dedo, mientras se pinta manda el gesto y no el desplazamiento
+$('#f-mes').addEventListener('touchmove', function (ev) {
+  if (pintado && pintado.vivo) ev.preventDefault();
+}, { passive: false });
+
+['pointerup', 'pointercancel'].forEach(function (t) {
+  $('#f-mes').addEventListener(t, function () {
+    // el click que cierra el gesto no debe deshacer el primer mes
+    if (pintado && pintado.vivo) tragarMes = true;
+    soltarPintado();
+  });
+});
+// si el dedo se va antes de que arranque, no hay gesto que esperar. Despues de
+// arrancar manda la captura y este aviso ya no llega.
+$('#f-mes').addEventListener('pointerleave', function () {
+  if (pintado && !pintado.vivo) { clearTimeout(relojPintar); pintado = null; }
+});
+
+var tragarMes = false;
+
 /* ---------- el anillo del ano ---------- */
 // las asas cabalgan el canto del anillo -radio 82 con 7 de radio propio-, no
 // flotando fuera: ahi se ven enganchadas a la pista por la que corren
-var ANI = { cx: 100, cy: 100, rIn: 52, rOut: 80, rTxt: 66, rCabo: 82 };
+var ANI = { cx: 100, cy: 100, rIn: 52, rOut: 80, rTxt: 66, rCabo: 82, rEst: 99 };
 
 function polar(r, grados) {
   var a = grados * Math.PI / 180;
@@ -1270,10 +1348,35 @@ function sectorMes(i) {
          'L' + n(p3) + 'A' + ANI.rIn + ' ' + ANI.rIn + ' 0 0 0 ' + n(p4) + 'Z';
 }
 
+/* un arco de la mitad del mes i0 a la mitad del i1, en el sentido del reloj */
+function arcoAnillo(r, i0, i1) {
+  var a0 = anguloMes(i0) - 15, a1 = anguloMes(i1) + 15;
+  var p0 = polar(r, a0), p1 = polar(r, a1);
+  var largo = ((a1 - a0 + 360) % 360) > 180 ? 1 : 0;
+  return 'M' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2) +
+         'A' + r + ' ' + r + ' 0 ' + largo + ' 1 ' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2);
+}
+
+function iconoEn(nombre, cx, cy, tam, clase) {
+  var cuerpo = ICO[nombre];
+  if (!cuerpo) return '';
+  return '<svg class="' + clase + '" x="' + (cx - tam / 2).toFixed(1) + '" y="' +
+         (cy - tam / 2).toFixed(1) + '" width="' + tam + '" height="' + tam +
+         '" viewBox="0 0 256 256">' + cuerpo + '</svg>';
+}
+
 function pintarAnillo() {
   var meses = rangoMeses(F.mesDesde, F.mesHasta), dentro = {};
   meses.forEach(function (m) { dentro[m] = 1; });
   var h = '', i, p;
+  // la escala de las estaciones va la primera: debajo de todo lo demas
+  h += '<path class="estacion humeda" d="' + arcoAnillo(ANI.rEst, 5, 10) + '"/>' +
+       '<path class="estacion seca" d="' + arcoAnillo(ANI.rEst, 11, 4) + '"/>';
+  [[135, 'drop', 'ico-humeda'], [315, 'sun', 'ico-seca']].forEach(function (e) {
+    var q = polar(ANI.rEst, e[0]);
+    h += '<circle class="hueco" cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) +
+         '" r="8.5"/>' + iconoEn(e[1], q[0], q[1], 12, e[2]);
+  });
   for (i = 0; i < 12; i++) {
     h += '<path class="seg' + (dentro[i + 1] ? ' on' : '') + '" data-mes="' +
          (i + 1) + '" d="' + sectorMes(i) + '"/>';
@@ -1290,8 +1393,15 @@ function pintarAnillo() {
      girarla sobre el centro del anillo, que es como se mueve de verdad. */
   [F.mesDesde, F.mesHasta].forEach(function (m, k) {
     var q = polar(ANI.rCabo, anguloMes(m - 1));
-    h += '<g class="asa asa-' + (k ? 'b' : 'a') + '"><circle class="cabo" cx="' +
-         q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r="7"/></g>';
+    var cx = q[0].toFixed(1), cy = q[1].toFixed(1);
+    // la que se esta moviendo crece y lleva su mes escrito
+    var tira = !!arrastre && arrastre.mes === m;
+    h += '<g class="asa asa-' + (k ? 'b' : 'a') + '">' +
+         '<circle class="cabo' + (tira ? ' tirando' : '') + '" cx="' + cx +
+         '" cy="' + cy + '" r="' + (tira ? 13 : 7) + '"/>' +
+         (tira ? '<text class="mes-asa" x="' + cx + '" y="' + (q[1] + 2.9).toFixed(1) +
+                 '" text-anchor="middle">' + G.meses[m - 1] + '</text>' : '') +
+         '</g>';
   });
   h += '<text class="centro" x="100" y="97" text-anchor="middle">' +
        (todo ? 'Todo el año'
@@ -1379,7 +1489,11 @@ $('#anillo').addEventListener('pointermove', function (ev) {
 });
 
 ['pointerup', 'pointercancel'].forEach(function (t) {
-  $('#anillo').addEventListener(t, function () { arrastre = null; });
+  $('#anillo').addEventListener(t, function () {
+    if (!arrastre) return;
+    arrastre = null;
+    pintarAnillo();                  // el asa vuelve a su tamano y suelta el mes
+  });
 });
 
 /* Devolver el ano entero sin doce toques ni una vuelta completa con el dedo.

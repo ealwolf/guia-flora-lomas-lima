@@ -762,11 +762,14 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
    por tanto tampoco un sentido que adivinar. */
 /* el sitio del boton se reserva siempre: si no, el anillo daba un brinco
    cada vez que aparecia o se iba */
+/* mientras se pinta, la fila no se desliza ni se selecciona texto */
+#f-mes.pintando { touch-action: none; -webkit-user-select: none; user-select: none; }
+#f-mes.pintando .chip { transition: none; }
 .anillo-cab { display: flex; min-height: 36px; margin-bottom: 2px; }
 .atajo.ano { border-style: solid; border-color: var(--borde); }
 .atajo.ano .ico { color: var(--tenue); }
 .anillo {
-  display: block; width: 100%; max-width: 212px; height: auto;
+  display: block; width: 100%; max-width: 228px; height: auto;
   margin: 2px auto 0; touch-action: none; -webkit-user-select: none; user-select: none;
   /* es una herramienta, no un boton: se agarra. Y sin el recuadro gris que
      pinta Android al tocar cualquier cosa con manejador, que encendia el
@@ -802,6 +805,22 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
    el tiron no ocurre y algo tiene que decirlo. */
 .pista.mano { display: none; text-align: center; margin-top: 6px; }
 @media (prefers-reduced-motion: reduce) { .pista.mano { display: block; } }
+/* El asa que se arrastra crece y dice su mes: el dedo la tapa, y el nombre
+   dentro del propio circulo no necesita sitio nuevo ni puede chocar con nada */
+.anillo .cabo.tirando { fill: var(--acento); }
+.anillo .mes-asa {
+  font-size: 8px; font-weight: 700; fill: var(--sobre-acento);
+  font-family: system-ui, sans-serif; pointer-events: none;
+}
+/* Las dos estaciones, impresas alrededor como la escala de un dial. No se
+   pulsan: son la referencia de los dos atajos de abajo, con sus mismos
+   colores -la gota del reverdecimiento y el sol de cuando la loma duerme-. */
+.anillo .estacion { fill: none; stroke-width: 3; stroke-linecap: butt; }
+.anillo .humeda { stroke: color-mix(in srgb, var(--acento) 55%, var(--fondo)); }
+.anillo .seca   { stroke: color-mix(in srgb, var(--ambar) 60%, var(--fondo)); }
+.anillo .hueco  { fill: var(--fondo); }
+.anillo .ico-humeda { color: var(--acento); }
+.anillo .ico-seca   { color: var(--ambar); }
 .anillo .centro { font-size: 16px; font-weight: 700; fill: var(--texto); }
 .anillo .centro-2 { font-size: 10.5px; fill: var(--tenue); }
 /* el mismo dato en palabras: se puede fijar exacto, y con el teclado */
