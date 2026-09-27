@@ -438,10 +438,24 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   background: var(--fondo); border-radius: 20px 20px 0 0;
   border-top: 1px solid var(--borde);
   max-height: 86vh; display: flex; flex-direction: column;
-  transform: translateY(101%); transition: transform .26s cubic-bezier(.2,.8,.3,1);
+  /* Cerrado se aparta hacia abajo, pero su sombra apunta hacia ARRIBA, asi que
+     volvia a entrar por el borde inferior: el panel se quedaba entre 1 y 7 px
+     por debajo y la sombra llega unos 16 px mas arriba de su canto. Con cinco
+     paneles apilados eso era la franja oscura que se veia siempre en el movil.
+     Escondidos de verdad, como ya hacia la version de pantalla ancha; la
+     transicion de visibility la mantiene puesta mientras se cierra. */
+  transform: translateY(101%); visibility: hidden;
+  /* la sombra no va en la transicion: asi se apaga en el acto al cerrar y el
+     estado sin sombra no depende de que ninguna animacion llegue a su fin */
+  transition: transform .26s cubic-bezier(.2,.8,.3,1), visibility .26s;
+}
+/* la sombra solo cuando esta abierto: cerrado no tiene que proyectar nada, y
+   asi la franja no puede volver aunque la transicion de visibility se quede a
+   medias */
+.panel.abierto {
+  transform: none; visibility: visible;
   box-shadow: 0 -12px 40px -16px rgba(0,0,0,.4);
 }
-.panel.abierto { transform: none; }
 .panel-cab {
   display: flex; align-items: center; gap: 10px;
   padding: 14px 16px 10px; border-bottom: 1px solid var(--borde);
