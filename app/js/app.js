@@ -1251,7 +1251,9 @@ $$('[data-meses]').forEach(function (b) {
 });
 
 /* ---------- el anillo del ano ---------- */
-var ANI = { cx: 100, cy: 100, rIn: 52, rOut: 80, rTxt: 66, rCabo: 89 };
+// las asas cabalgan el canto del anillo -radio 82 con 7 de radio propio-, no
+// flotando fuera: ahi se ven enganchadas a la pista por la que corren
+var ANI = { cx: 100, cy: 100, rIn: 52, rOut: 80, rTxt: 66, rCabo: 82 };
 
 function polar(r, grados) {
   var a = grados * Math.PI / 180;
@@ -1283,12 +1285,13 @@ function pintarAnillo() {
          G.meses[i] + '</text>';
   }
   var todo = meses.length === 12;
-  // con el ano entero no hay extremos que senalar: dos puntos pegados arriba
-  // parecian una costura en un anillo que no esta cortado
-  if (!todo) [F.mesDesde, F.mesHasta].forEach(function (m) {
-    var q = polar(ANI.rCabo, anguloMes(m - 1)), cx = q[0].toFixed(1), cy = q[1].toFixed(1);
-    h += '<circle class="halo" cx="' + cx + '" cy="' + cy + '" r="7"/>' +
-         '<circle class="cabo" cx="' + cx + '" cy="' + cy + '" r="7"/>';
+  /* Las dos asas, siempre, tambien con el ano entero: son el control, y un
+     control que no esta no se descubre. Cada una en su grupo para poder
+     girarla sobre el centro del anillo, que es como se mueve de verdad. */
+  [F.mesDesde, F.mesHasta].forEach(function (m, k) {
+    var q = polar(ANI.rCabo, anguloMes(m - 1));
+    h += '<g class="asa asa-' + (k ? 'b' : 'a') + '"><circle class="cabo" cx="' +
+         q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r="7"/></g>';
   });
   h += '<text class="centro" x="100" y="97" text-anchor="middle">' +
        (todo ? 'Todo el año'

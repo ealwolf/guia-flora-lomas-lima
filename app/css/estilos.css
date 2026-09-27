@@ -777,24 +777,26 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
   .anillo .seg:hover { fill: color-mix(in srgb, var(--acento) 30%, var(--superficie-2)); }
   .anillo .seg.on:hover { fill: color-mix(in srgb, var(--texto) 18%, var(--acento)); }
 }
-.anillo text, .anillo .cabo, .anillo .halo { pointer-events: none; }
+.anillo text, .anillo .cabo { pointer-events: none; }
 .anillo text { font-family: system-ui, sans-serif; }
 .anillo .rot { font-size: 9.5px; font-weight: 600; fill: var(--tenue); }
 .anillo .rot.on { fill: var(--sobre-acento); }
 /* asas de verdad y no dos puntitos: han de pedir que se les tire */
 .anillo .cabo { fill: var(--acento); stroke: var(--fondo); stroke-width: 3; }
-.anillo .halo {
-  fill: var(--acento); opacity: 0;
-  transform-box: fill-box; transform-origin: 50% 50%;
-}
-/* y las tres primeras veces, un latido: el texto de debajo se lee tarde, el
-   movimiento se ve antes de leer nada */
-.anillo.nuevo .halo { animation: latidoCabo 1.9s ease-out 3; }
-@keyframes latidoCabo {
-  0%        { opacity: .45; transform: scale(1); }
-  70%, 100% { opacity: 0;   transform: scale(2.7); }
-}
-.pista.mano { text-align: center; margin-top: 6px; }
+/* Y las dos primeras veces se estiran un poco y vuelven, cada una hacia su
+   lado. Un destello solo dice «mirame»; separarse dice lo que hacen. Giran
+   sobre el centro del anillo, que es por donde corren. */
+.anillo .asa { transform-box: view-box; transform-origin: 100px 100px; }
+.anillo.nuevo .asa-a { animation: tironA 1.6s ease-in-out 2; }
+.anillo.nuevo .asa-b { animation: tironB 1.6s ease-in-out 2; }
+@keyframes tironA { 0%, 100% { transform: rotate(0deg); }
+                    45%      { transform: rotate(-7deg); } }
+@keyframes tironB { 0%, 100% { transform: rotate(0deg); }
+                    45%      { transform: rotate(7deg); } }
+/* La pista escrita se guarda para cuando no puede haber movimiento: entonces
+   el tiron no ocurre y algo tiene que decirlo. */
+.pista.mano { display: none; text-align: center; margin-top: 6px; }
+@media (prefers-reduced-motion: reduce) { .pista.mano { display: block; } }
 .anillo .centro { font-size: 16px; font-weight: 700; fill: var(--texto); }
 .anillo .centro-2 { font-size: 10.5px; fill: var(--tenue); }
 /* el mismo dato en palabras: se puede fijar exacto, y con el teclado */
