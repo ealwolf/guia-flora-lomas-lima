@@ -1331,7 +1331,8 @@ var tragarMes = false;
 /* ---------- el anillo del ano ---------- */
 // las asas cabalgan el canto del anillo -radio 82 con 7 de radio propio-, no
 // flotando fuera: ahi se ven enganchadas a la pista por la que corren
-var ANI = { cx: 100, cy: 100, rIn: 52, rOut: 80, rTxt: 66, rCabo: 82, rEst: 99 };
+var ANI = { cx: 100, cy: 100, rIn: 52, rOut: 80, rTxt: 66, rCabo: 82,
+            rEst: 100, rBrillo: 112 };
 
 function polar(r, grados) {
   var a = grados * Math.PI / 180;
@@ -1348,13 +1349,14 @@ function sectorMes(i) {
          'L' + n(p3) + 'A' + ANI.rIn + ' ' + ANI.rIn + ' 0 0 0 ' + n(p4) + 'Z';
 }
 
-/* un arco de la mitad del mes i0 a la mitad del i1, en el sentido del reloj */
-function arcoAnillo(r, i0, i1) {
+/* una cuna de anillo, de r0 a r1, de la mitad del mes i0 a la mitad del i1 */
+function cunaAnillo(r0, r1, i0, i1) {
   var a0 = anguloMes(i0) - 15, a1 = anguloMes(i1) + 15;
-  var p0 = polar(r, a0), p1 = polar(r, a1);
   var largo = ((a1 - a0 + 360) % 360) > 180 ? 1 : 0;
-  return 'M' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2) +
-         'A' + r + ' ' + r + ' 0 ' + largo + ' 1 ' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2);
+  var n = function (p) { return p[0].toFixed(2) + ' ' + p[1].toFixed(2); };
+  return 'M' + n(polar(r1, a0)) + 'A' + r1 + ' ' + r1 + ' 0 ' + largo + ' 1 ' +
+         n(polar(r1, a1)) + 'L' + n(polar(r0, a1)) + 'A' + r0 + ' ' + r0 +
+         ' 0 ' + largo + ' 0 ' + n(polar(r0, a0)) + 'Z';
 }
 
 function iconoEn(nombre, cx, cy, tam, clase) {
@@ -1369,19 +1371,29 @@ function pintarAnillo() {
   var meses = rangoMeses(F.mesDesde, F.mesHasta), dentro = {};
   meses.forEach(function (m) { dentro[m] = 1; });
   var h = '', i, p;
-  // la escala de las estaciones va la primera: debajo de todo lo demas
-  h += '<path class="estacion humeda" d="' + arcoAnillo(ANI.rEst, 5, 10) + '"/>' +
-       '<path class="estacion seca" d="' + arcoAnillo(ANI.rEst, 11, 4) + '"/>';
+  // el resplandor de las estaciones va el primero: detras de todo lo demas
+  h += '<defs>' + ['humeda', 'seca'].map(function (n) {
+    return '<radialGradient id="brillo-' + n + '" gradientUnits="userSpaceOnUse" ' +
+           'cx="100" cy="100" r="' + ANI.rBrillo + '">' +
+           '<stop class="g0 ' + n + '" offset="0.70"/>' +
+           '<stop class="g1 ' + n + '" offset="1"/></radialGradient>';
+  }).join('') + '</defs>';
+  h += '<path class="brillo-humeda" d="' +
+       cunaAnillo(ANI.rOut - 2, ANI.rBrillo, 5, 10) + '"/>' +
+       '<path class="brillo-seca" d="' +
+       cunaAnillo(ANI.rOut - 2, ANI.rBrillo, 11, 4) + '"/>';
   [[135, 'drop', 'ico-humeda'], [315, 'sun', 'ico-seca']].forEach(function (e) {
     var q = polar(ANI.rEst, e[0]);
-    h += '<circle class="hueco" cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) +
-         '" r="8.5"/>' + iconoEn(e[1], q[0], q[1], 12, e[2]);
+    h += iconoEn(e[1], q[0], q[1], 13, e[2]);
   });
   for (i = 0; i < 12; i++) {
     h += '<path class="seg' + (dentro[i + 1] ? ' on' : '') + '" data-mes="' +
          (i + 1) + '" d="' + sectorMes(i) + '"/>';
   }
   for (i = 0; i < 12; i++) {
+    // los dos extremos no se rotulan: su asa ya lleva el nombre encima y las
+    // dos palabras se pisaban
+    if (i + 1 === F.mesDesde || i + 1 === F.mesHasta) continue;
     p = polar(ANI.rTxt, anguloMes(i));
     h += '<text class="rot' + (dentro[i + 1] ? ' on' : '') + '" x="' + p[0].toFixed(1) +
          '" y="' + (p[1] + 3.3).toFixed(1) + '" text-anchor="middle">' +
@@ -1394,14 +1406,16 @@ function pintarAnillo() {
   [F.mesDesde, F.mesHasta].forEach(function (m, k) {
     var q = polar(ANI.rCabo, anguloMes(m - 1));
     var cx = q[0].toFixed(1), cy = q[1].toFixed(1);
-    // la que se esta moviendo crece y lleva su mes escrito
+    /* Las asas llevan su mes escrito siempre, no solo al arrastrarlas: dos
+       puntos no dicen que se agarren, y un circulo con «Nov» dentro si -se lee
+       como una ficha que esta puesta sobre el anillo y puede correrse-. La que
+       se mueve crece un poco mas. */
     var tira = !!arrastre && arrastre.mes === m;
     h += '<g class="asa asa-' + (k ? 'b' : 'a') + '">' +
-         '<circle class="cabo' + (tira ? ' tirando' : '') + '" cx="' + cx +
-         '" cy="' + cy + '" r="' + (tira ? 13 : 7) + '"/>' +
-         (tira ? '<text class="mes-asa" x="' + cx + '" y="' + (q[1] + 2.9).toFixed(1) +
-                 '" text-anchor="middle">' + G.meses[m - 1] + '</text>' : '') +
-         '</g>';
+         '<circle class="cabo" cx="' + cx + '" cy="' + cy +
+         '" r="' + (tira ? 15 : 13) + '"/>' +
+         '<text class="mes-asa" x="' + cx + '" y="' + (q[1] + 3).toFixed(1) +
+         '" text-anchor="middle">' + G.meses[m - 1] + '</text></g>';
   });
   h += '<text class="centro" x="100" y="97" text-anchor="middle">' +
        (todo ? 'Todo el año'

@@ -13,6 +13,9 @@
   --acento-txt: #235536;
   --rojo:       #c8443c;
   --ambar:      #b07d1a;
+  /* la humeda en azul y la seca en ambar: el verde ya dice «elegido» en todo
+     el anillo, y con verde contra ambar las dos cosas se confundian */
+  --lluvia:     #2f7e9e;
   --sobre-acento: #ffffff;
   --tirador: 20px;
 
@@ -55,6 +58,7 @@
     --acento-txt: #9ad9ae;
     --rojo:       #e8695f;
     --ambar:      #d8a545;
+    --lluvia:     #6fc0dd;
     --sobre-acento: #0f140f;
     --propia:     #b49ae8;
     --propia-sua: #241d33;
@@ -78,6 +82,7 @@
     --acento-txt: #9ad9ae;
     --rojo:       #e8695f;
     --ambar:      #d8a545;
+    --lluvia:     #6fc0dd;
     --sobre-acento: #0f140f;
     --propia:     #b49ae8;
     --propia-sua: #241d33;
@@ -787,8 +792,10 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 }
 .anillo text, .anillo .cabo { pointer-events: none; }
 .anillo text { font-family: system-ui, sans-serif; }
-.anillo .rot { font-size: 9.5px; font-weight: 600; fill: var(--tenue); }
-.anillo .rot.on { fill: var(--sobre-acento); }
+/* Los meses bajan de tono: siguen ahi para apuntar, pero lo que manda son las
+   dos asas, que son lo unico que se mueve */
+.anillo .rot { font-size: 9.5px; font-weight: 600; fill: var(--tenue); opacity: .6; }
+.anillo .rot.on { fill: var(--sobre-acento); opacity: .72; }
 /* asas de verdad y no dos puntitos: han de pedir que se les tire */
 .anillo .cabo { fill: var(--acento); stroke: var(--fondo); stroke-width: 3; }
 /* Y las dos primeras veces se estiran un poco y vuelven, cada una hacia su
@@ -807,19 +814,20 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 @media (prefers-reduced-motion: reduce) { .pista.mano { display: block; } }
 /* El asa que se arrastra crece y dice su mes: el dedo la tapa, y el nombre
    dentro del propio circulo no necesita sitio nuevo ni puede chocar con nada */
-.anillo .cabo.tirando { fill: var(--acento); }
 .anillo .mes-asa {
-  font-size: 8px; font-weight: 700; fill: var(--sobre-acento);
+  font-size: 8.5px; font-weight: 700; fill: var(--sobre-acento);
   font-family: system-ui, sans-serif; pointer-events: none;
 }
-/* Las dos estaciones, impresas alrededor como la escala de un dial. No se
-   pulsan: son la referencia de los dos atajos de abajo, con sus mismos
-   colores -la gota del reverdecimiento y el sol de cuando la loma duerme-. */
-.anillo .estacion { fill: none; stroke-width: 3; stroke-linecap: butt; }
-.anillo .humeda { stroke: color-mix(in srgb, var(--acento) 55%, var(--fondo)); }
-.anillo .seca   { stroke: color-mix(in srgb, var(--ambar) 60%, var(--fondo)); }
-.anillo .hueco  { fill: var(--fondo); }
-.anillo .ico-humeda { color: var(--acento); }
+/* Las dos estaciones, detras del anillo y desvanecidas hacia afuera: un
+   resplandor, no un aro. Un aro mas se leia como otra pista que se pudiera
+   agarrar; una mancha de color es fondo, y el fondo no se toca. */
+.anillo .g0.humeda { stop-color: var(--lluvia); stop-opacity: .40; }
+.anillo .g1.humeda { stop-color: var(--lluvia); stop-opacity: 0; }
+.anillo .g0.seca   { stop-color: var(--ambar);  stop-opacity: .40; }
+.anillo .g1.seca   { stop-color: var(--ambar);  stop-opacity: 0; }
+.anillo .brillo-humeda { fill: url(#brillo-humeda); }
+.anillo .brillo-seca   { fill: url(#brillo-seca); }
+.anillo .ico-humeda { color: var(--lluvia); }
 .anillo .ico-seca   { color: var(--ambar); }
 .anillo .centro { font-size: 16px; font-weight: 700; fill: var(--texto); }
 .anillo .centro-2 { font-size: 10.5px; fill: var(--tenue); }
@@ -844,8 +852,8 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 .atajo .ico { width: 15px; height: 15px; flex: none; }
 /* el borde sigue de trazos porque son atajos, no un estado; lo que las separa
    es el color: la gota del reverdecimiento y el sol de cuando la loma duerme */
-.atajo.humeda .ico { color: var(--acento); }
-.atajo.humeda { border-color: color-mix(in srgb, var(--acento) 45%, var(--borde)); }
+.atajo.humeda .ico { color: var(--lluvia); }
+.atajo.humeda { border-color: color-mix(in srgb, var(--lluvia) 45%, var(--borde)); }
 .atajo.seca .ico { color: var(--ambar); }
 .atajo.seca { border-color: color-mix(in srgb, var(--ambar) 45%, var(--borde)); }
 .atajo:hover { border-style: solid; }
