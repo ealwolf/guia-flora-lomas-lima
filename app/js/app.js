@@ -1218,10 +1218,15 @@ function pintarModoMes() {
   });
   $('#f-mes').classList.toggle('oculto', rango);
   $('#mes-rango').classList.toggle('oculto', !rango);
-  $('#mes-pista').textContent = rango
-      ? 'Arrastra los dos extremos, o toca un mes y se moverá el más cercano.'
-      : 'Deja las especies que florecen en alguno de los meses marcados.';
-  if (rango) pintarAnillo();
+  // la del anillo vive pegada a el, debajo del dibujo y antes de las listas:
+  // donde se lee antes de bajar la vista a lo conocido, que son las listas
+  $('#mes-pista').textContent =
+      'Deja las especies que florecen en alguno de los meses marcados.';
+  $('#mes-pista').classList.toggle('oculto', rango);
+  if (rango) {
+    $('#anillo').classList.toggle('nuevo', !anilloUsado());
+    pintarAnillo();
+  }
 }
 
 $$('[data-mesmodo]').forEach(function (b) {
@@ -1281,9 +1286,9 @@ function pintarAnillo() {
   // con el ano entero no hay extremos que senalar: dos puntos pegados arriba
   // parecian una costura en un anillo que no esta cortado
   if (!todo) [F.mesDesde, F.mesHasta].forEach(function (m) {
-    var q = polar(ANI.rCabo, anguloMes(m - 1));
-    h += '<circle class="cabo" cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) +
-         '" r="4.5"/>';
+    var q = polar(ANI.rCabo, anguloMes(m - 1)), cx = q[0].toFixed(1), cy = q[1].toFixed(1);
+    h += '<circle class="halo" cx="' + cx + '" cy="' + cy + '" r="7"/>' +
+         '<circle class="cabo" cx="' + cx + '" cy="' + cy + '" r="7"/>';
   });
   h += '<text class="centro" x="100" y="97" text-anchor="middle">' +
        (todo ? 'Todo el año'
@@ -1314,6 +1319,16 @@ function distMes(a, b) { var d = Math.abs(a - b) % 12; return Math.min(d, 12 - d
    cabo de Nov en el sentido de las agujas, se pasa por Dic-Mar, Ene-Mar,
    Feb-Mar, Mar, Mar-Abr, Mar-May. Sin la cuenta con signo, al cruzar Mar el
    tramo saltaba a once meses. */
+/* El latido de las asas solo hasta que se arrastre una vez: es una pista para
+   quien no sabe que el anillo se toca, no un adorno permanente. */
+function anilloUsado() {
+  try { return !!localStorage.getItem('anilloUsado'); } catch (e) { return true; }
+}
+function apuntarAnilloUsado() {
+  $('#anillo').classList.remove('nuevo');
+  try { localStorage.setItem('anilloUsado', '1'); } catch (e) {}
+}
+
 var arrastre = null;
 
 function fijarPasos(ancla, pasos) {
@@ -1327,6 +1342,7 @@ function fijarPasos(ancla, pasos) {
 $('#anillo').addEventListener('pointerdown', function (ev) {
   var m = mesEnPunto(ev);
   if (!m) return;
+  apuntarAnilloUsado();
   // se coge el cabo mas cercano, no «el primero que toques»: nada que recordar
   var esDesde = distMes(m, F.mesDesde) <= distMes(m, F.mesHasta);
   var ancla = esDesde ? F.mesHasta : F.mesDesde;
