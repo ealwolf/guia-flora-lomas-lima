@@ -1301,6 +1301,8 @@ function pintarAnillo() {
        (todo ? 'sin filtrar' : meses.length + (meses.length === 1 ? ' mes' : ' meses')) +
        '</text>';
   $('#anillo').innerHTML = h;
+  // el boton solo cuando falta algo que devolver
+  $('#anillo-todo').classList.toggle('oculto', todo);
   $('#mes-desde').value = F.mesDesde;
   $('#mes-hasta').value = F.mesHasta;
 }
@@ -1335,7 +1337,11 @@ function apuntarAnilloUsado() {
 var arrastre = null;
 
 function fijarPasos(ancla, pasos) {
-  pasos = Math.max(-11, Math.min(11, pasos));    // no da la vuelta entera
+  /* Da la vuelta sin fin: pasado el ano entero se vuelve a un mes, y al reves
+     igual. Antes se topaba en los once y el asa se quedaba clavada en «Todo el
+     ano» por mucho que se siguiera girando. */
+  while (pasos >  11) pasos -= 12;
+  while (pasos < -11) pasos += 12;
   var m = (ancla - 1 + pasos + 24) % 12 + 1;
   if (pasos >= 0) { F.mesDesde = ancla; F.mesHasta = m; }
   else            { F.mesDesde = m;     F.mesHasta = ancla; }
@@ -1366,7 +1372,7 @@ $('#anillo').addEventListener('pointermove', function (ev) {
   var d = (m - arrastre.mes + 12) % 12;
   if (d > 6) d -= 12;                            // el salto mas corto
   var r = fijarPasos(arrastre.ancla, arrastre.pasos + d);
-  if (r.pasos === arrastre.pasos) return;        // topado en los once
+  if (r.pasos === arrastre.pasos) return;
   arrastre.pasos = r.pasos; arrastre.mes = r.mes;
   aplicarRango();
   render();
@@ -1374,6 +1380,16 @@ $('#anillo').addEventListener('pointermove', function (ev) {
 
 ['pointerup', 'pointercancel'].forEach(function (t) {
   $('#anillo').addEventListener(t, function () { arrastre = null; });
+});
+
+/* Devolver el ano entero sin doce toques ni una vuelta completa con el dedo.
+   Respeta por donde empezo el usuario: si su tramo arranca en junio, el ano
+   entero va de junio a mayo, no de enero a diciembre. El filtro es el mismo
+   -doce meses no quitan nada- pero las asas se quedan donde las dejo. */
+$('#anillo-todo').addEventListener('click', function () {
+  F.mesHasta = (F.mesDesde + 10) % 12 + 1;       // el mes anterior al de inicio
+  aplicarRango();
+  render();
 });
 
 /* el mismo dato en palabras: exacto, y alcanzable con el teclado */

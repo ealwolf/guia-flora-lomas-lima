@@ -760,6 +760,11 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
    un arco que pasa por arriba. Se arrastran los dos cabos, o se toca un mes y
    se mueve el cabo más cercano: no hay «primer toque» ni «segundo toque», y
    por tanto tampoco un sentido que adivinar. */
+/* el sitio del boton se reserva siempre: si no, el anillo daba un brinco
+   cada vez que aparecia o se iba */
+.anillo-cab { display: flex; min-height: 36px; margin-bottom: 2px; }
+.atajo.ano { border-style: solid; border-color: var(--borde); }
+.atajo.ano .ico { color: var(--tenue); }
 .anillo {
   display: block; width: 100%; max-width: 212px; height: auto;
   margin: 2px auto 0; touch-action: none; -webkit-user-select: none; user-select: none;
