@@ -8,6 +8,11 @@
   --texto:      #1c211d;
   --tenue:      #656c62;   /* 4.97:1 sobre --fondo; con #6c7369 se quedaba en 4.49 y no llegaba a AA */
   --borde:      #e3dfd5;
+  /* El borde de lo que se pulsa, aparte del de separar. Sobre claro los dos
+     valen lo mismo; sobre oscuro un filete de separacion puede ser tenue, pero
+     el contorno de una ficha o de una casilla no: es lo unico que dice que ahi
+     hay algo que tocar. */
+  --borde-control: #e3dfd5;
   --acento:     #2f6b45;
   --acento-sua: #e6f0e8;
   --acento-txt: #235536;
@@ -54,10 +59,11 @@
   :root:not([data-tema="claro"]) {
     --fondo:      #12150f;
     --superficie: #1a1e18;
-    --superficie-2:#232821;
+    --superficie-2:#2a3127;
     --texto:      #e9ece5;
     --tenue:      #9aa392;
-    --borde:      #2c3329;
+    --borde:      #3d473a;
+    --borde-control: #667260;
     --acento:     #78c493;
     --acento-sua: #1e2c22;
     --acento-txt: #9ad9ae;
@@ -82,10 +88,11 @@
 :root[data-tema="oscuro"] {
     --fondo:      #12150f;
     --superficie: #1a1e18;
-    --superficie-2:#232821;
+    --superficie-2:#2a3127;
     --texto:      #e9ece5;
     --tenue:      #9aa392;
-    --borde:      #2c3329;
+    --borde:      #3d473a;
+    --borde-control: #667260;
     --acento:     #78c493;
     --acento-sua: #1e2c22;
     --acento-txt: #9ad9ae;
@@ -310,7 +317,7 @@ button {
 .chip {
   display: inline-flex; align-items: center; gap: 6px; flex: none;
   padding: 7px 12px; border-radius: 999px;
-  border: 1px solid var(--borde); background: var(--superficie);
+  border: 1px solid var(--borde-control); background: var(--superficie);
   font-size: var(--t-1); font-weight: 500; color: var(--texto);
   white-space: nowrap; transition: background .15s, border-color .15s, color .15s;
 }
@@ -345,9 +352,9 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .btn-barra {
   display: inline-flex; align-items: center; gap: 7px; min-height: 38px;
   padding: 0 14px; border-radius: 999px; font-size: var(--t-1); font-weight: 600;
-  border: 1px solid var(--borde); background: var(--superficie); color: var(--texto);
+  border: 1px solid var(--borde-control); background: var(--superficie); color: var(--texto);
 }
-.btn-barra:hover { border-color: color-mix(in srgb, var(--acento) 45%, var(--borde)); }
+.btn-barra:hover { border-color: color-mix(in srgb, var(--acento) 45%, var(--borde-control)); }
 .btn-barra .ico { width: 17px; height: 17px; color: var(--tenue); flex: none; }
 .btn-barra .txt { white-space: nowrap; }
 /* Al bajar, el recuento y los filtros puestos se quedan pegados bajo la
@@ -510,7 +517,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .casilla:hover, .casilla:focus-visible { background: var(--superficie-2); }
 .casilla .caja {
   width: 20px; height: 20px; flex: none; border-radius: 6px;
-  border: 1.5px solid var(--borde); background: var(--superficie);
+  border: 1.5px solid var(--borde-control); background: var(--superficie);
   display: grid; place-items: center; transition: background .12s, border-color .12s;
 }
 .casilla .caja .ico { width: 14px; height: 14px; color: var(--sobre-acento); opacity: 0; }
@@ -670,7 +677,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 }
 .btn {
   flex: 1; padding: 12px; border-radius: 12px; font-weight: 600; font-size: var(--t-2);
-  border: 1px solid var(--borde); background: var(--superficie); color: var(--texto);
+  border: 1px solid var(--borde-control); background: var(--superficie); color: var(--texto);
   /* los que llevan icono lo tenian pegado a la palabra */
   display: inline-flex; align-items: center; justify-content: center; gap: 9px;
 }
@@ -705,7 +712,13 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .segmentado button .ico { width: 14px; height: 14px; flex: none; }
 .segmentado button .flechita { width: 13px; height: 13px; opacity: .6; }
 .segmentado button[aria-pressed="true"] {
-  background: var(--superficie); color: var(--texto); box-shadow: 0 1px 2px rgba(0,0,0,.08);
+  background: var(--superficie); color: var(--texto);
+  /* La sombra sola no se ve sobre fondo oscuro -una sombra negra sobre negro-,
+     asi que el elegido lleva ademas su filete. Lleva algo del color del texto
+     mezclado para despegarse del hueco donde va metido, que ya es mas claro
+     que la pagina: en claro eso lo oscurece y en oscuro lo aclara. */
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--texto) 25%, var(--borde-control)),
+              0 1px 2px rgba(0,0,0,.08);
 }
 .rango { display: flex; align-items: center; gap: 10px; }
 .rango label { font-size: var(--t-1); color: var(--tenue); min-width: 42px; }
@@ -864,7 +877,7 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 }
 .mes-selec select {
   font: inherit; font-weight: 600; color: var(--texto); padding: 5px 6px;
-  border: 1px solid var(--borde); border-radius: 8px; background: var(--superficie);
+  border: 1px solid var(--borde-control); border-radius: 8px; background: var(--superficie);
 }
 
 /* Las dos estaciones que nombra la guía: nueve meses de rango se piden de una
@@ -875,16 +888,16 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 .atajo {
   display: inline-flex; align-items: center; gap: 7px; min-height: 36px;
   padding: 0 13px; border-radius: 999px; font-size: var(--t-1); font-weight: 600;
-  border: 1px dashed var(--borde); color: var(--texto);
+  border: 1px dashed var(--borde-control); color: var(--texto);
 }
 .atajo .mes { font-weight: 400; color: var(--tenue); }
 .atajo .ico { width: 15px; height: 15px; flex: none; }
 /* el borde sigue de trazos porque son atajos, no un estado; lo que las separa
    es el color: la gota del reverdecimiento y el sol de cuando la loma duerme */
 .atajo.humeda .ico { color: var(--lluvia); }
-.atajo.humeda { border-color: color-mix(in srgb, var(--lluvia) 45%, var(--borde)); }
+.atajo.humeda { border-color: color-mix(in srgb, var(--lluvia) 45%, var(--borde-control)); }
 .atajo.seca .ico { color: var(--ambar); }
-.atajo.seca { border-color: color-mix(in srgb, var(--ambar) 45%, var(--borde)); }
+.atajo.seca { border-color: color-mix(in srgb, var(--ambar) 45%, var(--borde-control)); }
 .atajo:hover { border-style: solid; }
 
 /* El perfil en pequeño, dentro de la ficha: enseña de qué lado se habla sin
