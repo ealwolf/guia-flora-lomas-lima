@@ -770,9 +770,6 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 /* mientras se pinta, la fila no se desliza ni se selecciona texto */
 #f-mes.pintando { touch-action: none; -webkit-user-select: none; user-select: none; }
 #f-mes.pintando .chip { transition: none; }
-.anillo-cab { display: flex; min-height: 36px; margin-bottom: 2px; }
-.atajo.ano { border-style: solid; border-color: var(--borde); }
-.atajo.ano .ico { color: var(--tenue); }
 .anillo {
   display: block; width: 100%; max-width: 228px; height: auto;
   margin: 2px auto 0; touch-action: none; -webkit-user-select: none; user-select: none;
@@ -815,7 +812,7 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 /* El asa que se arrastra crece y dice su mes: el dedo la tapa, y el nombre
    dentro del propio circulo no necesita sitio nuevo ni puede chocar con nada */
 .anillo .mes-asa {
-  font-size: 8.5px; font-weight: 700; fill: var(--sobre-acento);
+  font-size: 9.5px; font-weight: 700; fill: var(--sobre-acento);
   font-family: system-ui, sans-serif; pointer-events: none;
 }
 /* Las dos estaciones, detras del anillo y desvanecidas hacia afuera: un

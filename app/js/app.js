@@ -1102,7 +1102,15 @@ $$('[data-vista]').forEach(function (b) {
 $$('[data-limpia]').forEach(function (b) {
   b.addEventListener('click', function () {
     F[b.dataset.limpia] = [];
-    if (b.dataset.limpia === 'mes') { F.mesDesde = 1; F.mesHasta = 12; }
+    /* El «Quitar» del grupo vale para los dos modos, que en el fondo hacen lo
+       mismo: los doce meses no quitan ninguna especie, asi que «ningun mes» y
+       «todos» son el mismo filtro. Antes habia dos botones distintos diciendo
+       lo mismo de dos maneras. En rango el ano entero empieza donde lo dejo el
+       usuario, no en enero. */
+    if (b.dataset.limpia === 'mes') {
+      if (F.mesModo === 'rango') F.mesHasta = (F.mesDesde + 10) % 12 + 1;
+      else { F.mesDesde = 1; F.mesHasta = 12; }
+    }
     render();
   });
 });
@@ -1274,7 +1282,9 @@ function soltarPintado() {
 $('#f-mes').addEventListener('pointerdown', function (ev) {
   var m = mesBajoElDedo(ev);
   if (!m) return;
-  pintado = { x: ev.clientX, y: ev.clientY, id: ev.pointerId, vivo: false, hubo: false };
+  tragarMes = false;                 // una pulsacion nueva: lo de antes ya paso
+  pintado = { x: ev.clientX, y: ev.clientY, id: ev.pointerId, vivo: false,
+              ancla: m, antes: F.mes.slice() };
   clearTimeout(relojPintar);
   relojPintar = setTimeout(function () {
     if (!pintado) return;
@@ -1283,15 +1293,23 @@ $('#f-mes').addEventListener('pointerdown', function (ev) {
     $('#f-mes').classList.add('pintando');
     try { $('#f-mes').setPointerCapture(pintado.id); } catch (e) {}
     try { navigator.vibrate && navigator.vibrate(12); } catch (e) {}
-    ponerMes(m);
+    pintarHasta(m);
   }, ESPERA_PINTAR);
 });
 
-function ponerMes(m) {
-  var hay = F.mes.indexOf(m) >= 0;
-  if (hay === pintado.pone) return;
-  if (pintado.pone) F.mes.push(m); else F.mes.splice(F.mes.indexOf(m), 1);
-  pintado.hubo = true;
+/* Pinta el tramo entero entre el mes donde empezo y donde esta el dedo, no
+   solo los que ha pisado. Las fichas van en dos filas, asi que al saltar de
+   fila el dedo se salta la mitad; y al volver atras hay que deshacer lo que ya
+   no queda dentro, de ahi que se parta siempre de como estaba. */
+function pintarHasta(m) {
+  var a = Math.min(pintado.ancla, m), b = Math.max(pintado.ancla, m);
+  var hay = {};
+  pintado.antes.forEach(function (x) { hay[x] = 1; });
+  for (var k = a; k <= b; k++) { if (pintado.pone) hay[k] = 1; else delete hay[k]; }
+  var nuevo = Object.keys(hay).map(Number).sort(function (x, y) { return x - y; });
+  var ahora = F.mes.slice().sort(function (x, y) { return x - y; });
+  if (nuevo.join(',') === ahora.join(',')) return;
+  F.mes = nuevo;
   render();
 }
 
@@ -1305,7 +1323,7 @@ $('#f-mes').addEventListener('pointermove', function (ev) {
     return;
   }
   var m = mesBajoElDedo(ev);
-  if (m) ponerMes(m);
+  if (m) pintarHasta(m);
 });
 
 // con el dedo, mientras se pinta manda el gesto y no el desplazamiento
@@ -1413,7 +1431,7 @@ function pintarAnillo() {
     var tira = !!arrastre && arrastre.mes === m;
     h += '<g class="asa asa-' + (k ? 'b' : 'a') + '">' +
          '<circle class="cabo" cx="' + cx + '" cy="' + cy +
-         '" r="' + (tira ? 15 : 13) + '"/>' +
+         '" r="' + (tira ? 17 : 15) + '"/>' +
          '<text class="mes-asa" x="' + cx + '" y="' + (q[1] + 3).toFixed(1) +
          '" text-anchor="middle">' + G.meses[m - 1] + '</text></g>';
   });
@@ -1425,8 +1443,6 @@ function pintarAnillo() {
        (todo ? 'sin filtrar' : meses.length + (meses.length === 1 ? ' mes' : ' meses')) +
        '</text>';
   $('#anillo').innerHTML = h;
-  // el boton solo cuando falta algo que devolver
-  $('#anillo-todo').classList.toggle('oculto', todo);
   $('#mes-desde').value = F.mesDesde;
   $('#mes-hasta').value = F.mesHasta;
 }
@@ -1508,16 +1524,6 @@ $('#anillo').addEventListener('pointermove', function (ev) {
     arrastre = null;
     pintarAnillo();                  // el asa vuelve a su tamano y suelta el mes
   });
-});
-
-/* Devolver el ano entero sin doce toques ni una vuelta completa con el dedo.
-   Respeta por donde empezo el usuario: si su tramo arranca en junio, el ano
-   entero va de junio a mayo, no de enero a diciembre. El filtro es el mismo
-   -doce meses no quitan nada- pero las asas se quedan donde las dejo. */
-$('#anillo-todo').addEventListener('click', function () {
-  F.mesHasta = (F.mesDesde + 10) % 12 + 1;       // el mes anterior al de inicio
-  aplicarRango();
-  render();
 });
 
 /* el mismo dato en palabras: exacto, y alcanzable con el teclado */
