@@ -12,7 +12,7 @@
      valen lo mismo; sobre oscuro un filete de separacion puede ser tenue, pero
      el contorno de una ficha o de una casilla no: es lo unico que dice que ahi
      hay algo que tocar. */
-  --borde-control: #e3dfd5;
+  --borde-control: #cdc7b6;
   --acento:     #2f6b45;
   --acento-sua: #e6f0e8;
   --acento-txt: #235536;
@@ -698,27 +698,32 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 }
 
 /* deslizador de altitud */
+/* Pestanas, no fichas. Iban en una caja de esquinas redondas con el elegido
+   relleno, o sea casi lo mismo que una ficha puesta, y en un panel lleno de
+   fichas eso se confunde: una ficha suma un valor a la lista y una pestana
+   cambia de que va la vista. Ahora son texto sobre una raya, con la elegida
+   subrayada en el color de acento: nada que ver con una pildora. */
 .segmentado {
-  display: inline-flex; gap: 3px; padding: 3px; margin-bottom: 10px;
-  background: var(--superficie-2); border-radius: 11px;
+  display: inline-flex; gap: 0; padding: 0; margin-bottom: 12px;
+  background: none; border-radius: 0;
+  box-shadow: inset 0 -2px 0 var(--borde);
 }
 /* En linea y centrado, no con vertical-align a ojo: los iconos de dentro
    -las flechas del sentido- se colocaban por la linea base y quedaban bajos */
 .segmentado button {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 6px 13px; border-radius: 8px; font-size: var(--t-1); font-weight: 600;
-  color: var(--tenue); transition: background .15s, color .15s;
+  min-height: 40px; padding: 0 14px; border-radius: 0;
+  font-size: var(--t-1); font-weight: 600; color: var(--tenue);
+  /* el subrayado va de sombra interior: asi no mueve nada al aparecer */
+  box-shadow: inset 0 -2px 0 transparent;
+  transition: color .15s, box-shadow .15s;
 }
+.segmentado button:hover { color: var(--texto); }
 .segmentado button .ico { width: 14px; height: 14px; flex: none; }
 .segmentado button .flechita { width: 13px; height: 13px; opacity: .6; }
 .segmentado button[aria-pressed="true"] {
-  background: var(--superficie); color: var(--texto);
-  /* La sombra sola no se ve sobre fondo oscuro -una sombra negra sobre negro-,
-     asi que el elegido lleva ademas su filete. Lleva algo del color del texto
-     mezclado para despegarse del hueco donde va metido, que ya es mas claro
-     que la pagina: en claro eso lo oscurece y en oscuro lo aclara. */
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--texto) 25%, var(--borde-control)),
-              0 1px 2px rgba(0,0,0,.08);
+  color: var(--acento-txt); font-weight: 700;
+  box-shadow: inset 0 -2px 0 var(--acento);
 }
 .rango { display: flex; align-items: center; gap: 10px; }
 .rango label { font-size: var(--t-1); color: var(--tenue); min-width: 42px; }
