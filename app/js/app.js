@@ -1373,7 +1373,12 @@ function polar(r, grados) {
   var a = grados * Math.PI / 180;
   return [ANI.cx + r * Math.cos(a), ANI.cy + r * Math.sin(a)];
 }
-function anguloMes(i) { return -90 + i * 30; }          // Ene arriba
+/* Arriba del todo no va el centro de enero sino el corte entre diciembre y
+   enero, que es donde acaba y empieza el ano. Con enero centrado, diciembre
+   quedaba descolgado a un lado y el anillo se veia torcido. Son quince grados
+   -medio mes- y los hereda todo lo demas: meses, asas y estaciones. */
+var ANG0 = -75;                                          // el centro de enero
+function anguloMes(i) { return ANG0 + i * 30; }
 
 function sectorMes(i) {
   var a0 = anguloMes(i) - 14, a1 = anguloMes(i) + 14;   // 2 grados de aire
@@ -1484,7 +1489,7 @@ function mesEnPunto(ev) {
   var x = ev.clientX - r.left - r.width / 2, y = ev.clientY - r.top - r.height / 2;
   // el agujero del centro no manda: ahi no hay meses
   if (Math.sqrt(x * x + y * y) < r.width * 0.2) return 0;
-  var g = ((Math.atan2(y, x) * 180 / Math.PI + 90) % 360 + 360) % 360;
+  var g = ((Math.atan2(y, x) * 180 / Math.PI - ANG0) % 360 + 360) % 360;
   return Math.round(g / 30) % 12 + 1;
 }
 function distMes(a, b) { var d = Math.abs(a - b) % 12; return Math.min(d, 12 - d); }
