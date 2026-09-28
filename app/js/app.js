@@ -1350,7 +1350,9 @@ var tragarMes = false;
 // las asas cabalgan el canto del anillo -radio 82 con 7 de radio propio-, no
 // flotando fuera: ahi se ven enganchadas a la pista por la que corren
 var ANI = { cx: 100, cy: 100, rIn: 52, rOut: 80, rTxt: 66, rCabo: 82,
-            rEst: 103, rBrillo: 118 };
+            // rEst se aparta al crecer las asas: con el asa en enero, julio o
+            // abril, el circulo y el icono de la estacion caian uno sobre otro
+            rEst: 107, rBrillo: 118 };
 
 /* Las cuatro estaciones del hemisferio sur, por meses enteros: el anillo no
    sabe de dias, y los equinoccios caen a mediados. Cada una noventa grados,
@@ -1447,7 +1449,7 @@ function pintarAnillo() {
     var tira = !!arrastre && arrastre.mes === m;
     h += '<g class="asa asa-' + (k ? 'b' : 'a') + '">' +
          '<circle class="cabo" cx="' + cx + '" cy="' + cy +
-         '" r="' + (tira ? 17 : 15) + '"/>' +
+         '" r="' + (tira ? 19 : 17) + '"/>' +
          '<text class="mes-asa" x="' + cx + '" y="' + (q[1] + 3).toFixed(1) +
          '" text-anchor="middle">' + G.meses[m - 1] + '</text></g>';
   });

@@ -825,7 +825,7 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 /* El asa que se arrastra crece y dice su mes: el dedo la tapa, y el nombre
    dentro del propio circulo no necesita sitio nuevo ni puede chocar con nada */
 .anillo .mes-asa {
-  font-size: 9.5px; font-weight: 700; fill: var(--sobre-acento);
+  font-size: 10.5px; font-weight: 700; fill: var(--sobre-acento);
   font-family: system-ui, sans-serif; pointer-events: none;
 }
 /* Las cuatro estaciones, detras del anillo y desvanecidas hacia afuera: un
@@ -850,8 +850,13 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 .anillo .ico-est.primavera, .anillo .nom-est.primavera { color: var(--est-primavera); fill: var(--est-primavera); }
 .anillo .centro { font-size: 16px; font-weight: 700; fill: var(--texto); }
 .anillo .centro-2 { font-size: 10.5px; fill: var(--tenue); }
-/* el mismo dato en palabras: se puede fijar exacto, y con el teclado */
-.mes-selec { margin: 8px 0 0; font-size: var(--t-1); color: var(--tenue); text-align: center; }
+/* El mismo dato en palabras: se puede fijar exacto, y con el teclado. En
+   fila flexible y no en texto corrido: el espacio de «a» entre las dos listas
+   era el de la tipografia, y las dejaba pegadas. */
+.mes-selec {
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  margin: 10px 0 0; font-size: var(--t-1); color: var(--tenue);
+}
 .mes-selec select {
   font: inherit; font-weight: 600; color: var(--texto); padding: 5px 6px;
   border: 1px solid var(--borde); border-radius: 8px; background: var(--superficie);
