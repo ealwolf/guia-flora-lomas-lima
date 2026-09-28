@@ -198,7 +198,12 @@ button {
   width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
   color: var(--tenue); flex: none;
 }
-.btn-icono:hover, .btn-icono:focus-visible { background: var(--superficie-2); color: var(--texto); }
+.btn-icono:hover:not(:disabled), .btn-icono:focus-visible { background: var(--superficie-2); color: var(--texto); }
+/* Al principio y al final de lo que hay filtrado no hay a donde ir. El
+   boton se queda en su sitio -escondiendolo, el otro se correria y los
+   chevrones bailarian de ficha en ficha- pero se apaga, que ya dice que
+   ahi se acaba. */
+.btn-icono:disabled { opacity: .3; cursor: default; }
 /* el icono es todo el mensaje: estos botones no llevan texto */
 .btn-icono .ico { width: 24px; height: 24px; }
 /* cuatro botones de 44 no caben junto al titulo en un movil estrecho; 40
