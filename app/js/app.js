@@ -1350,7 +1350,17 @@ var tragarMes = false;
 // las asas cabalgan el canto del anillo -radio 82 con 7 de radio propio-, no
 // flotando fuera: ahi se ven enganchadas a la pista por la que corren
 var ANI = { cx: 100, cy: 100, rIn: 52, rOut: 80, rTxt: 66, rCabo: 82,
-            rEst: 100, rBrillo: 112 };
+            rEst: 103, rBrillo: 118 };
+
+/* Las cuatro estaciones del hemisferio sur, por meses enteros: el anillo no
+   sabe de dias, y los equinoccios caen a mediados. Cada una noventa grados,
+   asi que sus iconos quedan arriba, a la derecha, abajo y a la izquierda. */
+var ESTACIONES = [
+  { id: 'verano',    txt: 'Verano',    ico: 'sun',    m0: 11, m1: 1,  medio: 0 },
+  { id: 'otono',     txt: 'Otoño',     ico: 'leaf',   m0: 2,  m1: 4,  medio: 3 },
+  { id: 'invierno',  txt: 'Invierno',  ico: 'drop',   m0: 5,  m1: 7,  medio: 6 },
+  { id: 'primavera', txt: 'Primavera', ico: 'flower', m0: 8,  m1: 10, medio: 9 }
+];
 
 function polar(r, grados) {
   var a = grados * Math.PI / 180;
@@ -1390,19 +1400,25 @@ function pintarAnillo() {
   meses.forEach(function (m) { dentro[m] = 1; });
   var h = '', i, p;
   // el resplandor de las estaciones va el primero: detras de todo lo demas
-  h += '<defs>' + ['humeda', 'seca'].map(function (n) {
-    return '<radialGradient id="brillo-' + n + '" gradientUnits="userSpaceOnUse" ' +
+  h += '<defs>' + ESTACIONES.map(function (e) {
+    return '<radialGradient id="br-' + e.id + '" gradientUnits="userSpaceOnUse" ' +
            'cx="100" cy="100" r="' + ANI.rBrillo + '">' +
-           '<stop class="g0 ' + n + '" offset="0.70"/>' +
-           '<stop class="g1 ' + n + '" offset="1"/></radialGradient>';
+           '<stop class="g0 ' + e.id + '" offset="0.66"/>' +
+           '<stop class="g1 ' + e.id + '" offset="1"/></radialGradient>';
   }).join('') + '</defs>';
-  h += '<path class="brillo-humeda" d="' +
-       cunaAnillo(ANI.rOut - 2, ANI.rBrillo, 5, 10) + '"/>' +
-       '<path class="brillo-seca" d="' +
-       cunaAnillo(ANI.rOut - 2, ANI.rBrillo, 11, 4) + '"/>';
-  [[135, 'drop', 'ico-humeda'], [315, 'sun', 'ico-seca']].forEach(function (e) {
-    var q = polar(ANI.rEst, e[0]);
-    h += iconoEn(e[1], q[0], q[1], 13, e[2]);
+  ESTACIONES.forEach(function (e) {
+    h += '<path fill="url(#br-' + e.id + ')" d="' +
+         cunaAnillo(ANI.rOut - 2, ANI.rBrillo, e.m0, e.m1) + '"/>';
+  });
+  ESTACIONES.forEach(function (e) {
+    var q = polar(ANI.rEst, anguloMes(e.medio));
+    /* El nombre se apila con su icono, no se aleja por el radio: a izquierda y
+       derecha los dos caian en la misma linea y la palabra se comia el dibujo.
+       Arriba del icono en la mitad de arriba, debajo en la de abajo. */
+    var dy = q[1] < 99 ? -11 : 11;
+    h += iconoEn(e.ico, q[0], q[1], 12, 'ico-est ' + e.id) +
+         '<text class="nom-est ' + e.id + '" x="' + q[0].toFixed(1) + '" y="' +
+         (q[1] + dy + 2.9).toFixed(1) + '" text-anchor="middle">' + e.txt + '</text>';
   });
   for (i = 0; i < 12; i++) {
     h += '<path class="seg' + (dentro[i + 1] ? ' on' : '') + '" data-mes="' +

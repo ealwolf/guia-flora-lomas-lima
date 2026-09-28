@@ -13,9 +13,14 @@
   --acento-txt: #235536;
   --rojo:       #c8443c;
   --ambar:      #b07d1a;
-  /* la humeda en azul y la seca en ambar: el verde ya dice «elegido» en todo
-     el anillo, y con verde contra ambar las dos cosas se confundian */
   --lluvia:     #2f7e9e;
+  /* Las cuatro estaciones del hemisferio sur, que es donde estan las lomas.
+     El verde de la primavera no es el del acento -ese dice «elegido»-: es mas
+     claro, y ademas va desvaido detras del anillo. */
+  --est-verano:    #c9862b;
+  --est-otono:     #9c6233;
+  --est-invierno:  #2f7e9e;
+  --est-primavera: #5a9e52;
   --sobre-acento: #ffffff;
   --tirador: 20px;
 
@@ -59,6 +64,10 @@
     --rojo:       #e8695f;
     --ambar:      #d8a545;
     --lluvia:     #6fc0dd;
+    --est-verano:    #e0a755;
+    --est-otono:     #c08a5a;
+    --est-invierno:  #6fc0dd;
+    --est-primavera: #8cc783;
     --sobre-acento: #0f140f;
     --propia:     #b49ae8;
     --propia-sua: #241d33;
@@ -83,6 +92,10 @@
     --rojo:       #e8695f;
     --ambar:      #d8a545;
     --lluvia:     #6fc0dd;
+    --est-verano:    #e0a755;
+    --est-otono:     #c08a5a;
+    --est-invierno:  #6fc0dd;
+    --est-primavera: #8cc783;
     --sobre-acento: #0f140f;
     --propia:     #b49ae8;
     --propia-sua: #241d33;
@@ -771,7 +784,7 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 #f-mes.pintando { touch-action: none; -webkit-user-select: none; user-select: none; }
 #f-mes.pintando .chip { transition: none; }
 .anillo {
-  display: block; width: 100%; max-width: 228px; height: auto;
+  display: block; width: 100%; max-width: 252px; height: auto;
   margin: 2px auto 0; touch-action: none; -webkit-user-select: none; user-select: none;
   /* es una herramienta, no un boton: se agarra. Y sin el recuadro gris que
      pinta Android al tocar cualquier cosa con manejador, que encendia el
@@ -815,17 +828,26 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
   font-size: 9.5px; font-weight: 700; fill: var(--sobre-acento);
   font-family: system-ui, sans-serif; pointer-events: none;
 }
-/* Las dos estaciones, detras del anillo y desvanecidas hacia afuera: un
+/* Las cuatro estaciones, detras del anillo y desvanecidas hacia afuera: un
    resplandor, no un aro. Un aro mas se leia como otra pista que se pudiera
    agarrar; una mancha de color es fondo, y el fondo no se toca. */
-.anillo .g0.humeda { stop-color: var(--lluvia); stop-opacity: .40; }
-.anillo .g1.humeda { stop-color: var(--lluvia); stop-opacity: 0; }
-.anillo .g0.seca   { stop-color: var(--ambar);  stop-opacity: .40; }
-.anillo .g1.seca   { stop-color: var(--ambar);  stop-opacity: 0; }
-.anillo .brillo-humeda { fill: url(#brillo-humeda); }
-.anillo .brillo-seca   { fill: url(#brillo-seca); }
-.anillo .ico-humeda { color: var(--lluvia); }
-.anillo .ico-seca   { color: var(--ambar); }
+.anillo .nom-est {
+  font-size: 8px; font-weight: 700; font-family: system-ui, sans-serif;
+  letter-spacing: .02em; pointer-events: none;
+}
+.anillo .ico-est { pointer-events: none; }
+.anillo .g0.verano    { stop-color: var(--est-verano);    stop-opacity: .38; }
+.anillo .g1.verano    { stop-color: var(--est-verano);    stop-opacity: 0; }
+.anillo .ico-est.verano, .anillo .nom-est.verano { color: var(--est-verano); fill: var(--est-verano); }
+.anillo .g0.otono     { stop-color: var(--est-otono);     stop-opacity: .38; }
+.anillo .g1.otono     { stop-color: var(--est-otono);     stop-opacity: 0; }
+.anillo .ico-est.otono, .anillo .nom-est.otono { color: var(--est-otono); fill: var(--est-otono); }
+.anillo .g0.invierno  { stop-color: var(--est-invierno);  stop-opacity: .38; }
+.anillo .g1.invierno  { stop-color: var(--est-invierno);  stop-opacity: 0; }
+.anillo .ico-est.invierno, .anillo .nom-est.invierno { color: var(--est-invierno); fill: var(--est-invierno); }
+.anillo .g0.primavera { stop-color: var(--est-primavera); stop-opacity: .38; }
+.anillo .g1.primavera { stop-color: var(--est-primavera); stop-opacity: 0; }
+.anillo .ico-est.primavera, .anillo .nom-est.primavera { color: var(--est-primavera); fill: var(--est-primavera); }
 .anillo .centro { font-size: 16px; font-weight: 700; fill: var(--texto); }
 .anillo .centro-2 { font-size: 10.5px; fill: var(--tenue); }
 /* el mismo dato en palabras: se puede fijar exacto, y con el teclado */
