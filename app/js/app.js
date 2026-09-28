@@ -1354,14 +1354,19 @@ var ANI = { cx: 100, cy: 100, rIn: 52, rOut: 80, rTxt: 66, rCabo: 82,
             // abril, el circulo y el icono de la estacion caian uno sobre otro
             rEst: 107, rBrillo: 118 };
 
-/* Las cuatro estaciones del hemisferio sur, por meses enteros: el anillo no
-   sabe de dias, y los equinoccios caen a mediados. Cada una noventa grados,
-   asi que sus iconos quedan arriba, a la derecha, abajo y a la izquierda. */
+/* Las cuatro estaciones del hemisferio sur. No empiezan donde empieza el mes,
+   sino hacia el dia 21 de diciembre, marzo, junio y setiembre: veinte grados
+   dentro del mes -cada mes son treinta-, o sea cinco pasado su centro. Con eso
+   el anillo de las estaciones queda girado respecto al de los meses, que es
+   justo lo que pasa en el calendario. Siguen siendo cuatro cuartos. */
+var DESFASE_EST = 5;
+function anguloLimite(i) { return anguloMes(i) + DESFASE_EST; }
+
 var ESTACIONES = [
-  { id: 'verano',    txt: 'Verano',    ico: 'sun',    m0: 11, m1: 1,  medio: 0 },
-  { id: 'otono',     txt: 'Otoño',     ico: 'leaf',   m0: 2,  m1: 4,  medio: 3 },
-  { id: 'invierno',  txt: 'Invierno',  ico: 'drop',   m0: 5,  m1: 7,  medio: 6 },
-  { id: 'primavera', txt: 'Primavera', ico: 'flower', m0: 8,  m1: 10, medio: 9 }
+  { id: 'verano',    txt: 'Verano',    ico: 'sun',    ini: 11 },
+  { id: 'otono',     txt: 'Otoño',     ico: 'leaf',   ini: 2 },
+  { id: 'invierno',  txt: 'Invierno',  ico: 'drop',   ini: 5 },
+  { id: 'primavera', txt: 'Primavera', ico: 'flower', ini: 8 }
 ];
 
 function polar(r, grados) {
@@ -1380,8 +1385,7 @@ function sectorMes(i) {
 }
 
 /* una cuna de anillo, de r0 a r1, de la mitad del mes i0 a la mitad del i1 */
-function cunaAnillo(r0, r1, i0, i1) {
-  var a0 = anguloMes(i0) - 15, a1 = anguloMes(i1) + 15;
+function cunaAnillo(r0, r1, a0, a1) {
   var largo = ((a1 - a0 + 360) % 360) > 180 ? 1 : 0;
   var n = function (p) { return p[0].toFixed(2) + ' ' + p[1].toFixed(2); };
   return 'M' + n(polar(r1, a0)) + 'A' + r1 + ' ' + r1 + ' 0 ' + largo + ' 1 ' +
@@ -1410,17 +1414,27 @@ function pintarAnillo() {
   }).join('') + '</defs>';
   ESTACIONES.forEach(function (e) {
     h += '<path fill="url(#br-' + e.id + ')" d="' +
-         cunaAnillo(ANI.rOut - 2, ANI.rBrillo, e.m0, e.m1) + '"/>';
+         cunaAnillo(ANI.rOut - 2, ANI.rBrillo, anguloLimite(e.ini),
+                    anguloLimite(e.ini) + 90) + '"/>';
   });
+  /* Los nombres son mobiliario y las asas son el mando: si un asa se planta
+     encima, el nombre se aparta -el icono, que es lo que da el color, se
+     queda-. Pasa cuando el asa cae a menos de 26 grados del centro del cuarto,
+     que es cuando los dos circulos se pisan. */
+  var asas = [anguloMes(F.mesDesde - 1), anguloMes(F.mesHasta - 1)];
+  var separa = function (a, b) { return Math.abs(((a - b + 540) % 360) - 180); };
   ESTACIONES.forEach(function (e) {
-    var q = polar(ANI.rEst, anguloMes(e.medio));
+    var ang = anguloLimite(e.ini) + 45;                  // el medio del cuarto
+    var q = polar(ANI.rEst, ang);
     /* El nombre se apila con su icono, no se aleja por el radio: a izquierda y
        derecha los dos caian en la misma linea y la palabra se comia el dibujo.
        Arriba del icono en la mitad de arriba, debajo en la de abajo. */
     var dy = q[1] < 99 ? -11 : 11;
+    var tapado = asas.some(function (x) { return separa(x, ang) < 26; });
     h += iconoEn(e.ico, q[0], q[1], 12, 'ico-est ' + e.id) +
-         '<text class="nom-est ' + e.id + '" x="' + q[0].toFixed(1) + '" y="' +
-         (q[1] + dy + 2.9).toFixed(1) + '" text-anchor="middle">' + e.txt + '</text>';
+         (tapado ? '' :
+          '<text class="nom-est ' + e.id + '" x="' + q[0].toFixed(1) + '" y="' +
+          (q[1] + dy + 2.9).toFixed(1) + '" text-anchor="middle">' + e.txt + '</text>');
   });
   for (i = 0; i < 12; i++) {
     h += '<path class="seg' + (dentro[i + 1] ? ' on' : '') + '" data-mes="' +
