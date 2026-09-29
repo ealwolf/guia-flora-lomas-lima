@@ -676,6 +676,16 @@ function quitarBusqueda(callado) {
   if (!callado) render();             // limpiarTodo ya repinta por su cuenta
 }
 
+/* Con una ventana abierta, lo de detras no contesta. El velo para los toques,
+   pero el menu del navegador se saca del elemento que hay bajo el dedo y
+   seguia saliendo el de la foto de la tarjeta tapada. Dentro de la ventana el
+   menu sigue valiendo, que ahi si hay texto que copiar. */
+document.addEventListener('contextmenu', function (ev) {
+  if (!document.documentElement.classList.contains('bloqueado')) return;
+  if (ev.target.closest && ev.target.closest('.panel, .tostada, .ficha')) return;
+  ev.preventDefault();
+});
+
 /* ---------- la barra que se queda arriba al bajar ---------- */
 var ultimoN = 0;
 function pintarCuenta() {

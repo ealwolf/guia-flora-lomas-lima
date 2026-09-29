@@ -115,6 +115,11 @@
 }
 
 * { box-sizing: border-box; }
+/* Un boton es un mando, no texto: manteniendolo pulsado no hay que
+   seleccionar su palabra ni sacar el menu del navegador. En el telefono eso
+   estropeaba el arrastre de los meses -a mitad del gesto saltaba el cursor de
+   seleccion- y en las tarjetas ofrecia guardar la foto. */
+button { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
 html, body { margin: 0; padding: 0; }
 /* El sitio de la barra de desplazamiento se reserva siempre. Si no, filtrar a
    pocos resultados hace que la pagina deje de desbordar, la barra desaparece y
@@ -841,10 +846,13 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 .anillo .asa { transform-box: view-box; transform-origin: 100px 100px; }
 .anillo.nuevo .asa-a { animation: tironA 1.6s ease-in-out 2; }
 .anillo.nuevo .asa-b { animation: tironB 1.6s ease-in-out 2; }
+/* Hacia dentro y no hacia fuera: de entrada esta puesto el ano entero, que ya
+   no puede crecer, asi que abrirse mas no ensena nada. Cerrandose un poco se
+   ve lo unico que cabe hacer desde ahi. */
 @keyframes tironA { 0%, 100% { transform: rotate(0deg); }
-                    45%      { transform: rotate(-7deg); } }
-@keyframes tironB { 0%, 100% { transform: rotate(0deg); }
                     45%      { transform: rotate(7deg); } }
+@keyframes tironB { 0%, 100% { transform: rotate(0deg); }
+                    45%      { transform: rotate(-7deg); } }
 /* La pista escrita se guarda para cuando no puede haber movimiento: entonces
    el tiron no ocurre y algo tiene que decirlo. */
 .pista.mano { display: none; text-align: center; margin-top: 6px; }
