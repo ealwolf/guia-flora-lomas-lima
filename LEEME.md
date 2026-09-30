@@ -19,7 +19,7 @@ todo lo demás, y en la loma ya no necesita señal para nada.
    **HTTPS**: es la única condición.
 2. Abre esa dirección con Chrome en el teléfono, **con wifi**.
 3. Al entrar se guarda sola la app (textos, mapa, perfiles: unos 400 KB). Las
-   fotos **no**: son 12 MB del plan de datos de alguien, y esa decisión es suya.
+   fotos **no**: son 3,3 MB del plan de datos de alguien, y esa decisión es suya.
 4. Pulsa el botón **↓** de la cabecera. Ahí está todo lo de guardar:
    *Descargar las 295 fotos* y, cuando el navegador lo permite,
    *Instalar como app*.
@@ -115,10 +115,11 @@ Guía de Flora de las Lomas de Lima/
 │   ├── js/mapa.js          el mapa de las 22 lomas ← generado
 │   ├── js/iconos.js        iconos Phosphor         ← generado
 │   ├── icono/              el icono de la app
-│   └── img/                295 fotos de la guía
+│   └── img/                295 fotos en avif       ← generado
 │
 ├── datos/
 │   ├── crudo/              copia congelada del PDF. NO EDITAR.
+│   │   └── img/            las 295 fotos en jpg, tal como salieron
 │   ├── propio/             tus correcciones. Ningún script escribe aquí.
 │   │   ├── color_flor.csv
 │   │   ├── sinonimos.csv
@@ -241,10 +242,18 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
   aparecen en algún punto de ese tramo). *Todas* es una opción y no una
   posición del deslizador: antes la cota arrancaba en mitad de la barra
   diciendo «sin filtrar», y al volver a ese mismo punto ya significaba 550.
-- Las fotos son **las del PDF, sin tocar**: ni recortadas ni reescaladas en
-  disco. En las tarjetas se encuadran a 4:3 para que la rejilla salga pareja,
-  pero eso es sólo el encuadre de la miniatura. En la ficha se ven **enteras**
-  —26 de las 295 son verticales— y al tocarlas se abren a tamaño completo.
+- Las fotos son **las del PDF**: ni recortadas ni reescaladas: el jpg tal como
+  salió vive en `datos/crudo/img/` y no se toca nunca. Lo que carga la app es
+  una copia en **avif** que genera `construir.py` con calidad 58, mismos
+  píxeles: 11,65 MB pasan a 3,31, que son los que hay que bajarse al teléfono.
+  Se compararon recortes a tamaño real de fotos con textura fina —pelos,
+  gotas— y no se distingue. En las tarjetas se encuadran a 4:3 para que la
+  rejilla salga pareja, pero eso es sólo el encuadre de la miniatura. En la
+  ficha se ven **enteras** —26 de las 295 son verticales— y al tocarlas se
+  abren a tamaño completo.
+- Convertirlas son unos 19 segundos la primera vez; después `construir.py`
+  sólo rehace las que cambien. Para cambiar la calidad, `CALIDAD_AVIF` en
+  `scripts/construir.py`, y se borra `app/img/` para que las rehaga todas.
 - Desde tableta, los cuatro textos se reparten en **dos columnas**: una línea
   de 70 caracteres dejaba vacío un buen trozo del ancho, y estirarla a noventa
   y pico se lee peor. No hay punto de corte, se acomodan solas: a 736 px salen

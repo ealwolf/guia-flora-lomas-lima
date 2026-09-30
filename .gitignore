@@ -7,4 +7,6 @@ __pycache__/
 *.pyc
 flora-lomas-app.zip
 app/sw.js
+# las fotos: el original en jpg vive en datos/crudo/img y de ahi salen
+app/img/
 flora-lomas-app/

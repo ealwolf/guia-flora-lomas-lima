@@ -7,6 +7,7 @@
     app/js/datos.js     las 134 especies y los catálogos
     app/js/mapa.js      el mapa de las 22 lomas en SVG
     app/js/iconos.js    los iconos Phosphor incrustados
+    app/img/*.avif      las 295 fotos, recomprimidas desde datos/crudo/img
 
 Se generan como archivos .js que declaran una variable global, no como .json:
 así funcionan al abrir index.html directamente desde el teléfono, donde fetch()
@@ -50,6 +51,57 @@ META = {
              'Lima, Perú. 162 pp.'),
     'fotografias': 'M. Lleellish, J. Odar, H. Castillo, G. Pino y D. Mac Donald',
 }
+
+
+CALIDAD_AVIF = 58
+
+
+def generar_fotos():
+    """Recomprime a AVIF las fotos que salieron del PDF.
+
+    Los jpg de datos/crudo/img son la extraccion tal cual y no se tocan; de
+    ellos sale una copia en avif para la app. Medido sobre las 295: 11,65 MB
+    en jpg contra 3,31 MB en avif con calidad 58, sin diferencia visible a
+    tamano real -se compararon recortes 1:1 de fotos con textura fina, pelos
+    y gotas-. Importa porque estas fotos se descargan enteras al telefono
+    para usarlas sin conexion.
+
+    No se reescala nada: la mediana de las principales es 591 px de ancho, que
+    ya se queda corta para verlas a pantalla completa.
+    """
+    from PIL import Image
+    ori = os.path.join(CRUDO, 'img')
+    dest = os.path.join(RAIZ, 'app', 'img')
+    if not os.path.isdir(ori):
+        sys.exit('falta datos/crudo/img')
+    if not os.path.isdir(dest):
+        os.makedirs(dest)
+
+    jpgs = sorted(f for f in os.listdir(ori) if f.lower().endswith('.jpg'))
+    quedan = {f[:-4] + '.avif' for f in jpgs}
+    # lo que ya no tenga original se va: si no, la lista del sw arrastraria
+    # fotos de especies que se quitaron
+    for f in os.listdir(dest):
+        if f not in quedan:
+            os.remove(os.path.join(dest, f))
+
+    hechas = 0
+    for f in jpgs:
+        pj = os.path.join(ori, f)
+        pa = os.path.join(dest, f[:-4] + '.avif')
+        # solo las que falten o esten viejas: convertirlas todas son 18 s
+        if os.path.exists(pa) and os.path.getmtime(pa) >= os.path.getmtime(pj):
+            continue
+        im = Image.open(pj)
+        im.load()
+        im.convert('RGB').save(pa, 'AVIF', quality=CALIDAD_AVIF, speed=6)
+        hechas += 1
+
+    pesoj = sum(os.path.getsize(os.path.join(ori, f)) for f in jpgs)
+    pesoa = sum(os.path.getsize(os.path.join(dest, f)) for f in os.listdir(dest))
+    print('-> app/img          %.2f MB en avif  (%d fotos; el jpg de crudo pesa '
+          '%.2f MB; %d convertidas ahora)'
+          % (pesoa / 1048576, len(jpgs), pesoj / 1048576, hechas))
 
 
 def rango_meses(ini, fin):
@@ -109,6 +161,9 @@ def lista(v, sep=','):
 
 
 def main():
+    # lo primero: las fotos, que de ahi salen el recuento y la lista del sw
+    generar_fotos()
+
     esp = leer(os.path.join(CRUDO, 'especie.csv'))
     if not esp:
         sys.exit('falta datos/crudo/especie.csv')
@@ -127,11 +182,13 @@ def main():
     # erratas de la extraccion que no se pueden arreglar con una regla general
     correcciones = leer(os.path.join(PROPIO, 'correcciones_texto.csv'))
 
-    # fotos por especie, principales primero
+    # fotos por especie, principales primero. El csv nombra el jpg original,
+    # que es lo que se extrajo; la app carga la copia en avif
     fotos = collections.defaultdict(list)
     for m in sorted(img, key=lambda m: (m['tipo'] != 'principal', int(m['orden']))):
         if m['tipo'] in ('principal', 'detalle'):
-            fotos[m['especie_id']].append(os.path.basename(m['archivo']))
+            n = os.path.basename(m['archivo'])
+            fotos[m['especie_id']].append(os.path.splitext(n)[0] + '.avif')
 
     porid = {r['especie_id']: r for r in esp}
     for c in correcciones:
