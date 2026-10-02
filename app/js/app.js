@@ -1194,18 +1194,25 @@ function tocarMes(m) { alterna(F.mes, m); }
    depende de los demas filtros: con una loma puesta, la grafica pasa a ser la
    de esa loma. La escala es la raiz cuadrada del recuento, no el recuento: de
    1 a 105 en lineal deja nueve meses en nada, y lo que interesa es la forma. */
+/* El año se dibuja empezando en junio, no en enero: asi las dos estaciones
+   salen como dos mitades seguidas -humeda a la izquierda, seca a la derecha- y
+   cada boton cae debajo de la suya. Enero partia la seca en dos trozos. */
+var ORDEN_MESES = [6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5];
+function posMes(m) { return ORDEN_MESES.indexOf(m); }
+
 function pintarMeses() {
   var n = [0,0,0,0,0,0,0,0,0,0,0,0];
   filtrar('mes').forEach(function (e) {
     (e.flor || []).forEach(function (m) { n[m - 1]++; });
   });
   var tope = Math.max.apply(null, n) || 1;
-  $('#f-mes').innerHTML = G.meses.map(function (mes, i) {
+  $('#f-mes').innerHTML = ORDEN_MESES.map(function (m) {
+    var i = m - 1, mes = G.meses[i];
     var alto = n[i] ? Math.max(6, Math.round(66 * Math.sqrt(n[i]) / Math.sqrt(tope))) : 6;
-    var puesto = F.mes.indexOf(i + 1) >= 0;
-    var est = (i + 1 >= 6 && i + 1 <= 11) ? ' hum' : ' sec';
+    var puesto = F.mes.indexOf(m) >= 0;
+    var est = (m >= 6 && m <= 11) ? ' hum' : ' sec';
     return '<button class="mes' + est + (n[i] ? '' : ' vacio') + '" data-f="mes" data-v="' +
-        (i + 1) + '" aria-pressed="' + puesto + '" aria-label="' + esc(mes) + ', ' +
+        m + '" aria-pressed="' + puesto + '" aria-label="' + esc(mes) + ', ' +
         n[i] + (n[i] === 1 ? ' especie' : ' especies') + '">' +
         '<span class="barra" style="height:' + alto + 'px"></span>' +
         '<span class="et">' + esc(mes) + '</span></button>';
@@ -1279,10 +1286,17 @@ $('#f-mes').addEventListener('pointerdown', function (ev) {
    fila el dedo se salta la mitad; y al volver atras hay que deshacer lo que ya
    no queda dentro, de ahi que se parta siempre de como estaba. */
 function pintarHasta(m) {
-  var a = Math.min(pintado.ancla, m), b = Math.max(pintado.ancla, m);
+  /* Por sitio en la tira y no por numero de mes: empezando el año en junio,
+     arrastrar de setiembre a enero son cinco meses seguidos -9, 10, 11, 12,
+     1- y con numeros habria cogido de enero a setiembre. */
+  var pa = posMes(pintado.ancla), pb = posMes(m);
+  var a = Math.min(pa, pb), b = Math.max(pa, pb);
   var hay = {};
   pintado.antes.forEach(function (x) { hay[x] = 1; });
-  for (var k = a; k <= b; k++) { if (pintado.pone) hay[k] = 1; else delete hay[k]; }
+  for (var k = a; k <= b; k++) {
+    var mm = ORDEN_MESES[k];
+    if (pintado.pone) hay[mm] = 1; else delete hay[mm];
+  }
   var nuevo = Object.keys(hay).map(Number).sort(function (x, y) { return x - y; });
   var ahora = F.mes.slice().sort(function (x, y) { return x - y; });
   if (nuevo.join(',') === ahora.join(',')) return;

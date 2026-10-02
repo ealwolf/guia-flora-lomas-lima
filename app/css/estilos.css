@@ -25,6 +25,14 @@
   --lav-humeda: #dbe8ee;
   --lav-seca:   #f1e4ca;
   --mes-et:     #5b6158;
+  /* El relleno de la barra elegida y su trazo. Un amarillo de verdad no llega
+     a 3:1 contra una pagina casi blanca -el amarillo es claro por naturaleza-,
+     asi que el contraste lo pone el trazo y el relleno queda libre para ser
+     amarillo y no pardo. */
+  --barra-hum:   #3f97b8;
+  --barra-hum-t: #2a7190;
+  --barra-sec:   #e0ac1e;
+  --barra-sec-t: #9a7212;
   --sobre-acento: #ffffff;
   --tirador: 20px;
 
@@ -72,6 +80,10 @@
     --lav-humeda: #16272e;
     --lav-seca:   #2b2416;
     --mes-et:     #9aa392;
+    --barra-hum:   #6fc0dd;
+    --barra-hum-t: #6fc0dd;
+    --barra-sec:   #e8b956;
+    --barra-sec-t: #e8b956;
     --sobre-acento: #0f140f;
     --propia:     #b49ae8;
     --propia-sua: #241d33;
@@ -100,6 +112,10 @@
     --lav-humeda: #16272e;
     --lav-seca:   #2b2416;
     --mes-et:     #9aa392;
+    --barra-hum:   #6fc0dd;
+    --barra-hum-t: #6fc0dd;
+    --barra-sec:   #e8b956;
+    --barra-sec-t: #e8b956;
     --sobre-acento: #0f140f;
     --propia:     #b49ae8;
     --propia-sua: #241d33;
@@ -837,10 +853,10 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
    del mes se enciende como una tecla: hace falta, porque la barra cambia de
    altura al elegir una loma y no se puede confiar solo en ella. */
 .barras .mes.hum[aria-pressed="true"] .barra {
-  background: var(--lluvia); border-color: var(--lluvia);
+  background: var(--barra-hum); border-color: var(--barra-hum-t);
 }
 .barras .mes.sec[aria-pressed="true"] .barra {
-  background: var(--ambar); border-color: var(--ambar);
+  background: var(--barra-sec); border-color: var(--barra-sec-t);
 }
 .barras .et { font-size: 9.5px; font-weight: 600; color: var(--mes-et); }
 .barras .mes[aria-pressed="true"] .et {
@@ -854,6 +870,13 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 
 /* Las dos estaciones que nombra la guía: nueve meses de rango se piden de una
    vez, no mes a mes. No son filtros aparte, sólo rellenan los de arriba. */
+/* Cada estacion debajo de sus seis meses, que es donde se entiende sin
+   leerla. Separados del grafico a proposito: pegados, el pulgar que va a por
+   diciembre acaba eligiendo la estacion entera. */
+.atajos-est {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px;
+}
+.atajos-est .atajo { justify-content: center; padding: 0 8px; }
 .atajos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 /* centrado y no por la linea base: con baseline el texto se subia dentro de
    los 36 px del boton y quedaba pegado al borde de arriba */
