@@ -823,29 +823,34 @@ function montarMapaLomas() {
   svg.setAttribute('role', 'group');
   svg.setAttribute('aria-label', 'Mapa de las lomas');
   var vb = (svg.getAttribute('viewBox') || '0 0 91 128').split(/[\s,]+/).map(Number);
+  DIB = { x: vb[0], y: vb[1], w: vb[2], h: vb[3] };
   MV = { x0: vb[0], y0: vb[1], w0: vb[2], h0: vb[3], x: vb[0], y: vb[1], z: 1 };
   mapaPuesto = true;
+  rehacerBase();
   ponerToques();
+  // el hueco cambia al girar el telefono o al estirar la ventana
+  if (window.ResizeObserver) new ResizeObserver(rehacerBase).observe(caja);
 }
 
 /* Un circulo invisible por loma: las siluetas son diminutas y el dedo no.
    Hay que hacerlo con el mapa ya visible: con display:none, getBBox() devuelve
    ceros y los circulos acaban todos amontonados en el origen. */
-/* Un circulo de ayuda por loma: las siluetas son diminutas y el dedo no. Hay
-   que hacerlo con el mapa ya visible: con display:none, getBBox() devuelve
-   ceros y los circulos acaban todos amontonados en el origen.
+/* Un circulo por loma, invisible, con su centro y su tamaño. Ya no es lo que
+   recibe el toque -de eso se encarga lomaEn(), por geometria- sino el indice
+   que esa cuenta recorre para saber que loma tienes mas cerca, el sitio donde
+   se posa el aviso al elegir, y el nombre para quien usa lector de pantalla.
 
-   Dos cosas que antes no estaban y hacian que una loma eligiera a su vecina
-   -Caringa y Malanche, por ejemplo, con los centros a 3,9 y un radio de 4,2-:
+   Antes si era el blanco del dedo, con un radio de la mitad del recuadro y
+   nunca menos de 4,2, y encima del dibujo: Caringa y Malanche tienen los
+   centros a 3,9, asi que cada circulo llegaba al centro del otro y tocar una
+   elegia la otra. De las 22 lomas, 20 estaban en esa situacion. Ahora el
+   radio se topa a la mitad de lo que hay hasta el vecino mas cercano -ninguno
+   alcanza un centro ajeno- y las siluetas van por encima, que ademas hace que
+   el raton las ilumine al pasar. Por eso se les quita el <title>: con el path
+   delante saldria el globo del navegador encima de nuestra etiqueta.
 
-   1. El radio se topa a la mitad de lo que hay hasta el vecino mas cercano,
-      asi que dos circulos pueden tocarse pero ninguno llega al centro del
-      otro. Medido sobre las 22: de 20 conflictos a ninguno.
-   2. Las siluetas vuelven a ponerse encima de los circulos. Donde hay dibujo
-      manda el dibujo -tocar Malanche es Malanche, aunque el circulo de
-      Caringa pase por ahi- y el circulo solo ayuda en el hueco de alrededor.
-      Por eso tambien se les quita el <title>: con el path arriba saldria el
-      globo del navegador encima de nuestra etiqueta. */
+   Hay que hacerlo con el mapa ya visible: con display:none, getBBox() devuelve
+   ceros y los circulos acaban todos amontonados en el origen. */
 function ponerToques() {
   if (toquesPuestos) return;
   var svg = $('#mapa-elige svg');
@@ -896,14 +901,58 @@ function ponerToques() {
    Las siluetas reales son diminutas y en el sur se solapan. Se amplia moviendo
    el viewBox, no con transform, para que los circulos de toque crezcan igual.
    Mover: dos dedos. Con uno se desplaza el panel, como en el resto de la app. */
-var MV = null;
+var MV = null, DIB = null;
+
+/* El dibujo mide 91x128 y el hueco casi nunca tiene esa forma. Antes se le
+   daba al svg una caja con la proporcion del dibujo, y el resto del area
+   -casi todo, en una pantalla ancha- se quedaba fuera del mapa: por mucho que
+   acercaras seguias mirando una tira vertical en medio de dos franjas vacias.
+
+   Ahora el lienzo ocupa el hueco entero y lo que se ensancha es el viewBox,
+   no el dibujo: se le añade margen por el lado que sobra, repartido a los dos
+   lados. A 1x se ve lo mismo que antes -el mapa entero, centrado- pero el
+   area que responde al dedo es toda, y al acercar el dibujo llega a los
+   bordes en vez de quedarse en una tira. */
+function base() {
+  var r = $('#mapa-elige').getBoundingClientRect();
+  if (!DIB) return null;
+  if (!r.width || !r.height) return { x0: DIB.x, y0: DIB.y, w0: DIB.w, h0: DIB.h };
+  var pr = r.width / r.height, w = DIB.w, h = DIB.h;
+  if (pr > DIB.w / DIB.h) w = DIB.h * pr; else h = DIB.w / pr;
+  return { x0: DIB.x - (w - DIB.w) / 2, y0: DIB.y - (h - DIB.h) / 2, w0: w, h0: h };
+}
+
+function rehacerBase() {
+  if (!MV) return;
+  var b = base();
+  if (!b) return;
+  MV.x0 = b.x0; MV.y0 = b.y0; MV.w0 = b.w0; MV.h0 = b.h0;
+  aplicarVista();
+}
+
+/* Cuanto se puede acercar. Cuatro veces el tamaño de partida, que es lo que
+   hace falta para separar las lomas pegadas, y nunca menos de lo que cuesta
+   que el dibujo cubra el hueco: en una pantalla muy ancha ese 4 se quedaba
+   corto y el mapa no llegaba a los lados por mucho que insistieras. */
+function zTope() {
+  if (!MV || !DIB) return 4;
+  return Math.max(4, MV.w0 / DIB.w, MV.h0 / DIB.h);
+}
+
+/* Lo que se mira no se sale del dibujo. Si cabe entero por un lado, va
+   centrado y por ahi no se mueve; si no cabe, se desplaza pero sin asomarse
+   al margen vacio que se le ha añadido. */
+function encajar(v, tam, min, largo) {
+  if (tam >= largo) return min + (largo - tam) / 2;
+  return Math.max(min, Math.min(min + largo - tam, v));
+}
 
 function aplicarVista() {
   var svg = $('#mapa-elige svg');
   if (!svg || !MV) return;
   var w = MV.w0 / MV.z, h = MV.h0 / MV.z;
-  MV.x = Math.max(MV.x0, Math.min(MV.x0 + MV.w0 - w, MV.x));
-  MV.y = Math.max(MV.y0, Math.min(MV.y0 + MV.h0 - h, MV.y));
+  MV.x = encajar(MV.x, w, DIB.x, DIB.w);
+  MV.y = encajar(MV.y, h, DIB.y, DIB.h);
   svg.setAttribute('viewBox', [MV.x, MV.y, w, h].map(function (n) {
     return n.toFixed(2);
   }).join(' '));
@@ -916,7 +965,7 @@ function aplicarVista() {
   var ampliado = MV.z > 1.001;
   $('#mapa-elige').classList.toggle('ampliado', ampliado);
   $('#mapa-menos').disabled = !ampliado;
-  $('#mapa-mas').disabled = MV.z >= 3.99;
+  $('#mapa-mas').disabled = MV.z >= zTope() - 0.01;
   sincronizarMapa();
 }
 
@@ -924,7 +973,7 @@ function acercar(f, cx, cy) {
   if (!MV) return;
   var w = MV.w0 / MV.z, h = MV.h0 / MV.z;
   if (cx == null) { cx = MV.x + w / 2; cy = MV.y + h / 2; }
-  var z = Math.max(1, Math.min(4, MV.z * f));
+  var z = Math.max(1, Math.min(zTope(), MV.z * f));
   if (z === MV.z) return;
   // el punto bajo los dedos se queda donde estaba
   var k = MV.z / z;
@@ -991,7 +1040,7 @@ $('#mapa-menos').addEventListener('click', function () { acercar(1 / 1.7); });
       ev.preventDefault();
       var dy = sostenido.y - ev.touches[0].clientY;
       if (Math.abs(dy) > 3) sostenido.movido = true;
-      var z = Math.max(1, Math.min(4, sostenido.z0 * Math.pow(2, dy / 140)));
+      var z = Math.max(1, Math.min(zTope(), sostenido.z0 * Math.pow(2, dy / 140)));
       acercar(z / MV.z, sostenido.p.x, sostenido.p.y);
       return;
     }
@@ -1131,14 +1180,21 @@ function sincronizarMapa() {
    de loma porque siempre contesta la que tienes mas cerca. */
 var TOLERANCIA_TOQUE = 22;              // px de pantalla, un dedo
 function lomaEn(ev) {
-  var d = ev.target.closest && ev.target.closest('[data-loma]');
-  if (d) return d.getAttribute('data-loma');
   var svg = $('#mapa-elige svg');
   var m = svg && svg.getScreenCTM && svg.getScreenCTM();
   if (!m) return null;
+  var paths = $$('#mapa-elige path[data-loma]');
   var p = svg.createSVGPoint();
   p.x = ev.clientX; p.y = ev.clientY;
   var u = p.matrixTransform(m.inverse());
+  /* Se le pregunta al trazado, no a lo que hay pintado en ese pixel. En el
+     borde de una silueta el navegador redondea, el toque cae en la tierra de
+     debajo y pasaba a la cuenta de mas abajo, que entre dos lomas pegadas
+     -Zorritos y Villa Maria- podia contestar la vecina. La geometria no
+     redondea: de 8 puntos mal resueltos a ninguno. */
+  for (var i = 0; i < paths.length; i++) {
+    if (paths[i].isPointInFill(u)) return paths[i].getAttribute('data-loma');
+  }
   var esc = Math.hypot(m.a, m.b) || 1;  // px de pantalla por unidad del dibujo
   var tope = TOLERANCIA_TOQUE / esc, mejor = null, mejorD = Infinity;
   $$('#mapa-elige circle.toque').forEach(function (c) {
