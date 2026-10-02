@@ -177,7 +177,6 @@ function elegirSug(i) {
 var ALT_MIN = 100, ALT_MAX = 1000;
 var F = { q: '', color: [], grupo: [], mes: [], loma: [], habitat: [], familia: [],
           conserv: [], cara: [], orden: 'guia',
-          mesModo: 'sueltos', mesDesde: 1, mesHasta: 12,
           altModo: 'todas', altitud: 550, altDesde: ALT_MIN, altHasta: ALT_MAX };
 
 /* La cara sale del dibujo del perfil, que es el unico dato que tienen las 134
@@ -245,7 +244,11 @@ function coloresDe(e) {
   return (e.colores && e.colores.length) ? e.colores : (e.color ? [e.color] : []);
 }
 
-function filtrar() {
+/* `omitir` deja un filtro fuera. Sirve para contar cuantas especies florecen
+   en cada mes con todo lo demas puesto -la loma, el color- pero sin el propio
+   filtro de meses: contandolo, al elegir agosto los otros once se irian a
+   cero y la grafica dejaria de decir nada. */
+function filtrar(omitir) {
   var q = sinTildes(F.q).trim();
   var term = q ? q.split(/\s+/) : [];
   return G.especies.filter(function (e) {
@@ -256,7 +259,8 @@ function filtrar() {
           return F.color.indexOf(c) >= 0; })) return false;
     if (F.grupo.length   && F.grupo.indexOf(e.grupo) < 0) return false;
     if (F.familia.length && F.familia.indexOf(e.familia) < 0) return false;
-    if (F.mes.length     && !F.mes.some(function (m) { return e.flor.indexOf(m) >= 0; })) return false;
+    if (omitir !== 'mes' && F.mes.length &&
+        !F.mes.some(function (m) { return e.flor.indexOf(m) >= 0; })) return false;
     if (F.loma.length    && !F.loma.some(function (l) { return e.lomas.indexOf(l) >= 0; })) return false;
     if (F.habitat.length && !F.habitat.some(function (h) { return e.habitats.indexOf(h) >= 0; })) return false;
     // aqui SI se cruzan: son atributos sueltos y marcarlos es pedirlos todos.
@@ -456,8 +460,7 @@ $('#tostada').addEventListener('pointermove', function (ev) {
 var ESPERA_DESHACER = 6000;
 var borrado = null, huellaBorrado = null;
 var GUARDABLES = ['q', 'color', 'grupo', 'mes', 'loma', 'habitat', 'familia',
-                  'conserv', 'cara', 'mesModo', 'mesDesde', 'mesHasta',
-                  'altModo', 'altitud', 'altDesde', 'altHasta'];
+                  'conserv', 'cara', 'altModo', 'altitud', 'altDesde', 'altHasta'];
 
 function huellaFiltros() {
   return GUARDABLES.map(function (k) { return F[k]; }).join('|');
@@ -597,7 +600,7 @@ $('#activos').addEventListener('click', function (ev) {
   if (ev.target.closest('#mas-chips')) { chipsAbiertos = true; pintarActivos(); }
   else if (ev.target.closest('#menos-chips')) { chipsAbiertos = false; pintarActivos(); }
   else if (ev.target.closest('#quita-alt')) quitarAltitud();
-  else if (ev.target.closest('#quita-mes')) { F.mes = []; F.mesDesde = 1; F.mesHasta = 12; render(); }
+  else if (ev.target.closest('#quita-mes')) { F.mes = []; render(); }
   else if (ev.target.closest('#quita-q')) quitarBusqueda();
   else if (ev.target.closest('#quita-todo')) tirarFiltros(true);
 });
@@ -764,10 +767,6 @@ function pintarFiltros() {
     return chip(esc(g.nombre) + ' <span class="cuenta">' + g.n + '</span>',
                 F.grupo.indexOf(g.nombre) >= 0,
                 'data-f="grupo" data-v="' + esc(g.nombre) + '"');
-  }).join('');
-
-  $('#f-mes').innerHTML = G.meses.map(function (m, i) {
-    return chip(m, F.mes.indexOf(i + 1) >= 0, 'data-f="mes" data-v="' + (i + 1) + '"');
   }).join('');
 
   // alfabetico: G.lomas viene en el orden de la leyenda del libro, que aqui
@@ -1112,15 +1111,6 @@ $$('[data-vista]').forEach(function (b) {
 $$('[data-limpia]').forEach(function (b) {
   b.addEventListener('click', function () {
     F[b.dataset.limpia] = [];
-    /* El «Quitar» del grupo vale para los dos modos, que en el fondo hacen lo
-       mismo: los doce meses no quitan ninguna especie, asi que «ningun mes» y
-       «todos» son el mismo filtro. Antes habia dos botones distintos diciendo
-       lo mismo de dos maneras. En rango el ano entero empieza donde lo dejo el
-       usuario, no en enero. */
-    if (b.dataset.limpia === 'mes') {
-      if (F.mesModo === 'rango') F.mesHasta = (F.mesDesde + 10) % 12 + 1;
-      else { F.mesDesde = 1; F.mesHasta = 12; }
-    }
     render();
   });
 });
@@ -1146,7 +1136,7 @@ function sincronizarChips() {
   $$('[data-limpia]').forEach(function (b) {
     b.classList.toggle('oculto', !F[b.dataset.limpia].length);
   });
-  pintarModoMes();
+  pintarMeses();
   sincronizarMapa();
 }
 
@@ -1183,16 +1173,7 @@ function miniPerfil(lado) {
       (corte ? ' clip-path="url(#' + id + ')"' : '') + '/></svg>';
 }
 
-/* ---------- meses: sueltos o de corrido ---------- */
-/* Nueve meses seguidos eran nueve toques. En modo rango son dos: el mes en que
-   empieza y el mes en que acaba. Y da la vuelta al ano, porque la floracion la
-   da: de noviembre a febrero es un rango, no un error. */
-function rangoMeses(a, b) {
-  var r = [], m = a;
-  for (var i = 0; i < 12; i++) { r.push(m); if (m === b) break; m = m % 12 + 1; }
-  return r;
-}
-
+/* ---------- meses ---------- */
 /* Si los meses puestos son un tramo seguido, una sola ficha lo dice mejor que
    nueve. Hay tramo cuando solo un mes no tiene al anterior marcado. */
 function tramoMeses() {
@@ -1207,64 +1188,32 @@ function tramoMeses() {
   return cabos === 1 ? [ini, fin] : null;
 }
 
-/* En modo rango los duenos del dato son los dos cabos, y F.mes se deriva de
-   ellos: por eso no puede quedar un hueco en medio. Antes F.mes era el dueno y
-   al volver de «meses sueltos» el rango heredaba los agujeros. */
-function aplicarRango() {
-  var r = rangoMeses(F.mesDesde, F.mesHasta);
-  F.mes = r.length === 12 ? [] : r;      // el ano entero no filtra nada
-}
-
-/* Al pasar a rango, el arco mas corto que cubre lo marcado: el hueco mas
-   ancho es el que se queda fuera. Con meses seguidos sale el mismo tramo. */
-function arcoDeMeses(ms) {
-  if (!ms.length || ms.length === 12) return [1, 12];
-  var s = ms.slice().sort(function (a, b) { return a - b; });
-  var mejor = -1, corte = 0;
-  s.forEach(function (m, i) {
-    var hueco = (s[(i + 1) % s.length] - m + 12) % 12;
-    if (hueco > mejor) { mejor = hueco; corte = i; }
-  });
-  return [s[(corte + 1) % s.length], s[corte]];
-}
-
 function tocarMes(m) { alterna(F.mes, m); }
 
-function pintarModoMes() {
-  var rango = F.mesModo === 'rango';
-  $$('[data-mesmodo]').forEach(function (b) {
-    b.setAttribute('aria-pressed', b.dataset.mesmodo === F.mesModo ? 'true' : 'false');
+/* Doce barras con su recuento. Se repintan en cada render porque el recuento
+   depende de los demas filtros: con una loma puesta, la grafica pasa a ser la
+   de esa loma. La escala es la raiz cuadrada del recuento, no el recuento: de
+   1 a 105 en lineal deja nueve meses en nada, y lo que interesa es la forma. */
+function pintarMeses() {
+  var n = [0,0,0,0,0,0,0,0,0,0,0,0];
+  filtrar('mes').forEach(function (e) {
+    (e.flor || []).forEach(function (m) { n[m - 1]++; });
   });
-  $('#f-mes').classList.toggle('oculto', rango);
-  $('#mes-rango').classList.toggle('oculto', !rango);
-  // la del anillo vive pegada a el, debajo del dibujo y antes de las listas:
-  // donde se lee antes de bajar la vista a lo conocido, que son las listas
-  $('#mes-pista').textContent =
-      'Deja las especies que florecen en alguno de los meses marcados.';
-  $('#mes-pista').classList.toggle('oculto', rango);
-  if (rango) {
-    $('#anillo').classList.toggle('nuevo', !anilloUsado());
-    pintarAnillo();
-  }
+  var tope = Math.max.apply(null, n) || 1;
+  $('#f-mes').innerHTML = G.meses.map(function (mes, i) {
+    var alto = n[i] ? Math.max(5, Math.round(44 * Math.sqrt(n[i]) / Math.sqrt(tope))) : 5;
+    var puesto = F.mes.indexOf(i + 1) >= 0;
+    return '<button class="mes' + (n[i] ? '' : ' vacio') + '" data-f="mes" data-v="' +
+        (i + 1) + '" aria-pressed="' + puesto + '" aria-label="' + esc(mes) + ', ' +
+        n[i] + (n[i] === 1 ? ' especie' : ' especies') + '">' +
+        '<span class="barra" style="height:' + alto + 'px"></span>' +
+        '<span class="et">' + esc(mes) + '</span></button>';
+  }).join('');
 }
-
-$$('[data-mesmodo]').forEach(function (b) {
-  b.addEventListener('click', function () {
-    F.mesModo = b.dataset.mesmodo;
-    if (F.mesModo === 'rango') {
-      var a = arcoDeMeses(F.mes);
-      F.mesDesde = a[0]; F.mesHasta = a[1];
-      aplicarRango();
-    }
-    render();
-  });
-});
 
 $$('[data-meses]').forEach(function (b) {
   b.addEventListener('click', function () {
-    var ms = b.dataset.meses.split(',').map(Number);
-    F.mesDesde = ms[0]; F.mesHasta = ms[ms.length - 1];
-    F.mes = ms;
+    F.mes = b.dataset.meses.split(',').map(Number);
     render();
   });
 });
@@ -1355,236 +1304,6 @@ $('#f-mes').addEventListener('pointerleave', function () {
 });
 
 var tragarMes = false;
-
-/* ---------- el anillo del ano ---------- */
-// las asas cabalgan el canto del anillo -radio 82 con 7 de radio propio-, no
-// flotando fuera: ahi se ven enganchadas a la pista por la que corren
-var ANI = { cx: 100, cy: 100, rIn: 52, rOut: 80, rTxt: 66, rCabo: 82,
-            // rEst se aparta al crecer las asas: con el asa en enero, julio o
-            // abril, el circulo y el icono de la estacion caian uno sobre otro
-            rEst: 107, rBrillo: 118 };
-
-/* Las cuatro estaciones del hemisferio sur. No empiezan donde empieza el mes,
-   sino hacia el dia 21 de diciembre, marzo, junio y setiembre: veinte grados
-   dentro del mes -cada mes son treinta-, o sea cinco pasado su centro. Con eso
-   el anillo de las estaciones queda girado respecto al de los meses, que es
-   justo lo que pasa en el calendario. Siguen siendo cuatro cuartos. */
-var DESFASE_EST = 5;
-function anguloLimite(i) { return anguloMes(i) + DESFASE_EST; }
-
-var ESTACIONES = [
-  { id: 'verano',    txt: 'Verano',    ico: 'sun',    ini: 11 },
-  { id: 'otono',     txt: 'Otoño',     ico: 'leaf',   ini: 2 },
-  { id: 'invierno',  txt: 'Invierno',  ico: 'drop',   ini: 5 },
-  { id: 'primavera', txt: 'Primavera', ico: 'flower', ini: 8 }
-];
-
-function polar(r, grados) {
-  var a = grados * Math.PI / 180;
-  return [ANI.cx + r * Math.cos(a), ANI.cy + r * Math.sin(a)];
-}
-/* Arriba del todo no va el centro de enero sino el corte entre diciembre y
-   enero, que es donde acaba y empieza el ano. Con enero centrado, diciembre
-   quedaba descolgado a un lado y el anillo se veia torcido. Son quince grados
-   -medio mes- y los hereda todo lo demas: meses, asas y estaciones. */
-var ANG0 = -75;                                          // el centro de enero
-function anguloMes(i) { return ANG0 + i * 30; }
-
-function sectorMes(i) {
-  var a0 = anguloMes(i) - 14, a1 = anguloMes(i) + 14;   // 2 grados de aire
-  var p1 = polar(ANI.rOut, a0), p2 = polar(ANI.rOut, a1),
-      p3 = polar(ANI.rIn, a1), p4 = polar(ANI.rIn, a0);
-  var n = function (p) { return p[0].toFixed(2) + ' ' + p[1].toFixed(2); };
-  return 'M' + n(p1) + 'A' + ANI.rOut + ' ' + ANI.rOut + ' 0 0 1 ' + n(p2) +
-         'L' + n(p3) + 'A' + ANI.rIn + ' ' + ANI.rIn + ' 0 0 0 ' + n(p4) + 'Z';
-}
-
-/* una cuna de anillo, de r0 a r1, de la mitad del mes i0 a la mitad del i1 */
-function cunaAnillo(r0, r1, a0, a1) {
-  var largo = ((a1 - a0 + 360) % 360) > 180 ? 1 : 0;
-  var n = function (p) { return p[0].toFixed(2) + ' ' + p[1].toFixed(2); };
-  return 'M' + n(polar(r1, a0)) + 'A' + r1 + ' ' + r1 + ' 0 ' + largo + ' 1 ' +
-         n(polar(r1, a1)) + 'L' + n(polar(r0, a1)) + 'A' + r0 + ' ' + r0 +
-         ' 0 ' + largo + ' 0 ' + n(polar(r0, a0)) + 'Z';
-}
-
-function iconoEn(nombre, cx, cy, tam, clase) {
-  var cuerpo = ICO[nombre];
-  if (!cuerpo) return '';
-  return '<svg class="' + clase + '" x="' + (cx - tam / 2).toFixed(1) + '" y="' +
-         (cy - tam / 2).toFixed(1) + '" width="' + tam + '" height="' + tam +
-         '" viewBox="0 0 256 256">' + cuerpo + '</svg>';
-}
-
-function pintarAnillo() {
-  var meses = rangoMeses(F.mesDesde, F.mesHasta), dentro = {};
-  meses.forEach(function (m) { dentro[m] = 1; });
-  var h = '', i, p;
-  // el resplandor de las estaciones va el primero: detras de todo lo demas
-  h += '<defs>' + ESTACIONES.map(function (e) {
-    return '<radialGradient id="br-' + e.id + '" gradientUnits="userSpaceOnUse" ' +
-           'cx="100" cy="100" r="' + ANI.rBrillo + '">' +
-           '<stop class="g0 ' + e.id + '" offset="0.66"/>' +
-           '<stop class="g1 ' + e.id + '" offset="1"/></radialGradient>';
-  }).join('') + '</defs>';
-  ESTACIONES.forEach(function (e) {
-    h += '<path fill="url(#br-' + e.id + ')" d="' +
-         cunaAnillo(ANI.rOut - 2, ANI.rBrillo, anguloLimite(e.ini),
-                    anguloLimite(e.ini) + 90) + '"/>';
-  });
-  /* Los nombres son mobiliario y las asas son el mando: si un asa se planta
-     encima, el nombre se aparta -el icono, que es lo que da el color, se
-     queda-. Pasa cuando el asa cae a menos de 26 grados del centro del cuarto,
-     que es cuando los dos circulos se pisan. */
-  var asas = [anguloMes(F.mesDesde - 1), anguloMes(F.mesHasta - 1)];
-  var separa = function (a, b) { return Math.abs(((a - b + 540) % 360) - 180); };
-  ESTACIONES.forEach(function (e) {
-    var ang = anguloLimite(e.ini) + 45;                  // el medio del cuarto
-    var q = polar(ANI.rEst, ang);
-    /* El nombre se apila con su icono, no se aleja por el radio: a izquierda y
-       derecha los dos caian en la misma linea y la palabra se comia el dibujo.
-       Arriba del icono en la mitad de arriba, debajo en la de abajo. */
-    var dy = q[1] < 99 ? -11 : 11;
-    var tapado = asas.some(function (x) { return separa(x, ang) < 26; });
-    h += iconoEn(e.ico, q[0], q[1], 12, 'ico-est ' + e.id) +
-         (tapado ? '' :
-          '<text class="nom-est ' + e.id + '" x="' + q[0].toFixed(1) + '" y="' +
-          (q[1] + dy + 2.9).toFixed(1) + '" text-anchor="middle">' + e.txt + '</text>');
-  });
-  for (i = 0; i < 12; i++) {
-    h += '<path class="seg' + (dentro[i + 1] ? ' on' : '') + '" data-mes="' +
-         (i + 1) + '" d="' + sectorMes(i) + '"/>';
-  }
-  for (i = 0; i < 12; i++) {
-    // los dos extremos no se rotulan: su asa ya lleva el nombre encima y las
-    // dos palabras se pisaban
-    if (i + 1 === F.mesDesde || i + 1 === F.mesHasta) continue;
-    p = polar(ANI.rTxt, anguloMes(i));
-    h += '<text class="rot' + (dentro[i + 1] ? ' on' : '') + '" x="' + p[0].toFixed(1) +
-         '" y="' + (p[1] + 3.3).toFixed(1) + '" text-anchor="middle">' +
-         G.meses[i] + '</text>';
-  }
-  var todo = meses.length === 12;
-  /* Las dos asas, siempre, tambien con el ano entero: son el control, y un
-     control que no esta no se descubre. Cada una en su grupo para poder
-     girarla sobre el centro del anillo, que es como se mueve de verdad. */
-  [F.mesDesde, F.mesHasta].forEach(function (m, k) {
-    var q = polar(ANI.rCabo, anguloMes(m - 1));
-    var cx = q[0].toFixed(1), cy = q[1].toFixed(1);
-    /* Las asas llevan su mes escrito siempre, no solo al arrastrarlas: dos
-       puntos no dicen que se agarren, y un circulo con «Nov» dentro si -se lee
-       como una ficha que esta puesta sobre el anillo y puede correrse-. La que
-       se mueve crece un poco mas. */
-    var tira = !!arrastre && arrastre.mes === m;
-    h += '<g class="asa asa-' + (k ? 'b' : 'a') + '">' +
-         '<circle class="cabo" cx="' + cx + '" cy="' + cy +
-         '" r="' + (tira ? 19 : 17) + '"/>' +
-         '<text class="mes-asa" x="' + cx + '" y="' + (q[1] + 3).toFixed(1) +
-         '" text-anchor="middle">' + G.meses[m - 1] + '</text></g>';
-  });
-  h += '<text class="centro" x="100" y="97" text-anchor="middle">' +
-       (todo ? 'Todo el año'
-        : F.mesDesde === F.mesHasta ? G.meses[F.mesDesde - 1]
-        : G.meses[F.mesDesde - 1] + ' - ' + G.meses[F.mesHasta - 1]) + '</text>' +
-       '<text class="centro-2" x="100" y="112" text-anchor="middle">' +
-       (todo ? 'sin filtrar' : meses.length + (meses.length === 1 ? ' mes' : ' meses')) +
-       '</text>';
-  $('#anillo').innerHTML = h;
-  $('#mes-desde').value = F.mesDesde;
-  $('#mes-hasta').value = F.mesHasta;
-}
-
-function mesEnPunto(ev) {
-  var r = $('#anillo').getBoundingClientRect();
-  var x = ev.clientX - r.left - r.width / 2, y = ev.clientY - r.top - r.height / 2;
-  // el agujero del centro no manda: ahi no hay meses
-  if (Math.sqrt(x * x + y * y) < r.width * 0.2) return 0;
-  var g = ((Math.atan2(y, x) * 180 / Math.PI - ANG0) % 360 + 360) % 360;
-  return Math.round(g / 30) % 12 + 1;
-}
-function distMes(a, b) { var d = Math.abs(a - b) % 12; return Math.min(d, 12 - d); }
-
-/* Mientras se arrastra, el cabo quieto es el ancla y del que se mueve se
-   lleva la cuenta en pasos con signo: cuantos meses esta por delante (+) o por
-   detras (-) del ancla. Asi, al pasar uno por encima del otro, el tramo se da
-   la vuelta en vez de irse por el camino largo: con Nov-Mar, arrastrando el
-   cabo de Nov en el sentido de las agujas, se pasa por Dic-Mar, Ene-Mar,
-   Feb-Mar, Mar, Mar-Abr, Mar-May. Sin la cuenta con signo, al cruzar Mar el
-   tramo saltaba a once meses. */
-/* El latido de las asas solo hasta que se arrastre una vez: es una pista para
-   quien no sabe que el anillo se toca, no un adorno permanente. */
-function anilloUsado() {
-  try { return !!localStorage.getItem('anilloUsado'); } catch (e) { return true; }
-}
-function apuntarAnilloUsado() {
-  $('#anillo').classList.remove('nuevo');
-  try { localStorage.setItem('anilloUsado', '1'); } catch (e) {}
-}
-
-var arrastre = null;
-
-function fijarPasos(ancla, pasos) {
-  /* Da la vuelta sin fin: pasado el ano entero se vuelve a un mes, y al reves
-     igual. Antes se topaba en los once y el asa se quedaba clavada en «Todo el
-     ano» por mucho que se siguiera girando. */
-  while (pasos >  11) pasos -= 12;
-  while (pasos < -11) pasos += 12;
-  var m = (ancla - 1 + pasos + 24) % 12 + 1;
-  if (pasos >= 0) { F.mesDesde = ancla; F.mesHasta = m; }
-  else            { F.mesDesde = m;     F.mesHasta = ancla; }
-  return { pasos: pasos, mes: m };
-}
-
-$('#anillo').addEventListener('pointerdown', function (ev) {
-  var m = mesEnPunto(ev);
-  if (!m) return;
-  apuntarAnilloUsado();
-  // se coge el cabo mas cercano, no «el primero que toques»: nada que recordar
-  var esDesde = distMes(m, F.mesDesde) <= distMes(m, F.mesHasta);
-  var ancla = esDesde ? F.mesHasta : F.mesDesde;
-  var pasos = esDesde ? -((ancla - m + 12) % 12) : ((m - ancla + 12) % 12);
-  arrastre = { ancla: ancla };
-  var r = fijarPasos(ancla, pasos);
-  arrastre.pasos = r.pasos; arrastre.mes = r.mes;
-  try { ev.currentTarget.setPointerCapture(ev.pointerId); } catch (e) {}
-  aplicarRango();
-  render();
-  ev.preventDefault();
-});
-
-$('#anillo').addEventListener('pointermove', function (ev) {
-  if (!arrastre) return;
-  var m = mesEnPunto(ev);
-  if (!m || m === arrastre.mes) return;
-  var d = (m - arrastre.mes + 12) % 12;
-  if (d > 6) d -= 12;                            // el salto mas corto
-  var r = fijarPasos(arrastre.ancla, arrastre.pasos + d);
-  if (r.pasos === arrastre.pasos) return;
-  arrastre.pasos = r.pasos; arrastre.mes = r.mes;
-  aplicarRango();
-  render();
-});
-
-['pointerup', 'pointercancel'].forEach(function (t) {
-  $('#anillo').addEventListener(t, function () {
-    if (!arrastre) return;
-    arrastre = null;
-    pintarAnillo();                  // el asa vuelve a su tamano y suelta el mes
-  });
-});
-
-/* el mismo dato en palabras: exacto, y alcanzable con el teclado */
-['#mes-desde', '#mes-hasta'].forEach(function (sel) {
-  var e = $(sel);
-  e.innerHTML = G.meses.map(function (m, i) {
-    return '<option value="' + (i + 1) + '">' + m + '</option>';
-  }).join('');
-  e.addEventListener('change', function () {
-    F[sel === '#mes-desde' ? 'mesDesde' : 'mesHasta'] = +e.value;
-    aplicarRango();
-    render();
-  });
-});
 
 /* ---------- perfil de altitud ---------- */
 function svgPerfil(e) {
@@ -1958,7 +1677,7 @@ $('#btn-aplicar').addEventListener('click', function () { abrirPanel(false); });
 
 function limpiarTodo() {
   F.color = []; F.grupo = []; F.mes = []; F.loma = []; F.habitat = []; F.familia = [];
-  F.conserv = []; F.cara = []; F.mesDesde = 1; F.mesHasta = 12;
+  F.conserv = []; F.cara = [];
   quitarAltitud();   // repinta
 }
 // el panel es de filtros: «Limpiar» no toca el texto del buscador

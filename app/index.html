@@ -138,22 +138,14 @@ window.addEventListener('beforeinstallprompt', function (ev) {
       <h3><span data-ico="calendar-blank" aria-hidden="true"></span> En flor durante
         <button class="limpia oculto" data-limpia="mes">Quitar</button>
       </h3>
-      <div class="segmentado" role="group" aria-label="Cómo elegir los meses">
-        <button data-mesmodo="sueltos" aria-pressed="true">Meses</button>
-        <button data-mesmodo="rango" aria-pressed="false">Un rango</button>
+      <div class="barras" id="f-mes" role="group" aria-label="Meses de floración"></div>
+      <div class="franja-est" aria-hidden="true">
+        <span class="fr seca" style="grid-column:1/6"><i></i>Seca</span>
+        <span class="fr humeda" style="grid-column:6/12"><i></i>Húmeda</span>
+        <span class="fr seca" style="grid-column:12/13"><i></i></span>
       </div>
-      <div class="envoltura" id="f-mes"></div>
-      <div id="mes-rango" class="oculto">
-        <svg class="anillo" id="anillo" viewBox="-30 -30 260 260"
-             aria-hidden="true"></svg>
-        <p class="pista mano">Arrastra los dos extremos con el dedo, o toca un mes
-          y se moverá el más cercano.</p>
-        <p class="mes-selec">De
-          <select id="mes-desde" aria-label="Mes en que empieza"></select> a
-          <select id="mes-hasta" aria-label="Mes en que acaba"></select>
-        </p>
-      </div>
-      <p class="pista" id="mes-pista"></p>
+      <p class="pista" id="mes-pista">Toca un mes, o mantenlo pulsado y arrastra
+        para varios. La altura es cuántas florecen.</p>
       <div class="atajos">
         <button class="atajo humeda" data-meses="6,7,8,9,10,11">
           <span data-ico="drop" aria-hidden="true"></span>

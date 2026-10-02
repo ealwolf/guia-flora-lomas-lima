@@ -19,13 +19,6 @@
   --rojo:       #c8443c;
   --ambar:      #b07d1a;
   --lluvia:     #2f7e9e;
-  /* Las cuatro estaciones del hemisferio sur, que es donde estan las lomas.
-     El verde de la primavera no es el del acento -ese dice «elegido»-: es mas
-     claro, y ademas va desvaido detras del anillo. */
-  --est-verano:    #c9862b;
-  --est-otono:     #9c6233;
-  --est-invierno:  #2f7e9e;
-  --est-primavera: #5a9e52;
   --sobre-acento: #ffffff;
   --tirador: 20px;
 
@@ -70,10 +63,6 @@
     --rojo:       #e8695f;
     --ambar:      #d8a545;
     --lluvia:     #6fc0dd;
-    --est-verano:    #e0a755;
-    --est-otono:     #c08a5a;
-    --est-invierno:  #6fc0dd;
-    --est-primavera: #8cc783;
     --sobre-acento: #0f140f;
     --propia:     #b49ae8;
     --propia-sua: #241d33;
@@ -99,10 +88,6 @@
     --rojo:       #e8695f;
     --ambar:      #d8a545;
     --lluvia:     #6fc0dd;
-    --est-verano:    #e0a755;
-    --est-otono:     #c08a5a;
-    --est-invierno:  #6fc0dd;
-    --est-primavera: #8cc783;
     --sobre-acento: #0f140f;
     --propia:     #b49ae8;
     --propia-sua: #241d33;
@@ -804,98 +789,52 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 .nota .ico { width: 15px; height: 15px; flex: none; margin-top: 2px; }
 .nota b { font-weight: 600; color: var(--texto); }
 
-/* El año es redondo y la floración también: de noviembre a febrero es un
-   tramo, no dos cabos sueltos. En una fila de doce fichas eso sale partido en
-   los dos extremos y no hay forma de dibujarlo; en un anillo es sencillamente
-   un arco que pasa por arriba. Se arrastran los dos cabos, o se toca un mes y
-   se mueve el cabo más cercano: no hay «primer toque» ni «segundo toque», y
-   por tanto tampoco un sentido que adivinar. */
-/* el sitio del boton se reserva siempre: si no, el anillo daba un brinco
-   cada vez que aparecia o se iba */
-/* mientras se pinta, la fila no se desliza ni se selecciona texto */
-#f-mes.pintando { touch-action: none; -webkit-user-select: none; user-select: none; }
-#f-mes.pintando .chip { transition: none; }
-.anillo {
-  display: block; width: 100%; max-width: 252px; height: auto;
-  margin: 2px auto 0; touch-action: none; -webkit-user-select: none; user-select: none;
-  /* es una herramienta, no un boton: se agarra. Y sin el recuadro gris que
-     pinta Android al tocar cualquier cosa con manejador, que encendia el
-     anillo entero como si fuera una sola tecla */
-  cursor: grab; -webkit-tap-highlight-color: transparent;
+/* Doce barras y no doce fichas: la altura dice cuantas especies florecen en
+   ese mes, que en estas lomas va de 1 en enero a 105 en setiembre. Una fila de
+   fichas iguales se callaba eso, que es justo lo que uno quiere saber antes de
+   subir. Se arrastra de lado, asi que con touch-action: pan-y el dedo sigue
+   desplazando el panel: el anillo que habia antes se quedaba con el gesto
+   entero y ocupaba la mitad de la ventana. */
+.barras {
+  display: flex; align-items: flex-end; gap: 3px; height: 64px;
+  touch-action: pan-y; -webkit-tap-highlight-color: transparent;
 }
-.anillo:active { cursor: grabbing; }
-.anillo .seg { fill: var(--superficie-2); transition: fill .12s; }
-.anillo .seg.on { fill: var(--acento); }
-/* lo que responde es el mes, no el anillo. Solo con raton: en el telefono el
-   hover se queda pegado despues de tocar */
+.barras .mes {
+  flex: 1; min-width: 0; height: 100%; padding: 0;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-end; gap: 4px;
+}
+.barras .barra {
+  width: 100%; border-radius: 3px 3px 0 0;
+  background: var(--superficie-2); border: 1px solid var(--borde-control);
+  border-bottom: 0; transition: background .12s, border-color .12s;
+}
+.barras .mes[aria-pressed="true"] .barra {
+  background: var(--acento); border-color: var(--acento);
+}
+.barras .et { font-size: 9.5px; font-weight: 600; color: var(--tenue); }
+.barras .mes[aria-pressed="true"] .et { color: var(--acento-txt); font-weight: 700; }
+/* un mes sin nada que ensenar se queda en un muñon apagado */
+.barras .mes.vacio .barra { opacity: .5; }
 @media (hover: hover) {
-  .anillo .seg:hover { fill: color-mix(in srgb, var(--acento) 30%, var(--superficie-2)); }
-  .anillo .seg.on:hover { fill: color-mix(in srgb, var(--texto) 18%, var(--acento)); }
+  .barras .mes:hover .barra { border-color: var(--acento); }
 }
-.anillo text, .anillo .cabo { pointer-events: none; }
-.anillo text { font-family: system-ui, sans-serif; }
-/* Los meses bajan de tono: siguen ahi para apuntar, pero lo que manda son las
-   dos asas, que son lo unico que se mueve */
-.anillo .rot { font-size: 9.5px; font-weight: 600; fill: var(--tenue); opacity: .6; }
-.anillo .rot.on { fill: var(--sobre-acento); opacity: .72; }
-/* asas de verdad y no dos puntitos: han de pedir que se les tire */
-.anillo .cabo { fill: var(--acento); stroke: var(--fondo); stroke-width: 3; }
-/* Y las dos primeras veces se estiran un poco y vuelven, cada una hacia su
-   lado. Un destello solo dice «mirame»; separarse dice lo que hacen. Giran
-   sobre el centro del anillo, que es por donde corren. */
-.anillo .asa { transform-box: view-box; transform-origin: 100px 100px; }
-.anillo.nuevo .asa-a { animation: tironA 1.6s ease-in-out 2; }
-.anillo.nuevo .asa-b { animation: tironB 1.6s ease-in-out 2; }
-/* Hacia dentro y no hacia fuera: de entrada esta puesto el ano entero, que ya
-   no puede crecer, asi que abrirse mas no ensena nada. Cerrandose un poco se
-   ve lo unico que cabe hacer desde ahi. */
-@keyframes tironA { 0%, 100% { transform: rotate(0deg); }
-                    45%      { transform: rotate(7deg); } }
-@keyframes tironB { 0%, 100% { transform: rotate(0deg); }
-                    45%      { transform: rotate(-7deg); } }
-/* La pista escrita se guarda para cuando no puede haber movimiento: entonces
-   el tiron no ocurre y algo tiene que decirlo. */
-.pista.mano { display: none; text-align: center; margin-top: 6px; }
-@media (prefers-reduced-motion: reduce) { .pista.mano { display: block; } }
-/* El asa que se arrastra crece y dice su mes: el dedo la tapa, y el nombre
-   dentro del propio circulo no necesita sitio nuevo ni puede chocar con nada */
-.anillo .mes-asa {
-  font-size: 10.5px; font-weight: 700; fill: var(--sobre-acento);
-  font-family: system-ui, sans-serif; pointer-events: none;
+
+/* Debajo, que meses son de cada estacion. Empezando el año en enero la seca
+   sale partida -enero a mayo y diciembre-, que es la verdad: el año se corta
+   por la mitad de la seca. */
+.franja-est {
+  display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; margin-top: 5px;
 }
-/* Las cuatro estaciones, detras del anillo y desvanecidas hacia afuera: un
-   resplandor, no un aro. Un aro mas se leia como otra pista que se pudiera
-   agarrar; una mancha de color es fondo, y el fondo no se toca. */
-.anillo .nom-est {
-  font-size: 8px; font-weight: 700; font-family: system-ui, sans-serif;
-  letter-spacing: .02em; pointer-events: none;
+.franja-est .fr {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  font-size: 9.5px; font-weight: 700; letter-spacing: .02em;
 }
-.anillo .ico-est { pointer-events: none; }
-.anillo .g0.verano    { stop-color: var(--est-verano);    stop-opacity: .38; }
-.anillo .g1.verano    { stop-color: var(--est-verano);    stop-opacity: 0; }
-.anillo .ico-est.verano, .anillo .nom-est.verano { color: var(--est-verano); fill: var(--est-verano); }
-.anillo .g0.otono     { stop-color: var(--est-otono);     stop-opacity: .38; }
-.anillo .g1.otono     { stop-color: var(--est-otono);     stop-opacity: 0; }
-.anillo .ico-est.otono, .anillo .nom-est.otono { color: var(--est-otono); fill: var(--est-otono); }
-.anillo .g0.invierno  { stop-color: var(--est-invierno);  stop-opacity: .38; }
-.anillo .g1.invierno  { stop-color: var(--est-invierno);  stop-opacity: 0; }
-.anillo .ico-est.invierno, .anillo .nom-est.invierno { color: var(--est-invierno); fill: var(--est-invierno); }
-.anillo .g0.primavera { stop-color: var(--est-primavera); stop-opacity: .38; }
-.anillo .g1.primavera { stop-color: var(--est-primavera); stop-opacity: 0; }
-.anillo .ico-est.primavera, .anillo .nom-est.primavera { color: var(--est-primavera); fill: var(--est-primavera); }
-.anillo .centro { font-size: 16px; font-weight: 700; fill: var(--texto); }
-.anillo .centro-2 { font-size: 10.5px; fill: var(--tenue); }
-/* El mismo dato en palabras: se puede fijar exacto, y con el teclado. En
-   fila flexible y no en texto corrido: el espacio de «a» entre las dos listas
-   era el de la tipografia, y las dejaba pegadas. */
-.mes-selec {
-  display: flex; align-items: center; justify-content: center; gap: 9px;
-  margin: 10px 0 0; font-size: var(--t-1); color: var(--tenue);
-}
-.mes-selec select {
-  font: inherit; font-weight: 600; color: var(--texto); padding: 5px 6px;
-  border: 1px solid var(--borde-control); border-radius: 8px; background: var(--superficie);
-}
+.franja-est .fr i { display: block; width: 100%; height: 3px; border-radius: 2px; }
+.franja-est .humeda { color: var(--lluvia); }
+.franja-est .humeda i { background: var(--lluvia); }
+.franja-est .seca { color: var(--ambar); }
+.franja-est .seca i { background: var(--ambar); }
 
 /* Las dos estaciones que nombra la guía: nueve meses de rango se piden de una
    vez, no mes a mes. No son filtros aparte, sólo rellenan los de arriba. */
