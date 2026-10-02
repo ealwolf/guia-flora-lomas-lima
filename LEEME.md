@@ -52,6 +52,20 @@ textos desde el PC va bien, pero para el campo la vía es la de arriba.
 
 ---
 
+## Probarla en el teléfono sin publicar nada
+
+```
+python scripts/servir.py
+```
+
+Te dice la dirección —algo como `http://192.168.1.40:8911`— y la abres con el
+teléfono **en el mismo wifi**. Sirve `app/` tal cual y manda `no-store`, para
+que el navegador no se quede con la versión anterior mientras pruebas. `Ctrl+C`
+para parar; un puerto distinto, `python scripts/servir.py 9000`.
+
+Con esto se ve todo menos tres cosas: **descargar las fotos, usarla sin red e
+instalarla**. Ésas necesitan `https://`, y por eso hay que publicarla.
+
 ## Publicar la carpeta `app/`
 
 Cualquier alojamiento estático con HTTPS sirve. La carpeta `app/` es la raíz
