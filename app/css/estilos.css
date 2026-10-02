@@ -642,9 +642,12 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 /* Encima del panel de filtros, que es desde donde se abre. Ahi el mapa tiene
    sitio de verdad para el pellizco y para los nombres, y queda espacio para lo
    que venga despues -los distritos-. */
+/* Nada de esto es texto para leer ni copiar, y el doble toque sobre el mapa
+   -que acerca- acababa marcando de azul la frase del pie. */
 .vista-mapa {
   position: fixed; inset: 0; z-index: 75; background: var(--fondo);
   display: none; flex-direction: column;
+  -webkit-user-select: none; user-select: none;
 }
 .vista-mapa.abierta { display: flex; }
 .vm-cab {
@@ -679,9 +682,11 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 
 .mapa-caja { position: relative; max-width: 420px; margin: 2px auto 0; }
 .mapa-elige { overflow: hidden; border-radius: var(--r-s); }
-/* pan-y siempre: un dedo desplaza el panel como en cualquier otro sitio, y de
-   paso el navegador deja de quedarse con el doble toque, que aqui hace falta */
-.mapa-elige { touch-action: pan-y; }
+/* El mapa se queda con todos los gestos. Antes cedia el movimiento vertical
+   -pan-y- porque vivia dentro del panel de filtros y un dedo tenia que poder
+   desplazarlo; a pantalla completa no hay nada detras que mover, asi que un
+   dedo mueve el mapa, como en cualquier mapa. */
+.mapa-elige { touch-action: none; }
 .mapa-elige.ampliado { cursor: grab; }
 .mapa-elige.ampliado:active { cursor: grabbing; }
 /* el puntero manda sobre la mano: encima de una loma se elige, no se arrastra */

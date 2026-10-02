@@ -990,6 +990,7 @@ $('#mapa-menos').addEventListener('click', function () { acercar(1 / 1.7); });
 (function () {
   var caja = $('#mapa-elige');
   var dedos = null;      // los dos dedos que mueven o pellizcan
+  var arrastre = null;   // un dedo moviendo el mapa
   var raton = null;      // arrastre con raton
   var sostenido = null;  // doble toque mantenido, como en un mapa de verdad
   var ultimo = 0, ultimoP = null;
@@ -1019,7 +1020,9 @@ $('#mapa-menos').addEventListener('click', function () { acercar(1 / 1.7); });
   caja.addEventListener('touchstart', function (ev) {
     tragar = false;                  // empieza una pulsacion nueva
     if (!MV) return;
-    if (ev.touches.length === 2) { dedos = medio(ev.touches); sostenido = null; return; }
+    if (ev.touches.length === 2) {
+      dedos = medio(ev.touches); sostenido = null; arrastre = null; return;
+    }
     if (ev.touches.length !== 1) return;
     var t = ev.touches[0], ahora = Date.now();
     var cerca = ultimoP && Math.hypot(t.clientX - ultimoP.x, t.clientY - ultimoP.y) < 30;
@@ -1031,6 +1034,12 @@ $('#mapa-menos').addEventListener('click', function () { acercar(1 / 1.7); });
     } else {
       ultimo = ahora;
       ultimoP = { x: t.clientX, y: t.clientY };
+      /* Y con un dedo se mueve el mapa, como en cualquier mapa. Dos dedos era
+         la regla de cuando el mapa iba dentro del panel y un dedo tenia que
+         poder desplazarlo; a pantalla completa no hay nada detras que mover.
+         Solo si esta acercado: a 1x no hay sitio a donde ir y un toque algo
+         tembloroso se quedaria sin elegir nada. */
+      if (MV.z > 1.001) arrastre = { x: t.clientX, y: t.clientY, movido: 0, activo: false };
     }
   }, { passive: true });
 
@@ -1042,6 +1051,21 @@ $('#mapa-menos').addEventListener('click', function () { acercar(1 / 1.7); });
       if (Math.abs(dy) > 3) sostenido.movido = true;
       var z = Math.max(1, Math.min(zTope(), sostenido.z0 * Math.pow(2, dy / 140)));
       acercar(z / MV.z, sostenido.p.x, sostenido.p.y);
+      return;
+    }
+    if (arrastre && !sostenido && ev.touches.length === 1) {
+      var d = ev.touches[0];
+      var ax = d.clientX - arrastre.x, ay = d.clientY - arrastre.y;
+      arrastre.movido += Math.abs(ax) + Math.abs(ay);
+      if (!arrastre.activo) {
+        if (arrastre.movido < 6) return;   // aun podria ser un toque
+        arrastre.activo = true;
+      }
+      ev.preventDefault();
+      var ka = porPixel();
+      MV.x -= ax * ka; MV.y -= ay * ka;
+      arrastre.x = d.clientX; arrastre.y = d.clientY;
+      aplicarVista();
       return;
     }
     if (!dedos || ev.touches.length !== 2) return;
@@ -1065,7 +1089,9 @@ $('#mapa-menos').addEventListener('click', function () { acercar(1 / 1.7); });
       tragar = true;
     }
     if (dedos) tragar = true;
+    if (arrastre && arrastre.activo) tragar = true;   // movio, no eligio
     dedos = null;
+    arrastre = null;
   });
 
   /* ---------- raton ---------- */
@@ -1163,7 +1189,7 @@ function sincronizarMapa() {
   var n = F.loma.length;
   $('#mapa-pista').textContent = n
       ? F.loma.map(function (id) { return nombreLoma[id] || id; }).join(' · ')
-      : (MV && MV.z > 1.001 ? 'Dos dedos para mover el mapa.'
+      : (MV && MV.z > 1.001 ? 'Arrastra para mover el mapa.'
                             : 'Toca una loma. Doble toque para acercar.');
 }
 
