@@ -1204,47 +1204,53 @@ function avisarLoma(id, puesta) {
   avisoLomaT = setTimeout(function () { a.classList.remove('vuela'); }, 1100);
 }
 
-/* La pila de lo puesto. Las tres primeras y un «+N mas» que la abre; abierta,
-   un «Ver menos» que la cierra. Tres porque la pila tapa mapa y porque es lo
-   que se elige casi siempre; pasado eso, mas vale verlo que adivinarlo. */
-var TOPE_PUESTAS = 3, puestasAbiertas = false;
+/* La pila de lo puesto: arriba la cuenta, que abre y cierra la lista, y al
+   lado el «Quitar», que antes vivia en la cabecera de la vista, lejos de
+   aquello de lo que habla. Los dos se quedan quietos; lo que corre es la
+   lista. Se abre de entrada -de poco sirve saber que hay tres si no sabes
+   cuales- pero recuerda si la cierras, y la cuenta sigue al dia. */
+var puestasAbiertas = true;
 
 function pintarPuestas() {
   var c = $('#mapa-puestas');
   if (!c) return;
+  var n = F.loma.length;
+  c.classList.toggle('oculto', !n);
+  if (!n) return;
   var ids = F.loma.slice().sort(function (a, b) {
     return (nombreLoma[a] || a).localeCompare(nombreLoma[b] || b, 'es');
   });
-  if (ids.length <= TOPE_PUESTAS) puestasAbiertas = false;
-  var sobran = (!puestasAbiertas && ids.length > TOPE_PUESTAS)
-      ? ids.length - TOPE_PUESTAS : 0;
-  var html = (sobran ? ids.slice(0, TOPE_PUESTAS) : ids).map(function (id) {
+  var cuenta = $('#puestas-cuenta');
+  cuenta.innerHTML = '<span class="et">' + n + (n === 1 ? ' loma' : ' lomas') +
+      '</span>' + svgIcono('caret-down');
+  cuenta.setAttribute('aria-expanded', puestasAbiertas ? 'true' : 'false');
+  cuenta.setAttribute('aria-label', (puestasAbiertas ? 'Ocultar' : 'Ver') +
+      ' las lomas elegidas, ' + n);
+  var lista = $('#puestas-lista');
+  lista.classList.toggle('oculto', !puestasAbiertas);
+  lista.innerHTML = !puestasAbiertas ? '' : ids.map(function (id) {
     var nom = nombreLoma[id] || id;
     return '<button class="chip" data-quita="' + esc(id) + '" ' +
         'aria-label="Quitar ' + esc(nom) + '"><span class="et">' + esc(nom) +
         '</span>' + svgIcono('x', 'quita') + '</button>';
   }).join('');
-  if (sobran) {
-    html += '<button class="chip todo" id="puestas-mas">+' + sobran + ' más</button>';
-  } else if (puestasAbiertas) {
-    html += '<button class="chip todo" id="puestas-menos">Ver menos</button>';
-  }
-  c.innerHTML = html;
-  c.classList.toggle('oculto', !html);
-  if (!sobran && !puestasAbiertas) c.scrollTop = 0;
 }
 
 $('#mapa-puestas').addEventListener('click', function (ev) {
-  if (ev.target.closest('#puestas-mas')) { puestasAbiertas = true; pintarPuestas(); return; }
-  if (ev.target.closest('#puestas-menos')) { puestasAbiertas = false; pintarPuestas(); return; }
+  if (ev.target.closest('#puestas-cuenta')) {
+    puestasAbiertas = !puestasAbiertas;
+    pintarPuestas();
+    return;
+  }
+  if (ev.target.closest('#puestas-quitar')) { F.loma = []; render(); return; }
   var b = ev.target.closest('[data-quita]');
   if (!b) return;
   alterna(F.loma, b.getAttribute('data-quita'));
   render();
 });
 
-// la rueda solo es de la pila si la pila tiene a donde ir; si no, es del mapa
-$('#mapa-puestas').addEventListener('wheel', function (ev) {
+// la rueda solo es de la lista si la lista tiene a donde ir; si no, es del mapa
+$('#puestas-lista').addEventListener('wheel', function (ev) {
   if (this.scrollHeight > this.clientHeight + 1) ev.stopPropagation();
 });
 
@@ -1328,11 +1334,6 @@ function abrirMapa(si) {
 
 $('#loma-locator').addEventListener('click', function () { abrirMapa(true); });
 $('#vista-mapa-atras').addEventListener('click', function () { abrirMapa(false); });
-$('#vista-mapa-listo').addEventListener('click', function () { abrirMapa(false); });
-$('#vista-mapa-quitar').addEventListener('click', function () {
-  F.loma = [];
-  render();
-});
 document.addEventListener('keydown', function (ev) {
   if (ev.key === 'Escape' && $('#vista-mapa').classList.contains('abierta')) {
     ev.stopPropagation();
@@ -1355,7 +1356,6 @@ function pintarLocator() {
   $('.loc-txt').textContent = n === 0 ? 'Ver en el mapa'
       : n === 1 ? (nombreLoma[F.loma[0]] || F.loma[0])
       : n + ' lomas elegidas';
-  $('#vista-mapa-quitar').classList.toggle('oculto', !n);
 }
 
 /* ---------- quitar un solo campo ---------- */

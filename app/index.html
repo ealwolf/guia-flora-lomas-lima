@@ -217,7 +217,6 @@ window.addEventListener('beforeinstallprompt', function (ev) {
     <button class="btn-icono" id="vista-mapa-atras" aria-label="Volver a los filtros"
             data-ico="arrow-left"></button>
     <h2 id="vista-mapa-tit">Lomas</h2>
-    <button class="limpia oculto" id="vista-mapa-quitar">Quitar</button>
   </div>
   <div class="vm-lienzo">
     <div class="mapa-caja">
@@ -226,14 +225,18 @@ window.addEventListener('beforeinstallprompt', function (ev) {
         <button id="mapa-mas" aria-label="Acercar el mapa" data-ico="plus"></button>
         <button id="mapa-menos" aria-label="Alejar el mapa" data-ico="minus" disabled></button>
       </div>
-      <div class="mapa-puestas oculto" id="mapa-puestas"></div>
+      <div class="mapa-puestas oculto" id="mapa-puestas">
+        <div class="mp-cab">
+          <button class="chip mp-cuenta" id="puestas-cuenta" aria-expanded="true"
+                  aria-controls="puestas-lista"></button>
+          <button class="chip mp-quitar" id="puestas-quitar">Quitar</button>
+        </div>
+        <div class="mp-lista" id="puestas-lista"></div>
+      </div>
       <div class="mapa-etiqueta" id="mapa-etiqueta" aria-hidden="true"></div>
       <div class="mapa-aviso" id="mapa-aviso" aria-hidden="true"></div>
+      <p class="pista pista-mapa" id="mapa-pista"></p>
     </div>
-  </div>
-  <div class="vm-pie">
-    <p class="pista" id="mapa-pista"></p>
-    <button class="btn principal" id="vista-mapa-listo">Listo</button>
   </div>
 </section>
 

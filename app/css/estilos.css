@@ -34,6 +34,13 @@
   --barra-sec:   #e0ac1e;
   --barra-sec-t: #9a7212;
   --sobre-acento: #ffffff;
+  /* Las fichas que van ENCIMA del mapa. Ni el verde del acento ni el blanco
+     de la superficie: el verde ya significa «loma elegida» en el dibujo, y
+     uno casi blanco se pierde sobre la tierra. Este contrasta con todo lo que
+     puede quedar debajo -11,2:1 sobre el mar, 12,3:1 sobre la tierra- y no
+     necesita contorno. El texto, 15,2:1. */
+  --chip-mapa:     #23271f;
+  --chip-mapa-txt: #ffffff;
   --tirador: 20px;
 
   /* Escala tipográfica. Antes había dieciocho tamaños sueltos, cinco de ellos
@@ -85,6 +92,9 @@
     --barra-sec:   #e8b956;
     --barra-sec-t: #e8b956;
     --sobre-acento: #0f140f;
+    /* al reves, que un casi negro sobre pagina oscura desaparece */
+    --chip-mapa:     #e4e8dd;
+    --chip-mapa-txt: #1a1e18;
     --propia:     #b49ae8;
     --propia-sua: #241d33;
     --propia-txt: #c7b3f0;
@@ -117,6 +127,9 @@
     --barra-sec:   #e8b956;
     --barra-sec-t: #e8b956;
     --sobre-acento: #0f140f;
+    /* al reves, que un casi negro sobre pagina oscura desaparece */
+    --chip-mapa:     #e4e8dd;
+    --chip-mapa-txt: #1a1e18;
     --propia:     #b49ae8;
     --propia-sua: #241d33;
     --propia-txt: #c7b3f0;
@@ -676,13 +689,27 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    rectangulo que mide el toque deja de ser el del dibujo. Un pixel no se ve,
    pero la cuenta se apoya en que coinciden. */
 .vm-lienzo .mapa-caja { border: 1px solid var(--borde); border-radius: var(--r-s); }
-.vm-pie {
-  flex: none; display: flex; align-items: center; gap: 12px;
-  padding: 10px 14px calc(12px + env(safe-area-inset-bottom));
-  border-top: 1px solid var(--borde); background: var(--superficie);
+/* Sin pie. Tenia un «Listo» que hacia lo mismo que la flecha de volver -dos
+   salidas para una sola puerta- y su franja blanca hacia que la vista
+   pareciera una ventanita encima de otra en vez de la pantalla del mapa. Lo
+   unico que habia ahi era la pista, que ahora flota sobre el mapa y no quita
+   sitio; no recibe toques, para no estorbar al dedo. */
+/* Con .pista a secas no basta: la regla general de las pistas va despues en
+   el archivo y le ganaba el margen -que descentraba la burbuja- y el color
+   -que la dejaba en gris tenue sobre fondo oscuro-. */
+.mapa-caja .pista-mapa {
+  /* left/right y margen automatico, no left:50%: con left:50% el ancho que
+     se puede ocupar es solo de la mitad al borde -173 px de los 323- y la
+     frase se partia en dos sin necesidad. Es el mismo tropiezo del aviso de
+     deshacer. */
+  position: absolute; left: 0; right: 0; bottom: 10px;
+  width: max-content; max-width: calc(100% - 24px); margin: 0 auto;
+  text-align: center;
+  padding: 5px 12px; border-radius: 999px;
+  background: var(--chip-mapa); color: var(--chip-mapa-txt);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .22);
+  pointer-events: none; z-index: 4;
 }
-.vm-pie .pista { margin: 0; flex: 1; }
-.vm-pie .btn { flex: none; min-width: 120px; }
 
 .mapa-caja { position: relative; max-width: 420px; margin: 2px auto 0; }
 .mapa-elige { overflow: hidden; border-radius: var(--r-s); }
@@ -747,24 +774,49 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .mapa-puestas {
   position: absolute; top: 8px; left: 8px; z-index: 4;
   display: flex; flex-direction: column; align-items: flex-start; gap: 5px;
-  max-width: min(58%, 220px); max-height: 50%;
-  overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y;
-  scrollbar-width: thin;
+  max-width: min(72%, 258px); max-height: 56%;
 }
 .mapa-puestas.oculto { display: none; }
+/* La cuenta y el «Quitar» no se desplazan: son el mando de la pila y tienen
+   que estar siempre donde el pulgar los dejo. Solo corre la lista. */
+.mp-cab { display: flex; gap: 5px; flex: none; max-width: 100%; }
+.mp-lista {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 5px;
+  flex: 0 1 auto; min-height: 0; max-width: 100%;
+  overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y;
+}
+.mp-lista.oculto { display: none; }
 .mapa-puestas .chip {
   max-width: 100%; min-height: 36px; padding: 5px 8px 5px 12px;
-  background: var(--acento-sua); border-color: transparent; color: var(--acento-txt);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, .14);
+  background: var(--chip-mapa); border-color: transparent; color: var(--chip-mapa-txt);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .22);
 }
-.mapa-puestas .chip:hover { border-color: var(--acento); }
+.mapa-puestas .chip:hover { border-color: var(--chip-mapa-txt); }
 .mapa-puestas .chip .et { overflow: hidden; text-overflow: ellipsis; }
-.mapa-puestas .chip .quita { width: 15px; height: 15px; opacity: .55; margin-left: 1px; flex: none; }
+.mapa-puestas .chip .quita { width: 15px; height: 15px; opacity: .7; margin-left: 1px; flex: none; }
 .mapa-puestas .chip:hover .quita { opacity: 1; }
-.mapa-puestas .todo {
-  background: var(--superficie); border-color: var(--borde); color: var(--tenue);
+.mp-cuenta { padding-right: 7px; font-weight: 600; }
+.mp-cuenta .ico { transition: transform .18s; }
+.mp-cuenta[aria-expanded="true"] .ico { transform: rotate(180deg); }
+/* Quitar es lo unico que no se deshace, asi que no se viste igual que el
+   resto: hueco, y solo se pinta cuando se va a pulsar. */
+.mp-quitar {
+  background: var(--superficie); color: var(--tenue);
+  border-color: var(--borde-control); font-weight: 500;
 }
-.mapa-puestas .todo:hover { border-color: var(--tenue); color: var(--texto); }
+.mp-quitar:hover { border-color: var(--rojo); color: var(--rojo); }
+
+/* La barra de la lista, a mano: la del sistema en Windows es un cajon gris
+   ancho que al lado de las fichas redondeadas canta. Va sobre el mapa, asi
+   que el carril se deja transparente y solo se ve el pulgar. */
+.mp-lista { scrollbar-width: thin; scrollbar-color: var(--chip-mapa) transparent; }
+.mp-lista::-webkit-scrollbar { width: 10px; }
+.mp-lista::-webkit-scrollbar-track { background: transparent; }
+.mp-lista::-webkit-scrollbar-thumb {
+  background: var(--chip-mapa); border-radius: 999px;
+  border: 3px solid transparent; background-clip: content-box;
+}
+.mp-lista::-webkit-scrollbar-thumb:hover { border-width: 2px; }
 
 /* El nombre al pasar el ratón. pointer-events:none es lo que impide que se
    pueda pasar por encima de la propia etiqueta: sin eso, el puntero entra en
