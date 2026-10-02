@@ -1093,19 +1093,55 @@ $('#mapa-elige').addEventListener('click', function (ev) {
   avisarLoma(id, F.loma.indexOf(id) >= 0);
 });
 
-$$('[data-vista]').forEach(function (b) {
-  b.addEventListener('click', function () {
-    var mapa = b.dataset.vista === 'mapa';
-    $$('[data-vista]').forEach(function (o) {
-      o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
-    });
+/* ---------- el mapa, a pantalla completa ----------
+   Antes vivia dentro del panel, detras de una pestaña que nadie encontraba, y
+   en 460 px de alto. Ahora el grupo lleva un mapita que no se usa para elegir
+   -solo enseña que hay mapa y que lomas estan puestas- y el mapa de verdad se
+   abre encima, con la pantalla entera. */
+function abrirMapa(si) {
+  var v = $('#vista-mapa');
+  v.classList.toggle('abierta', si);
+  if (si) {
     // visible primero, montar despues: getBBox necesita que este dibujado
-    $('#f-loma').classList.toggle('oculto', mapa);
-    $('#f-loma-mapa').classList.toggle('oculto', !mapa);
-    if (mapa) montarMapaLomas();
+    montarMapaLomas();
     sincronizarMapa();
-  });
+    $('#vista-mapa-atras').focus();
+  } else {
+    $('#loma-locator').focus();
+  }
+}
+
+$('#loma-locator').addEventListener('click', function () { abrirMapa(true); });
+$('#vista-mapa-atras').addEventListener('click', function () { abrirMapa(false); });
+$('#vista-mapa-listo').addEventListener('click', function () { abrirMapa(false); });
+$('#vista-mapa-quitar').addEventListener('click', function () {
+  F.loma = [];
+  render();
 });
+document.addEventListener('keydown', function (ev) {
+  if (ev.key === 'Escape' && $('#vista-mapa').classList.contains('abierta')) {
+    ev.stopPropagation();
+    abrirMapa(false);
+  }
+}, true);
+
+/* El mapita del grupo: el mismo dibujo, pequeño y con lo elegido encendido. */
+function pintarLocator() {
+  var c = document.createElement('div');
+  c.innerHTML = window.MAPA_SVG || '';
+  var svg = c.querySelector('svg');
+  if (!svg) return;
+  F.loma.forEach(function (id) {
+    var p = svg.querySelector('[data-loma="' + id + '"]');
+    if (p) p.classList.add('activa');
+  });
+  $('#loc-mapa').innerHTML = c.innerHTML;
+  var n = F.loma.length;
+  $('.loc-txt').textContent = n === 0 ? 'Ver en el mapa'
+      : n === 1 ? (nombreLoma[F.loma[0]] || F.loma[0])
+      : n + ' lomas elegidas';
+  $('#vista-mapa-quitar').classList.toggle('oculto', !n);
+}
 
 /* ---------- quitar un solo campo ---------- */
 $$('[data-limpia]').forEach(function (b) {
@@ -1137,6 +1173,7 @@ function sincronizarChips() {
     b.classList.toggle('oculto', !F[b.dataset.limpia].length);
   });
   pintarMeses();
+  pintarLocator();
   sincronizarMapa();
 }
 

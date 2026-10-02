@@ -606,6 +606,64 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    tocan, asi que arrastrar encima desplaza el panel como en cualquier otro
    sitio. Las lomas son diminutas, asi que cada una lleva ademas un circulo
    invisible de buen tamaño en su centro. */
+/* El mapita: ni pestaña ni mapa entero metido en el panel. Enseña que el mapa
+   existe -que era el problema: «Mapa» en gris se leia como un rotulo y no como
+   una puerta-, marca las lomas elegidas, y al tocarlo abre el mapa grande. No
+   se elige en el, asi que un roce no cambia nada. */
+.locator {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 7px 10px; border-radius: var(--r-s);
+  border: 1px solid var(--borde-control); background: var(--superficie);
+  color: var(--texto); font-size: var(--t-1); font-weight: 600; text-align: left;
+}
+.locator:hover { border-color: var(--acento); }
+.loc-mapa { flex: none; width: 46px; line-height: 0; }
+.loc-mapa svg { width: 100%; height: auto; display: block; }
+.loc-mapa .activa { fill: var(--acento); }
+.loc-txt { flex: 1; min-width: 0; }
+.locator .loc-ir .ico { width: 18px; height: 18px; color: var(--tenue); }
+
+/* A lo ancho hay margen de sobra: el mapita se pone al lado y se hace mas
+   grande. Medido, apretar las fichas en una columna estrecha salia mas caro
+   que ponerlo arriba, asi que solo se hace donde la fila da para las dos. */
+.loma-cuerpo { display: flex; flex-direction: column; gap: 10px; }
+@media (min-width: 620px) {
+  .loma-cuerpo { flex-direction: row; align-items: flex-start; gap: 14px; }
+  .loma-cuerpo .locator {
+    flex: none; width: 104px; flex-direction: column; gap: 6px;
+    text-align: center; padding: 9px;
+  }
+  .loma-cuerpo .loc-mapa { width: 100%; }
+  .loma-cuerpo .loc-ir { display: none; }
+  .loma-cuerpo .envoltura { flex: 1; min-width: 0; }
+}
+
+/* ---------- el mapa, a pantalla completa ---------- */
+/* Encima del panel de filtros, que es desde donde se abre. Ahi el mapa tiene
+   sitio de verdad para el pellizco y para los nombres, y queda espacio para lo
+   que venga despues -los distritos-. */
+.vista-mapa {
+  position: fixed; inset: 0; z-index: 75; background: var(--fondo);
+  display: none; flex-direction: column;
+}
+.vista-mapa.abierta { display: flex; }
+.vm-cab {
+  display: flex; align-items: center; gap: 10px; flex: none;
+  padding: 10px 12px; border-bottom: 1px solid var(--borde);
+}
+.vm-cab h2 { margin: 0; font-size: var(--t-3); font-weight: 600; flex: 1; }
+.vm-lienzo {
+  flex: 1; min-height: 0; display: grid; place-items: center; padding: 10px 14px;
+}
+.vm-lienzo .mapa-caja { width: 100%; max-width: min(560px, 100%); }
+.vm-pie {
+  flex: none; display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--borde); background: var(--superficie);
+}
+.vm-pie .pista { margin: 0; flex: 1; }
+.vm-pie .btn { flex: none; min-width: 120px; }
+
 .mapa-caja { position: relative; max-width: 420px; margin: 2px auto 0; }
 .mapa-elige { overflow: hidden; border-radius: var(--r-s); }
 /* pan-y siempre: un dedo desplaza el panel como en cualquier otro sitio, y de

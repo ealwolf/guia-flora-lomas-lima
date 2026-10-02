@@ -116,22 +116,13 @@ window.addEventListener('beforeinstallprompt', function (ev) {
       <h3><span data-ico="map-trifold" aria-hidden="true"></span> Loma
         <button class="limpia oculto" data-limpia="loma">Quitar</button>
       </h3>
-      <div class="segmentado" role="group" aria-label="Cómo elegir la loma">
-        <button data-vista="lista" aria-pressed="true">Lista</button>
-        <button data-vista="mapa" aria-pressed="false">Mapa</button>
-      </div>
-      <div class="envoltura" id="f-loma"></div>
-      <div id="f-loma-mapa" class="oculto">
-        <div class="mapa-caja">
-          <div class="mapa-elige" id="mapa-elige"></div>
-          <div class="mapa-zoom">
-            <button id="mapa-mas" aria-label="Acercar el mapa" data-ico="plus"></button>
-            <button id="mapa-menos" aria-label="Alejar el mapa" data-ico="minus" disabled></button>
-          </div>
-          <div class="mapa-etiqueta" id="mapa-etiqueta" aria-hidden="true"></div>
-          <div class="mapa-aviso" id="mapa-aviso" aria-hidden="true"></div>
-        </div>
-        <p class="pista" id="mapa-pista"></p>
+      <div class="loma-cuerpo">
+        <button class="locator" id="loma-locator" aria-haspopup="dialog">
+          <span class="loc-mapa" id="loc-mapa" aria-hidden="true"></span>
+          <span class="loc-txt">Ver en el mapa</span>
+          <span class="loc-ir" data-ico="caret-right" aria-hidden="true"></span>
+        </button>
+        <div class="envoltura" id="f-loma"></div>
       </div>
     </div>
     <div class="grupo">
@@ -216,6 +207,32 @@ window.addEventListener('beforeinstallprompt', function (ev) {
   <div class="panel-pie">
     <button class="btn" id="btn-reset">Limpiar</button>
     <button class="btn principal" id="btn-aplicar">Ver resultados</button>
+  </div>
+</section>
+
+<!-- ---------- el mapa, a pantalla completa ---------- -->
+<section class="vista-mapa" id="vista-mapa" role="dialog" aria-modal="true"
+         aria-labelledby="vista-mapa-tit">
+  <div class="vm-cab">
+    <button class="btn-icono" id="vista-mapa-atras" aria-label="Volver a los filtros"
+            data-ico="arrow-left"></button>
+    <h2 id="vista-mapa-tit">Lomas</h2>
+    <button class="limpia oculto" id="vista-mapa-quitar">Quitar</button>
+  </div>
+  <div class="vm-lienzo">
+    <div class="mapa-caja">
+      <div class="mapa-elige" id="mapa-elige"></div>
+      <div class="mapa-zoom">
+        <button id="mapa-mas" aria-label="Acercar el mapa" data-ico="plus"></button>
+        <button id="mapa-menos" aria-label="Alejar el mapa" data-ico="minus" disabled></button>
+      </div>
+      <div class="mapa-etiqueta" id="mapa-etiqueta" aria-hidden="true"></div>
+      <div class="mapa-aviso" id="mapa-aviso" aria-hidden="true"></div>
+    </div>
+  </div>
+  <div class="vm-pie">
+    <p class="pista" id="mapa-pista"></p>
+    <button class="btn principal" id="vista-mapa-listo">Listo</button>
   </div>
 </section>
 

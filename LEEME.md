@@ -226,12 +226,16 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
   color sólo desempata.
 - **La loma se elige de dos maneras**: por lista alfabética o **tocándola en el
   mapa**, que es como piensa quien conoce la zona —«las de por aquí»— en vez de
-  buscar un nombre. Las dos vistas comparten la selección, así que se cambia de
-  una a otra sin perder nada. Cada loma lleva una zona de toque de 28 px,
-  porque las siluetas reales son diminutas, y debajo se leen los nombres de
-  las que llevas elegidas. Con el ratón, el nombre aparece al pasar por encima;
-  al elegir una, su nombre sale un momento sobre la propia loma, para no tener
-  que bajar la vista a la lista.
+  buscar un nombre. Antes el mapa estaba detrás de una pestaña y la gente no lo
+  encontraba: «Mapa» en gris se lee como un rótulo, no como una puerta. Ahora
+  el grupo lleva un **mapita** que no sirve para elegir —sólo enseña que hay
+  mapa y marca las lomas puestas— y que abre **el mapa a pantalla completa**,
+  donde hay sitio de verdad para el pellizco y para los nombres. En pantalla
+  ancha el mapita se pone al lado de las fichas, donde sobra margen; en el
+  teléfono, encima, en una tira baja. Cada loma lleva una zona de toque de
+  28 px, porque las siluetas reales son diminutas. Con el ratón, el nombre
+  aparece al pasar por encima; al elegir una, su nombre sale un momento sobre
+  la propia loma, para no tener que bajar la vista a la lista.
 - El mapa del filtro se **acerca** de cuatro maneras: los botones + y −, doble
   toque, doble toque sostenido y arrastrando arriba o abajo, y pellizco. Una
   vez ampliado se mueve **con dos dedos** (o arrastrando con el ratón). Con un
