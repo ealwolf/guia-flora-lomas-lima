@@ -1204,16 +1204,60 @@ function avisarLoma(id, puesta) {
   avisoLomaT = setTimeout(function () { a.classList.remove('vuela'); }, 1100);
 }
 
+/* La pila de lo puesto. Las tres primeras y un «+N mas» que la abre; abierta,
+   un «Ver menos» que la cierra. Tres porque la pila tapa mapa y porque es lo
+   que se elige casi siempre; pasado eso, mas vale verlo que adivinarlo. */
+var TOPE_PUESTAS = 3, puestasAbiertas = false;
+
+function pintarPuestas() {
+  var c = $('#mapa-puestas');
+  if (!c) return;
+  var ids = F.loma.slice().sort(function (a, b) {
+    return (nombreLoma[a] || a).localeCompare(nombreLoma[b] || b, 'es');
+  });
+  if (ids.length <= TOPE_PUESTAS) puestasAbiertas = false;
+  var sobran = (!puestasAbiertas && ids.length > TOPE_PUESTAS)
+      ? ids.length - TOPE_PUESTAS : 0;
+  var html = (sobran ? ids.slice(0, TOPE_PUESTAS) : ids).map(function (id) {
+    var nom = nombreLoma[id] || id;
+    return '<button class="chip" data-quita="' + esc(id) + '" ' +
+        'aria-label="Quitar ' + esc(nom) + '"><span class="et">' + esc(nom) +
+        '</span>' + svgIcono('x', 'quita') + '</button>';
+  }).join('');
+  if (sobran) {
+    html += '<button class="chip todo" id="puestas-mas">+' + sobran + ' más</button>';
+  } else if (puestasAbiertas) {
+    html += '<button class="chip todo" id="puestas-menos">Ver menos</button>';
+  }
+  c.innerHTML = html;
+  c.classList.toggle('oculto', !html);
+  if (!sobran && !puestasAbiertas) c.scrollTop = 0;
+}
+
+$('#mapa-puestas').addEventListener('click', function (ev) {
+  if (ev.target.closest('#puestas-mas')) { puestasAbiertas = true; pintarPuestas(); return; }
+  if (ev.target.closest('#puestas-menos')) { puestasAbiertas = false; pintarPuestas(); return; }
+  var b = ev.target.closest('[data-quita]');
+  if (!b) return;
+  alterna(F.loma, b.getAttribute('data-quita'));
+  render();
+});
+
+// la rueda solo es de la pila si la pila tiene a donde ir; si no, es del mapa
+$('#mapa-puestas').addEventListener('wheel', function (ev) {
+  if (this.scrollHeight > this.clientHeight + 1) ev.stopPropagation();
+});
+
 function sincronizarMapa() {
   if (!mapaPuesto) return;
   $$('#mapa-elige .loma').forEach(function (p) {
     p.classList.toggle('activa', F.loma.indexOf(p.getAttribute('data-loma')) >= 0);
   });
-  var n = F.loma.length;
-  $('#mapa-pista').textContent = n
-      ? F.loma.map(function (id) { return nombreLoma[id] || id; }).join(' · ')
-      : (MV && MV.z > 1.001 ? 'Arrastra para mover el mapa.'
-                            : 'Toca una loma. Doble toque para acercar.');
+  pintarPuestas();
+  // los nombres ya estan en la pila: el pie vuelve a ser para el gesto
+  $('#mapa-pista').textContent = MV && MV.z > 1.001
+      ? 'Arrastra para mover el mapa.'
+      : 'Toca una loma. Doble toque para acercar.';
 }
 
 /* Que loma hay bajo el dedo.

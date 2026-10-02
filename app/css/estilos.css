@@ -730,6 +730,42 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 #mapa-elige .loma:not(.activa):hover { fill: color-mix(in srgb, var(--acento) 55%, transparent); }
 #mapa-pista { text-align: center; }
 
+/* Las lomas puestas, en una pila encima del mapa.
+
+   Quitar una exigia volver a acertarle en el dibujo, y Zorritos mide 7 px:
+   aqui es un boton de 36 px con su aspa. Arriba a la izquierda porque ahi
+   hay mar -el dibujo va pegado a la derecha- y porque los botones de acercar
+   ya ocupan la otra esquina.
+
+   Solo aparece si hay algo puesto, para no comerse el mapa en el caso
+   corriente, y no pasa de tres: con mas sale un «+N mas» y la pila se abre.
+   Abierta puede llegar a la mitad del alto y se desplaza sola;
+   overscroll-behavior la encierra, para que al llegar al final no siga el
+   mapa, y pan-y le deja el gesto vertical, que el mapa se queda con todos.
+   El giro de la rueda se para aqui solo cuando hay de verdad algo que
+   desplazar; si no, pasa al mapa y acerca, como en el resto del lienzo. */
+.mapa-puestas {
+  position: absolute; top: 8px; left: 8px; z-index: 4;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 5px;
+  max-width: min(58%, 220px); max-height: 50%;
+  overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y;
+  scrollbar-width: thin;
+}
+.mapa-puestas.oculto { display: none; }
+.mapa-puestas .chip {
+  max-width: 100%; min-height: 36px; padding: 5px 8px 5px 12px;
+  background: var(--acento-sua); border-color: transparent; color: var(--acento-txt);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .14);
+}
+.mapa-puestas .chip:hover { border-color: var(--acento); }
+.mapa-puestas .chip .et { overflow: hidden; text-overflow: ellipsis; }
+.mapa-puestas .chip .quita { width: 15px; height: 15px; opacity: .55; margin-left: 1px; flex: none; }
+.mapa-puestas .chip:hover .quita { opacity: 1; }
+.mapa-puestas .todo {
+  background: var(--superficie); border-color: var(--borde); color: var(--tenue);
+}
+.mapa-puestas .todo:hover { border-color: var(--tenue); color: var(--texto); }
+
 /* El nombre al pasar el ratón. pointer-events:none es lo que impide que se
    pueda pasar por encima de la propia etiqueta: sin eso, el puntero entra en
    ella, deja de estar sobre la loma, la etiqueta se esconde, el puntero vuelve
