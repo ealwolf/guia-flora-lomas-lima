@@ -796,17 +796,25 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
    desplazando el panel: el anillo que habia antes se quedaba con el gesto
    entero y ocupaba la mitad de la ventana. */
 .barras {
-  display: flex; align-items: flex-end; gap: 3px; height: 64px;
+  display: flex; align-items: flex-end; gap: 0; height: 92px;
   touch-action: pan-y; -webkit-tap-highlight-color: transparent;
+  border-radius: var(--r-s); overflow: hidden;
 }
+/* El hueco entre barras va por dentro de cada mes y no entre ellos: asi el
+   color de la estacion, que es el fondo del mes, sale de corrido y se lee
+   como una franja. Con gap quedaban rayas sueltas. */
 .barras .mes {
-  flex: 1; min-width: 0; height: 100%; padding: 0;
+  flex: 1; min-width: 0; height: 100%; padding: 4px 2px 0;
   display: flex; flex-direction: column; align-items: center;
   justify-content: flex-end; gap: 4px;
 }
+/* La estacion, detras del mes: humeda de junio a noviembre y seca el resto.
+   Pintada ahi no hace falta rotularla, y no se puede confundir con un boton. */
+.barras .mes.hum { background: color-mix(in srgb, var(--lluvia) 13%, transparent); }
+.barras .mes.sec { background: color-mix(in srgb, var(--ambar) 13%, transparent); }
 .barras .barra {
   width: 100%; border-radius: 3px 3px 0 0;
-  background: var(--superficie-2); border: 1px solid var(--borde-control);
+  background: var(--superficie); border: 1px solid var(--borde-control);
   border-bottom: 0; transition: background .12s, border-color .12s;
 }
 .barras .mes[aria-pressed="true"] .barra {
@@ -820,22 +828,6 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
   .barras .mes:hover .barra { border-color: var(--acento); }
 }
 
-/* Debajo, que meses son de cada estacion. Empezando el año en enero la seca
-   sale partida -enero a mayo y diciembre-, que es la verdad: el año se corta
-   por la mitad de la seca. */
-.franja-est {
-  display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; margin-top: 5px;
-}
-.franja-est .fr {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  font-size: 9.5px; font-weight: 700; letter-spacing: .02em;
-}
-.franja-est .fr i { display: block; width: 100%; height: 3px; border-radius: 2px; }
-.franja-est .humeda { color: var(--lluvia); }
-.franja-est .humeda i { background: var(--lluvia); }
-.franja-est .seca { color: var(--ambar); }
-.franja-est .seca i { background: var(--ambar); }
-
 /* Las dos estaciones que nombra la guía: nueve meses de rango se piden de una
    vez, no mes a mes. No son filtros aparte, sólo rellenan los de arriba. */
 .atajos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
@@ -844,7 +836,20 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 .atajo {
   display: inline-flex; align-items: center; gap: 7px; min-height: 36px;
   padding: 0 13px; border-radius: 999px; font-size: var(--t-1); font-weight: 600;
-  border: 1px dashed var(--borde-control); color: var(--texto);
+  /* 1,5 px abre el guion: el navegador saca la raya y el hueco del grosor del
+     borde, que es lo unico que se puede tocar de un borde de trazos */
+  border: 1.5px dashed var(--borde-control); color: var(--texto);
+}
+/* Puesto: se cierra el trazo y se tine de su estacion. Solo cuando los meses
+   elegidos son exactamente los suyos; en cuanto se toca un mes, se apaga. */
+.atajo[aria-pressed="true"] { border-style: solid; }
+.atajo.humeda[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--lluvia) 16%, transparent);
+  border-color: var(--lluvia);
+}
+.atajo.seca[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--ambar) 16%, transparent);
+  border-color: var(--ambar);
 }
 .atajo .mes { font-weight: 400; color: var(--tenue); }
 .atajo .ico { width: 15px; height: 15px; flex: none; }

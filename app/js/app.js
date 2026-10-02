@@ -1201,19 +1201,37 @@ function pintarMeses() {
   });
   var tope = Math.max.apply(null, n) || 1;
   $('#f-mes').innerHTML = G.meses.map(function (mes, i) {
-    var alto = n[i] ? Math.max(5, Math.round(44 * Math.sqrt(n[i]) / Math.sqrt(tope))) : 5;
+    var alto = n[i] ? Math.max(6, Math.round(66 * Math.sqrt(n[i]) / Math.sqrt(tope))) : 6;
     var puesto = F.mes.indexOf(i + 1) >= 0;
-    return '<button class="mes' + (n[i] ? '' : ' vacio') + '" data-f="mes" data-v="' +
+    var est = (i + 1 >= 6 && i + 1 <= 11) ? ' hum' : ' sec';
+    return '<button class="mes' + est + (n[i] ? '' : ' vacio') + '" data-f="mes" data-v="' +
         (i + 1) + '" aria-pressed="' + puesto + '" aria-label="' + esc(mes) + ', ' +
         n[i] + (n[i] === 1 ? ' especie' : ' especies') + '">' +
         '<span class="barra" style="height:' + alto + 'px"></span>' +
         '<span class="et">' + esc(mes) + '</span></button>';
   }).join('');
+  pintarAtajos();
+}
+
+/* Un atajo esta puesto solo si los meses elegidos son exactamente los suyos:
+   en cuanto se toca un mes deja de serlo, que es lo que uno espera al ver el
+   boton encendido. */
+function mesesDe(b) {
+  return b.dataset.meses.split(',').map(Number)
+          .sort(function (a, c) { return a - c; }).join(',');
+}
+function pintarAtajos() {
+  var hoy = F.mes.slice().sort(function (a, c) { return a - c; }).join(',');
+  $$('[data-meses]').forEach(function (b) {
+    b.setAttribute('aria-pressed', hoy && hoy === mesesDe(b) ? 'true' : 'false');
+  });
 }
 
 $$('[data-meses]').forEach(function (b) {
   b.addEventListener('click', function () {
-    F.mes = b.dataset.meses.split(',').map(Number);
+    // si ya estaba puesto, el mismo boton lo quita
+    F.mes = b.getAttribute('aria-pressed') === 'true'
+        ? [] : b.dataset.meses.split(',').map(Number);
     render();
   });
 });
