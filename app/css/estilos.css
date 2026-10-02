@@ -831,11 +831,21 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
 .barras .et { width: 100%; text-align: center; padding: 3px 0 4px; }
 .barras .mes.hum .et { background: var(--lav-humeda); }
 .barras .mes.sec .et { background: var(--lav-seca); }
-.barras .mes[aria-pressed="true"] .barra {
-  background: var(--acento); border-color: var(--acento);
+/* Elegido se dice dos veces, y ninguna en verde. La barra se rellena del
+   color de su estacion -azul de junio a noviembre, ambar el resto-, que de
+   paso le da variedad a una pantalla donde casi todo es verde. Y el nombre
+   del mes se enciende como una tecla: hace falta, porque la barra cambia de
+   altura al elegir una loma y no se puede confiar solo en ella. */
+.barras .mes.hum[aria-pressed="true"] .barra {
+  background: var(--lluvia); border-color: var(--lluvia);
+}
+.barras .mes.sec[aria-pressed="true"] .barra {
+  background: var(--ambar); border-color: var(--ambar);
 }
 .barras .et { font-size: 9.5px; font-weight: 600; color: var(--mes-et); }
-.barras .mes[aria-pressed="true"] .et { color: var(--acento-txt); font-weight: 700; }
+.barras .mes[aria-pressed="true"] .et {
+  background: var(--texto); color: var(--fondo); font-weight: 700;
+}
 /* un mes sin nada que ensenar se queda en un muñon apagado */
 .barras .mes.vacio .barra { opacity: .5; }
 @media (hover: hover) {
