@@ -655,7 +655,32 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .vm-lienzo {
   flex: 1; min-height: 0; display: grid; place-items: center; padding: 10px 14px;
 }
-.vm-lienzo .mapa-caja { width: 100%; max-width: min(560px, 100%); }
+/* El mapa se ajusta al hueco por los dos lados. Antes solo mandaba el ancho y
+   el alto salia solo, asi que en una ventana apaisada se desbordaba por abajo
+   y se metia bajo el pie.
+
+   Guarda la proporcion del dibujo -91:128- en vez de estirarlo: ademas de que
+   estirado quedaria feo, la cuenta que convierte un toque en coordenadas del
+   mapa da por hecho que el svg llena su caja, y con bandas a un lado el
+   pellizco apuntaria donde no es.
+
+   Quien manda es el lado que se queda corto, y eso no se sabe de antemano: en
+   el telefono sobra alto y falta ancho, en el portatil al reves, y la frontera
+   depende de lo que midan cabecera y pie. Por eso se pregunta por la forma del
+   hueco y no por la de la pantalla. Probado con max-width y max-height a la
+   vez: el navegador recorta el lado que se pasa pero no rehace el otro, y el
+   mapa sale deformado. */
+.vm-lienzo { container-type: size; }
+.vm-lienzo .mapa-caja {
+  aspect-ratio: 91 / 128; width: 100%; height: auto; max-width: none; margin: 0;
+}
+@container (min-aspect-ratio: 91 / 128) {   /* hueco mas ancho: manda el alto */
+  .vm-lienzo .mapa-caja { height: 100%; width: auto; }
+}
+@container (max-aspect-ratio: 91 / 128) {   /* hueco mas alto: manda el ancho */
+  .vm-lienzo .mapa-caja { width: 100%; height: auto; }
+}
+.vm-lienzo .mapa-elige, .vm-lienzo .mapa-elige svg { width: 100%; height: 100%; }
 .vm-pie {
   flex: none; display: flex; align-items: center; gap: 12px;
   padding: 10px 14px calc(12px + env(safe-area-inset-bottom));
@@ -700,7 +725,9 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    el archivo, ganaban por orden y pintaban de rojo lo elegido. Aqui el rojo
    significa otra cosa -donde vive la especie-, y esto es una seleccion */
 #mapa-elige .loma.activa { fill: var(--acento); }
-#mapa-elige .toque { fill: transparent; cursor: pointer; }
+/* la silueta va encima del circulo de ayuda, asi que la mano la pide ella */
+#mapa-elige .loma, #mapa-elige .toque { cursor: pointer; }
+#mapa-elige .toque { fill: transparent; }
 /* solo las no elegidas: en el movil el hover se queda pegado tras el toque, y
    la loma recien elegida se veia mas palida que las demas elegidas */
 #mapa-elige .loma:not(.activa):hover { fill: color-mix(in srgb, var(--acento) 55%, transparent); }

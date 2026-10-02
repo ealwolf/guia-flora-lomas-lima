@@ -831,28 +831,63 @@ function montarMapaLomas() {
 /* Un circulo invisible por loma: las siluetas son diminutas y el dedo no.
    Hay que hacerlo con el mapa ya visible: con display:none, getBBox() devuelve
    ceros y los circulos acaban todos amontonados en el origen. */
+/* Un circulo de ayuda por loma: las siluetas son diminutas y el dedo no. Hay
+   que hacerlo con el mapa ya visible: con display:none, getBBox() devuelve
+   ceros y los circulos acaban todos amontonados en el origen.
+
+   Dos cosas que antes no estaban y hacian que una loma eligiera a su vecina
+   -Caringa y Malanche, por ejemplo, con los centros a 3,9 y un radio de 4,2-:
+
+   1. El radio se topa a la mitad de lo que hay hasta el vecino mas cercano,
+      asi que dos circulos pueden tocarse pero ninguno llega al centro del
+      otro. Medido sobre las 22: de 20 conflictos a ninguno.
+   2. Las siluetas vuelven a ponerse encima de los circulos. Donde hay dibujo
+      manda el dibujo -tocar Malanche es Malanche, aunque el circulo de
+      Caringa pase por ahi- y el circulo solo ayuda en el hueco de alrededor.
+      Por eso tambien se les quita el <title>: con el path arriba saldria el
+      globo del navegador encima de nuestra etiqueta. */
 function ponerToques() {
   if (toquesPuestos) return;
   var svg = $('#mapa-elige svg');
   if (!svg) return;
-  var R = 4.2, hechos = 0;
-  $$('#mapa-elige [data-loma]').forEach(function (p) {
-    var c = p.getBBox();
+  var R = 4.2;
+  var paths = $$('#mapa-elige path[data-loma]');
+  var cajas = paths.map(function (p) { return p.getBBox(); });
+  if (!cajas.length || !cajas.some(function (c) { return c.width || c.height; })) return;
+
+  var cen = cajas.map(function (c) {
+    return { x: c.x + c.width / 2, y: c.y + c.height / 2 };
+  });
+  var hechos = 0;
+  paths.forEach(function (p, i) {
+    var c = cajas[i];
     if (!c.width && !c.height) return;  // aun sin medidas: se reintenta luego
+    var cerca = Infinity;
+    cen.forEach(function (o, j) {
+      if (j === i) return;
+      cerca = Math.min(cerca, Math.hypot(cen[i].x - o.x, cen[i].y - o.y));
+    });
+    var tope = cerca / 2;
     var t = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    t.setAttribute('cx', (c.x + c.width / 2).toFixed(2));
-    t.setAttribute('cy', (c.y + c.height / 2).toFixed(2));
-    // la mitad real de la silueta; la ayuda se le suma aparte y encoge al
-    // acercar, o al ampliar los circulos se comerian a los vecinos
+    t.setAttribute('cx', cen[i].x.toFixed(2));
+    t.setAttribute('cy', cen[i].y.toFixed(2));
     t.setAttribute('data-mitad', (Math.max(c.width, c.height) / 2).toFixed(2));
-    t.setAttribute('r', Math.max(R, Math.max(c.width, c.height) / 2).toFixed(2));
+    t.setAttribute('data-tope', tope.toFixed(2));
+    t.setAttribute('r', Math.min(Math.max(R, Math.max(c.width, c.height) / 2),
+                                 tope).toFixed(2));
     t.setAttribute('class', 'toque');
     t.setAttribute('data-loma', p.getAttribute('data-loma'));
     // aria-label y no <title>: el <title> saca ademas el globo del sistema,
     // que se solaparia con nuestra etiqueta y llega tarde
     t.setAttribute('aria-label', nombreLoma[p.getAttribute('data-loma')] || '');
-    svg.appendChild(t);                 // encima de todo, para recibir el toque
+    svg.appendChild(t);
     hechos++;
+  });
+  // y las siluetas por encima de los circulos
+  paths.forEach(function (p) {
+    var tit = p.querySelector('title');
+    if (tit) tit.remove();
+    svg.appendChild(p);
   });
   toquesPuestos = hechos > 0;
 }
@@ -875,7 +910,8 @@ function aplicarVista() {
   // el radio de ayuda en pixeles de pantalla se mantiene: 4.2 unidades a 1x
   $$('#mapa-elige circle.toque').forEach(function (t) {
     var m = parseFloat(t.getAttribute('data-mitad')) || 0;
-    t.setAttribute('r', Math.max(m, 4.2 / MV.z).toFixed(2));
+    var tope = parseFloat(t.getAttribute('data-tope')) || Infinity;
+    t.setAttribute('r', Math.min(Math.max(m, 4.2 / MV.z), tope).toFixed(2));
   });
   var ampliado = MV.z > 1.001;
   $('#mapa-elige').classList.toggle('ampliado', ampliado);
@@ -994,8 +1030,7 @@ $('#mapa-menos').addEventListener('click', function () { acercar(1 / 1.7); });
   });
   caja.addEventListener('pointermove', function (ev) {
     if (ev.pointerType === 'mouse' && !(raton && raton.activo)) {
-      var l = ev.target.closest && ev.target.closest('[data-loma]');
-      etiquetaMapa(l && l.getAttribute('data-loma'), ev.clientX, ev.clientY);
+      etiquetaMapa(lomaEn(ev), ev.clientX, ev.clientY);
     }
     if (!raton || ev.pointerId !== raton.id) return;
     if (raton.activo) etiquetaMapa(null);
@@ -1083,11 +1118,42 @@ function sincronizarMapa() {
                             : 'Toca una loma. Doble toque para acercar.');
 }
 
+/* Que loma hay bajo el dedo.
+
+   Primero el dibujo: si el toque cae dentro de la silueta es esa, sin discutir.
+   Si cae fuera -y cae fuera casi siempre, porque son manchas de milimetros-
+   vale la mas cercana, y solo si esta a menos de un dedo.
+
+   Antes esto lo hacia un circulo gordo por loma, y el circulo de una tapaba el
+   centro de la vecina: tocar Malanche elegia Caringa. Ahora los circulos no
+   pasan de la mitad del camino al vecino, asi que ninguno le roba el centro a
+   nadie, y el hueco que dejan lo cubre esta cuenta, que no puede equivocarse
+   de loma porque siempre contesta la que tienes mas cerca. */
+var TOLERANCIA_TOQUE = 22;              // px de pantalla, un dedo
+function lomaEn(ev) {
+  var d = ev.target.closest && ev.target.closest('[data-loma]');
+  if (d) return d.getAttribute('data-loma');
+  var svg = $('#mapa-elige svg');
+  var m = svg && svg.getScreenCTM && svg.getScreenCTM();
+  if (!m) return null;
+  var p = svg.createSVGPoint();
+  p.x = ev.clientX; p.y = ev.clientY;
+  var u = p.matrixTransform(m.inverse());
+  var esc = Math.hypot(m.a, m.b) || 1;  // px de pantalla por unidad del dibujo
+  var tope = TOLERANCIA_TOQUE / esc, mejor = null, mejorD = Infinity;
+  $$('#mapa-elige circle.toque').forEach(function (c) {
+    var dx = u.x - c.cx.baseVal.value, dy = u.y - c.cy.baseVal.value;
+    // a la silueta, no al centro: si no, una loma grande ganaria siempre
+    var dist = Math.hypot(dx, dy) - (parseFloat(c.getAttribute('data-mitad')) || 0);
+    if (dist < mejorD) { mejorD = dist; mejor = c; }
+  });
+  return (mejor && mejorD <= tope) ? mejor.getAttribute('data-loma') : null;
+}
+
 $('#mapa-elige').addEventListener('click', function (ev) {
   if (this.tragaClick && this.tragaClick()) return;   // venia de un gesto
-  var t = ev.target.closest('[data-loma]');
-  if (!t) return;
-  var id = t.getAttribute('data-loma');
+  var id = lomaEn(ev);
+  if (!id) return;
   alterna(F.loma, id);
   render();
   avisarLoma(id, F.loma.indexOf(id) >= 0);
