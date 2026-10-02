@@ -19,6 +19,12 @@
   --rojo:       #c8443c;
   --ambar:      #b07d1a;
   --lluvia:     #2f7e9e;
+  /* El lavado que lleva la etiqueta del mes segun su estacion, y el gris de
+     esa etiqueta. Aparte de --lluvia y --ambar porque sobre fondo oscuro no
+     vale mezclarlos con el fondo: queda un barro sin contraste. */
+  --lav-humeda: #dbe8ee;
+  --lav-seca:   #f1e4ca;
+  --mes-et:     #5b6158;
   --sobre-acento: #ffffff;
   --tirador: 20px;
 
@@ -63,6 +69,9 @@
     --rojo:       #e8695f;
     --ambar:      #d8a545;
     --lluvia:     #6fc0dd;
+    --lav-humeda: #16272e;
+    --lav-seca:   #2b2416;
+    --mes-et:     #9aa392;
     --sobre-acento: #0f140f;
     --propia:     #b49ae8;
     --propia-sua: #241d33;
@@ -88,6 +97,9 @@
     --rojo:       #e8695f;
     --ambar:      #d8a545;
     --lluvia:     #6fc0dd;
+    --lav-humeda: #16272e;
+    --lav-seca:   #2b2416;
+    --mes-et:     #9aa392;
     --sobre-acento: #0f140f;
     --propia:     #b49ae8;
     --propia-sua: #241d33;
@@ -800,27 +812,29 @@ input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--
   touch-action: pan-y; -webkit-tap-highlight-color: transparent;
   border-radius: var(--r-s); overflow: hidden;
 }
-/* El hueco entre barras va por dentro de cada mes y no entre ellos: asi el
-   color de la estacion, que es el fondo del mes, sale de corrido y se lee
-   como una franja. Con gap quedaban rayas sueltas. */
 .barras .mes {
-  flex: 1; min-width: 0; height: 100%; padding: 4px 2px 0;
+  flex: 1; min-width: 0; height: 100%; padding: 4px 0 0;
   display: flex; flex-direction: column; align-items: center;
-  justify-content: flex-end; gap: 4px;
+  justify-content: flex-end; gap: 0;
 }
-/* La estacion, detras del mes: humeda de junio a noviembre y seca el resto.
-   Pintada ahi no hace falta rotularla, y no se puede confundir con un boton. */
-.barras .mes.hum { background: color-mix(in srgb, var(--lluvia) 13%, transparent); }
-.barras .mes.sec { background: color-mix(in srgb, var(--ambar) 13%, transparent); }
+/* La barra deja aire a los lados por dentro del mes, no con gap: asi la tira
+   de etiquetas de abajo sale de corrido y el lavado de la estacion se lee
+   como dos franjas y no como doce rayas sueltas. */
 .barras .barra {
-  width: 100%; border-radius: 3px 3px 0 0;
+  width: calc(100% - 5px); border-radius: 3px 3px 0 0;
   background: var(--superficie); border: 1px solid var(--borde-control);
   border-bottom: 0; transition: background .12s, border-color .12s;
 }
+/* La estacion tine el nombre del mes, no el area del grafico: detras de las
+   barras parecia que esos meses estaban elegidos, que es justo lo que dice
+   el verde. Abajo es una leyenda, y se lee como tal. */
+.barras .et { width: 100%; text-align: center; padding: 3px 0 4px; }
+.barras .mes.hum .et { background: var(--lav-humeda); }
+.barras .mes.sec .et { background: var(--lav-seca); }
 .barras .mes[aria-pressed="true"] .barra {
   background: var(--acento); border-color: var(--acento);
 }
-.barras .et { font-size: 9.5px; font-weight: 600; color: var(--tenue); }
+.barras .et { font-size: 9.5px; font-weight: 600; color: var(--mes-et); }
 .barras .mes[aria-pressed="true"] .et { color: var(--acento-txt); font-weight: 700; }
 /* un mes sin nada que ensenar se queda en un muñon apagado */
 .barras .mes.vacio .barra { opacity: .5; }
