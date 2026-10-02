@@ -671,7 +671,11 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    hueco- y sin esto el margen que queda era fondo de pagina, con los botones
    de acercar flotando sobre nada. Con el recuadro se ve donde acaba lo que
    responde al dedo y por donde se puede mover el mapa. */
-.vm-lienzo .mapa-elige { border: 1px solid var(--borde); }
+/* El recuadro va en la caja de fuera y no en .mapa-elige: dentro de
+   .mapa-elige el borde mete el svg 1 px hacia adentro, y entonces el
+   rectangulo que mide el toque deja de ser el del dibujo. Un pixel no se ve,
+   pero la cuenta se apoya en que coinciden. */
+.vm-lienzo .mapa-caja { border: 1px solid var(--borde); border-radius: var(--r-s); }
 .vm-pie {
   flex: none; display: flex; align-items: center; gap: 12px;
   padding: 10px 14px calc(12px + env(safe-area-inset-bottom));

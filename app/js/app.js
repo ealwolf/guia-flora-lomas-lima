@@ -1140,6 +1140,29 @@ $('#mapa-menos').addEventListener('click', function () { acercar(1 / 1.7); });
     acercar(1.8, p.x, p.y);
   });
 
+  /* La rueda acerca y aleja, hacia donde apunta el raton. Aqui no se pierde
+     nada por quedarsela: el mapa ocupa la pantalla y no hay pagina detras que
+     desplazar. El pellizco del panel tactil llega como rueda con Ctrl, y
+     tambien acerca, que es lo que uno espera.
+
+     La cuenta es continua y no por saltos, porque un panel tactil manda
+     muchos avisos pequeños y a saltos daria tirones: una muesca de raton son
+     unos 100 y sale un 1,26. Las unidades del aviso no siempre son pixeles
+     -Firefox cuenta lineas- asi que se igualan antes, y se recorta lo que
+     llegue de golpe para que un manotazo no se plante en el tope. */
+  // en la caja de fuera, que si no los botones de acercar son un hueco muerto
+  (caja.closest('.mapa-caja') || caja).addEventListener('wheel', function (ev) {
+    if (!MV) return;
+    ev.preventDefault();
+    var dy = ev.deltaY * (ev.deltaMode === 1 ? 33 : ev.deltaMode === 2 ? 400 : 1);
+    dy = Math.max(-200, Math.min(200, dy));
+    if (!dy) return;
+    var p = enMapa(ev.clientX, ev.clientY);
+    acercar(Math.pow(2, -dy / 300), p.x, p.y);
+    // bajo el raton puede haber ya otra loma
+    etiquetaMapa(lomaEn(ev), ev.clientX, ev.clientY);
+  }, { passive: false });
+
   caja.tragaClick = function () {
     var t = tragar;
     tragar = false;
