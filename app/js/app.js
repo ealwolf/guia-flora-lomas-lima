@@ -2452,7 +2452,13 @@ function abrirInfo(v) {
           'libro en el campo, sin señal.</p>' +
         '<p>Todo el contenido —textos, fotografías, dibujos y datos— es de la ' +
           'guía y pertenece a sus autores y al SERFOR. Si algo de aquí no ' +
-          'coincide con el libro, manda el libro.</p>' +
+          'coincide con el libro, la información del libro es la correcta.</p>' +
+        /* Se dice en presente y sin fechas, para que siga siendo verdad
+           mientras se pide. Cuando haya respuesta, esta linea se cambia por
+           la autorizacion concreta. */
+        '<p><b>Difusión pendiente de autorización.</b> Para distribuir la guía ' +
+          'en esta forma hace falta el permiso del SERFOR. Mientras no lo haya, ' +
+          'esto es un prototipo para enseñar, no una app publicada.</p>' +
       '</div>' +
 
       '<h3>' + svgIcono('book-open') + 'El libro</h3>' +
@@ -2469,23 +2475,25 @@ function abrirInfo(v) {
       '<div class="ficha-libro">' +
         '<p>Es gratuita y lo seguirá siendo. No tiene publicidad, ni compras, ' +
           'ni cuentas, ni versión de pago. Nadie gana dinero con ella.</p>' +
+        '<p>Nadie está autorizado a cobrarla ni a venderla. Si has pagado algo ' +
+          'por conseguirla, no te la ha dado quien la hizo.</p>' +
         '<p>No recoge ningún dato tuyo. No hay estadísticas de uso ni rastreo: ' +
           'funciona entera en tu teléfono y no envía nada a ningún servidor. Lo ' +
           'único que descarga son sus propias fotos, y sólo si se lo pides.</p>' +
       '</div>' +
 
-      '<h3>' + svgIcono('sliders-horizontal') + 'Qué pone la app de su parte</h3>' +
+      '<h3>' + svgIcono('sliders-horizontal') + 'Algunos cambios</h3>' +
       '<div class="ficha-libro">' +
         '<p>Casi nada, y va separado del dato del libro para que se pueda ' +
           'distinguir: el <b>color de la flor</b>, deducido del texto y de las ' +
           'fotografías para poder buscar por color; <b>2 erratas</b> de la ' +
-          'extracción del PDF; <b>2 sinónimos</b> científicos; y <b>1 loma</b> ' +
-          'observada por nosotros, que la guía no cita.</p>' +
+          'extracción del PDF; <b>2 sinónimos</b> científicos; y <b>1 especie</b> ' +
+          'que hemos visto en una loma que la guía no le cita: el zapatito ' +
+          '(<i>Calceolaria pinnata</i>), en las lomas de Villa María.</p>' +
         '<p>Hay además <b>15 fichas</b> en las que el dibujo del perfil y el ' +
           'texto de la propia guía no dicen lo mismo sobre la altitud. Están ' +
           'anotadas, pero <b>no se ha cambiado ninguna</b>: la app enseña lo que ' +
           'dice el dibujo, que es lo que hace el libro.</p>' +
-        '<p class="menudo">Datos generados el ' + esc(G.meta.generado) + '.</p>' +
       '</div>';
   }
   abrirPanel(v, '#panel-info');

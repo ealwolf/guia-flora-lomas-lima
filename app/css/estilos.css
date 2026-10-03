@@ -309,7 +309,6 @@ button {
   font-size: var(--t-0); color: var(--tenue); font-style: italic;
   border-left: 2px solid var(--borde); padding-left: 10px;
 }
-.ficha-libro .menudo { font-size: var(--t-0); color: var(--tenue); }
 .ficha-libro b { color: var(--texto); }
 .ficha-libro p { margin: 0 0 9px; }
 
