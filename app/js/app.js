@@ -573,7 +573,7 @@ function pintarActivos() {
              f: 'conserv', v: v });
   });
   F.cara.forEach(function (v) {
-    f.push({ ico: 'circle-half-tilt', et: ladoDe(v).txt, tipo: 'Cara de la loma',
+    f.push({ ico: 'circle-half-tilt', et: ladoDe(v).txt, tipo: 'Ladera donde crece',
              f: 'cara', v: v });
   });
   var tramo = tramoMeses();
