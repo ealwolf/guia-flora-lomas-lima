@@ -2446,10 +2446,13 @@ function abrirInfo(v) {
     $('#info-libro').innerHTML =
       '<h3>' + svgIcono('warning-circle') + 'Aviso</h3>' +
       '<div class="ficha-libro">' +
+        /* Sin dueño mientras no este decidido si esto es de la asociacion o
+           algo personal. «Independiente» ademas refuerza lo de arriba sin
+           tener que nombrar a nadie. */
         '<p><b>Esta no es una aplicación oficial.</b> No está hecha, revisada ' +
           'ni respaldada por el SERFOR ni por los autores de la guía. Es un ' +
-          'proyecto de la asociación Lomas de Paraíso para poder consultar el ' +
-          'libro en el campo, sin señal.</p>' +
+          'proyecto independiente para poder consultar el libro en el campo, ' +
+          'sin señal.</p>' +
         '<p>Todo el contenido —textos, fotografías, dibujos y datos— es de la ' +
           'guía y pertenece a sus autores y al SERFOR. Si algo de aquí no ' +
           'coincide con el libro, la información del libro es la correcta.</p>' +
