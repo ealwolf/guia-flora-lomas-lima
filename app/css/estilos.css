@@ -924,13 +924,19 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    es la de la otra con los dos extremos juntos-, y ni una ni otra dejaban
    escoger 300 y 800 sin lo de en medio. Lo que se marca es un trozo de ladera,
    y dos alturas seguidas se dibujan de una pieza, sin raya en medio. */
-/* Con todo el ancho del panel, en escritorio el cerro se iba a 499 px de
-   alto: las filas quedaban en 43 px, mas de lo que pide un dedo, y el grupo se
-   comia la pantalla. Topado, las filas miden 33 px en cualquier sitio, que es
-   justo lo que miden en el telefono. */
-.ladera { position: relative; touch-action: pan-y; max-width: 340px; margin-inline: auto; }
+/* El alto es fijo -diez filas de 31 px, lo que pide un dedo- y el ancho el que
+   haya. No se escala el dibujo entero, que a lo ancho lo habria estirado todo,
+   letra incluida: el lienzo se mide en pixeles y lo que crece es el cerro, que
+   se tiende y se hace mas suave. Por eso el viewBox se calcula al pintar.
+
+   touch-action: none y no pan-y. Aqui se pinta de arriba abajo, el mismo eje
+   por el que se desplaza el panel: con pan-y el navegador se quedaba el gesto
+   en cuanto el dedo se movia y mantener pulsado no llegaba nunca a pintar. Se
+   lo queda la ladera, y mientras no este pintando desplaza ella el panel a
+   mano, un pixel por pixel. */
+.ladera { position: relative; touch-action: none; }
 .ladera, .ladera * { -webkit-user-select: none; user-select: none; }
-.ladera svg { display: block; width: 100%; height: auto; }
+.ladera svg { display: block; width: 100%; }
 .ladera .fila { cursor: pointer; }
 .ladera .cel { fill: transparent; }
 .ladera .mar { fill: var(--mar); }
@@ -939,21 +945,24 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 /* lo unico que se repasa es la cuesta marcada: ni arriba, ni a la derecha, ni
    abajo, que ahi no hay ladera que señalar sino el corte del dibujo */
 .ladera .cuesta-on {
-  stroke: var(--acento); stroke-width: 2; fill: none;
+  stroke: var(--acento); stroke-width: 7; fill: none;
   stroke-linecap: round; stroke-linejoin: round;
 }
 .ladera .suelo {
-  fill: none; stroke: var(--costa); stroke-width: .55; stroke-linejoin: round;
+  fill: none; stroke: var(--costa); stroke-width: 1.9; stroke-linejoin: round;
 }
-.ladera .rejilla { stroke: var(--borde); stroke-width: .18; stroke-dasharray: 1.2 1.4; }
+.ladera .rejilla { stroke: var(--borde); stroke-width: .7; stroke-dasharray: 4 5; }
 /* el rastro de las cifras va de una pieza por tramo, no una pastilla por
    altura: si no, un rango se leia como alturas sueltas puestas en fila */
 .ladera .pilalab { fill: var(--acento-sua); }
 .ladera .lab {
-  font-size: 3.1px; fill: var(--tenue); font-variant-numeric: tabular-nums;
+  font-size: 10.5px; fill: var(--tenue); font-variant-numeric: tabular-nums;
 }
 .ladera .fila[data-on="1"] .lab { fill: var(--acento-txt); font-weight: 700; }
-.alt-fichas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+/* centrada: va con el dibujo que tiene encima, no con el texto del grupo */
+#mes-pista, #alt-pista { text-align: center; }
+.alt-fichas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+              justify-content: center; }
 .alt-fichas:empty { display: none; }
 .alt-fichas .chip {
   min-height: 34px; padding: 4px 8px 4px 12px;

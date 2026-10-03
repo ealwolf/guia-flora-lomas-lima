@@ -1985,35 +1985,50 @@ $('#btn-reset').addEventListener('click', function () { tirarFiltros(false); });
    es la del rango con los dos extremos juntos- y ninguna de las dos dejaba
    pedir 300 y 800 sin lo de en medio, que es lo que hace falta para comparar
    dos pisos. Ahora son diez alturas que se marcan como se marcan los meses, y
-   lo seguido se funde solo. */
-var ALT_W = 100, ALT_XLAB = 15, ALT_XR = 97, ALT_COSTA = 29, ALT_CIMA = 94;
-var ALT_ARRIBA = 3, ALT_FILA = 9.2;
-var ALT_TOPE = ALT_MAX + ALT_PASO / 2, ALT_PIE = -70;
+   lo seguido se funde solo.
+
+   El lienzo se mide en pixeles, no en unidades propias: el alto es fijo -diez
+   filas de 31 px, que es lo que pide un dedo- y el ancho es el que haya. Asi,
+   al ensanchar la ventana no se escala el dibujo entero -que habria estirado
+   tambien la letra y los trazos- sino que crece el cerro, que se tiende y se
+   vuelve mas suave. Es la unica parte que da de si. */
+var ALT_FILA = 31, ALT_ARRIBA = 10;
+var ALT_XLAB = 51;                      // la columna de cifras, fija
 var ALT_ALTO = ALT_ARRIBA + (ALTURAS.length + 1.2) * ALT_FILA;
+var ALT_TOPE = ALT_MAX + ALT_PASO / 2, ALT_PIE = -70;
+var ALT_ANCHO = 340;                    // lo ultimo que se midio
 
 function altY(a) {
   return ALT_ARRIBA + (ALT_TOPE - a) * (ALT_ALTO - ALT_ARRIBA) / (ALT_TOPE - ALT_PIE);
 }
+function altCosta() { return 64; }                      // donde acaba el mar
+function altCima()  { return ALT_ANCHO - 20; }
+function altDer()   { return ALT_ANCHO - 10; }
+
 /* La ese va sobre la altitud y no sobre la distancia: asi sale playa tendida
    abajo, ladera recia en medio y cumbre redondeada arriba. Al reves salia un
-   farallon pegado al mar. */
-var ALT_SUP = (function () {
-  var p = [];
+   farallon pegado al mar. Se rehace con cada ancho, que es lo que hace que el
+   cerro se tienda en vez de estirarse. */
+var ALT_SUP = [];
+function altCurva() {
+  var c = altCosta(), k = altCima() - c;
+  ALT_SUP = [];
   for (var i = 0; i <= 200; i++) {
     var t = i / 200, e = t * t * (3 - 2 * t);
-    p.push({ x: ALT_COSTA + t * (ALT_CIMA - ALT_COSTA), a: e * ALT_TOPE });
+    ALT_SUP.push({ x: c + t * k, a: e * ALT_TOPE });
   }
-  return p;
-})();
+}
+altCurva();
+
 function altX(a) {
-  if (a <= 0) return ALT_COSTA;
+  if (a <= 0) return altCosta();
   for (var i = 1; i < ALT_SUP.length; i++) {
     if (ALT_SUP[i].a >= a) {
       var p = ALT_SUP[i - 1], q = ALT_SUP[i];
       return p.x + (a - p.a) / (q.a - p.a) * (q.x - p.x);
     }
   }
-  return ALT_CIMA;
+  return altCima();
 }
 function altCuesta(a1, a2) {
   return ALT_SUP.filter(function (p) { return p.a >= a1 && p.a <= a2; });
@@ -2023,57 +2038,59 @@ function altCuesta(a1, a2) {
    altura: si no, dos alturas seguidas salen con una raya en medio y se leen
    como dos cosas sueltas en vez de como un tramo. */
 function altMancha(aBaja, aAlta) {
-  var arr = altCuesta(aBaja, aAlta);
-  var d = 'M ' + altX(aAlta).toFixed(2) + ' ' + altY(aAlta).toFixed(2);
+  var arr = altCuesta(aBaja, aAlta), d = 'M ' + altX(aAlta).toFixed(1) + ' ' + altY(aAlta).toFixed(1);
   for (var i = arr.length - 1; i >= 0; i--) {
-    d += ' L ' + arr[i].x.toFixed(2) + ' ' + altY(arr[i].a).toFixed(2);
+    d += ' L ' + arr[i].x.toFixed(1) + ' ' + altY(arr[i].a).toFixed(1);
   }
-  return d + ' L ' + altX(aBaja).toFixed(2) + ' ' + altY(aBaja).toFixed(2) +
-         ' L ' + ALT_XR + ' ' + altY(aBaja).toFixed(2) +
-         ' L ' + ALT_XR + ' ' + altY(aAlta).toFixed(2) + ' Z';
+  return d + ' L ' + altX(aBaja).toFixed(1) + ' ' + altY(aBaja).toFixed(1) +
+         ' L ' + altDer() + ' ' + altY(aBaja).toFixed(1) +
+         ' L ' + altDer() + ' ' + altY(aAlta).toFixed(1) + ' Z';
 }
 
 function pintarAltitud() {
   var caja = $('#f-alt');
   if (!caja) return;
-  var y0 = altY(0), yPie = ALT_ALTO - 0.5;
-  var s = '<svg viewBox="0 0 ' + ALT_W + ' ' + ALT_ALTO.toFixed(2) + '" ' +
-          'role="group" aria-label="Altitud">';
+  var ancho = Math.round(caja.clientWidth) || ALT_ANCHO;
+  if (ancho > 60) { ALT_ANCHO = ancho; altCurva(); }
+
+  var y0 = altY(0), yPie = ALT_ALTO - 2, costa = altCosta();
+  var s = '<svg viewBox="0 0 ' + ALT_ANCHO + ' ' + ALT_ALTO + '" height="' + ALT_ALTO +
+          '" role="group" aria-label="Altitud">';
   // el mar arranca en el margen, por debajo de la columna de cifras
-  s += '<path class="mar" d="M 0 ' + y0.toFixed(2) + ' L ' + ALT_COSTA + ' ' + y0.toFixed(2) +
-       ' L ' + ALT_COSTA + ' ' + yPie.toFixed(2) + ' L 0 ' + yPie.toFixed(2) + ' Z"/>';
-  s += '<path class="tierra" d="M ' + ALT_COSTA + ' ' + y0.toFixed(2) + ' ' +
-       ALT_SUP.map(function (p) { return 'L ' + p.x.toFixed(2) + ' ' + altY(p.a).toFixed(2); }).join(' ') +
-       ' L ' + ALT_XR + ' ' + altY(ALT_TOPE).toFixed(2) +
-       ' L ' + ALT_XR + ' ' + yPie.toFixed(2) + ' L ' + ALT_COSTA + ' ' + yPie.toFixed(2) + ' Z"/>';
-  s += '<line class="rejilla" x1="0" y1="' + y0.toFixed(2) + '" x2="' + ALT_COSTA +
-       '" y2="' + y0.toFixed(2) + '"/>';
+  s += '<path class="mar" d="M 0 ' + y0.toFixed(1) + ' L ' + costa + ' ' + y0.toFixed(1) +
+       ' L ' + costa + ' ' + yPie + ' L 0 ' + yPie + ' Z"/>';
+  s += '<path class="tierra" d="M ' + costa + ' ' + y0.toFixed(1) + ' ' +
+       ALT_SUP.map(function (p) { return 'L ' + p.x.toFixed(1) + ' ' + altY(p.a).toFixed(1); }).join(' ') +
+       ' L ' + altDer() + ' ' + altY(ALT_TOPE).toFixed(1) +
+       ' L ' + altDer() + ' ' + yPie + ' L ' + costa + ' ' + yPie + ' Z"/>';
+  s += '<line class="rejilla" x1="0" y1="' + y0.toFixed(1) + '" x2="' + costa +
+       '" y2="' + y0.toFixed(1) + '"/>';
   ALTURAS.forEach(function (h) {
-    s += '<line class="rejilla" x1="' + altX(h).toFixed(2) + '" y1="' + altY(h).toFixed(2) +
-         '" x2="' + ALT_XR + '" y2="' + altY(h).toFixed(2) + '"/>';
+    s += '<line class="rejilla" x1="' + altX(h).toFixed(1) + '" y1="' + altY(h).toFixed(1) +
+         '" x2="' + altDer() + '" y2="' + altY(h).toFixed(1) + '"/>';
   });
   var tr = tramosAlt();
   tr.forEach(function (r) {
     var a1 = r[0] - ALT_PASO / 2, a2 = r[1] + ALT_PASO / 2;
     s += '<path class="tramo" d="' + altMancha(a1, a2) + '"/>';
-    s += '<rect class="pilalab" x="1.5" y="' + altY(a2).toFixed(2) + '" width="' +
-         (ALT_XLAB - 4) + '" height="' + (altY(a1) - altY(a2)).toFixed(2) + '" rx="2.4"/>';
+    s += '<rect class="pilalab" x="5" y="' + altY(a2).toFixed(1) + '" width="' + (ALT_XLAB - 14) +
+         '" height="' + (altY(a1) - altY(a2)).toFixed(1) + '" rx="8"/>';
   });
   s += '<path class="suelo" d="M ' + ALT_SUP.map(function (p) {
-    return p.x.toFixed(2) + ' ' + altY(p.a).toFixed(2); }).join(' L ') + '"/>';
+    return p.x.toFixed(1) + ' ' + altY(p.a).toFixed(1); }).join(' L ') + '"/>';
   // lo unico que se repasa es la cuesta marcada, por encima del suelo
   tr.forEach(function (r) {
     var arr = altCuesta(r[0] - ALT_PASO / 2, r[1] + ALT_PASO / 2);
     if (arr.length < 2) return;
     s += '<path class="cuesta-on" d="M ' + arr.map(function (p) {
-      return p.x.toFixed(2) + ' ' + altY(p.a).toFixed(2); }).join(' L ') + '"/>';
+      return p.x.toFixed(1) + ' ' + altY(p.a).toFixed(1); }).join(' L ') + '"/>';
   });
   ALTURAS.forEach(function (h) {
     var y = altY(h), on = F.alt.indexOf(h) >= 0;
     s += '<g class="fila" data-h="' + h + '" data-on="' + (on ? 1 : 0) + '">' +
-         '<rect class="cel" x="0" y="' + (y - ALT_FILA / 2).toFixed(2) + '" width="' + ALT_W +
-         '" height="' + ALT_FILA.toFixed(2) + '"/>' +
-         '<text class="lab" x="' + (ALT_XLAB - 4.5) + '" y="' + (y + 1.15).toFixed(2) +
+         '<rect class="cel" x="0" y="' + (y - ALT_FILA / 2).toFixed(1) + '" width="' + ALT_ANCHO +
+         '" height="' + ALT_FILA + '"/>' +
+         '<text class="lab" x="' + (ALT_XLAB - 15) + '" y="' + (y + 4).toFixed(1) +
          '" text-anchor="end">' + h + '</text></g>';
   });
   caja.innerHTML = s + '</svg>';
@@ -2083,6 +2100,7 @@ function pintarAltitud() {
         textoTramo(r) + '">' + esc(textoTramo(r)) + svgIcono('x', 'quita') + '</button>';
   }).join('');
 }
+window.addEventListener('resize', pintarAltitud);
 
 function quitarTramoAlt(b) {
   var p = b.getAttribute('data-alt').split('-');
@@ -2103,13 +2121,35 @@ function quitarAltitud() { F.alt = []; render(); }
    que en los meses y con la misma espera. Si el arrastre empieza sobre algo
    ya marcado, borra en vez de poner, que es como se deshace un tramo.
 
-   Aqui pintar y desplazar el panel comparten el eje -los meses van de lado y
-   no se estorban-, asi que la espera trabaja mas. Por eso tocar una a una
-   tiene que seguir siendo comodo: con diez filas lo es. */
+   Con los meses bastaba con cederle al navegador el eje vertical: alli se
+   pinta de lado. Aqui se pinta en el mismo eje por el que se desplaza el
+   panel, y el navegador, en cuanto el dedo se movia, se quedaba el gesto y
+   mantener pulsado no llegaba nunca a pintar. Asi que la ladera se queda con
+   todos los gestos y, mientras no este pintando, desplaza ella el panel: un
+   pixel de dedo, un pixel de panel. Se pierde el deslizamiento por inercia
+   sobre el dibujo, que es el precio de poder pintar hacia abajo. */
 (function () {
   var caja = $('#f-alt');
   if (!caja) return;
-  var pintado = null, reloj = null, tragar = false;
+  var pintado = null, reloj = null, tragar = false, arrastre = null;
+  var cont = caja.closest('.panel-cuerpo');
+  var vel = 0, ultimoT = 0, inercia = null;
+
+  /* Al quedarnos el gesto se pierde el deslizamiento por inercia del
+     navegador, y sobre 357 px de dibujo se nota: hay que dar dos pasadas para
+     bajar lo que antes bajaba de un manotazo. Asi que se devuelve a mano, con
+     el mismo frenado de siempre. */
+  function lanzar(v) {
+    cancelAnimationFrame(inercia);
+    var t0 = performance.now();
+    inercia = requestAnimationFrame(function paso(t) {
+      var dt = Math.min(32, t - t0); t0 = t;
+      v *= Math.pow(0.95, dt / 16);
+      if (Math.abs(v) < 0.02 || !cont) return;
+      cont.scrollTop -= v * dt;
+      inercia = requestAnimationFrame(paso);
+    });
+  }
 
   function alturaEn(ev) {
     var e = document.elementFromPoint(ev.clientX, ev.clientY);
@@ -2131,23 +2171,45 @@ function quitarAltitud() { F.alt = []; render(); }
 
   caja.addEventListener('pointerdown', function (ev) {
     tragar = false;                     // cada pulsacion empieza limpia
+    cancelAnimationFrame(inercia);      // el dedo para lo que venia rodando
     var h = alturaEn(ev);
     if (h == null) return;
+    arrastre = { y: ev.clientY, movido: 0, tactil: ev.pointerType !== 'mouse' };
+    vel = 0; ultimoT = performance.now();
+    if (arrastre.tactil) { try { caja.setPointerCapture(ev.pointerId); } catch (e) {} }
     clearTimeout(reloj);
     reloj = setTimeout(function () {
       pintado = { ancla: h, antes: F.alt.slice(), pone: F.alt.indexOf(h) < 0 };
+      arrastre = null;
       try { caja.setPointerCapture(ev.pointerId); } catch (e) {}
       pintarHastaAlt(h);
       tragar = true;
     }, ESPERA_PINTAR);
   });
   caja.addEventListener('pointermove', function (ev) {
-    if (!pintado) { clearTimeout(reloj); return; }
-    ev.preventDefault();
-    var h = alturaEn(ev);
-    if (h != null) pintarHastaAlt(h);
+    if (pintado) {
+      ev.preventDefault();
+      var h = alturaEn(ev);
+      if (h != null) pintarHastaAlt(h);
+      return;
+    }
+    if (!arrastre) { clearTimeout(reloj); return; }
+    var dy = ev.clientY - arrastre.y;
+    arrastre.y = ev.clientY;
+    arrastre.movido += Math.abs(dy);
+    if (arrastre.movido > 8) clearTimeout(reloj);   // ya es un desplazamiento
+    var t = performance.now(), dt = t - ultimoT;
+    if (dt > 0) { vel = dy / dt; ultimoT = t; }
+    if (arrastre.tactil && cont) cont.scrollTop -= dy;
   });
-  function soltar() { clearTimeout(reloj); pintado = null; }
+  function soltar() {
+    clearTimeout(reloj);
+    if (arrastre && arrastre.movido > 8) {
+      tragar = true;                                     // movio: no es un toque
+      if (arrastre.tactil && Math.abs(vel) > 0.15) lanzar(vel);
+    }
+    pintado = null; arrastre = null;
+  }
   caja.addEventListener('pointerup', soltar);
   caja.addEventListener('pointercancel', soltar);
   caja.addEventListener('click', function (ev) {
