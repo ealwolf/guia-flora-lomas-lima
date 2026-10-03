@@ -1135,9 +1135,11 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .cara-cerro .ladera[data-on="1"] .relleno {
   fill: color-mix(in srgb, var(--acento) 32%, transparent);
 }
+/* Punta recta y no redonda: con la redonda el trazo se pasaba media unidad del
+   pie del cerro y se metia en el agua. */
 .cara-cerro .ladera .cresta {
   fill: none; stroke: var(--acento); stroke-width: 0;
-  stroke-linecap: round; stroke-linejoin: round; transition: stroke-width .15s;
+  stroke-linecap: butt; stroke-linejoin: round; transition: stroke-width .15s;
 }
 .cara-cerro .ladera[data-on="1"] .cresta { stroke-width: 2; }
 .cara-cerro .rotulo { font-size: 2.6px; fill: var(--costa); }

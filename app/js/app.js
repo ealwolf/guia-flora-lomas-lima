@@ -303,7 +303,8 @@ function filtrar(omitir) {
     // «Endemica + Amenazada» son 2 especies, no 40. Por eso se dibujan como
     // casillas y no como fichas.
     if (F.conserv.length && !F.conserv.every(function (c) { return conservOk(e, c); })) return false;
-    if (F.cara.length && !F.cara.every(function (l) { return ocupaCara(e, l); })) return false;
+    if (omitir !== 'cara' && F.cara.length &&
+        !F.cara.every(function (l) { return ocupaCara(e, l); })) return false;
     if (omitir !== 'alt' && F.alt.length) {
       if (e.altitud[0] == null || e.altitud[1] == null) return false;
       // vale con que pise alguna de las franjas marcadas, como con los meses
@@ -1507,16 +1508,25 @@ function pintarCaras() {
   s += '<path d="M1 17.5 q 4 -3.4 8 -1.2 q 3.4 -4 7.6 -1.4 q 3.6 -2.6 6.8 .6 ' +
        'q 4 -1 7 2.4 q 3 2 4.6 5.6 L ' + (SILLA + 3) + ' 33 L 1 33 Z" ' +
        'fill="url(#nieblaIzq)"/>';
-  s += '<rect class="agua" x="2" y="39" width="6.5" height="5" rx="1"/>';
+  /* El mar se cuelga del pie del cerro, no de una altura puesta a mano: antes
+     su borde de arriba quedaba por encima del pie y el agua parecia subirse a
+     la tierra, y por abajo sobresalia del suelo del dibujo. */
+  var pie = pts[0];
+  s += '<rect class="agua" x="1" y="' + pie.y.toFixed(2) + '" width="' +
+       (pie.x - 1).toFixed(2) + '" height="' + (CARA_SUELO - pie.y).toFixed(2) + '"/>';
   s += '<path class="suelo" d="' + caraRelleno(pts) + '"/>';
   s += '<path class="seco" d="' + caraRelleno(est) + '"/>';
+  /* La linea del terreno va ANTES de las laderas. Iba despues, y al marcar una
+     se le veia por el medio al trazo grueso, como una raya partiendolo en dos.
+     Debajo, el trazo verde la tapa del todo donde esta marcada y la deja ver
+     donde no. */
+  s += '<path class="linea" d="' + caraLinea(pts) + '"/>';
   LADOS.forEach(function (d) {
     var arr = d.l === 'o' ? oes : est;
     s += '<g class="ladera" data-lado="' + d.l + '" data-on="' + (puesto(d.l) ? 1 : 0) + '">' +
          '<path class="relleno" d="' + caraRelleno(arr) + '"/>' +
          '<path class="cresta" d="' + caraLinea(arr) + '"/></g>';
   });
-  s += '<path class="linea" d="' + caraLinea(pts) + '"/>';
   s += '<text class="rotulo" x="3.4" y="13.5">neblina</text>';
   s += '<text class="rotulo" x="3.4" y="38">mar</text>';
   s += '<text class="rotulo" x="62" y="12" text-anchor="end">cordillera</text>';
@@ -1524,8 +1534,11 @@ function pintarCaras() {
 
   // los nombres y las cuentas, en HTML y debajo: sobre la tierra el gris se
   // queda en 4,27:1 y no llega a AA
+  // las cuentas cuentan sobre lo que dejan los demas filtros, con la cara
+  // fuera: igual que las barras de los meses
+  var hay = filtrar('cara');
   s += '<div class="cara-pies">' + LADOS.map(function (d) {
-    var n = G.especies.filter(function (e) { return ocupaCara(e, d.l); }).length;
+    var n = hay.filter(function (e) { return ocupaCara(e, d.l); }).length;
     return '<button data-lado="' + d.l + '" aria-pressed="' + puesto(d.l) + '">' +
         '<b class="cuenta">' + n + '</b>' + esc(d.txt) + '</button>';
   }).join('') + '</div>';
