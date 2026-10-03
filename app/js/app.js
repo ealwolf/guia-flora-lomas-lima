@@ -590,7 +590,7 @@ function pintarActivos() {
              f: 'conserv', v: v });
   });
   F.cara.forEach(function (v) {
-    f.push({ ico: 'ladera-mar', et: ladoDe(v).txt, tipo: 'Ladera donde crece',
+    f.push({ ico: 'circle-half', et: ladoDe(v).txt, tipo: 'Ladera donde crece',
              f: 'cara', v: v });
   });
   var tramo = tramoMeses();
