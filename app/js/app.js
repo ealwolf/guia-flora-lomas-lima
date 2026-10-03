@@ -235,7 +235,23 @@ function conservOk(e, id) {
    mismo punto ya significaba 550: el mismo sitio, dos cosas distintas. */
 function altActiva() { return F.alt.length > 0; }
 
-/* Las alturas marcadas, agrupadas en tramos seguidos. De aqui salen tanto las
+/* Cada numero de la escala es el TECHO de una franja de 100 m: 100 es «del mar
+   a los 100», 500 es «de 400 a 500». Antes era una cota suelta y marcar 100 no
+   parecia llegar al agua, que es justo lo que el dibujo tiene que contar.
+
+   El criterio cambia con ello: ya no es «la especie vive a esa cota» sino «la
+   especie pisa esa franja». Se nota: la franja de 800 pasa de 35 especies a
+   51, porque ahi entran las que llegan a 750 y antes se caian por no tocar el
+   800 clavado. El «mayor que» del suelo evita que una especie que acaba justo
+   en el borde aparezca tambien en la franja de encima, donde solo estaria por
+   un punto; con «mayor o igual» esa misma franja se iba a 68. */
+function altFranja(h) { return [h - ALT_PASO, h]; }
+function altPisa(e, h) {
+  var lo = h - ALT_PASO;
+  return (lo <= 0 || e.altitud[1] > lo) && e.altitud[0] <= h;
+}
+
+/* Las franjas marcadas, agrupadas en tramos seguidos. De aqui salen tanto las
    manchas del dibujo como las fichas, asi que fundirse es automatico: lo que
    se guarda es un conjunto de alturas, no una lista de tramos. */
 function tramosAlt() {
@@ -247,7 +263,7 @@ function tramosAlt() {
   return r;
 }
 function textoTramo(r) {
-  return r[0] === r[1] ? r[0] + ' msnm' : r[0] + '–' + r[1] + ' msnm';
+  return (r[0] - ALT_PASO) + '–' + r[1] + ' msnm';
 }
 
 function activos() {
@@ -289,10 +305,9 @@ function filtrar(omitir) {
     if (F.conserv.length && !F.conserv.every(function (c) { return conservOk(e, c); })) return false;
     if (F.cara.length && F.cara.indexOf(e._cara) < 0) return false;
     if (omitir !== 'alt' && F.alt.length) {
-      var min = e.altitud[0], max = e.altitud[1];
-      if (min == null || max == null) return false;
-      // vale con que viva a alguna de las alturas marcadas, como con los meses
-      if (!F.alt.some(function (h) { return h >= min && h <= max; })) return false;
+      if (e.altitud[0] == null || e.altitud[1] == null) return false;
+      // vale con que pise alguna de las franjas marcadas, como con los meses
+      if (!F.alt.some(function (h) { return altPisa(e, h); })) return false;
     }
     return true;
   });
@@ -2006,44 +2021,33 @@ var ALT_ANCHO = 340;                    // lo ultimo que se midio
 function altY(a) {
   return ALT_ARRIBA + (ALT_TOPE - a) * (ALT_ALTO - ALT_ARRIBA) / (ALT_TOPE - ALT_PIE);
 }
-function altCosta() { return 64; }                      // la orilla
+function altCima() { return ALT_ANCHO - 20; }
+function altDer()  { return ALT_ANCHO - 10; }
 
-/* El lecho del mar, de la orilla hacia fuera. El agua era un rectangulo, y un
-   rectangulo azul no se lee como mar: ahora la tierra sigue por debajo del
-   agua, tendida junto a la orilla y hundiendose al alejarse, y el azul es lo
-   que queda encima. */
-function altLecho() {
-  var y0 = altY(0), yPie = ALT_ALTO - 2, c = altCosta(), p = [];
-  for (var i = 0; i <= 24; i++) {
-    /* La cuesta es solo la orilla: en el primer tercio baja a su hondura y de
-       ahi para fuera es mar abierto. Con la cuesta repartida por todo el
-       ancho -que fue el primer intento- el agua se quedaba en un triangulo de
-       64x29 y dejaba de leerse como mar. */
-    var t = i / 24, u = Math.min(1, t / 0.35), e = u * u * (3 - 2 * u);
-    p.push({ x: c * (1 - t), y: y0 + (yPie - y0) * e });
-  }
-  return p;
-}
-function altCima()  { return ALT_ANCHO - 20; }
-function altDer()   { return ALT_ANCHO - 10; }
+/* El terreno es UNA sola curva, del fondo del mar a la cima. Antes eran dos
+   -el cerro por un lado y el lecho del mar por otro, pegados en la orilla- y
+   se notaba el codo; ademas, para que al agua le quedara cuerpo, el lecho
+   tenia que caer deprisa y parecia un abismo. Siendo una sola, la orilla deja
+   de ser un numero elegido: es donde la curva cruza el cero, y la playa sale
+   tendida sola, porque ahi la ese esta en su tramo plano.
 
-/* La ese va sobre la altitud y no sobre la distancia: asi sale playa tendida
+   La ese va sobre la altitud y no sobre la distancia: asi hay playa tendida
    abajo, ladera recia en medio y cumbre redondeada arriba. Al reves salia un
-   farallon pegado al mar. Se rehace con cada ancho, que es lo que hace que el
+   farallon junto al mar. Se rehace con cada ancho, que es lo que hace que el
    cerro se tienda en vez de estirarse. */
 var ALT_SUP = [];
 function altCurva() {
-  var c = altCosta(), k = altCima() - c;
+  var k = altCima();
   ALT_SUP = [];
-  for (var i = 0; i <= 200; i++) {
-    var t = i / 200, e = t * t * (3 - 2 * t);
-    ALT_SUP.push({ x: c + t * k, a: e * ALT_TOPE });
+  for (var i = 0; i <= 240; i++) {
+    var t = i / 240, e = t * t * (3 - 2 * t);
+    ALT_SUP.push({ x: t * k, a: ALT_PIE + e * (ALT_TOPE - ALT_PIE) });
   }
 }
 altCurva();
 
 function altX(a) {
-  if (a <= 0) return altCosta();
+  if (a <= ALT_SUP[0].a) return ALT_SUP[0].x;
   for (var i = 1; i < ALT_SUP.length; i++) {
     if (ALT_SUP[i].a >= a) {
       var p = ALT_SUP[i - 1], q = ALT_SUP[i];
@@ -2052,6 +2056,7 @@ function altX(a) {
   }
   return altCima();
 }
+function altCosta() { return altX(0); }        // donde la curva cruza el cero
 function altCuesta(a1, a2) {
   return ALT_SUP.filter(function (p) { return p.a >= a1 && p.a <= a2; });
 }
@@ -2076,19 +2081,21 @@ function pintarAltitud() {
   if (ancho > 60) { ALT_ANCHO = ancho; altCurva(); }
 
   var y0 = altY(0), yPie = ALT_ALTO - 2, costa = altCosta();
+  var traza = function (arr) {
+    return arr.map(function (p) {
+      return p.x.toFixed(1) + ' ' + altY(p.a).toFixed(1);
+    }).join(' L ');
+  };
   var s = '<svg viewBox="0 0 ' + ALT_ANCHO + ' ' + ALT_ALTO + '" height="' + ALT_ALTO +
           '" role="group" aria-label="Altitud">';
-  // primero el lecho, que es tierra, y encima el agua: asi el mar tiene fondo
-  var lecho = altLecho().map(function (p) {
-    return p.x.toFixed(1) + ' ' + p.y.toFixed(1);
-  }).join(' L ');
-  s += '<path class="lecho" d="M ' + lecho + ' L 0 ' + yPie + ' Z"/>';
-  s += '<path class="mar" d="M 0 ' + y0.toFixed(1) + ' L ' + lecho + ' Z"/>';
-  s += '<path class="tierra" d="M ' + costa + ' ' + y0.toFixed(1) + ' ' +
-       ALT_SUP.map(function (p) { return 'L ' + p.x.toFixed(1) + ' ' + altY(p.a).toFixed(1); }).join(' ') +
+  // la tierra entera, la de debajo del agua incluida, y el agua por encima
+  s += '<path class="tierra" d="M 0 ' + yPie + ' L ' + traza(ALT_SUP) +
        ' L ' + altDer() + ' ' + altY(ALT_TOPE).toFixed(1) +
-       ' L ' + altDer() + ' ' + yPie + ' L ' + costa + ' ' + yPie + ' Z"/>';
-  s += '<line class="rejilla" x1="0" y1="' + y0.toFixed(1) + '" x2="' + costa +
+       ' L ' + altDer() + ' ' + yPie + ' Z"/>';
+  var sumergido = ALT_SUP.filter(function (p) { return p.a <= 0; }).reverse();
+  s += '<path class="mar" d="M 0 ' + y0.toFixed(1) + ' L ' + costa.toFixed(1) + ' ' +
+       y0.toFixed(1) + ' L ' + traza(sumergido) + ' Z"/>';
+  s += '<line class="rejilla" x1="0" y1="' + y0.toFixed(1) + '" x2="' + altDer() +
        '" y2="' + y0.toFixed(1) + '"/>';
   ALTURAS.forEach(function (h) {
     s += '<line class="rejilla" x1="' + altX(h).toFixed(1) + '" y1="' + altY(h).toFixed(1) +
@@ -2096,7 +2103,7 @@ function pintarAltitud() {
   });
   var tr = tramosAlt();
   tr.forEach(function (r) {
-    var a1 = r[0] - ALT_PASO / 2, a2 = r[1] + ALT_PASO / 2;
+    var a1 = r[0] - ALT_PASO, a2 = r[1];       // del suelo del tramo a su techo
     s += '<path class="tramo" d="' + altMancha(a1, a2) + '"/>';
     s += '<rect class="pilalab" x="5" y="' + altY(a2).toFixed(1) + '" width="' + (ALT_XLAB - 14) +
          '" height="' + (altY(a1) - altY(a2)).toFixed(1) + '" rx="8"/>';
@@ -2105,25 +2112,22 @@ function pintarAltitud() {
     return p.x.toFixed(1) + ' ' + altY(p.a).toFixed(1); }).join(' L ') + '"/>';
   // lo unico que se repasa es la cuesta marcada, por encima del suelo
   tr.forEach(function (r) {
-    var arr = altCuesta(r[0] - ALT_PASO / 2, r[1] + ALT_PASO / 2);
+    var arr = altCuesta(r[0] - ALT_PASO, r[1]);
     if (arr.length < 2) return;
-    s += '<path class="cuesta-on" d="M ' + arr.map(function (p) {
-      return p.x.toFixed(1) + ' ' + altY(p.a).toFixed(1); }).join(' L ') + '"/>';
+    s += '<path class="cuesta-on" d="M ' + traza(arr) + '"/>';
   });
+  /* Lo que se toca es la franja, no una banda centrada en la cifra: va de la
+     raya de su numero hacia abajo, que es exactamente lo que se pinta al
+     marcarla. La cifra se apoya dentro de su propia franja, un poco por
+     debajo de la raya, para que se vea de cual habla. */
   ALTURAS.forEach(function (h) {
     var y = altY(h), on = F.alt.indexOf(h) >= 0;
     s += '<g class="fila" data-h="' + h + '" data-on="' + (on ? 1 : 0) + '">' +
-         '<rect class="cel" x="0" y="' + (y - ALT_FILA / 2).toFixed(1) + '" width="' + ALT_ANCHO +
+         '<rect class="cel" x="0" y="' + y.toFixed(1) + '" width="' + ALT_ANCHO +
          '" height="' + ALT_FILA + '"/>' +
-         '<text class="lab" x="' + (ALT_XLAB - 15) + '" y="' + (y + 4).toFixed(1) +
+         '<text class="lab" x="' + (ALT_XLAB - 15) + '" y="' + (y + 12).toFixed(1) +
          '" text-anchor="end">' + h + '</text></g>';
   });
-  /* El cero cierra la escala, en la linea del agua. Va fuera de las filas a
-     proposito: no es una opcion. El minimo de los 134 dibujos del libro es
-     exactamente 100, asi que una franja 0-100 saldria siempre vacia; el cero
-     esta para decir donde empieza la cuenta, no para elegirlo. */
-  s += '<text class="lab cero" x="' + (ALT_XLAB - 15) + '" y="' + (altY(0) + 4).toFixed(1) +
-       '" text-anchor="end">0</text>';
   caja.innerHTML = s + '</svg>';
 
   $('#alt-fichas').innerHTML = tr.map(function (r) {
