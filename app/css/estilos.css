@@ -715,27 +715,11 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    rectangulo que mide el toque deja de ser el del dibujo. Un pixel no se ve,
    pero la cuenta se apoya en que coinciden. */
 .vm-lienzo .mapa-caja { border: 1px solid var(--borde); border-radius: var(--r-s); }
-/* Sin pie. Tenia un «Listo» que hacia lo mismo que la flecha de volver -dos
-   salidas para una sola puerta- y su franja blanca hacia que la vista
-   pareciera una ventanita encima de otra en vez de la pantalla del mapa. Lo
-   unico que habia ahi era la pista, que ahora flota sobre el mapa y no quita
-   sitio; no recibe toques, para no estorbar al dedo. */
-/* Con .pista a secas no basta: la regla general de las pistas va despues en
-   el archivo y le ganaba el margen -que descentraba la burbuja- y el color
-   -que la dejaba en gris tenue sobre fondo oscuro-. */
-.mapa-caja .pista-mapa {
-  /* left/right y margen automatico, no left:50%: con left:50% el ancho que
-     se puede ocupar es solo de la mitad al borde -173 px de los 323- y la
-     frase se partia en dos sin necesidad. Es el mismo tropiezo del aviso de
-     deshacer. */
-  position: absolute; left: 0; right: 0; bottom: 10px;
-  width: max-content; max-width: calc(100% - 24px); margin: 0 auto;
-  text-align: center;
-  padding: 5px 12px; border-radius: 999px;
-  background: var(--chip-mapa); color: var(--chip-mapa-txt);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, .22);
-  pointer-events: none; z-index: 4;
-}
+/* Esta vista no tiene pie ni pista. El pie llevaba un «Listo» que hacia lo
+   mismo que la flecha de volver, y su franja blanca hacia que pareciera una
+   ventanita encima de otra en vez de la pantalla del mapa. Lo que quedo ahi
+   fue un rato la pista del gesto -«toca una loma», «arrastra para mover»-,
+   pero el mapa se maneja ya como cualquier otro y no hay nada que explicar. */
 
 .mapa-caja { position: relative; max-width: 420px; margin: 2px auto 0; }
 .mapa-elige { overflow: hidden; border-radius: var(--r-s); }
@@ -781,7 +765,6 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 /* solo las no elegidas: en el movil el hover se queda pegado tras el toque, y
    la loma recien elegida se veia mas palida que las demas elegidas */
 #mapa-elige .loma:not(.activa):hover { fill: color-mix(in srgb, var(--acento) 55%, transparent); }
-#mapa-pista { text-align: center; }
 
 /* Las lomas puestas, en una pila encima del mapa.
 
@@ -800,7 +783,9 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .mapa-puestas {
   position: absolute; top: 8px; left: 8px; z-index: 4;
   display: flex; flex-direction: column; align-items: flex-start; gap: 5px;
-  max-width: min(72%, 258px); max-height: 56%;
+  /* Un tercio de alto y no la mitad: desplegada, con la mitad se comia el
+     cerro. Entran cinco fichas y a partir de ahi se desplaza. */
+  max-width: min(72%, 258px); max-height: 38%;
 }
 .mapa-puestas.oculto { display: none; }
 /* La cuenta y el «Quitar» no se desplazan: son el mando de la pila y tienen
@@ -810,6 +795,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   display: flex; flex-direction: column; align-items: flex-start; gap: 5px;
   flex: 0 1 auto; min-height: 0; max-width: 100%;
   overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y;
+  padding-right: 10px;                  /* las fichas iban pegadas a la barra */
 }
 .mp-lista.oculto { display: none; }
 .mapa-puestas .chip {

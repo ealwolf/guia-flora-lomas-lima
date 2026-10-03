@@ -1301,10 +1301,6 @@ function sincronizarMapa() {
     p.classList.toggle('activa', F.loma.indexOf(p.getAttribute('data-loma')) >= 0);
   });
   pintarPuestas();
-  // los nombres ya estan en la pila: el pie vuelve a ser para el gesto
-  $('#mapa-pista').textContent = MV && MV.z > 1.001
-      ? 'Arrastra para mover el mapa.'
-      : 'Toca una loma. Doble toque para acercar.';
 }
 
 /* Que loma hay bajo el dedo.
