@@ -1117,23 +1117,29 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .cara-cerro .agua { fill: var(--mar); }
 .cara-cerro .suelo { fill: var(--tierra); }
 .cara-cerro .seco { fill: var(--seco); }
-.cara-cerro .niebla { fill: var(--niebla); }
+/* el degradado lleva el color en los topes: asi la niebla se deshace al subir
+   hacia la cumbre en vez de cortarse en recto */
+.cara-cerro .nb { stop-color: var(--niebla); }
 .cara-cerro .linea {
   fill: none; stroke: var(--costa); stroke-width: .5; stroke-linejoin: round;
 }
-.cara-cerro .mata { stroke: var(--acento); stroke-width: .5; fill: none;
-                    stroke-linecap: round; opacity: .55; }
 .cara-cerro .ladera { cursor: pointer; }
+/* El <g> ya no lleva tabindex -no lo recibia de todos modos- y con el se fue
+   el recuadro negro que el navegador pintaba al pulsar y tapaba media ladera.
+   El teclado va por los botones de abajo, que son botones de verdad. */
+.cara-pies button:focus-visible {
+  outline: 2px solid var(--acento); outline-offset: 2px;
+}
 .cara-cerro .ladera .relleno { fill: transparent; transition: fill .15s; }
 .cara-cerro .ladera:hover .relleno { fill: color-mix(in srgb, var(--acento) 13%, transparent); }
-.cara-cerro .ladera[aria-pressed="true"] .relleno {
+.cara-cerro .ladera[data-on="1"] .relleno {
   fill: color-mix(in srgb, var(--acento) 32%, transparent);
 }
 .cara-cerro .ladera .cresta {
   fill: none; stroke: var(--acento); stroke-width: 0;
   stroke-linecap: round; stroke-linejoin: round; transition: stroke-width .15s;
 }
-.cara-cerro .ladera[aria-pressed="true"] .cresta { stroke-width: 2; }
+.cara-cerro .ladera[data-on="1"] .cresta { stroke-width: 2; }
 .cara-cerro .rotulo { font-size: 2.6px; fill: var(--costa); }
 /* Los nombres y las cuentas van en HTML debajo del dibujo, no dentro: sobre la
    tierra el gris se queda en 4,27:1 y no llega a AA. */

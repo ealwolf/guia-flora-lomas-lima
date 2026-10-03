@@ -1490,24 +1490,29 @@ function pintarCaras() {
   var oes = caraTrozo(pts, 0, SILLA), est = caraTrozo(pts, SILLA, W);
   var puesto = function (l) { return F.cara.indexOf(l) >= 0; };
 
-  var s = '<svg viewBox="2 5 62 41" role="group" aria-label="Cara de la loma">';
-  /* la neblina entra por la izquierda y se para en la cumbre; va debajo de la
-     tierra, asi que solo asoma por el cielo de la cara marina */
-  s += '<path class="niebla" d="M2 15 q 5 -2.6 10 0 t 10 0 q 6 .6 10 4.5 ' +
-       'L ' + SILLA + ' 32 L 2 32 Z"/>';
+  /* El dibujo va oculto al lector de pantalla: lo que se puede decir con
+     palabras ya lo dicen los dos botones de abajo, que son botones de verdad
+     y por ahi pasa el tabulador. Un <g> con tabindex no recibe el foco en
+     SVG, asi que ponerle role="button" prometia un teclado que no existia. */
+  var s = '<svg viewBox="2 5 62 41" aria-hidden="true" focusable="false">';
+  /* La neblina entra por la izquierda y se deshace al subir. Va debajo de la
+     tierra, asi que solo asoma por el cielo de la cara marina, y se desvanece
+     hacia la cumbre con un degradado: antes era una mancha de borde recto que
+     parecia un bloque, no niebla. */
+  s += '<defs><linearGradient id="nieblaIzq" x1="0" y1="0" x2="1" y2="0">' +
+       '<stop offset="0" class="nb" stop-opacity=".9"/>' +
+       '<stop offset=".5" class="nb" stop-opacity=".7"/>' +
+       '<stop offset="1" class="nb" stop-opacity="0"/>' +
+       '</linearGradient></defs>';
+  s += '<path d="M1 17.5 q 4 -3.4 8 -1.2 q 3.4 -4 7.6 -1.4 q 3.6 -2.6 6.8 .6 ' +
+       'q 4 -1 7 2.4 q 3 2 4.6 5.6 L ' + (SILLA + 3) + ' 33 L 1 33 Z" ' +
+       'fill="url(#nieblaIzq)"/>';
   s += '<rect class="agua" x="2" y="39" width="6.5" height="5" rx="1"/>';
   s += '<path class="suelo" d="' + caraRelleno(pts) + '"/>';
   s += '<path class="seco" d="' + caraRelleno(est) + '"/>';
-  // la cara marina reverdece, que es lo que hace la neblina
-  oes.forEach(function (p, i) {
-    if (i % 7) return;
-    s += '<path class="mata" d="M ' + p.x.toFixed(1) + ' ' + p.y.toFixed(1) +
-         ' q .4 -.9 1 -1.7"/>';
-  });
   LADOS.forEach(function (d) {
     var arr = d.l === 'o' ? oes : est;
-    s += '<g class="ladera" data-lado="' + d.l + '" role="button" tabindex="0" ' +
-         'aria-pressed="' + puesto(d.l) + '" aria-label="' + esc(d.txt) + '">' +
+    s += '<g class="ladera" data-lado="' + d.l + '" data-on="' + (puesto(d.l) ? 1 : 0) + '">' +
          '<path class="relleno" d="' + caraRelleno(arr) + '"/>' +
          '<path class="cresta" d="' + caraLinea(arr) + '"/></g>';
   });
@@ -1534,14 +1539,7 @@ $('#f-cara').addEventListener('click', function (ev) {
   alterna(F.cara, b.getAttribute('data-lado'));
   render();
 });
-$('#f-cara').addEventListener('keydown', function (ev) {
-  if (ev.key !== 'Enter' && ev.key !== ' ') return;
-  var b = ev.target.closest('.ladera[data-lado]');
-  if (!b) return;
-  ev.preventDefault();
-  alterna(F.cara, b.getAttribute('data-lado'));
-  render();
-});
+
 
 /* ---------- meses ---------- */
 /* Si los meses puestos son un tramo seguido, una sola ficha lo dice mejor que
