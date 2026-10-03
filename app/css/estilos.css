@@ -303,6 +303,13 @@ button {
 .pasos b { font-weight: 600; }
 
 .ficha-libro { font-size: var(--t-1); line-height: 1.55; color: var(--tenue); }
+/* La cita bibliografica y el sello de fecha: letra chica, que son para quien
+   quiera citar o comprobar, no para quien esta leyendo el aviso. */
+.ficha-libro .cita {
+  font-size: var(--t-0); color: var(--tenue); font-style: italic;
+  border-left: 2px solid var(--borde); padding-left: 10px;
+}
+.ficha-libro .menudo { font-size: var(--t-0); color: var(--tenue); }
 .ficha-libro b { color: var(--texto); }
 .ficha-libro p { margin: 0 0 9px; }
 

@@ -2440,7 +2440,21 @@ function quitarAltitud() { F.alt = []; render(); }
 
 function abrirInfo(v) {
   if (v) {
+    /* Lo primero que se lee es que esto no es oficial. Va antes que la ficha
+       del libro a proposito: quien abre esta pantalla suele venir buscando
+       quien responde de lo que esta leyendo. */
     $('#info-libro').innerHTML =
+      '<h3>' + svgIcono('warning-circle') + 'Aviso</h3>' +
+      '<div class="ficha-libro">' +
+        '<p><b>Esta no es una aplicación oficial.</b> No está hecha, revisada ' +
+          'ni respaldada por el SERFOR ni por los autores de la guía. Es un ' +
+          'proyecto de la asociación Lomas de Paraíso para poder consultar el ' +
+          'libro en el campo, sin señal.</p>' +
+        '<p>Todo el contenido —textos, fotografías, dibujos y datos— es de la ' +
+          'guía y pertenece a sus autores y al SERFOR. Si algo de aquí no ' +
+          'coincide con el libro, manda el libro.</p>' +
+      '</div>' +
+
       '<h3>' + svgIcono('book-open') + 'El libro</h3>' +
       '<div class="ficha-libro">' +
         '<p><b>' + esc(G.meta.titulo) + '</b><br>' + esc(G.meta.autores) + '<br>' +
@@ -2448,8 +2462,30 @@ function abrirInfo(v) {
         '<p>' + G.meta.especies + ' especies · ' + G.lomas.length + ' lomas · ' +
           (G.meta.nFotos || '') + ' fotografías</p>' +
         '<p>Fotografías: ' + esc(G.meta.fotografias) + '</p>' +
-        '<p>Esta app reproduce el contenido de la guía; los datos salen del PDF ' +
-          'publicado por SERFOR. El contenido y las fotografías son de sus autores.</p>' +
+        '<p class="cita">' + esc(G.meta.cita) + '</p>' +
+      '</div>' +
+
+      '<h3>' + svgIcono('seal-check') + 'Gratis, y sin nada a cambio</h3>' +
+      '<div class="ficha-libro">' +
+        '<p>Es gratuita y lo seguirá siendo. No tiene publicidad, ni compras, ' +
+          'ni cuentas, ni versión de pago. Nadie gana dinero con ella.</p>' +
+        '<p>No recoge ningún dato tuyo. No hay estadísticas de uso ni rastreo: ' +
+          'funciona entera en tu teléfono y no envía nada a ningún servidor. Lo ' +
+          'único que descarga son sus propias fotos, y sólo si se lo pides.</p>' +
+      '</div>' +
+
+      '<h3>' + svgIcono('sliders-horizontal') + 'Qué pone la app de su parte</h3>' +
+      '<div class="ficha-libro">' +
+        '<p>Casi nada, y va separado del dato del libro para que se pueda ' +
+          'distinguir: el <b>color de la flor</b>, deducido del texto y de las ' +
+          'fotografías para poder buscar por color; <b>2 erratas</b> de la ' +
+          'extracción del PDF; <b>2 sinónimos</b> científicos; y <b>1 loma</b> ' +
+          'observada por nosotros, que la guía no cita.</p>' +
+        '<p>Hay además <b>15 fichas</b> en las que el dibujo del perfil y el ' +
+          'texto de la propia guía no dicen lo mismo sobre la altitud. Están ' +
+          'anotadas, pero <b>no se ha cambiado ninguna</b>: la app enseña lo que ' +
+          'dice el dibujo, que es lo que hace el libro.</p>' +
+        '<p class="menudo">Datos generados el ' + esc(G.meta.generado) + '.</p>' +
       '</div>';
   }
   abrirPanel(v, '#panel-info');
