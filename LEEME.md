@@ -145,6 +145,8 @@ Guía de Flora de las Lomas de Lima/
 │
 ├── scripts/
 │   ├── construir.py        datos/ → app/js/ y app/sw.js
+│   ├── publicar.py         app/ → flora-lomas-app/ y su zip
+│   ├── servir.py           servidor de pruebas, sin caché
 │   ├── sw.plantilla.js     de donde sale sw.js
 │   └── icono.py            dibuja el icono (se ejecuta una vez)
 │

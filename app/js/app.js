@@ -1445,8 +1445,10 @@ var CUENTAN = {
    Se escribe «x/n» -lo que queda y lo que hay en el libro- en vez de apagar
    las que den cero: apagarlas evita un clic en balde pero obliga a adivinar
    cual de los filtros puestos la bloquea, mientras que un «0/3» lo dice solo.
-   El denominador sale solo cuando algo estrecha esa seccion; sin filtros,
-   «7/7» en 123 opciones seria ruido.
+   Tampoco se atenuan: al 45% parecian deshabilitadas, que era lo mismo que
+   queriamos evitar. El denominador sale solo cuando los dos numeros difieren;
+   «1/1» o «12/12» no dicen nada, y sin filtros el panel se ve igual que
+   siempre.
 
    Cada seccion se cuenta con ella misma fuera. Si no, al marcar «Amarillo»
    los demas colores se irian a cero, porque dentro de un grupo las opciones
@@ -1454,22 +1456,18 @@ var CUENTAN = {
 
    Cuesta 0,36 ms por render, contra los 24 que cuesta el render entero. */
 function pintarCuentas() {
-  var base = {}, estrecha = {}, tot = G.especies.length;
+  var base = {};
   $$('#panel [data-f]').forEach(function (b) {
     var f = b.dataset.f, ok = CUENTAN[f];
     var span = ok && b.querySelector('.cuenta');
     if (!span) return;
-    if (!base[f]) {
-      base[f] = filtrar(f);
-      estrecha[f] = base[f].length < tot;
-    }
+    if (!base[f]) base[f] = filtrar(f);
     var v = b.dataset.v, n = 0;
     for (var i = 0; i < base[f].length; i++) if (ok(base[f][i], v)) n++;
-    var total = span.getAttribute('data-total');
-    span.textContent = estrecha[f] ? n + '/' + total : total;
-    // atenuada, nunca apagada: si no, el usuario tendria que adivinar que
-    // quitar para recuperarla
-    b.classList.toggle('vacia', n === 0);
+    // el denominador solo cuando dice algo: «1/1» o «12/12» es ruido, y asi
+    // el panel sin filtros se ve igual que siempre
+    var total = +span.getAttribute('data-total');
+    span.textContent = n === total ? total : n + '/' + total;
   });
 }
 
