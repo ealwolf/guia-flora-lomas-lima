@@ -372,6 +372,13 @@ button {
   background: var(--acento); border-color: var(--acento); color: var(--sobre-acento);
 }
 .chip .cuenta { color: var(--tenue); font-weight: 400; font-variant-numeric: tabular-nums; }
+/* Una opcion que ahora mismo no dejaria nada se atenua, pero NO se apaga: su
+   cuenta dice «0/3», que ya explica que hay tres en el libro y que lo puesto
+   las tapa. Apagarla ahorraria un clic en balde a cambio de obligar a
+   adivinar cual de los filtros la bloquea. Si esta marcada se ve entera, que
+   hay que poder desmarcarla. */
+.chip.vacia, .casilla.vacia { opacity: .45; }
+.chip.vacia[aria-pressed="true"], .casilla.vacia[aria-checked="true"] { opacity: 1; }
 .chip[aria-pressed="true"] .cuenta { color: var(--sobre-acento); opacity: .75; }
 .punto { width: 13px; height: 13px; border-radius: 50%; border: 1px solid rgba(0,0,0,.18); flex: none; }
 

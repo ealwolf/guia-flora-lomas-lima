@@ -291,18 +291,21 @@ function filtrar(omitir) {
     for (var i = 0; i < term.length; i++) if (e._b.indexOf(term[i]) < 0) return false;
     // basta con que coincida cualquiera de sus colores: una flor entre
     // blanca y amarilla debe salir en las dos busquedas
-    if (F.color.length && !coloresDe(e).some(function (c) {
+    if (omitir !== 'color' && F.color.length && !coloresDe(e).some(function (c) {
           return F.color.indexOf(c) >= 0; })) return false;
-    if (F.grupo.length   && F.grupo.indexOf(e.grupo) < 0) return false;
-    if (F.familia.length && F.familia.indexOf(e.familia) < 0) return false;
+    if (omitir !== 'grupo' && F.grupo.length && F.grupo.indexOf(e.grupo) < 0) return false;
+    if (omitir !== 'familia' && F.familia.length && F.familia.indexOf(e.familia) < 0) return false;
     if (omitir !== 'mes' && F.mes.length &&
         !F.mes.some(function (m) { return e.flor.indexOf(m) >= 0; })) return false;
-    if (F.loma.length    && !F.loma.some(function (l) { return e.lomas.indexOf(l) >= 0; })) return false;
-    if (F.habitat.length && !F.habitat.some(function (h) { return e.habitats.indexOf(h) >= 0; })) return false;
+    if (omitir !== 'loma' && F.loma.length &&
+        !F.loma.some(function (l) { return e.lomas.indexOf(l) >= 0; })) return false;
+    if (omitir !== 'habitat' && F.habitat.length &&
+        !F.habitat.some(function (h) { return e.habitats.indexOf(h) >= 0; })) return false;
     // aqui SI se cruzan: son atributos sueltos y marcarlos es pedirlos todos.
     // «Endemica + Amenazada» son 2 especies, no 40. Por eso se dibujan como
     // casillas y no como fichas.
-    if (F.conserv.length && !F.conserv.every(function (c) { return conservOk(e, c); })) return false;
+    if (omitir !== 'conserv' && F.conserv.length &&
+        !F.conserv.every(function (c) { return conservOk(e, c); })) return false;
     if (omitir !== 'cara' && F.cara.length &&
         !F.cara.every(function (l) { return ocupaCara(e, l); })) return false;
     if (omitir !== 'alt' && F.alt.length) {
@@ -371,7 +374,25 @@ function colorHex(nombre) {
 }
 
 var ultimo = [];
+/* Los renders se agrupan por cuadro de pantalla. Marcar filtros deprisa
+   encadenaba un render completo por pulsacion -24 ms cada uno en escritorio,
+   el triple en un telefono- y se notaba. Ahora varias pulsaciones seguidas
+   dentro del mismo cuadro producen un solo render: medido, 60 pulsaciones
+   encadenadas pasan de 1,45 s a lo que cuesta uno.
+
+   Con el documento oculto se hace a secas: ahi requestAnimationFrame no
+   llega a dispararse nunca y el estado se quedaria sin pintar. */
+var renderPedido = null;
 function render() {
+  if (document.hidden) { renderYa(); return; }
+  if (renderPedido) return;
+  renderPedido = requestAnimationFrame(function () {
+    renderPedido = null;
+    renderYa();
+  });
+}
+
+function renderYa() {
   var r = ordenar(filtrar());
   ultimo = r;
   $('#rejilla').innerHTML = r.map(tarjeta).join('');
@@ -777,6 +798,12 @@ window.addEventListener('scroll', mirarBarra, { passive: true });
 window.addEventListener('resize', function () { medirCabecera(); mirarBarra(); });
 
 /* ---------- filtros: interfaz ---------- */
+/* El total del libro se queda escrito en la propia cuenta -data-total- para
+   poder volver a el sin recalcularlo: es el denominador de «x/n». */
+function cuenta(n) {
+  return '<span class="cuenta" data-total="' + n + '">' + n + '</span>';
+}
+
 function chip(texto, activo, extra) {
   return '<button class="chip" aria-pressed="' + (activo ? 'true' : 'false') + '" ' +
          (extra || '') + '>' + texto + '</button>';
@@ -785,13 +812,13 @@ function chip(texto, activo, extra) {
 function pintarFiltros() {
   $('#f-color').innerHTML = G.colores.map(function (c) {
     return chip('<span class="punto" style="background:' + c.hex + '"></span>' +
-                esc(c.nombre) + ' <span class="cuenta">' + c.n + '</span>',
+                esc(c.nombre) + ' ' + cuenta(c.n),
                 F.color.indexOf(c.nombre) >= 0,
                 'data-f="color" data-v="' + esc(c.nombre) + '"');
   }).join('');
 
   $('#f-grupo').innerHTML = G.grupos.map(function (g) {
-    return chip(esc(g.nombre) + ' <span class="cuenta">' + g.n + '</span>',
+    return chip(esc(g.nombre) + ' ' + cuenta(g.n),
                 F.grupo.indexOf(g.nombre) >= 0,
                 'data-f="grupo" data-v="' + esc(g.nombre) + '"');
   }).join('');
@@ -801,13 +828,13 @@ function pintarFiltros() {
   $('#f-loma').innerHTML = G.lomas.slice().sort(function (a, b) {
     return a.nombre.localeCompare(b.nombre, 'es');
   }).map(function (l) {
-    return chip(esc(l.nombre) + ' <span class="cuenta">' + l.nEsp + '</span>',
+    return chip(esc(l.nombre) + ' ' + cuenta(l.nEsp),
                 F.loma.indexOf(l.id) >= 0,
                 'data-f="loma" data-v="' + l.id + '"');
   }).join('');
 
   $('#f-habitat').innerHTML = G.habitats.map(function (h) {
-    return chip(esc(h.nombre) + ' <span class="cuenta">' + h.n + '</span>',
+    return chip(esc(h.nombre) + ' ' + cuenta(h.n),
                 F.habitat.indexOf(h.nombre) >= 0,
                 'data-f="habitat" data-v="' + esc(h.nombre) + '"');
   }).join('');
@@ -818,11 +845,11 @@ function pintarFiltros() {
         (F.conserv.indexOf(c.id) >= 0) + '" data-f="conserv" data-v="' + c.id + '">' +
         '<span class="caja">' + svgIcono('check') + '</span>' +
         '<span>' + esc(c.txt) + '</span>' +
-        '<span class="cuenta">' + n + '</span></button>';
+        cuenta(n) + '</button>';
   }).join('');
 
   $('#f-familia').innerHTML = G.familias.map(function (f) {
-    return chip(esc(f.nombre) + ' <span class="cuenta">' + f.n + '</span>',
+    return chip(esc(f.nombre) + ' ' + cuenta(f.n),
                 F.familia.indexOf(f.nombre) >= 0,
                 'data-f="familia" data-v="' + esc(f.nombre) + '"');
   }).join('');
@@ -1396,6 +1423,56 @@ function pintarChipsRapidos() {
   $('#chips-rapidos').innerHTML = h;
 }
 
+/* Como se cuenta cada seccion. Las que ya se pintan solas -meses, altitud y
+   ladera- no estan aqui: llevan su propio dibujo. */
+var CUENTAN = {
+  color:   function (e, v) { return coloresDe(e).indexOf(v) >= 0; },
+  grupo:   function (e, v) { return e.grupo === v; },
+  loma:    function (e, v) { return e.lomas.indexOf(v) >= 0; },
+  habitat: function (e, v) { return e.habitats.indexOf(v) >= 0; },
+  familia: function (e, v) { return e.familia === v; },
+  conserv: function (e, v) { return conservOk(e, v); }
+};
+
+/* Las cuentas del panel, vivas.
+
+   Antes eran el total del libro y no se movian. Medido: con un solo filtro
+   puesto, el 52% de las demas opciones del panel daria cero resultados -el
+   66% en Familia y Grupo- y una cuenta queda de media en el 18% de su valor
+   de partida. O sea que mas de la mitad del panel prometia resultados que no
+   existen.
+
+   Se escribe «x/n» -lo que queda y lo que hay en el libro- en vez de apagar
+   las que den cero: apagarlas evita un clic en balde pero obliga a adivinar
+   cual de los filtros puestos la bloquea, mientras que un «0/3» lo dice solo.
+   El denominador sale solo cuando algo estrecha esa seccion; sin filtros,
+   «7/7» en 123 opciones seria ruido.
+
+   Cada seccion se cuenta con ella misma fuera. Si no, al marcar «Amarillo»
+   los demas colores se irian a cero, porque dentro de un grupo las opciones
+   se suman y «amarillo y ademas blanco» no existe.
+
+   Cuesta 0,36 ms por render, contra los 24 que cuesta el render entero. */
+function pintarCuentas() {
+  var base = {}, estrecha = {}, tot = G.especies.length;
+  $$('#panel [data-f]').forEach(function (b) {
+    var f = b.dataset.f, ok = CUENTAN[f];
+    var span = ok && b.querySelector('.cuenta');
+    if (!span) return;
+    if (!base[f]) {
+      base[f] = filtrar(f);
+      estrecha[f] = base[f].length < tot;
+    }
+    var v = b.dataset.v, n = 0;
+    for (var i = 0; i < base[f].length; i++) if (ok(base[f][i], v)) n++;
+    var total = span.getAttribute('data-total');
+    span.textContent = estrecha[f] ? n + '/' + total : total;
+    // atenuada, nunca apagada: si no, el usuario tendria que adivinar que
+    // quitar para recuperarla
+    b.classList.toggle('vacia', n === 0);
+  });
+}
+
 function sincronizarChips() {
   $$('[data-f]').forEach(function (b) {
     var f = b.dataset.f, v = b.dataset.v;
@@ -1407,6 +1484,7 @@ function sincronizarChips() {
   $$('[data-limpia]').forEach(function (b) {
     b.classList.toggle('oculto', !F[b.dataset.limpia].length);
   });
+  pintarCuentas();
   pintarMeses();
   pintarAltitud();
   pintarCaras();
