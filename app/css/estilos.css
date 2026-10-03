@@ -371,13 +371,6 @@ button {
 .chip[aria-pressed="true"] {
   background: var(--acento); border-color: var(--acento); color: var(--sobre-acento);
 }
-.chip .cuenta { color: var(--tenue); font-weight: 400; font-variant-numeric: tabular-nums; }
-/* Las opciones que ahora mismo no dejarian nada NO se tocan: su cuenta dice
-   «0/3» y con eso basta. Estuvieron un rato atenuadas al 45% y, aunque en el
-   codigo seguian pulsandose, al ojo parecian deshabilitadas -incluso
-   desaparecidas, en un chip claro sobre fondo claro-, que es lo que
-   queriamos evitar. */
-.chip[aria-pressed="true"] .cuenta { color: var(--sobre-acento); opacity: .75; }
 .punto { width: 13px; height: 13px; border-radius: 50%; border: 1px solid rgba(0,0,0,.18); flex: none; }
 
 /* ---------- resultados ---------- */
@@ -575,7 +568,6 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .casilla[aria-checked="true"] .caja { background: var(--acento); border-color: var(--acento); }
 .casilla[aria-checked="true"] .caja .ico { opacity: 1; }
 .casilla[aria-checked="true"] { font-weight: 600; }
-.casilla .cuenta { margin-left: auto; }
 
 /* Deshacer no es un filtro puesto: es algo que acaba de pasar y que caduca.
    Va abajo, con su cuenta atras a la vista, y se va solo. */
@@ -624,7 +616,6 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 @keyframes menguar { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 
 /* el orden elegido, que es una sola opcion y no una lista */
-.chip[data-orden][aria-pressed="true"] .cuenta { display: none; }
 
 /* quitar un solo campo, sin tocar los demas */
 .limpia {
@@ -1172,7 +1163,6 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .cara-pies button b { display: block; font-size: var(--t-2); color: var(--texto); }
 .cara-pies button[aria-pressed="true"] { color: var(--acento-txt); }
 .cara-pies button[aria-pressed="true"] b { color: var(--acento-txt); }
-.cara-pies .cuenta { font-variant-numeric: tabular-nums; }
 .rango input[type=range] { flex: 1; accent-color: var(--acento); }
 .rango output {
   font-variant-numeric: tabular-nums; font-size: var(--t-1); color: var(--tenue);

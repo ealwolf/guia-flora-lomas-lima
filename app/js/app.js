@@ -291,23 +291,19 @@ function filtrar(omitir) {
     for (var i = 0; i < term.length; i++) if (e._b.indexOf(term[i]) < 0) return false;
     // basta con que coincida cualquiera de sus colores: una flor entre
     // blanca y amarilla debe salir en las dos busquedas
-    if (omitir !== 'color' && F.color.length && !coloresDe(e).some(function (c) {
+    if (F.color.length && !coloresDe(e).some(function (c) {
           return F.color.indexOf(c) >= 0; })) return false;
-    if (omitir !== 'grupo' && F.grupo.length && F.grupo.indexOf(e.grupo) < 0) return false;
-    if (omitir !== 'familia' && F.familia.length && F.familia.indexOf(e.familia) < 0) return false;
+    if (F.grupo.length   && F.grupo.indexOf(e.grupo) < 0) return false;
+    if (F.familia.length && F.familia.indexOf(e.familia) < 0) return false;
     if (omitir !== 'mes' && F.mes.length &&
         !F.mes.some(function (m) { return e.flor.indexOf(m) >= 0; })) return false;
-    if (omitir !== 'loma' && F.loma.length &&
-        !F.loma.some(function (l) { return e.lomas.indexOf(l) >= 0; })) return false;
-    if (omitir !== 'habitat' && F.habitat.length &&
-        !F.habitat.some(function (h) { return e.habitats.indexOf(h) >= 0; })) return false;
+    if (F.loma.length    && !F.loma.some(function (l) { return e.lomas.indexOf(l) >= 0; })) return false;
+    if (F.habitat.length && !F.habitat.some(function (h) { return e.habitats.indexOf(h) >= 0; })) return false;
     // aqui SI se cruzan: son atributos sueltos y marcarlos es pedirlos todos.
     // «Endemica + Amenazada» son 2 especies, no 40. Por eso se dibujan como
     // casillas y no como fichas.
-    if (omitir !== 'conserv' && F.conserv.length &&
-        !F.conserv.every(function (c) { return conservOk(e, c); })) return false;
-    if (omitir !== 'cara' && F.cara.length &&
-        !F.cara.every(function (l) { return ocupaCara(e, l); })) return false;
+    if (F.conserv.length && !F.conserv.every(function (c) { return conservOk(e, c); })) return false;
+    if (F.cara.length && !F.cara.every(function (l) { return ocupaCara(e, l); })) return false;
     if (omitir !== 'alt' && F.alt.length) {
       if (e.altitud[0] == null || e.altitud[1] == null) return false;
       // vale con que pise alguna de las franjas marcadas, como con los meses
@@ -594,7 +590,7 @@ function pintarActivos() {
              f: 'conserv', v: v });
   });
   F.cara.forEach(function (v) {
-    f.push({ ico: 'circle-half-tilt', et: ladoDe(v).txt, tipo: 'Ladera donde crece',
+    f.push({ ico: 'ladera-mar', et: ladoDe(v).txt, tipo: 'Ladera donde crece',
              f: 'cara', v: v });
   });
   var tramo = tramoMeses();
@@ -798,12 +794,12 @@ window.addEventListener('scroll', mirarBarra, { passive: true });
 window.addEventListener('resize', function () { medirCabecera(); mirarBarra(); });
 
 /* ---------- filtros: interfaz ---------- */
-/* El total del libro se queda escrito en la propia cuenta -data-total- para
-   poder volver a el sin recalcularlo: es el denominador de «x/n». */
-function cuenta(n) {
-  return '<span class="cuenta" data-total="' + n + '">' + n + '</span>';
-}
-
+/* Las opciones no llevan cuenta. La llevaron, primero fija -el total del
+   libro, que con un filtro puesto acertaba casi nunca- y luego viva en forma
+   de «x/n». Lo segundo era cierto pero cambiaba el ancho de cada ficha al
+   marcar algo: medido, el panel crecia 172 px de golpe, Familia ganaba dos
+   filas y parecia que las opciones se movian o se iban. Lo unico que lleva
+   numero ahora es el boton de resultados, que es donde se mira. */
 function chip(texto, activo, extra) {
   return '<button class="chip" aria-pressed="' + (activo ? 'true' : 'false') + '" ' +
          (extra || '') + '>' + texto + '</button>';
@@ -812,13 +808,13 @@ function chip(texto, activo, extra) {
 function pintarFiltros() {
   $('#f-color').innerHTML = G.colores.map(function (c) {
     return chip('<span class="punto" style="background:' + c.hex + '"></span>' +
-                esc(c.nombre) + ' ' + cuenta(c.n),
+                esc(c.nombre),
                 F.color.indexOf(c.nombre) >= 0,
                 'data-f="color" data-v="' + esc(c.nombre) + '"');
   }).join('');
 
   $('#f-grupo').innerHTML = G.grupos.map(function (g) {
-    return chip(esc(g.nombre) + ' ' + cuenta(g.n),
+    return chip(esc(g.nombre),
                 F.grupo.indexOf(g.nombre) >= 0,
                 'data-f="grupo" data-v="' + esc(g.nombre) + '"');
   }).join('');
@@ -828,28 +824,26 @@ function pintarFiltros() {
   $('#f-loma').innerHTML = G.lomas.slice().sort(function (a, b) {
     return a.nombre.localeCompare(b.nombre, 'es');
   }).map(function (l) {
-    return chip(esc(l.nombre) + ' ' + cuenta(l.nEsp),
+    return chip(esc(l.nombre),
                 F.loma.indexOf(l.id) >= 0,
                 'data-f="loma" data-v="' + l.id + '"');
   }).join('');
 
   $('#f-habitat').innerHTML = G.habitats.map(function (h) {
-    return chip(esc(h.nombre) + ' ' + cuenta(h.n),
+    return chip(esc(h.nombre),
                 F.habitat.indexOf(h.nombre) >= 0,
                 'data-f="habitat" data-v="' + esc(h.nombre) + '"');
   }).join('');
 
   $('#f-conserv').innerHTML = CONSERV.map(function (c) {
-    var n = G.especies.filter(c.ok).length;
     return '<button class="casilla" role="checkbox" aria-checked="' +
         (F.conserv.indexOf(c.id) >= 0) + '" data-f="conserv" data-v="' + c.id + '">' +
         '<span class="caja">' + svgIcono('check') + '</span>' +
-        '<span>' + esc(c.txt) + '</span>' +
-        cuenta(n) + '</button>';
+        '<span>' + esc(c.txt) + '</span></button>';
   }).join('');
 
   $('#f-familia').innerHTML = G.familias.map(function (f) {
-    return chip(esc(f.nombre) + ' ' + cuenta(f.n),
+    return chip(esc(f.nombre),
                 F.familia.indexOf(f.nombre) >= 0,
                 'data-f="familia" data-v="' + esc(f.nombre) + '"');
   }).join('');
@@ -1423,54 +1417,6 @@ function pintarChipsRapidos() {
   $('#chips-rapidos').innerHTML = h;
 }
 
-/* Como se cuenta cada seccion. Las que ya se pintan solas -meses, altitud y
-   ladera- no estan aqui: llevan su propio dibujo. */
-var CUENTAN = {
-  color:   function (e, v) { return coloresDe(e).indexOf(v) >= 0; },
-  grupo:   function (e, v) { return e.grupo === v; },
-  loma:    function (e, v) { return e.lomas.indexOf(v) >= 0; },
-  habitat: function (e, v) { return e.habitats.indexOf(v) >= 0; },
-  familia: function (e, v) { return e.familia === v; },
-  conserv: function (e, v) { return conservOk(e, v); }
-};
-
-/* Las cuentas del panel, vivas.
-
-   Antes eran el total del libro y no se movian. Medido: con un solo filtro
-   puesto, el 52% de las demas opciones del panel daria cero resultados -el
-   66% en Familia y Grupo- y una cuenta queda de media en el 18% de su valor
-   de partida. O sea que mas de la mitad del panel prometia resultados que no
-   existen.
-
-   Se escribe «x/n» -lo que queda y lo que hay en el libro- en vez de apagar
-   las que den cero: apagarlas evita un clic en balde pero obliga a adivinar
-   cual de los filtros puestos la bloquea, mientras que un «0/3» lo dice solo.
-   Tampoco se atenuan: al 45% parecian deshabilitadas, que era lo mismo que
-   queriamos evitar. El denominador sale solo cuando los dos numeros difieren;
-   «1/1» o «12/12» no dicen nada, y sin filtros el panel se ve igual que
-   siempre.
-
-   Cada seccion se cuenta con ella misma fuera. Si no, al marcar «Amarillo»
-   los demas colores se irian a cero, porque dentro de un grupo las opciones
-   se suman y «amarillo y ademas blanco» no existe.
-
-   Cuesta 0,36 ms por render, contra los 24 que cuesta el render entero. */
-function pintarCuentas() {
-  var base = {};
-  $$('#panel [data-f]').forEach(function (b) {
-    var f = b.dataset.f, ok = CUENTAN[f];
-    var span = ok && b.querySelector('.cuenta');
-    if (!span) return;
-    if (!base[f]) base[f] = filtrar(f);
-    var v = b.dataset.v, n = 0;
-    for (var i = 0; i < base[f].length; i++) if (ok(base[f][i], v)) n++;
-    // el denominador solo cuando dice algo: «1/1» o «12/12» es ruido, y asi
-    // el panel sin filtros se ve igual que siempre
-    var total = +span.getAttribute('data-total');
-    span.textContent = n === total ? total : n + '/' + total;
-  });
-}
-
 function sincronizarChips() {
   $$('[data-f]').forEach(function (b) {
     var f = b.dataset.f, v = b.dataset.v;
@@ -1482,7 +1428,6 @@ function sincronizarChips() {
   $$('[data-limpia]').forEach(function (b) {
     b.classList.toggle('oculto', !F[b.dataset.limpia].length);
   });
-  pintarCuentas();
   pintarMeses();
   pintarAltitud();
   pintarCaras();
@@ -1643,13 +1588,11 @@ function pintarCaras() {
 
   // los nombres y las cuentas, en HTML y debajo: sobre la tierra el gris se
   // queda en 4,27:1 y no llega a AA
-  // las cuentas cuentan sobre lo que dejan los demas filtros, con la cara
-  // fuera: igual que las barras de los meses
-  var hay = filtrar('cara');
+  // sin cuenta, como el resto de las opciones: el numero vive en el boton de
+  // resultados
   s += '<div class="cara-pies">' + LADOS.map(function (d) {
-    var n = hay.filter(function (e) { return ocupaCara(e, d.l); }).length;
     return '<button data-lado="' + d.l + '" aria-pressed="' + puesto(d.l) + '">' +
-        '<b class="cuenta">' + n + '</b>' + esc(d.txt) + '</button>';
+        '<b>' + esc(d.txt) + '</b></button>';
   }).join('') + '</div>';
 
   caja.innerHTML = s;

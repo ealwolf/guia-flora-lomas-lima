@@ -10,6 +10,10 @@
     "descargar": {
       "_nota": "Flecha a la bandeja, al estilo de Phosphor regular.",
       "body": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"16\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M128 32v116\"/><path d=\"M82 106l46 46l46-46\"/><path d=\"M40 168v40h176v-40\"/></g>"
+    },
+    "ladera-mar": {
+      "_nota": "La ladera frente al mar: un cerro con la ola a su pie. Ninguno de Phosphor decia esto -«sun» hablaba de sol y «circle-half-tilt» de una mitad abstracta-, y el malentendido que hubo que arreglar era justamente que se leyera como geografia y no como la cara de un cerro.",
+      "body": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"16\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M84 196C118 196 130 68 168 68C206 68 218 196 244 196\"/><path d=\"M12 190q18-17 36 0t36 0\"/></g>"
     }
   }
 }
