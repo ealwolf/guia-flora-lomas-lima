@@ -2475,8 +2475,8 @@ function abrirInfo(v) {
       '<div class="ficha-libro">' +
         '<p>Es gratuita y lo seguirá siendo. No tiene publicidad, ni compras, ' +
           'ni cuentas, ni versión de pago. Nadie gana dinero con ella.</p>' +
-        '<p>Nadie está autorizado a cobrarla ni a venderla. Si has pagado algo ' +
-          'por conseguirla, no te la ha dado quien la hizo.</p>' +
+        '<p>Nadie está autorizado a cobrar por ella. Conseguirla, usarla y ' +
+          'recibir sus correcciones no cuesta nada, ni lo costará.</p>' +
         '<p>No recoge ningún dato tuyo. No hay estadísticas de uso ni rastreo: ' +
           'funciona entera en tu teléfono y no envía nada a ningún servidor. Lo ' +
           'único que descarga son sus propias fotos, y sólo si se lo pides.</p>' +
@@ -2484,16 +2484,20 @@ function abrirInfo(v) {
 
       '<h3>' + svgIcono('sliders-horizontal') + 'Algunos cambios</h3>' +
       '<div class="ficha-libro">' +
-        '<p>Casi nada, y va separado del dato del libro para que se pueda ' +
-          'distinguir: el <b>color de la flor</b>, deducido del texto y de las ' +
-          'fotografías para poder buscar por color; <b>2 erratas</b> de la ' +
-          'extracción del PDF; <b>2 sinónimos</b> científicos; y <b>1 especie</b> ' +
-          'que hemos visto en una loma que la guía no le cita: el zapatito ' +
-          '(<i>Calceolaria pinnata</i>), en las lomas de Villa María.</p>' +
-        '<p>Hay además <b>15 fichas</b> en las que el dibujo del perfil y el ' +
-          'texto de la propia guía no dicen lo mismo sobre la altitud. Están ' +
-          'anotadas, pero <b>no se ha cambiado ninguna</b>: la app enseña lo que ' +
-          'dice el dibujo, que es lo que hace el libro.</p>' +
+        '<p>Lo que la app pone de su parte se guarda separado del dato del ' +
+          'libro, para poder distinguir siempre uno de otro:</p>' +
+        '<ul class="cambios">' +
+          '<li>El <b>color de la flor</b>, deducido del texto y de las ' +
+            'fotografías, para poder buscar por color.</li>' +
+          '<li><b>Dos erratas</b> de la extracción del PDF, corregidas.</li>' +
+          '<li><b>Dos sinónimos</b> científicos, añadidos.</li>' +
+          '<li><b>Una especie</b> vista en una loma que la guía no le cita: el ' +
+            'zapatito (<i>Calceolaria pinnata</i>), en las lomas de Villa María.</li>' +
+          '<li><b>Quince fichas</b> en las que el dibujo del perfil y el texto ' +
+            'de la propia guía no dicen lo mismo sobre la altitud. Están ' +
+            'anotadas, pero no se ha cambiado ninguna: la app enseña lo que ' +
+            'dice el dibujo, que es lo que hace el libro.</li>' +
+        '</ul>' +
       '</div>';
   }
   abrirPanel(v, '#panel-info');

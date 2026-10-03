@@ -303,8 +303,17 @@ button {
 .pasos b { font-weight: 600; }
 
 .ficha-libro { font-size: var(--t-1); line-height: 1.55; color: var(--tenue); }
-/* La cita bibliografica y el sello de fecha: letra chica, que son para quien
-   quiera citar o comprobar, no para quien esta leyendo el aviso. */
+/* La lista de lo que la app añade. En lista y no en parrafo: son cosas
+   sueltas y contables, y en corrido habia que ir separandolas con puntos y
+   comas para leerlas. */
+.ficha-libro .cambios {
+  margin: 8px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 7px;
+}
+.ficha-libro .cambios li { line-height: 1.5; }
+.ficha-libro .cambios li::marker { color: var(--tenue); }
+
+/* La cita bibliografica: letra chica, que es para quien quiera citar o
+   comprobar, no para quien esta leyendo el aviso. */
 .ficha-libro .cita {
   font-size: var(--t-0); color: var(--tenue); font-style: italic;
   border-left: 2px solid var(--borde); padding-left: 10px;
