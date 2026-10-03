@@ -1446,6 +1446,7 @@ var SILLA = 34;
    que el path este en el documento; no pide que se vea, asi que va en un svg
    de tamaño cero y se hace una sola vez. */
 var CARA_PTS = null, CARA_N = 200, CARA_PASO = 1;
+var CARA_VB_ANCHO = 62;                 // lo que abarca el viewBox del dibujo
 function caraPuntos() {
   if (CARA_PTS) return CARA_PTS;
   var NS = 'http://www.w3.org/2000/svg';
@@ -1485,9 +1486,21 @@ function caraPartir(pts, x) {
 
 /* El trazo grueso se recorta por los extremos de fuera lo que mide su media
    punta: con punta redonda, si no, se derrama por el pie del cerro y se mete
-   en el agua. En la silla no se recorta, que es donde las dos se juntan. */
+   en el agua. En la silla no se recorta, que es donde las dos se juntan.
+
+   La media punta se mide en pixeles de pantalla -el trazo no se escala con el
+   dibujo- asi que hay que pasarla a unidades con el ancho de ahora. */
+function caraRadio() {
+  var caja = $('#f-cara');
+  var ancho = caja ? caja.clientWidth : 0;
+  var porUnidad = ancho ? ancho / CARA_VB_ANCHO : 1;
+  var px = parseFloat(getComputedStyle(document.documentElement)
+             .getPropertyValue('--trazo-elegido')) || 7;
+  return (px / 2) / porUnidad;
+}
 function caraRecorta(arr, inicio, fin) {
-  var n = Math.max(1, Math.round(1 / CARA_PASO));
+  var n = Math.max(1, Math.round(caraRadio() / CARA_PASO));
+  if (arr.length - (inicio ? n : 0) - (fin ? n : 0) < 2) return arr;
   return arr.slice(inicio ? n : 0, fin ? arr.length - n : arr.length);
 }
 function caraLinea(arr) {

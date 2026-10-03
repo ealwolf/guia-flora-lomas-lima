@@ -43,6 +43,15 @@
   --chip-mapa-txt: #ffffff;
   --seco:   #e4d9c2;
   --niebla: #dbe7ec;
+  /* Los dos cerros de la app -el de «Altitud» y el de «Ladera donde crece»-
+     se dibujan en escalas distintas: el primero mide en pixeles y el segundo
+     en las unidades de la guia, que se amplian unas siete veces. Con los
+     grosores puestos a mano en cada uno, la misma linea salia de 1,9 px en
+     uno y 3,4 en el otro, y el trazo de lo elegido de 7 contra 13,5. Van aqui,
+     en pixeles de pantalla, y el de la guia los respeta con
+     vector-effect: non-scaling-stroke. */
+  --trazo-suelo:   1.9px;
+  --trazo-elegido: 7px;
   --tirador: 20px;
 
   /* Escala tipográfica. Antes había dieciocho tamaños sueltos, cinco de ellos
@@ -951,11 +960,12 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 /* lo unico que se repasa es la cuesta marcada: ni arriba, ni a la derecha, ni
    abajo, que ahi no hay ladera que señalar sino el corte del dibujo */
 .ladera .cuesta-on {
-  stroke: var(--acento); stroke-width: 7; fill: none;
+  stroke: var(--acento); stroke-width: var(--trazo-elegido); fill: none;
   stroke-linecap: round; stroke-linejoin: round;
 }
 .ladera .suelo {
-  fill: none; stroke: var(--costa); stroke-width: 1.9; stroke-linejoin: round;
+  fill: none; stroke: var(--costa); stroke-width: var(--trazo-suelo);
+  stroke-linejoin: round;
 }
 .ladera .rejilla { stroke: var(--borde); stroke-width: .7; stroke-dasharray: 4 5; }
 /* el rastro de las cifras va de una pieza por tramo, no una pastilla por
@@ -1121,7 +1131,8 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    hacia la cumbre en vez de cortarse en recto */
 .cara-cerro .nb { stop-color: var(--niebla); }
 .cara-cerro .linea {
-  fill: none; stroke: var(--costa); stroke-width: .5; stroke-linejoin: round;
+  fill: none; stroke: var(--costa); stroke-width: var(--trazo-suelo);
+  stroke-linejoin: round; vector-effect: non-scaling-stroke;
 }
 .cara-cerro .ladera { cursor: pointer; }
 /* El <g> ya no lleva tabindex -no lo recibia de todos modos- y con el se fue
@@ -1142,8 +1153,9 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .cara-cerro .ladera .cresta {
   fill: none; stroke: var(--acento); stroke-width: 0;
   stroke-linecap: round; stroke-linejoin: round; transition: stroke-width .15s;
+  vector-effect: non-scaling-stroke;
 }
-.cara-cerro .ladera[data-on="1"] .cresta { stroke-width: 2; }
+.cara-cerro .ladera[data-on="1"] .cresta { stroke-width: var(--trazo-elegido); }
 .cara-cerro .rotulo { font-size: 2.6px; fill: var(--costa); }
 /* Los nombres y las cuentas van en HTML debajo del dibujo, no dentro: sobre la
    tierra el gris se queda en 4,27:1 y no llega a AA. */
