@@ -136,6 +136,7 @@ Guía de Flora de las Lomas de Lima/
 │   │   └── img/            las 295 fotos en jpg, tal como salieron
 │   ├── propio/             tus correcciones. Ningún script escribe aquí.
 │   │   ├── color_flor.csv
+│   │   ├── altitud_propia.csv
 │   │   ├── sinonimos.csv
 │   │   ├── loma_propia.csv
 │   │   └── correcciones_texto.csv
@@ -387,6 +388,40 @@ desentona. En la ficha mandan las dos cosas juntas.
 En la prosa no se toca nada: allí un espacio entre cifras suele ser el
 separador de millares —«1 050 msnm»— y es un espacio normal, así que al
 copiarlo se copia tal cual.
+
+### La altitud: el dibujo y el texto no siempre dicen lo mismo
+
+El rango de altitud de cada ficha sale del **dibujo del perfil**, que mide
+milímetros. El texto de la misma página da cifras con una precisión que el
+dibujo no tiene, y a veces no coinciden. Cotejadas las 134 fichas, leyendo a
+mano las 99 frases que mencionan una altitud:
+
+- **10** chocan de verdad: el texto de «Hábitat» describe lo que se observó en
+  las lomas visitadas, que es justo lo que mide el dibujo, y no cuadran. La
+  peor es *Loxanthocereus convergens*: el dibujo dice 300–400 y el texto
+  250–800.
+- **5** hablan de la costa o de las lomas en general, no de lo medido aquí. Se
+  anotan, no se proponen.
+- **28** dan el rango de la especie en todo el Perú, sierra incluida, hasta
+  4500 msnm. **No son un fallo**: un dibujo de lomas no puede cubrir eso.
+
+Hay tres trampas al leer estas frases, y conviene conocerlas antes de tocar
+nada:
+
+| Trampa | Ejemplo | Por qué engaña |
+|---|---|---|
+| El inciso de acompañantes | «asociada a *Paspalum penicillatum*… entre los 400–600 msnm» | parece que la altitud sea del acompañante; no lo es, el sujeto es la especie de la página |
+| El tope y el suelo | «no sobrepasa los 500», «a altitudes superiores a los 700» | no dicen que llegue ahí, dicen que no pasa de ahí |
+| La extensión ocasional | «ocasionalmente… hasta los 1 000 msnm» | el dibujo enseña el rango normal, y eso no es un error |
+
+El cotejo vive en `datos/propio/altitud_propia.csv`, una fila por especie. Las
+columnas que empiezan por `_` son contexto sacado del PDF —el rango del dibujo,
+el pie de altitud, las cifras del texto y la frase entera de donde salen— y no
+se tocan. Las editables son `altitud_min`, `altitud_max`, `revisado` y
+`notas_altitud`, y **sólo cuentan cuando `revisado = TRUE`**: mientras tanto
+manda el dibujo, que es lo fiel al PDF. Hoy están las 134 sin revisar, así que
+la app se comporta exactamente igual que antes de existir la capa. La columna
+`_revisar` marca con `SI` las diez y con `regional` las otras cinco.
 
 ### Erratas sueltas de la extracción
 

@@ -171,6 +171,11 @@ def main():
     lomas = leer(os.path.join(CRUDO, 'loma.csv'))
     colauto = {r['especie_id']: r for r in leer(os.path.join(CRUDO, 'especie_color.csv'))}
     colrev = {r['especie_id']: r for r in leer(os.path.join(PROPIO, 'color_flor.csv'))}
+    # La altitud de la guia sale del dibujo del perfil, que es de milimetros, y
+    # en diez fichas no cuadra con lo que dice el texto de «Habitat» de esa
+    # misma pagina. Esta capa recoge el cotejo. Solo manda cuando la fila esta
+    # revisada: sin revisar, vale el dibujo, que es lo fiel al PDF.
+    altrev = {r['especie_id']: r for r in leer(os.path.join(PROPIO, 'altitud_propia.csv'))}
     rojos = json.load(open(os.path.join(CRUDO, 'perfil_rojo.json'), encoding='utf-8'))
     # los sinonimos no estan en la guia: son aporte propio
     sinon = {r['especie_id']: lista(r.get('sinonimos', ''), ';')
@@ -203,7 +208,7 @@ def main():
 
     idpor = {l['nombre']: l['loma_id'] for l in lomas}
     ids = {l['loma_id'] for l in lomas}
-    especies, revisados = [], 0
+    especies, revisados, altrevisadas = [], 0, 0
     for r in esp:
         eid = r['especie_id']
         deguia = [idpor[x] for x in lista(r['lomas'], ';') if x in idpor]
@@ -220,6 +225,16 @@ def main():
                       or a.get('color_flor_todos_auto', ''))
         if (v.get('revisado') or '').upper() == 'TRUE':
             revisados += 1
+
+        alt = [ent(r['altitud_min_msnm']), ent(r['altitud_max_msnm'])]
+        va = altrev.get(eid, {})
+        if (va.get('revisado') or '').upper() == 'TRUE':
+            pa, pb = ent(va.get('altitud_min')), ent(va.get('altitud_max'))
+            if pa is None or pb is None or pa > pb:
+                print('   aviso: altitud propia mal puesta en', eid)
+            else:
+                alt = [pa, pb]
+                altrevisadas += 1
         especies.append({
             'id': eid,
             'n': ent(r['numero_guia']),
@@ -235,7 +250,7 @@ def main():
             'amenaza': r['amenaza'],
             'altura': [ent(r['altura_min_cm']), ent(r['altura_max_cm'])],
             'alturaTxt': intervalo(ent(r['altura_min_cm']), ent(r['altura_max_cm']), 'cm'),
-            'altitud': [ent(r['altitud_min_msnm']), ent(r['altitud_max_msnm'])],
+            'altitud': alt,
             'altitudTxt': r['altitud_texto'],
             'flor': [MESES.index(m) + 1 for m in lista(r['floracion_meses'], ';')
                      if m in MESES],
@@ -364,6 +379,9 @@ def main():
         print('\nlomas añadidas por observación propia: %d' % nprop)
     print('\nrevisión de color: %d/%d especies marcadas como revisadas'
           % (revisados, len(especies)))
+    porRevisar = sum(1 for x in altrev.values() if (x.get('_revisar') or '').strip())
+    print('revisión de altitud: %d/%d revisadas, %d señaladas por cotejo con el texto'
+          % (altrevisadas, len(especies), porRevisar))
     print('imágenes en app/img: %d' % nimg)
 
 
