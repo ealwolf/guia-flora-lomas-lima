@@ -303,7 +303,7 @@ function filtrar(omitir) {
     // «Endemica + Amenazada» son 2 especies, no 40. Por eso se dibujan como
     // casillas y no como fichas.
     if (F.conserv.length && !F.conserv.every(function (c) { return conservOk(e, c); })) return false;
-    if (F.cara.length && F.cara.indexOf(e._cara) < 0) return false;
+    if (F.cara.length && !F.cara.every(function (l) { return ocupaCara(e, l); })) return false;
     if (omitir !== 'alt' && F.alt.length) {
       if (e.altitud[0] == null || e.altitud[1] == null) return false;
       // vale con que pise alguna de las franjas marcadas, como con los meses
@@ -572,7 +572,7 @@ function pintarActivos() {
              f: 'conserv', v: v });
   });
   F.cara.forEach(function (v) {
-    f.push({ ico: 'sun', et: (cara(v) || {}).txt || v, tipo: 'Cara de la loma',
+    f.push({ ico: 'circle-half-tilt', et: ladoDe(v).txt, tipo: 'Cara de la loma',
              f: 'cara', v: v });
   });
   var tramo = tramoMeses();
@@ -818,13 +818,6 @@ function pintarFiltros() {
         '<span class="caja">' + svgIcono('check') + '</span>' +
         '<span>' + esc(c.txt) + '</span>' +
         '<span class="cuenta">' + n + '</span></button>';
-  }).join('');
-
-  $('#f-cara').innerHTML = CARAS.map(function (c) {
-    var n = G.especies.filter(function (e) { return e._cara === c.v; }).length;
-    return chip(miniPerfil(c.lado) + esc(c.txt) + ' <span class="cuenta">' + n + '</span>',
-                F.cara.indexOf(c.v) >= 0,
-                'data-f="cara" data-v="' + esc(c.v) + '"');
   }).join('');
 
   $('#f-familia').innerHTML = G.familias.map(function (f) {
@@ -1415,6 +1408,7 @@ function sincronizarChips() {
   });
   pintarMeses();
   pintarAltitud();
+  pintarCaras();
   pintarLocator();
   sincronizarMapa();
 }
@@ -1436,21 +1430,118 @@ document.addEventListener('click', function (ev) {
    El corte va por la ensillada -entre las dos cumbres-, que es donde el ojo
    parte el cerro; caraDe() usa 27 para clasificar el trazo, que es otra cosa. */
 var SILLA = 34;
-function miniPerfil(lado) {
-  var P = G.perfil, H = P.viewBox[3];
-  var n = (P.silueta.match(/-?\d*\.?\d+/g) || []).map(parseFloat);
-  var x0 = n[0], xN = n[n.length - 2], suelo = 42;
-  var relleno = P.silueta + ' L' + xN + ' ' + suelo + ' L' + x0 + ' ' + suelo + ' Z';
-  var id = 'mp-' + lado;
-  var corte = lado === 'o' ? '<rect x="0" y="0" width="' + SILLA + '" height="' + H + '"/>'
-            : lado === 'e' ? '<rect x="' + SILLA + '" y="0" width="' + P.viewBox[2] +
-                             '" height="' + H + '"/>' : '';
-  return '<svg class="mini-perfil" viewBox="5 9 60 34" aria-hidden="true">' +
-      (corte ? '<clipPath id="' + id + '">' + corte + '</clipPath>' : '') +
-      '<path class="fondo" d="' + relleno + '"/>' +
-      '<path class="lado" d="' + relleno + '"' +
-      (corte ? ' clip-path="url(#' + id + ')"' : '') + '/></svg>';
+/* El corte del cerro con el que se elige la cara. Eran tres fichas -«Al mar»,
+   «Ambas caras», «A la cordillera»- y alguien las leyo como lomas del norte y
+   del sur. El dato no va de geografia: va de que ladera de UN cerro mira al
+   mar. Dibujado de canto, con la neblina entrando por la izquierda, no hay
+   forma de leerlo mal, y de paso el dibujo cuenta el porque.
+
+   La silueta es la de la guia, la misma que sale en cada ficha. El libro la
+   llama «un perfil de loma tipico» (p. 14) y tiene dos cumbres -947 y 1020
+   msnm- con una silla a 734 en medio: por ahi se parte, que es lo que marca
+   SILLA.
+
+   Hay que muestrear el trazado para poder cortarlo, y getPointAtLength pide
+   que el path este en el documento; no pide que se vea, asi que va en un svg
+   de tamaño cero y se hace una sola vez. */
+var CARA_PTS = null;
+function caraPuntos() {
+  if (CARA_PTS) return CARA_PTS;
+  var NS = 'http://www.w3.org/2000/svg';
+  var caja = document.createElementNS(NS, 'svg');
+  caja.setAttribute('viewBox', '0 0 ' + G.perfil.viewBox[2] + ' ' + G.perfil.viewBox[3]);
+  caja.setAttribute('style', 'position:absolute;width:0;height:0;overflow:hidden');
+  var p = document.createElementNS(NS, 'path');
+  p.setAttribute('d', G.perfil.silueta);
+  caja.appendChild(p);
+  document.body.appendChild(caja);
+  var largo = 0, out = [];
+  try { largo = p.getTotalLength(); } catch (e) {}
+  for (var i = 0; largo && i <= 200; i++) {
+    var q = p.getPointAtLength(largo * i / 200);
+    out.push({ x: q.x, y: q.y });
+  }
+  document.body.removeChild(caja);
+  if (out.length) CARA_PTS = out;
+  return out;
 }
+
+var CARA_SUELO = 43;                    // donde apoya el cerro en el dibujo
+function caraTrozo(pts, desde, hasta) {
+  return pts.filter(function (p) { return p.x >= desde && p.x <= hasta; });
+}
+function caraLinea(arr) {
+  return 'M ' + arr.map(function (p) {
+    return p.x.toFixed(2) + ' ' + p.y.toFixed(2);
+  }).join(' L ');
+}
+function caraRelleno(arr) {
+  if (!arr.length) return '';
+  return caraLinea(arr) + ' L ' + arr[arr.length - 1].x.toFixed(2) + ' ' + CARA_SUELO +
+         ' L ' + arr[0].x.toFixed(2) + ' ' + CARA_SUELO + ' Z';
+}
+
+function pintarCaras() {
+  var caja = $('#f-cara');
+  if (!caja) return;
+  var pts = caraPuntos();
+  if (!pts.length) return;
+  var W = G.perfil.viewBox[2];
+  var oes = caraTrozo(pts, 0, SILLA), est = caraTrozo(pts, SILLA, W);
+  var puesto = function (l) { return F.cara.indexOf(l) >= 0; };
+
+  var s = '<svg viewBox="2 5 62 41" role="group" aria-label="Cara de la loma">';
+  /* la neblina entra por la izquierda y se para en la cumbre; va debajo de la
+     tierra, asi que solo asoma por el cielo de la cara marina */
+  s += '<path class="niebla" d="M2 15 q 5 -2.6 10 0 t 10 0 q 6 .6 10 4.5 ' +
+       'L ' + SILLA + ' 32 L 2 32 Z"/>';
+  s += '<rect class="agua" x="2" y="39" width="6.5" height="5" rx="1"/>';
+  s += '<path class="suelo" d="' + caraRelleno(pts) + '"/>';
+  s += '<path class="seco" d="' + caraRelleno(est) + '"/>';
+  // la cara marina reverdece, que es lo que hace la neblina
+  oes.forEach(function (p, i) {
+    if (i % 7) return;
+    s += '<path class="mata" d="M ' + p.x.toFixed(1) + ' ' + p.y.toFixed(1) +
+         ' q .4 -.9 1 -1.7"/>';
+  });
+  LADOS.forEach(function (d) {
+    var arr = d.l === 'o' ? oes : est;
+    s += '<g class="ladera" data-lado="' + d.l + '" role="button" tabindex="0" ' +
+         'aria-pressed="' + puesto(d.l) + '" aria-label="' + esc(d.txt) + '">' +
+         '<path class="relleno" d="' + caraRelleno(arr) + '"/>' +
+         '<path class="cresta" d="' + caraLinea(arr) + '"/></g>';
+  });
+  s += '<path class="linea" d="' + caraLinea(pts) + '"/>';
+  s += '<text class="rotulo" x="3.4" y="13.5">neblina</text>';
+  s += '<text class="rotulo" x="3.4" y="38">mar</text>';
+  s += '<text class="rotulo" x="62" y="12" text-anchor="end">cordillera</text>';
+  s += '</svg>';
+
+  // los nombres y las cuentas, en HTML y debajo: sobre la tierra el gris se
+  // queda en 4,27:1 y no llega a AA
+  s += '<div class="cara-pies">' + LADOS.map(function (d) {
+    var n = G.especies.filter(function (e) { return ocupaCara(e, d.l); }).length;
+    return '<button data-lado="' + d.l + '" aria-pressed="' + puesto(d.l) + '">' +
+        '<b class="cuenta">' + n + '</b>' + esc(d.txt) + '</button>';
+  }).join('') + '</div>';
+
+  caja.innerHTML = s;
+}
+
+$('#f-cara').addEventListener('click', function (ev) {
+  var b = ev.target.closest('[data-lado]');
+  if (!b) return;
+  alterna(F.cara, b.getAttribute('data-lado'));
+  render();
+});
+$('#f-cara').addEventListener('keydown', function (ev) {
+  if (ev.key !== 'Enter' && ev.key !== ' ') return;
+  var b = ev.target.closest('.ladera[data-lado]');
+  if (!b) return;
+  ev.preventDefault();
+  alterna(F.cara, b.getAttribute('data-lado'));
+  render();
+});
 
 /* ---------- meses ---------- */
 /* Si los meses puestos son un tramo seguido, una sola ficha lo dice mejor que
@@ -1665,6 +1756,27 @@ var CARAS = [
 ];
 function cara(v) {
   return CARAS.filter(function (c) { return c.v === v; })[0];
+}
+
+/* El filtro ya no guarda el valor del dato -«Occidental», «Ambas caras»,
+   «Oriental»- sino la ladera que se ha tocado en el dibujo. Y una especie de
+   ambas caras ocupa las dos: antes se pedia coincidencia exacta y marcar «al
+   mar» dejaba fuera las 32 que viven en las dos, lo que con un dibujo donde
+   acabas de tocar esa ladera se lee como un fallo.
+
+   Las dos laderas se combinan con «y», no con «o». Con «o», tocar las dos
+   daria las 134, que es no filtrar; con «y» da las 32 que viven en las dos,
+   que es lo que hacia el boton «Ambas caras». Asi las tres respuestas de
+   siempre se siguen alcanzando: 117 al mar, 49 a la cordillera, 32 las dos. */
+var LADOS = [
+  { l: 'o', txt: 'Al mar',          dato: 'Occidental' },
+  { l: 'e', txt: 'A la cordillera', dato: 'Oriental' }
+];
+function ladoDe(l) {
+  return LADOS.filter(function (x) { return x.l === l; })[0] || LADOS[0];
+}
+function ocupaCara(e, l) {
+  return e._cara === 'Ambas caras' || e._cara === ladoDe(l).dato;
 }
 
 function caraDe(e) {

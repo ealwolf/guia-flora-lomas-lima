@@ -41,6 +41,8 @@
      necesita contorno. El texto, 15,2:1. */
   --chip-mapa:     #23271f;
   --chip-mapa-txt: #ffffff;
+  --seco:   #e4d9c2;
+  --niebla: #dbe7ec;
   --tirador: 20px;
 
   /* Escala tipográfica. Antes había dieciocho tamaños sueltos, cinco de ellos
@@ -95,6 +97,8 @@
     /* al reves, que un casi negro sobre pagina oscura desaparece */
     --chip-mapa:     #e4e8dd;
     --chip-mapa-txt: #1a1e18;
+    --seco:   #2c2718;
+    --niebla: #1a2a31;
     --propia:     #b49ae8;
     --propia-sua: #241d33;
     --propia-txt: #c7b3f0;
@@ -130,6 +134,8 @@
     /* al reves, que un casi negro sobre pagina oscura desaparece */
     --chip-mapa:     #e4e8dd;
     --chip-mapa-txt: #1a1e18;
+    --seco:   #2c2718;
+    --niebla: #1a2a31;
     --propia:     #b49ae8;
     --propia-sua: #241d33;
     --propia-txt: #c7b3f0;
@@ -1097,8 +1103,49 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .mini-perfil { width: 32px; height: 18px; flex: none; }
 .mini-perfil .fondo { fill: color-mix(in srgb, var(--acento) 22%, var(--superficie-2)); }
 .mini-perfil .lado  { fill: color-mix(in srgb, var(--acento) 75%, var(--superficie)); }
-.caras .chip { gap: 8px; }
-.caras .chip[aria-pressed="true"] .lado { fill: var(--acento); }
+/* ---------- la cara de la loma: un corte del cerro ----------
+   Eran tres fichas -«Al mar», «Ambas caras», «A la cordillera»- y alguien las
+   leyo como lomas del norte y del sur. El dato no va de geografia: va de que
+   ladera de UN cerro mira al mar. Dibujado de canto, con la neblina entrando
+   por la izquierda, no hay forma de leerlo mal, y de paso el dibujo cuenta el
+   porque: la neblina moja la cara marina y se para en la cumbre.
+
+   La silueta es la de la guia, la misma que sale en cada ficha de especie. Su
+   «perfil de loma tipico» -asi lo llama el libro en la pagina 14- tiene dos
+   cumbres, 947 y 1020 msnm, con una silla a 734 en medio; por ahi se parte. */
+.cara-cerro svg { display: block; width: 100%; height: auto; }
+.cara-cerro .agua { fill: var(--mar); }
+.cara-cerro .suelo { fill: var(--tierra); }
+.cara-cerro .seco { fill: var(--seco); }
+.cara-cerro .niebla { fill: var(--niebla); }
+.cara-cerro .linea {
+  fill: none; stroke: var(--costa); stroke-width: .5; stroke-linejoin: round;
+}
+.cara-cerro .mata { stroke: var(--acento); stroke-width: .5; fill: none;
+                    stroke-linecap: round; opacity: .55; }
+.cara-cerro .ladera { cursor: pointer; }
+.cara-cerro .ladera .relleno { fill: transparent; transition: fill .15s; }
+.cara-cerro .ladera:hover .relleno { fill: color-mix(in srgb, var(--acento) 13%, transparent); }
+.cara-cerro .ladera[aria-pressed="true"] .relleno {
+  fill: color-mix(in srgb, var(--acento) 32%, transparent);
+}
+.cara-cerro .ladera .cresta {
+  fill: none; stroke: var(--acento); stroke-width: 0;
+  stroke-linecap: round; stroke-linejoin: round; transition: stroke-width .15s;
+}
+.cara-cerro .ladera[aria-pressed="true"] .cresta { stroke-width: 2; }
+.cara-cerro .rotulo { font-size: 2.6px; fill: var(--costa); }
+/* Los nombres y las cuentas van en HTML debajo del dibujo, no dentro: sobre la
+   tierra el gris se queda en 4,27:1 y no llega a AA. */
+.cara-pies { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+.cara-pies button {
+  background: none; border: 0; padding: 4px 2px; cursor: pointer; text-align: center;
+  font-size: var(--t-1); color: var(--tenue); border-radius: var(--r-s);
+}
+.cara-pies button b { display: block; font-size: var(--t-2); color: var(--texto); }
+.cara-pies button[aria-pressed="true"] { color: var(--acento-txt); }
+.cara-pies button[aria-pressed="true"] b { color: var(--acento-txt); }
+.cara-pies .cuenta { font-variant-numeric: tabular-nums; }
 .rango input[type=range] { flex: 1; accent-color: var(--acento); }
 .rango output {
   font-variant-numeric: tabular-nums; font-size: var(--t-1); color: var(--tenue);
