@@ -2009,6 +2009,7 @@ $('#btn-reset').addEventListener('click', function () { tirarFiltros(false); });
    vuelve mas suave. Es la unica parte que da de si. */
 var ALT_FILA = 31, ALT_ARRIBA = 10;
 var ALT_XLAB = 51;                      // la columna de cifras, fija
+var ALT_LAB_DY = 12;                    // de la raya de la franja a la base de su cifra
 // el alto sale del tramo de altitud que se dibuja, no de contar filas: asi una
 // fila mide ALT_FILA exacto y las zonas de toque no se pisan entre si
 var ALT_ALTO;
@@ -2105,8 +2106,14 @@ function pintarAltitud() {
   tr.forEach(function (r) {
     var a1 = r[0] - ALT_PASO, a2 = r[1];       // del suelo del tramo a su techo
     s += '<path class="tramo" d="' + altMancha(a1, a2) + '"/>';
-    s += '<rect class="pilalab" x="5" y="' + altY(a2).toFixed(1) + '" width="' + (ALT_XLAB - 14) +
-         '" height="' + (altY(a1) - altY(a2)).toFixed(1) + '" rx="8"/>';
+    /* El rastro de las cifras se centra en las CIFRAS, no en la franja. La
+       franja de 100 va del cero a los 100 y su numero se apoya arriba, asi
+       que un rastro con la forma de la franja dejaba el numero pegado al
+       borde de arriba y parecia descolocado. */
+    var cMedio = ALT_LAB_DY - 3.7;              // del alto de la cifra a su centro
+    s += '<rect class="pilalab" x="5" y="' + (altY(r[1]) + cMedio - ALT_FILA / 2).toFixed(1) +
+         '" width="' + (ALT_XLAB - 14) + '" height="' +
+         (altY(r[0]) - altY(r[1]) + ALT_FILA).toFixed(1) + '" rx="8"/>';
   });
   s += '<path class="suelo" d="M ' + ALT_SUP.map(function (p) {
     return p.x.toFixed(1) + ' ' + altY(p.a).toFixed(1); }).join(' L ') + '"/>';
@@ -2125,7 +2132,7 @@ function pintarAltitud() {
     s += '<g class="fila" data-h="' + h + '" data-on="' + (on ? 1 : 0) + '">' +
          '<rect class="cel" x="0" y="' + y.toFixed(1) + '" width="' + ALT_ANCHO +
          '" height="' + ALT_FILA + '"/>' +
-         '<text class="lab" x="' + (ALT_XLAB - 15) + '" y="' + (y + 12).toFixed(1) +
+         '<text class="lab" x="' + (ALT_XLAB - 15) + '" y="' + (y + ALT_LAB_DY).toFixed(1) +
          '" text-anchor="end">' + h + '</text></g>';
   });
   caja.innerHTML = s + '</svg>';

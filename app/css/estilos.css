@@ -959,6 +959,10 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   font-size: 10.5px; fill: var(--tenue); font-variant-numeric: tabular-nums;
 }
 .ladera .lecho { fill: var(--tierra); }
+/* «msnm» va en minuscula: la guia lo escribe asi las 159 veces que aparece, y
+   es un simbolo de unidad, no una sigla. El titulo del grupo va en versalitas
+   por CSS, asi que la unidad tiene que salirse de esa regla. */
+.grupo h3 .unidad-tit { text-transform: none; letter-spacing: 0; font-weight: 600; }
 .ladera .fila[data-on="1"] .lab { fill: var(--acento-txt); font-weight: 700; }
 /* centrada: va con el dibujo que tiene encima, no con el texto del grupo */
 #mes-pista, #alt-pista { text-align: center; }
