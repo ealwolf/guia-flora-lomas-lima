@@ -148,35 +148,12 @@ window.addEventListener('beforeinstallprompt', function (ev) {
       <div class="casillas" id="f-conserv"></div>
     </div>
     <div class="grupo">
-      <h3><span data-ico="mountains" aria-hidden="true"></span> Altitud</h3>
-      <div class="segmentado" role="group" aria-label="Filtro por altitud">
-        <button data-modo="todas" aria-pressed="true">Todas</button>
-        <button data-modo="cota" aria-pressed="false">Una cota</button>
-        <button data-modo="rango" aria-pressed="false">Un rango</button>
-      </div>
-      <div id="alt-cota" class="oculto">
-        <div class="rango">
-          <input type="range" id="f-altitud" min="100" max="1000" step="50" value="550"
-                 aria-label="Altitud a la que estás">
-          <output id="f-altitud-val">550 msnm</output>
-        </div>
-        <p class="pista">Deja sólo las especies cuyo rango incluye esa altura.</p>
-      </div>
-      <div id="alt-rango" class="oculto">
-        <div class="doble" id="doble">
-          <div class="doble-pista"></div>
-          <div class="doble-activa" id="doble-activa"></div>
-          <input type="range" id="f-alt-min" min="100" max="1000" step="50" value="100"
-                 aria-label="Altitud mínima">
-          <input type="range" id="f-alt-max" min="100" max="1000" step="50" value="1000"
-                 aria-label="Altitud máxima">
-        </div>
-        <div class="doble-val">
-          <span id="f-alt-min-val">100 msnm</span>
-          <span id="f-alt-max-val">1000 msnm</span>
-        </div>
-        <p class="pista">Deja las especies que aparecen en alguna parte de ese tramo.</p>
-      </div>
+      <h3><span data-ico="mountains" aria-hidden="true"></span> Altitud
+        <button class="limpia oculto" data-limpia="alt">Quitar</button>
+      </h3>
+      <div class="ladera" id="f-alt"></div>
+      <p class="pista">Mantén presionado y arrastra para elegir un rango.</p>
+      <div class="alt-fichas" id="alt-fichas"></div>
     </div>
     <div class="grupo">
       <h3><span data-ico="sun" aria-hidden="true"></span> Cara de la loma

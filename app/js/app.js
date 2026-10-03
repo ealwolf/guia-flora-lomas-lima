@@ -174,10 +174,19 @@ function elegirSug(i) {
 }
 
 /* ---------- estado ---------- */
-var ALT_MIN = 100, ALT_MAX = 1000;
+/* La altitud va por escalones de 100, de 100 a 1000, que es lo que abarca el
+   libro. Comprobado sobre las 134: con ese paso no se escapa ninguna -toda
+   banda de la guia contiene al menos un multiplo de 100, porque los extremos
+   van de 50 en 50 y la mas estrecha mide 50- y los diez juntos dan las 134,
+   asi que no marcar nada sigue siendo «todas». */
+var ALT_MIN = 100, ALT_MAX = 1000, ALT_PASO = 100;
+var ALTURAS = (function () {
+  var v = [];
+  for (var h = ALT_MIN; h <= ALT_MAX; h += ALT_PASO) v.push(h);
+  return v;
+})();
 var F = { q: '', color: [], grupo: [], mes: [], loma: [], habitat: [], familia: [],
-          conserv: [], cara: [], orden: 'guia',
-          altModo: 'todas', altitud: 550, altDesde: ALT_MIN, altHasta: ALT_MAX };
+          conserv: [], cara: [], orden: 'guia', alt: [] };
 
 /* La cara sale del dibujo del perfil, que es el unico dato que tienen las 134
    -el texto solo lo dice en 103-. Se calcula una vez y no en cada filtrado. */
@@ -224,16 +233,27 @@ function conservOk(e, id) {
 /* «Todas» es una opción, no una posición del deslizador. Antes la cota
    arrancaba en mitad de la barra diciendo «sin filtrar», y al volver a ese
    mismo punto ya significaba 550: el mismo sitio, dos cosas distintas. */
-function altActiva() {
-  if (F.altModo === 'cota') return true;
-  if (F.altModo === 'rango') return F.altDesde > ALT_MIN || F.altHasta < ALT_MAX;
-  return false;
+function altActiva() { return F.alt.length > 0; }
+
+/* Las alturas marcadas, agrupadas en tramos seguidos. De aqui salen tanto las
+   manchas del dibujo como las fichas, asi que fundirse es automatico: lo que
+   se guarda es un conjunto de alturas, no una lista de tramos. */
+function tramosAlt() {
+  var v = F.alt.slice().sort(function (a, b) { return a - b; }), r = [];
+  v.forEach(function (h) {
+    var u = r[r.length - 1];
+    if (u && h === u[1] + ALT_PASO) u[1] = h; else r.push([h, h]);
+  });
+  return r;
+}
+function textoTramo(r) {
+  return r[0] === r[1] ? r[0] + ' msnm' : r[0] + '–' + r[1] + ' msnm';
 }
 
 function activos() {
   return F.color.length + F.grupo.length + F.mes.length + F.loma.length +
          F.habitat.length + F.familia.length + F.conserv.length + F.cara.length +
-         (altActiva() ? 1 : 0);
+         tramosAlt().length;
 }
 function alterna(lista, valor) {
   var i = lista.indexOf(valor);
@@ -268,14 +288,11 @@ function filtrar(omitir) {
     // casillas y no como fichas.
     if (F.conserv.length && !F.conserv.every(function (c) { return conservOk(e, c); })) return false;
     if (F.cara.length && F.cara.indexOf(e._cara) < 0) return false;
-    if (altActiva()) {
+    if (omitir !== 'alt' && F.alt.length) {
       var min = e.altitud[0], max = e.altitud[1];
       if (min == null || max == null) return false;
-      if (F.altModo === 'cota') {
-        if (F.altitud < min || F.altitud > max) return false;      // la cota cae dentro
-      } else {
-        if (max < F.altDesde || min > F.altHasta) return false;    // los tramos se solapan
-      }
+      // vale con que viva a alguna de las alturas marcadas, como con los meses
+      if (!F.alt.some(function (h) { return h >= min && h <= max; })) return false;
     }
     return true;
   });
@@ -460,7 +477,7 @@ $('#tostada').addEventListener('pointermove', function (ev) {
 var ESPERA_DESHACER = 6000;
 var borrado = null, huellaBorrado = null;
 var GUARDABLES = ['q', 'color', 'grupo', 'mes', 'loma', 'habitat', 'familia',
-                  'conserv', 'cara', 'altModo', 'altitud', 'altDesde', 'altHasta'];
+                  'conserv', 'cara', 'alt'];
 
 function huellaFiltros() {
   return GUARDABLES.map(function (k) { return F[k]; }).join('|');
@@ -497,10 +514,6 @@ function devolverBorrado() {
   GUARDABLES.forEach(function (k) { F[k] = v[k]; });
   $('#q').value = F.q;
   $('#limpiar').classList.toggle('oculto', !F.q);
-  $('#f-altitud').value = F.altitud;
-  $('#f-alt-min').value = F.altDesde;
-  $('#f-alt-max').value = F.altHasta;
-  pintarAltitud(); pintarRango();
   render();
 }
 
@@ -574,14 +587,12 @@ function pintarActivos() {
         (x.marca || svgIcono(x.ico)) + esc(x.et) + svgIcono('x', 'quita') + '</button>';
   }).join('');
 
-  if (altActiva()) {
-    var txt = F.altModo === 'cota'
-        ? F.altitud + ' msnm'
-        : F.altDesde + '–' + F.altHasta + ' msnm';
-    html += '<button class="chip" id="quita-alt" title="Altitud: ' + txt + '" ' +
-        'aria-label="Quitar el filtro de altitud">' +
-        svgIcono('mountains') + txt + svgIcono('x', 'quita') + '</button>';
-  }
+  tramosAlt().forEach(function (r) {
+    var txt = textoTramo(r);
+    html += '<button class="chip" data-alt="' + r[0] + '-' + r[1] + '" ' +
+        'title="Altitud: ' + txt + '" aria-label="Quitar el filtro de altitud ' +
+        txt + '">' + svgIcono('mountains') + txt + svgIcono('x', 'quita') + '</button>';
+  });
 
   if (sobran) {
     html += '<button class="chip todo" id="mas-chips">+' + sobran + ' más</button>';
@@ -599,7 +610,7 @@ function pintarActivos() {
 $('#activos').addEventListener('click', function (ev) {
   if (ev.target.closest('#mas-chips')) { chipsAbiertos = true; pintarActivos(); }
   else if (ev.target.closest('#menos-chips')) { chipsAbiertos = false; pintarActivos(); }
-  else if (ev.target.closest('#quita-alt')) quitarAltitud();
+  else if (ev.target.closest('[data-alt]')) quitarTramoAlt(ev.target.closest('[data-alt]'));
   else if (ev.target.closest('#quita-mes')) { F.mes = []; render(); }
   else if (ev.target.closest('#quita-q')) quitarBusqueda();
   else if (ev.target.closest('#quita-todo')) tirarFiltros(true);
@@ -1388,6 +1399,7 @@ function sincronizarChips() {
     b.classList.toggle('oculto', !F[b.dataset.limpia].length);
   });
   pintarMeses();
+  pintarAltitud();
   pintarLocator();
   sincronizarMapa();
 }
@@ -1946,7 +1958,6 @@ function bloquearFondo(v) {
 function abrirPanel(v, cual) {
   cual = cual || '#panel';
   $(cual).classList.toggle('abierto', v);
-  if (v && cual === '#panel') setTimeout(pintarRango, 30);
   panelActual = v ? cual : null;
   $('#velo').classList.toggle('abierto', v);
   bloquearFondo(v);
@@ -1967,65 +1978,186 @@ function limpiarTodo() {
 // el panel es de filtros: «Limpiar» no toca el texto del buscador
 $('#btn-reset').addEventListener('click', function () { tirarFiltros(false); });
 
-$('#f-altitud').addEventListener('input', function (ev) {
-  F.altitud = +ev.target.value;
-  pintarAltitud();
-  render();
-});
+/* ---------- la ladera: el filtro de altitud ----------
+   Un corte del cerro, el mar a la izquierda y la cuesta subiendo a la derecha.
+   Antes habia tres pestañas y dos deslizadores: «todas», «una cota» y «un
+   rango». Las dos ultimas nunca fueron dos preguntas -la condicion de la cota
+   es la del rango con los dos extremos juntos- y ninguna de las dos dejaba
+   pedir 300 y 800 sin lo de en medio, que es lo que hace falta para comparar
+   dos pisos. Ahora son diez alturas que se marcan como se marcan los meses, y
+   lo seguido se funde solo. */
+var ALT_W = 100, ALT_XLAB = 15, ALT_XR = 97, ALT_COSTA = 29, ALT_CIMA = 94;
+var ALT_ARRIBA = 3, ALT_FILA = 9.2;
+var ALT_TOPE = ALT_MAX + ALT_PASO / 2, ALT_PIE = -70;
+var ALT_ALTO = ALT_ARRIBA + (ALTURAS.length + 1.2) * ALT_FILA;
 
-function quitarAltitud() {
-  F.altModo = 'todas';
-  F.altitud = 550;
-  F.altDesde = ALT_MIN; F.altHasta = ALT_MAX;
-  $('#f-altitud').value = 550;
-  $('#f-alt-min').value = ALT_MIN;
-  $('#f-alt-max').value = ALT_MAX;
-  pintarAltitud(); pintarRango(); render();
+function altY(a) {
+  return ALT_ARRIBA + (ALT_TOPE - a) * (ALT_ALTO - ALT_ARRIBA) / (ALT_TOPE - ALT_PIE);
+}
+/* La ese va sobre la altitud y no sobre la distancia: asi sale playa tendida
+   abajo, ladera recia en medio y cumbre redondeada arriba. Al reves salia un
+   farallon pegado al mar. */
+var ALT_SUP = (function () {
+  var p = [];
+  for (var i = 0; i <= 200; i++) {
+    var t = i / 200, e = t * t * (3 - 2 * t);
+    p.push({ x: ALT_COSTA + t * (ALT_CIMA - ALT_COSTA), a: e * ALT_TOPE });
+  }
+  return p;
+})();
+function altX(a) {
+  if (a <= 0) return ALT_COSTA;
+  for (var i = 1; i < ALT_SUP.length; i++) {
+    if (ALT_SUP[i].a >= a) {
+      var p = ALT_SUP[i - 1], q = ALT_SUP[i];
+      return p.x + (a - p.a) / (q.a - p.a) * (q.x - p.x);
+    }
+  }
+  return ALT_CIMA;
+}
+function altCuesta(a1, a2) {
+  return ALT_SUP.filter(function (p) { return p.a >= a1 && p.a <= a2; });
+}
+/* La tierra entre dos alturas: la pendiente por la izquierda y el borde del
+   dibujo por la derecha, en un solo contorno. De una pieza y no una por
+   altura: si no, dos alturas seguidas salen con una raya en medio y se leen
+   como dos cosas sueltas en vez de como un tramo. */
+function altMancha(aBaja, aAlta) {
+  var arr = altCuesta(aBaja, aAlta);
+  var d = 'M ' + altX(aAlta).toFixed(2) + ' ' + altY(aAlta).toFixed(2);
+  for (var i = arr.length - 1; i >= 0; i--) {
+    d += ' L ' + arr[i].x.toFixed(2) + ' ' + altY(arr[i].a).toFixed(2);
+  }
+  return d + ' L ' + altX(aBaja).toFixed(2) + ' ' + altY(aBaja).toFixed(2) +
+         ' L ' + ALT_XR + ' ' + altY(aBaja).toFixed(2) +
+         ' L ' + ALT_XR + ' ' + altY(aAlta).toFixed(2) + ' Z';
 }
 
 function pintarAltitud() {
-  $$('.segmentado [data-modo]').forEach(function (b) {
-    b.setAttribute('aria-pressed', b.dataset.modo === F.altModo ? 'true' : 'false');
+  var caja = $('#f-alt');
+  if (!caja) return;
+  var y0 = altY(0), yPie = ALT_ALTO - 0.5;
+  var s = '<svg viewBox="0 0 ' + ALT_W + ' ' + ALT_ALTO.toFixed(2) + '" ' +
+          'role="group" aria-label="Altitud">';
+  // el mar arranca en el margen, por debajo de la columna de cifras
+  s += '<path class="mar" d="M 0 ' + y0.toFixed(2) + ' L ' + ALT_COSTA + ' ' + y0.toFixed(2) +
+       ' L ' + ALT_COSTA + ' ' + yPie.toFixed(2) + ' L 0 ' + yPie.toFixed(2) + ' Z"/>';
+  s += '<path class="tierra" d="M ' + ALT_COSTA + ' ' + y0.toFixed(2) + ' ' +
+       ALT_SUP.map(function (p) { return 'L ' + p.x.toFixed(2) + ' ' + altY(p.a).toFixed(2); }).join(' ') +
+       ' L ' + ALT_XR + ' ' + altY(ALT_TOPE).toFixed(2) +
+       ' L ' + ALT_XR + ' ' + yPie.toFixed(2) + ' L ' + ALT_COSTA + ' ' + yPie.toFixed(2) + ' Z"/>';
+  s += '<line class="rejilla" x1="0" y1="' + y0.toFixed(2) + '" x2="' + ALT_COSTA +
+       '" y2="' + y0.toFixed(2) + '"/>';
+  ALTURAS.forEach(function (h) {
+    s += '<line class="rejilla" x1="' + altX(h).toFixed(2) + '" y1="' + altY(h).toFixed(2) +
+         '" x2="' + ALT_XR + '" y2="' + altY(h).toFixed(2) + '"/>';
   });
-  $('#alt-cota').classList.toggle('oculto', F.altModo !== 'cota');
-  $('#alt-rango').classList.toggle('oculto', F.altModo !== 'rango');
-  $('#f-altitud-val').textContent = F.altitud + ' msnm';
+  var tr = tramosAlt();
+  tr.forEach(function (r) {
+    var a1 = r[0] - ALT_PASO / 2, a2 = r[1] + ALT_PASO / 2;
+    s += '<path class="tramo" d="' + altMancha(a1, a2) + '"/>';
+    s += '<rect class="pilalab" x="1.5" y="' + altY(a2).toFixed(2) + '" width="' +
+         (ALT_XLAB - 4) + '" height="' + (altY(a1) - altY(a2)).toFixed(2) + '" rx="2.4"/>';
+  });
+  s += '<path class="suelo" d="M ' + ALT_SUP.map(function (p) {
+    return p.x.toFixed(2) + ' ' + altY(p.a).toFixed(2); }).join(' L ') + '"/>';
+  // lo unico que se repasa es la cuesta marcada, por encima del suelo
+  tr.forEach(function (r) {
+    var arr = altCuesta(r[0] - ALT_PASO / 2, r[1] + ALT_PASO / 2);
+    if (arr.length < 2) return;
+    s += '<path class="cuesta-on" d="M ' + arr.map(function (p) {
+      return p.x.toFixed(2) + ' ' + altY(p.a).toFixed(2); }).join(' L ') + '"/>';
+  });
+  ALTURAS.forEach(function (h) {
+    var y = altY(h), on = F.alt.indexOf(h) >= 0;
+    s += '<g class="fila" data-h="' + h + '" data-on="' + (on ? 1 : 0) + '">' +
+         '<rect class="cel" x="0" y="' + (y - ALT_FILA / 2).toFixed(2) + '" width="' + ALT_W +
+         '" height="' + ALT_FILA.toFixed(2) + '"/>' +
+         '<text class="lab" x="' + (ALT_XLAB - 4.5) + '" y="' + (y + 1.15).toFixed(2) +
+         '" text-anchor="end">' + h + '</text></g>';
+  });
+  caja.innerHTML = s + '</svg>';
+
+  $('#alt-fichas').innerHTML = tr.map(function (r) {
+    return '<button class="chip" data-alt="' + r[0] + '-' + r[1] + '" aria-label="Quitar ' +
+        textoTramo(r) + '">' + esc(textoTramo(r)) + svgIcono('x', 'quita') + '</button>';
+  }).join('');
 }
 
-function pintarRango() {
-  $('#f-alt-min-val').textContent = F.altDesde + ' msnm';
-  $('#f-alt-max-val').textContent = F.altHasta + ' msnm';
-  var caja = $('#doble'), barra = $('#doble-activa');
-  if (!caja || !barra) return;
-  var w = caja.clientWidth;
-  var tirador = parseFloat(getComputedStyle(document.documentElement)
-                  .getPropertyValue('--tirador')) || 20;
-  if (!w) return;                       // el panel está oculto: aún no mide
-  var p = function (v) { return (v - ALT_MIN) / (ALT_MAX - ALT_MIN); };
-  var a = p(F.altDesde) * (w - tirador) + tirador / 2;
-  var b = p(F.altHasta) * (w - tirador) + tirador / 2;
-  barra.style.left = a + 'px';
-  barra.style.width = Math.max(0, b - a) + 'px';
+function quitarTramoAlt(b) {
+  var p = b.getAttribute('data-alt').split('-');
+  for (var h = +p[0]; h <= +p[1]; h += ALT_PASO) {
+    var i = F.alt.indexOf(h);
+    if (i >= 0) F.alt.splice(i, 1);
+  }
+  render();
 }
-$('#f-alt-min').addEventListener('input', function (ev) {
-  F.altDesde = +ev.target.value;
-  if (F.altDesde > F.altHasta) { F.altHasta = F.altDesde; $('#f-alt-max').value = F.altHasta; }
-  pintarRango(); pintarAltitud(); render();
+$('#alt-fichas').addEventListener('click', function (ev) {
+  var b = ev.target.closest('[data-alt]');
+  if (b) quitarTramoAlt(b);
 });
-$('#f-alt-max').addEventListener('input', function (ev) {
-  F.altHasta = +ev.target.value;
-  if (F.altHasta < F.altDesde) { F.altDesde = F.altHasta; $('#f-alt-min').value = F.altDesde; }
-  pintarRango(); pintarAltitud(); render();
-});
-$$('.segmentado [data-modo]').forEach(function (b) {
-  b.addEventListener('click', function () {
-    if (b.dataset.modo === 'todas') { quitarAltitud(); return; }
-    F.altModo = b.dataset.modo;
-    pintarAltitud();
-    setTimeout(pintarRango, 0);        // el bloque acaba de dejar de estar oculto
+
+function quitarAltitud() { F.alt = []; render(); }
+
+/* Tocar pone o quita una altura; mantener y arrastrar coge un tramo, igual
+   que en los meses y con la misma espera. Si el arrastre empieza sobre algo
+   ya marcado, borra en vez de poner, que es como se deshace un tramo.
+
+   Aqui pintar y desplazar el panel comparten el eje -los meses van de lado y
+   no se estorban-, asi que la espera trabaja mas. Por eso tocar una a una
+   tiene que seguir siendo comodo: con diez filas lo es. */
+(function () {
+  var caja = $('#f-alt');
+  if (!caja) return;
+  var pintado = null, reloj = null, tragar = false;
+
+  function alturaEn(ev) {
+    var e = document.elementFromPoint(ev.clientX, ev.clientY);
+    var g = e && e.closest && e.closest('.fila');
+    return g ? +g.getAttribute('data-h') : null;
+  }
+  function pintarHastaAlt(h) {
+    var a = Math.min(pintado.ancla, h), b = Math.max(pintado.ancla, h), hay = {};
+    pintado.antes.forEach(function (x) { hay[x] = 1; });
+    for (var k = a; k <= b; k += ALT_PASO) {
+      if (pintado.pone) hay[k] = 1; else delete hay[k];
+    }
+    var nuevo = Object.keys(hay).map(Number).sort(function (x, y) { return x - y; });
+    var ahora = F.alt.slice().sort(function (x, y) { return x - y; });
+    if (nuevo.join() === ahora.join()) return;
+    F.alt = nuevo;
+    render();
+  }
+
+  caja.addEventListener('pointerdown', function (ev) {
+    tragar = false;                     // cada pulsacion empieza limpia
+    var h = alturaEn(ev);
+    if (h == null) return;
+    clearTimeout(reloj);
+    reloj = setTimeout(function () {
+      pintado = { ancla: h, antes: F.alt.slice(), pone: F.alt.indexOf(h) < 0 };
+      try { caja.setPointerCapture(ev.pointerId); } catch (e) {}
+      pintarHastaAlt(h);
+      tragar = true;
+    }, ESPERA_PINTAR);
+  });
+  caja.addEventListener('pointermove', function (ev) {
+    if (!pintado) { clearTimeout(reloj); return; }
+    ev.preventDefault();
+    var h = alturaEn(ev);
+    if (h != null) pintarHastaAlt(h);
+  });
+  function soltar() { clearTimeout(reloj); pintado = null; }
+  caja.addEventListener('pointerup', soltar);
+  caja.addEventListener('pointercancel', soltar);
+  caja.addEventListener('click', function (ev) {
+    if (tragar) { tragar = false; return; }
+    var h = alturaEn(ev);
+    if (h == null) return;
+    alterna(F.alt, h);
     render();
   });
-});
+})();
 
 function abrirInfo(v) {
   if (v) {
@@ -2046,7 +2178,6 @@ function abrirInfo(v) {
 $('#btn-info').addEventListener('click', function () { abrirInfo(true); });
 $('#cerrar-info').addEventListener('click', function () { abrirInfo(false); });
 
-window.addEventListener('resize', pintarRango);
 
 document.addEventListener('keydown', function (ev) {
   if (ev.key === 'Escape') {
@@ -2102,7 +2233,6 @@ function aplicarTexto(id) {
   document.documentElement.style.setProperty('--escala', t.v);
   try { localStorage.setItem('texto', t.id); } catch (e) {}
   if (panelActual === '#panel-apariencia') pintarApariencia();
-  pintarRango();                      // el doble deslizador mide en píxeles
 }
 
 /* tres opciones no se adivinan pulsando un boton que rota */
@@ -2419,7 +2549,6 @@ aplicarTexto(leerTexto());
 pintarChipsRapidos();
 pintarFiltros();
 pintarAltitud();
-pintarRango();
 pintarIconos(document);
 pintarBotonOrden();
 pintarGuardar();

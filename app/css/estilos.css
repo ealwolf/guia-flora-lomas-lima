@@ -917,51 +917,51 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   color: var(--acento-txt); font-weight: 700;
   box-shadow: inset 0 -2px 0 var(--acento);
 }
-.rango { display: flex; align-items: center; gap: 10px; }
-.rango label { font-size: var(--t-1); color: var(--tenue); min-width: 42px; }
-
-/* Deslizadores con estilo propio. El nativo pinta de color la parte izquierda,
-   y eso hace leer "cuanto" cuando aqui lo que se marca es "donde". */
-input[type=range] {
-  -webkit-appearance: none; appearance: none;
-  width: 100%; height: 28px; margin: 0; background: transparent;
+/* ---------- la ladera: el filtro de altitud ----------
+   Un corte del cerro, el mar a la izquierda y la cuesta subiendo a la derecha,
+   con las alturas en el margen. Sustituye a tres pestañas y dos deslizadores:
+   «una cota» y «un rango» nunca fueron dos preguntas -la condicion de la una
+   es la de la otra con los dos extremos juntos-, y ni una ni otra dejaban
+   escoger 300 y 800 sin lo de en medio. Lo que se marca es un trozo de ladera,
+   y dos alturas seguidas se dibujan de una pieza, sin raya en medio. */
+/* Con todo el ancho del panel, en escritorio el cerro se iba a 499 px de
+   alto: las filas quedaban en 43 px, mas de lo que pide un dedo, y el grupo se
+   comia la pantalla. Topado, las filas miden 33 px en cualquier sitio, que es
+   justo lo que miden en el telefono. */
+.ladera { position: relative; touch-action: pan-y; max-width: 340px; margin-inline: auto; }
+.ladera, .ladera * { -webkit-user-select: none; user-select: none; }
+.ladera svg { display: block; width: 100%; height: auto; }
+.ladera .fila { cursor: pointer; }
+.ladera .cel { fill: transparent; }
+.ladera .mar { fill: var(--mar); }
+.ladera .tierra { fill: var(--tierra); }
+.ladera .tramo { fill: var(--acento); opacity: .26; }
+/* lo unico que se repasa es la cuesta marcada: ni arriba, ni a la derecha, ni
+   abajo, que ahi no hay ladera que señalar sino el corte del dibujo */
+.ladera .cuesta-on {
+  stroke: var(--acento); stroke-width: 2; fill: none;
+  stroke-linecap: round; stroke-linejoin: round;
 }
-input[type=range]::-webkit-slider-runnable-track {
-  height: 4px; border-radius: 3px; background: var(--borde);
+.ladera .suelo {
+  fill: none; stroke: var(--costa); stroke-width: .55; stroke-linejoin: round;
 }
-input[type=range]::-moz-range-track {
-  height: 4px; border-radius: 3px; background: var(--borde);
+.ladera .rejilla { stroke: var(--borde); stroke-width: .18; stroke-dasharray: 1.2 1.4; }
+/* el rastro de las cifras va de una pieza por tramo, no una pastilla por
+   altura: si no, un rango se leia como alturas sueltas puestas en fila */
+.ladera .pilalab { fill: var(--acento-sua); }
+.ladera .lab {
+  font-size: 3.1px; fill: var(--tenue); font-variant-numeric: tabular-nums;
 }
-input[type=range]::-moz-range-progress { height: 4px; background: transparent; }
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none; appearance: none;
-  width: var(--tirador); height: var(--tirador);
-  margin-top: calc((4px - var(--tirador)) / 2); border-radius: 50%;
-  background: var(--superficie); border: 2px solid var(--acento);
-  box-shadow: 0 1px 3px rgba(0,0,0,.22); cursor: pointer;
+.ladera .fila[data-on="1"] .lab { fill: var(--acento-txt); font-weight: 700; }
+.alt-fichas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.alt-fichas:empty { display: none; }
+.alt-fichas .chip {
+  min-height: 34px; padding: 4px 8px 4px 12px;
+  background: var(--acento-sua); border-color: transparent; color: var(--acento-txt);
 }
-input[type=range]::-moz-range-thumb {
-  width: var(--tirador); height: var(--tirador);
-  border-radius: 50%; border: 2px solid var(--acento);
-  background: var(--superficie); box-shadow: 0 1px 3px rgba(0,0,0,.22); cursor: pointer;
-}
-input[type=range]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px var(--acento-sua); }
-input[type=range]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--acento-sua); }
-
-/* Rango: dos tiradores sobre una misma linea, con el tramo central relleno. */
-.doble { position: relative; height: 28px; }
-.doble-pista, .doble-activa {
-  position: absolute; top: 12px; height: 4px; border-radius: 3px; pointer-events: none;
-}
-.doble-pista { left: 0; right: 0; background: var(--borde); }
-.doble-activa { background: var(--acento); }
-.doble input[type=range] {
-  position: absolute; left: 0; top: 0; pointer-events: none;
-}
-.doble input[type=range]::-webkit-slider-runnable-track { background: transparent; }
-.doble input[type=range]::-moz-range-track { background: transparent; }
-.doble input[type=range]::-webkit-slider-thumb { pointer-events: auto; }
-.doble input[type=range]::-moz-range-thumb { pointer-events: auto; }
+.alt-fichas .chip:hover { border-color: var(--acento); }
+.alt-fichas .chip .quita { width: 15px; height: 15px; opacity: .55; margin-left: 1px; }
+.alt-fichas .chip:hover .quita { opacity: 1; }
 /* con el dedo hace falta un blanco mayor */
 @media (pointer: coarse) {
   :root { --tirador: 26px; }
