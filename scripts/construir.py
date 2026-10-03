@@ -280,6 +280,16 @@ def main():
         return c
 
     cfam, cgru, chab = cuenta('familia'), cuenta('grupo'), cuenta('habitats')
+    # Cada habitat tiene su dibujo, y el dibujo esta hecho a mano: si el PDF
+    # trajera uno nuevo o cambiara un nombre, el filtro se lo callaria -la
+    # ficha saldria sin dibujo o no saldria-. Mejor que pare aqui.
+    if set(chab) != HABITATS_DIBUJADOS:
+        sobran = sorted(set(chab) - HABITATS_DIBUJADOS)
+        faltan = sorted(HABITATS_DIBUJADOS - set(chab))
+        raise SystemExit('hábitats sin dibujo: %s; dibujos sin hábitat: %s. '
+                         'añade o renombra el dibujo en datos/dibujos-habitat/ '
+                         'y la familia en HABITATS, en app/js/app.js'
+                         % (sobran or '-', faltan or '-'))
     # se cuenta por 'colores' porque el filtro acepta cualquiera de ellos
     ccol, clom = cuenta('colores'), cuenta('lomas')
 
@@ -346,13 +356,22 @@ def main():
         if os.path.exists(fp):
             mios = json.load(open(fp, encoding='utf-8'))
             cuerpo.update({k: v['body'] for k, v in mios.get('icons', {}).items()})
+        # Los dibujos de los hábitats viajan en el mismo archivo que los
+        # iconos -son dibujos y se cargan a la vez- pero en otra variable: no
+        # son cuadrados de 256 como los de Phosphor sino rectángulos de 4:5,
+        # y svgIcono() no sabría envolverlos.
+        dib = dibujos_habitat()
         pi = os.path.join(APPJS, 'iconos.js')
         with open(pi, 'w', encoding='utf-8') as fh:
             fh.write('window.ICONOS=')
             json.dump(cuerpo, fh, ensure_ascii=False, separators=(',', ':'))
             fh.write(';\n')
-        print('-> app/js/iconos.js %.0f KB  (%d iconos)'
-              % (os.path.getsize(pi) / 1024, len(cuerpo)))
+            if dib:
+                fh.write('window.DIBUJOS=')
+                json.dump(dib, fh, ensure_ascii=False, separators=(',', ':'))
+                fh.write(';\n')
+        print('-> app/js/iconos.js %.0f KB  (%d iconos, %d dibujos)'
+              % (os.path.getsize(pi) / 1024, len(cuerpo), len(dib)))
 
     # versión de un solo archivo, por si el navegador del teléfono no deja
     # cargar los .js vecinos al abrir desde file://
@@ -384,6 +403,59 @@ def main():
           % (altrevisadas, len(especies), porRevisar))
     print('imágenes en app/img: %d' % nimg)
 
+
+# Lo que los ocho dibujos tienen que compartir para que parezcan una familia:
+# el mismo lienzo, el mismo grosor y nada de color. Se comprueba al construir
+# porque es fácil de romper -basta retocar uno en un editor de vectores, que
+# suele reescribir el <svg> entero- y el estropicio no se ve hasta que están
+# los ocho juntos y uno sale de otro tamaño.
+ENVOLTORIO = ('viewBox="0 0 80 100"', 'fill="none"', 'stroke="currentColor"',
+              'stroke-width="2"', 'stroke-linecap="round"',
+              'stroke-linejoin="round"')
+# ids y nombres propios: los ocho acaban incrustados en la misma página.
+PROHIBIDO = ('<text', '<style', '<defs', ' id=', '<image', 'xlink', '#')
+
+
+def dibujos_habitat():
+    """Los .svg de datos/dibujos-habitat, sin su <svg> de fuera.
+
+    Se guarda sólo el interior: el envoltorio lo pone dibujoHabitat(), en
+    app/js/app.js, y así los ocho comparten lienzo y trazo por construcción.
+    El archivo de disco sí lo lleva, para poder abrirlo y verlo por su cuenta.
+    """
+    d = os.path.join(RAIZ, 'datos', 'dibujos-habitat')
+    if not os.path.isdir(d):
+        return {}
+    dib = {}
+    for f in sorted(os.listdir(d)):
+        if not f.endswith('.svg'):
+            continue
+        s = open(os.path.join(d, f), encoding='utf-8').read()
+        s = re.sub(r'<!--.*?-->', '', s, flags=re.S)
+        m = re.search(r'<svg([^>]*)>(.*)</svg>', s, re.S)
+        if not m:
+            raise SystemExit('%s: no encuentro el <svg>' % f)
+        for a in ENVOLTORIO:
+            if a not in m.group(1):
+                raise SystemExit('%s: al <svg> le falta %s. Los ocho dibujos '
+                                 'comparten envoltorio; mira '
+                                 'datos/dibujos-habitat/LEEME.md' % (f, a))
+        cuerpo = re.sub(r'\s*\n\s*', '', m.group(2)).strip()
+        for p in PROHIBIDO:
+            if p in cuerpo:
+                raise SystemExit('%s: lleva «%s», y los ocho van incrustados '
+                                 'en la misma página' % (f, p.strip()))
+        dib[f[:-4]] = cuerpo
+    return dib
+
+
+# Los ocho del libro (pag. 12). Van aqui para que construir.py pueda avisar si
+# el dato deja de coincidir con los dibujos; el reparto en tres familias y el
+# nombre de archivo de cada dibujo estan en app/js/app.js, que es quien pinta.
+HABITATS_DIBUJADOS = {
+    'Loma arbórea', 'Loma arbustiva', 'Loma herbácea', 'Zona de cactáceas',
+    'Ladera arenosa', 'Ladera rocosa', 'Cresta rocosa', 'Fondo de quebrada',
+}
 
 NUCLEO = ['./', 'index.html', 'manifest.webmanifest',
           'css/estilos.css',

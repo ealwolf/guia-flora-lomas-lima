@@ -3,7 +3,7 @@
 (function () {
 'use strict';
 
-var G = window.GUIA, ICO = window.ICONOS || {};
+var G = window.GUIA, ICO = window.ICONOS || {}, DIBH = window.DIBUJOS || {};
 var $  = function (s, r) { return (r || document).querySelector(s); };
 var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
@@ -805,6 +805,43 @@ function chip(texto, activo, extra) {
          (extra || '') + '>' + texto + '</button>';
 }
 
+/* Los ocho hábitats del libro (pág. 12), repartidos en tres familias.
+   Eran ocho fichas de texto en fila y había que saberse el vocabulario:
+   «Cresta rocosa», «Ladera rocosa» y «Fondo de quebrada» se leían como tres
+   maneras de decir «con piedras», y lo que las separa no es la piedra sino
+   dónde estás en el cerro. El libro los define uno a uno y no los agrupa,
+   pero se agrupan solos: cuatro dicen QUÉ crece -de la pradera al árbol-,
+   dos DE QUÉ es la ladera -arena o roca- y dos la FORMA del terreno -la
+   cresta de arriba, el fondo de abajo-.
+
+   Dentro de cada familia el dibujo es el mismo salvo en lo que las distingue,
+   que es justo lo que hay que mirar. Las cuatro primeras van de mayor a menor
+   porte. El dato no se toca: lo que se agrupa es cómo se enseña. Si el PDF
+   trajera un hábitat nuevo, construir.py no deja pasar la construcción. */
+var HABITATS = [
+  { tit: 'Lo que crece', hay: [
+      ['Loma arbórea',      'arborea'],
+      ['Loma arbustiva',    'arbustiva'],
+      ['Loma herbácea',     'herbacea'],
+      ['Zona de cactáceas', 'cactaceas'] ] },
+  { tit: 'El suelo de la ladera', hay: [
+      ['Ladera arenosa',    'arenosa'],
+      ['Ladera rocosa',     'rocosa'] ] },
+  { tit: 'La forma del terreno', hay: [
+      ['Cresta rocosa',     'cresta'],
+      ['Fondo de quebrada', 'quebrada'] ] }
+];
+
+/* El envoltorio va aquí y no en cada dibujo: así los ocho comparten lienzo y
+   grosor de trazo por construcción, y el archivo guarda sólo las líneas. */
+function dibujoHabitat(n) {
+  var cuerpo = DIBH[n];
+  if (!cuerpo) return '';
+  return '<svg class="hab-dib" viewBox="0 0 80 100" aria-hidden="true" ' +
+         'focusable="false" fill="none" stroke="currentColor" stroke-width="2" ' +
+         'stroke-linecap="round" stroke-linejoin="round">' + cuerpo + '</svg>';
+}
+
 function pintarFiltros() {
   $('#f-color').innerHTML = G.colores.map(function (c) {
     return chip('<span class="punto" style="background:' + c.hex + '"></span>' +
@@ -829,10 +866,14 @@ function pintarFiltros() {
                 'data-f="loma" data-v="' + l.id + '"');
   }).join('');
 
-  $('#f-habitat').innerHTML = G.habitats.map(function (h) {
-    return chip(esc(h.nombre),
-                F.habitat.indexOf(h.nombre) >= 0,
-                'data-f="habitat" data-v="' + esc(h.nombre) + '"');
+  $('#f-habitat').innerHTML = HABITATS.map(function (fam) {
+    return '<p class="hab-fam">' + esc(fam.tit) + '</p>' +
+      '<div class="hab-fila">' + fam.hay.map(function (h) {
+        return '<button class="hab" aria-pressed="' +
+               (F.habitat.indexOf(h[0]) >= 0) + '" data-f="habitat" data-v="' +
+               esc(h[0]) + '">' + dibujoHabitat(h[1]) +
+               '<span>' + esc(h[0]) + '</span></button>';
+      }).join('') + '</div>';
   }).join('');
 
   $('#f-conserv').innerHTML = CONSERV.map(function (c) {

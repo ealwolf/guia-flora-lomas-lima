@@ -562,6 +562,45 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   min-height: 27px;
 }
 .envoltura { display: flex; flex-wrap: wrap; gap: 7px; }
+
+/* Los ocho hábitats, en tres familias y con dibujo. Eran ocho fichas de texto
+   en fila y había que saberse el vocabulario del libro: «Cresta rocosa»,
+   «Ladera rocosa» y «Fondo de quebrada» se leían como tres maneras de decir
+   «con piedras». Dentro de cada familia el dibujo es el mismo salvo en lo que
+   las separa -el porte de la planta, la arena o la roca, el pico o el valle-,
+   y esa diferencia se ve sin leer.
+   Los dibujos son líneas de currentColor, así que siguen al tema y a lo
+   elegido sin una sola regla de color aparte. */
+.hab-fam {
+  margin: 0 0 7px; font-size: var(--t-1); color: var(--tenue); line-height: 1.3;
+}
+/* Rejilla de cuatro y no fila que se estira: con la fila, las familias de
+   dos se repartían el ancho entre dos y salían con fichas de 96 px al lado
+   de las de 80 de la familia de cuatro, como si pesaran más. Cuatro columnas
+   fijas -las de la familia mayor- dan a las ocho el mismo tamaño, y las
+   familias de dos dejan dos huecos, que es justo lo que hace que se vean
+   como familias. El tope es para que en una ventana ancha los dibujos no se
+   conviertan en láminas. */
+.hab-fila {
+  display: grid; gap: 8px; font-size: var(--t-0); max-width: 37em;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.hab-fila + .hab-fam { margin-top: 13px; }
+.hab {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 7px 5px 8px; border-radius: var(--r-s);
+  border: 1px solid var(--borde-control); background: var(--superficie);
+  font-size: var(--t-0); font-weight: 500; color: var(--texto);
+  line-height: 1.25; text-align: center; overflow-wrap: break-word;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.hab:hover { border-color: color-mix(in srgb, var(--acento) 45%, var(--borde)); }
+/* El dibujo, más tenue que el nombre: es el apoyo, no el dato. */
+.hab-dib { width: 100%; aspect-ratio: 4 / 5; display: block; color: var(--tenue); }
+.hab[aria-pressed="true"] {
+  background: var(--acento-sua); border-color: var(--acento); color: var(--acento-txt);
+}
+.hab[aria-pressed="true"] .hab-dib { color: var(--acento); }
 /* Casillas y no fichas: estas tres son atributos sueltos de cada especie y se
    suman entre si -endemica Y amenazada-, mientras que las fichas de los demas
    grupos son alternativas -este color O este otro-. La forma lo dice sin

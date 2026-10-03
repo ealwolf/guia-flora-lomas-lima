@@ -1,0 +1,8 @@
+<!-- Loma arbórea — dos árboles de copa abierta; el porte mayor de la familia. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<path d="M6 82H74"/>
+<path d="M26 82V58M60 82V66"/>
+<path d="M12 56a8 7 0 0 1 2-14a10 9 0 0 1 12-10a10 9 0 0 1 14 2a9 8 0 0 1 4 12a7 7 0 0 1-4 10a7 5 0 0 1-14 0a7 5 0 0 1-14 0z"/>
+<path d="M50 66a6 6 0 0 1 2-10a8 8 0 0 1 10-6a8 7 0 0 1 8 6a6 6 0 0 1 0 10a5 4 0 0 1-10 0a5 4 0 0 1-10 0z"/>
+<path stroke-width="1.4" d="M26 58V48M26 54l-7-7M26 52l7-7M60 66v-6M60 63l-4-4M60 61l4-4"/>
+</svg>

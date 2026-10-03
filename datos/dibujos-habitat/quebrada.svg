@@ -1,0 +1,7 @@
+<!-- Fondo de quebrada — las mismas líneas, invertidas, bajando al fondo. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<path d="M26 74l4 3 4-2 6 7 6-7 4 2 4-3z" fill="currentColor" opacity=".12" stroke="none"/>
+<path d="M8 24l6 4 6-3 6 7 6-2 8 10 8-10 6 2 6-7 6 3 6-4"/>
+<path d="M14 42l5 4 5-3 5 7 5-2 6 8 6-8 5 2 5-7 5 3 5-4"/>
+<path stroke-width="1.4" d="M20 58l4 4 4-2 5 6 4-2 3 6 3-6 4 2 5-6 4 2 4-4M26 74l4 3 4-2 6 7 6-7 4 2 4-3"/>
+</svg>
