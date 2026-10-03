@@ -41,6 +41,9 @@
      necesita contorno. El texto, 15,2:1. */
   --chip-mapa:     #23271f;
   --chip-mapa-txt: #ffffff;
+  /* el cero de la escala de altitud va escrito sobre el agua, y --tenue sobre
+     el mar claro se queda en 3,99:1; este llega a 5,85:1 */
+  --mar-txt:       #2f5666;
   --tirador: 20px;
 
   /* Escala tipográfica. Antes había dieciocho tamaños sueltos, cinco de ellos
@@ -95,6 +98,7 @@
     /* al reves, que un casi negro sobre pagina oscura desaparece */
     --chip-mapa:     #e4e8dd;
     --chip-mapa-txt: #1a1e18;
+    --mar-txt:       #8fb3c0;
     --propia:     #b49ae8;
     --propia-sua: #241d33;
     --propia-txt: #c7b3f0;
@@ -130,6 +134,7 @@
     /* al reves, que un casi negro sobre pagina oscura desaparece */
     --chip-mapa:     #e4e8dd;
     --chip-mapa-txt: #1a1e18;
+    --mar-txt:       #8fb3c0;
     --propia:     #b49ae8;
     --propia-sua: #241d33;
     --propia-txt: #c7b3f0;
@@ -958,6 +963,12 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .ladera .lab {
   font-size: 10.5px; fill: var(--tenue); font-variant-numeric: tabular-nums;
 }
+/* El cero cierra la escala por abajo, en la linea del agua. No es una opcion:
+   el minimo de los 134 dibujos del libro es exactamente 100, asi que una
+   franja 0-100 saldria siempre vacia. Esta para decir donde empieza la cuenta,
+   y por eso no va dentro de ninguna .fila ni se puede tocar. */
+.ladera .cero { fill: var(--mar-txt); }
+.ladera .lecho { fill: var(--tierra); }
 .ladera .fila[data-on="1"] .lab { fill: var(--acento-txt); font-weight: 700; }
 /* centrada: va con el dibujo que tiene encima, no con el texto del grupo */
 #mes-pista, #alt-pista { text-align: center; }

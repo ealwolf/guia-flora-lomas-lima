@@ -1994,14 +1994,36 @@ $('#btn-reset').addEventListener('click', function () { tirarFiltros(false); });
    vuelve mas suave. Es la unica parte que da de si. */
 var ALT_FILA = 31, ALT_ARRIBA = 10;
 var ALT_XLAB = 51;                      // la columna de cifras, fija
-var ALT_ALTO = ALT_ARRIBA + (ALTURAS.length + 1.2) * ALT_FILA;
-var ALT_TOPE = ALT_MAX + ALT_PASO / 2, ALT_PIE = -70;
+// el alto sale del tramo de altitud que se dibuja, no de contar filas: asi una
+// fila mide ALT_FILA exacto y las zonas de toque no se pisan entre si
+var ALT_ALTO;
+// bajo cero hay sitio para el agua: una franja entera. Con 70 quedaban 22 px
+// y el lecho en cuesta no se apreciaba
+var ALT_TOPE = ALT_MAX + ALT_PASO / 2, ALT_PIE = -ALT_PASO;
+ALT_ALTO = ALT_ARRIBA + (ALT_TOPE - ALT_PIE) / ALT_PASO * ALT_FILA;
 var ALT_ANCHO = 340;                    // lo ultimo que se midio
 
 function altY(a) {
   return ALT_ARRIBA + (ALT_TOPE - a) * (ALT_ALTO - ALT_ARRIBA) / (ALT_TOPE - ALT_PIE);
 }
-function altCosta() { return 64; }                      // donde acaba el mar
+function altCosta() { return 64; }                      // la orilla
+
+/* El lecho del mar, de la orilla hacia fuera. El agua era un rectangulo, y un
+   rectangulo azul no se lee como mar: ahora la tierra sigue por debajo del
+   agua, tendida junto a la orilla y hundiendose al alejarse, y el azul es lo
+   que queda encima. */
+function altLecho() {
+  var y0 = altY(0), yPie = ALT_ALTO - 2, c = altCosta(), p = [];
+  for (var i = 0; i <= 24; i++) {
+    /* La cuesta es solo la orilla: en el primer tercio baja a su hondura y de
+       ahi para fuera es mar abierto. Con la cuesta repartida por todo el
+       ancho -que fue el primer intento- el agua se quedaba en un triangulo de
+       64x29 y dejaba de leerse como mar. */
+    var t = i / 24, u = Math.min(1, t / 0.35), e = u * u * (3 - 2 * u);
+    p.push({ x: c * (1 - t), y: y0 + (yPie - y0) * e });
+  }
+  return p;
+}
 function altCima()  { return ALT_ANCHO - 20; }
 function altDer()   { return ALT_ANCHO - 10; }
 
@@ -2056,9 +2078,12 @@ function pintarAltitud() {
   var y0 = altY(0), yPie = ALT_ALTO - 2, costa = altCosta();
   var s = '<svg viewBox="0 0 ' + ALT_ANCHO + ' ' + ALT_ALTO + '" height="' + ALT_ALTO +
           '" role="group" aria-label="Altitud">';
-  // el mar arranca en el margen, por debajo de la columna de cifras
-  s += '<path class="mar" d="M 0 ' + y0.toFixed(1) + ' L ' + costa + ' ' + y0.toFixed(1) +
-       ' L ' + costa + ' ' + yPie + ' L 0 ' + yPie + ' Z"/>';
+  // primero el lecho, que es tierra, y encima el agua: asi el mar tiene fondo
+  var lecho = altLecho().map(function (p) {
+    return p.x.toFixed(1) + ' ' + p.y.toFixed(1);
+  }).join(' L ');
+  s += '<path class="lecho" d="M ' + lecho + ' L 0 ' + yPie + ' Z"/>';
+  s += '<path class="mar" d="M 0 ' + y0.toFixed(1) + ' L ' + lecho + ' Z"/>';
   s += '<path class="tierra" d="M ' + costa + ' ' + y0.toFixed(1) + ' ' +
        ALT_SUP.map(function (p) { return 'L ' + p.x.toFixed(1) + ' ' + altY(p.a).toFixed(1); }).join(' ') +
        ' L ' + altDer() + ' ' + altY(ALT_TOPE).toFixed(1) +
@@ -2093,6 +2118,12 @@ function pintarAltitud() {
          '<text class="lab" x="' + (ALT_XLAB - 15) + '" y="' + (y + 4).toFixed(1) +
          '" text-anchor="end">' + h + '</text></g>';
   });
+  /* El cero cierra la escala, en la linea del agua. Va fuera de las filas a
+     proposito: no es una opcion. El minimo de los 134 dibujos del libro es
+     exactamente 100, asi que una franja 0-100 saldria siempre vacia; el cero
+     esta para decir donde empieza la cuenta, no para elegirlo. */
+  s += '<text class="lab cero" x="' + (ALT_XLAB - 15) + '" y="' + (altY(0) + 4).toFixed(1) +
+       '" text-anchor="end">0</text>';
   caja.innerHTML = s + '</svg>';
 
   $('#alt-fichas').innerHTML = tr.map(function (r) {
