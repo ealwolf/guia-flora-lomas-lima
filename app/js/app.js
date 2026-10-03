@@ -1445,7 +1445,7 @@ var SILLA = 34;
    Hay que muestrear el trazado para poder cortarlo, y getPointAtLength pide
    que el path este en el documento; no pide que se vea, asi que va en un svg
    de tamaño cero y se hace una sola vez. */
-var CARA_PTS = null;
+var CARA_PTS = null, CARA_N = 200, CARA_PASO = 1;
 function caraPuntos() {
   if (CARA_PTS) return CARA_PTS;
   var NS = 'http://www.w3.org/2000/svg';
@@ -1458,18 +1458,37 @@ function caraPuntos() {
   document.body.appendChild(caja);
   var largo = 0, out = [];
   try { largo = p.getTotalLength(); } catch (e) {}
-  for (var i = 0; largo && i <= 200; i++) {
-    var q = p.getPointAtLength(largo * i / 200);
+  for (var i = 0; largo && i <= CARA_N; i++) {
+    var q = p.getPointAtLength(largo * i / CARA_N);
     out.push({ x: q.x, y: q.y });
   }
   document.body.removeChild(caja);
-  if (out.length) CARA_PTS = out;
+  if (out.length) { CARA_PTS = out; CARA_PASO = largo / CARA_N; }
   return out;
 }
 
 var CARA_SUELO = 43;                    // donde apoya el cerro en el dibujo
-function caraTrozo(pts, desde, hasta) {
-  return pts.filter(function (p) { return p.x >= desde && p.x <= hasta; });
+
+/* Las dos laderas se parten por la silla, y tienen que COMPARTIR ese punto.
+   Antes cada una se quedaba con las muestras de su lado y ninguna caia justo
+   en la silla: entre la ultima de una y la primera de la otra quedaba el paso
+   del muestreo, y al marcarlas las dos se veia una rendija, en el relleno y en
+   el trazo. Ahora el punto de corte se interpola y se le da a las dos. */
+function caraPartir(pts, x) {
+  var i = 0;
+  while (i < pts.length - 1 && pts[i + 1].x < x) i++;
+  var a = pts[i], b = pts[i + 1] || a;
+  var k = (b.x - a.x) ? (x - a.x) / (b.x - a.x) : 0;
+  var corte = { x: x, y: a.y + k * (b.y - a.y) };
+  return [pts.slice(0, i + 1).concat([corte]), [corte].concat(pts.slice(i + 1))];
+}
+
+/* El trazo grueso se recorta por los extremos de fuera lo que mide su media
+   punta: con punta redonda, si no, se derrama por el pie del cerro y se mete
+   en el agua. En la silla no se recorta, que es donde las dos se juntan. */
+function caraRecorta(arr, inicio, fin) {
+  var n = Math.max(1, Math.round(1 / CARA_PASO));
+  return arr.slice(inicio ? n : 0, fin ? arr.length - n : arr.length);
 }
 function caraLinea(arr) {
   return 'M ' + arr.map(function (p) {
@@ -1488,7 +1507,7 @@ function pintarCaras() {
   var pts = caraPuntos();
   if (!pts.length) return;
   var W = G.perfil.viewBox[2];
-  var oes = caraTrozo(pts, 0, SILLA), est = caraTrozo(pts, SILLA, W);
+  var mitades = caraPartir(pts, SILLA), oes = mitades[0], est = mitades[1];
   var puesto = function (l) { return F.cara.indexOf(l) >= 0; };
 
   /* El dibujo va oculto al lector de pantalla: lo que se puede decir con
@@ -1525,7 +1544,8 @@ function pintarCaras() {
     var arr = d.l === 'o' ? oes : est;
     s += '<g class="ladera" data-lado="' + d.l + '" data-on="' + (puesto(d.l) ? 1 : 0) + '">' +
          '<path class="relleno" d="' + caraRelleno(arr) + '"/>' +
-         '<path class="cresta" d="' + caraLinea(arr) + '"/></g>';
+         '<path class="cresta" d="' +
+         caraLinea(caraRecorta(arr, d.l === 'o', d.l === 'e')) + '"/></g>';
   });
   s += '<text class="rotulo" x="3.4" y="13.5">neblina</text>';
   s += '<text class="rotulo" x="3.4" y="38">mar</text>';
