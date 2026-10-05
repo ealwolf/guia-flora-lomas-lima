@@ -588,13 +588,21 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .hab-fila + .hab-fam { margin-top: 13px; }
 .hab {
   display: flex; flex-direction: column; align-items: center; gap: 6px;
-  padding: 7px 5px 8px; border-radius: var(--r-s);
+  /* Sin acolchado a los lados: «Lo que crece» es un campo partido en cuatro
+     ventanas y su línea del suelo tiene que llegar al filete de la ficha. Con
+     5 px a cada lado, entre una línea y la siguiente había 20 px de nada y
+     dejaban de parecer la misma; así quedan los 8 de la rejilla y los dos
+     filetes, y el ojo la cose. Va para las ocho, no sólo para esas cuatro:
+     los otros dibujos tienen su propio margen dentro del lienzo y lo único
+     que les pasa es que se ven algo mayores. El nombre lleva el suyo aparte. */
+  padding: 7px 0 8px; border-radius: var(--r-s);
   border: 1px solid var(--borde-control); background: var(--superficie);
   font-size: var(--t-0); font-weight: 500; color: var(--texto);
   line-height: 1.25; text-align: center; overflow-wrap: break-word;
   transition: background .15s, border-color .15s, color .15s;
 }
 .hab:hover { border-color: color-mix(in srgb, var(--acento) 45%, var(--borde)); }
+.hab span { padding: 0 4px; }
 /* El dibujo, más tenue que el nombre: es el apoyo, no el dato. */
 .hab-dib { width: 100%; aspect-ratio: 4 / 5; display: block; color: var(--tenue); }
 .hab[aria-pressed="true"] {

@@ -10,3 +10,7 @@ app/sw.js
 # las fotos: el original en jpg vive en datos/crudo/img y de ahi salen
 app/img/
 flora-lomas-app/
+# el documento de Affinity de los dibujos: 15 MB y binario. Lo que entra
+# en el repositorio es lo que se exporta de el -assets/habitat-*.svg- y lo
+# que sale del importador. El .af se guarda aparte.
+assets/source/

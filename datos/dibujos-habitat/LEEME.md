@@ -47,9 +47,15 @@ tocar nada:
 
 El dibujo es **el mismo** salvo en lo que las separa: el porte de la planta,
 la arena o la roca, el pico o el valle. Ésa es toda la idea, así que al
-retocar uno hay que mirar a sus hermanos. Las cuatro de «Lo que crece»
-comparten la línea del suelo en y=82, que es la que algún día coserá los
-cuatro dibujos en una sola franja.
+retocar uno hay que mirar a sus hermanos.
+
+«Lo que crece» va un paso más allá: los cuatro no son cuatro escenas, son
+**cuatro ventanas de un mismo campo**. Por eso su línea del suelo es
+`M0 82H80` y no `M6 82H74` — sale por los dos lados del lienzo, se corta con
+él y sigue en la ficha de al lado. Si tocas uno, la línea se queda donde
+está. Las plantas sueltas —árboles, matas, cactus— van enteras dentro de su
+ficha, porque media mata cortada por el borde parece un fallo; la hierba no,
+que es una estera y se corta con el lienzo como el suelo.
 
 El `<svg>` de fuera lo pone `dibujoHabitat()`, en `app/js/app.js`;
 `construir.py` guarda sólo el interior, así que el archivo puede abrirse y
