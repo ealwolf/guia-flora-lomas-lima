@@ -817,17 +817,26 @@ function chip(texto, activo, extra) {
    Dentro de cada familia el dibujo es el mismo salvo en lo que las distingue,
    que es justo lo que hay que mirar. Las cuatro primeras van de mayor a menor
    porte. El dato no se toca: lo que se agrupa es cómo se enseña. Si el PDF
-   trajera un hábitat nuevo, construir.py no deja pasar la construcción. */
+   trajera un hábitat nuevo, construir.py no deja pasar la construcción.
+
+   Los tres títulos están dichos desde fuera de la planta, a propósito. El
+   primero decía «Lo que crece», y leído encima de «Loma arbórea» parecía
+   decir que la especie es un árbol, cuando lo que dice es entre qué está:
+   la guía lo cuenta así en cada ficha, «se le puede encontrar ocupando los
+   hábitats de...». El tercero decía «La forma del terreno», y «terreno»
+   tira a parcela y a lindes; estos dos no son una forma sino un sitio, lo
+   más alto del cerro y el fondo por donde pasa el agua. El libro no les
+   pone nombre de grupo -los enumera y ya-, así que el nombre es nuestro. */
 var HABITATS = [
-  { tit: 'Lo que crece', hay: [
+  { tit: 'La vegetación de alrededor', hay: [
       ['Loma arbórea',      'arborea'],
       ['Loma arbustiva',    'arbustiva'],
       ['Loma herbácea',     'herbacea'],
       ['Zona de cactáceas', 'cactaceas'] ] },
-  { tit: 'El suelo de la ladera', hay: [
+  { tit: 'El tipo de ladera', hay: [
       ['Ladera arenosa',    'arenosa'],
       ['Ladera rocosa',     'rocosa'] ] },
-  { tit: 'La forma del terreno', hay: [
+  { tit: 'Lo alto y lo hondo', hay: [
       ['Cresta rocosa',     'cresta'],
       ['Fondo de quebrada', 'quebrada'] ] }
 ];

@@ -588,7 +588,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .hab-fila + .hab-fam { margin-top: 13px; }
 .hab {
   display: flex; flex-direction: column; align-items: center; gap: 6px;
-  /* Sin acolchado a los lados: «Lo que crece» es un campo partido en cuatro
+  /* Sin acolchado a los lados: la primera familia es un campo partido en cuatro
      ventanas y su línea del suelo tiene que llegar al filete de la ficha. Con
      5 px a cada lado, entre una línea y la siguiente había 20 px de nada y
      dejaban de parecer la misma; así quedan los 8 de la rejilla y los dos

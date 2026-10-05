@@ -8,9 +8,9 @@ Van en tres familias, y el reparto está en `HABITATS`, en `app/js/app.js`:
 
 | Familia | Dibujos |
 | --- | --- |
-| Lo que crece | `arborea` `arbustiva` `herbacea` `cactaceas` |
-| El suelo de la ladera | `arenosa` `rocosa` |
-| La forma del terreno | `cresta` `quebrada` |
+| La vegetación de alrededor | `arborea` `arbustiva` `herbacea` `cactaceas` |
+| El tipo de ladera | `arenosa` `rocosa` |
+| Lo alto y lo hondo | `cresta` `quebrada` |
 
 ## De dónde viene cada uno
 
@@ -49,7 +49,7 @@ El dibujo es **el mismo** salvo en lo que las separa: el porte de la planta,
 la arena o la roca, el pico o el valle. Ésa es toda la idea, así que al
 retocar uno hay que mirar a sus hermanos.
 
-«Lo que crece» va un paso más allá: los cuatro no son cuatro escenas, son
+La primera familia va un paso más allá: los cuatro no son cuatro escenas, son
 **cuatro ventanas de un mismo campo**. Por eso su línea del suelo es
 `M0 82H80` y no `M6 82H74` — sale por los dos lados del lienzo, se corta con
 él y sigue en la ficha de al lado. Si tocas uno, la línea se queda donde
