@@ -650,6 +650,29 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 /* El contenido, posicionado, para que quede por encima de esa capa: una
    capa absoluta se pinta por delante de los hijos que no lo están. */
 .hab-fila.franja .hab > * { position: relative; z-index: 1; }
+
+/* La casilla, junto al nombre. Sin filete alrededor del tramo, nada decía
+   que esos cuatro se pulsan -parecían el paisaje de fondo-, y probadas en
+   pantalla las otras salidas no llegaban: el recuadro de trazo discontinuo y
+   el contorno tenue se pierden encima del dibujo, y pintarles el fondo
+   entero vuelve a partir la franja en cuatro cuadros. Un cuadradito vacío se
+   entiende de lejos y además dice que se puede marcar más de uno, que es el
+   caso. Es la de Conservación, a 14 px en vez de 20. */
+.hab-fila.franja .hab span {
+  display: inline-flex; align-items: center; gap: 5px; text-align: left;
+}
+.hab-fila.franja .caja {
+  width: 14px; height: 14px; flex: none; border-radius: 4.5px;
+  border: 1.5px solid var(--borde-control); background: var(--superficie);
+  display: grid; place-items: center;
+  transition: background .12s, border-color .12s;
+}
+.hab-fila.franja .caja .ico { width: 10px; height: 10px; color: var(--sobre-acento); opacity: 0; }
+.hab-fila.franja .hab[aria-pressed="true"] .caja {
+  background: var(--acento); border-color: var(--acento);
+}
+.hab-fila.franja .hab[aria-pressed="true"] .caja .ico { opacity: 1; }
+.hab-fila.franja .hab:hover .caja { border-color: var(--acento); }
 /* Casillas y no fichas: estas tres son atributos sueltos de cada especie y se
    suman entre si -endemica Y amenazada-, mientras que las fichas de los demas
    grupos son alternativas -este color O este otro-. La forma lo dice sin

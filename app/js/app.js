@@ -889,8 +889,15 @@ function pintarFiltros() {
       fam.hay.map(function (h) {
         return '<button class="hab" aria-pressed="' +
                (F.habitat.indexOf(h[0]) >= 0) + '" data-f="habitat" data-v="' +
-               esc(h[0]) + '">' + dibujoHabitat(h[1]) +
-               '<span>' + esc(h[0]) + '</span></button>';
+               esc(h[0]) + '">' + dibujoHabitat(h[1]) + '<span>' +
+               /* La franja no tiene filete mientras no se elige, así que nada
+                  decía que esos cuatro tramos se pulsan: parecían el paisaje
+                  de fondo. La casilla sí lo dice, y de paso dice que se puede
+                  marcar más de una. Es la misma que lleva Conservación, en
+                  pequeño. Las otras dos familias no la necesitan: ya se ven
+                  como fichas sueltas. */
+               (fam.franja ? '<span class="caja">' + svgIcono('check') + '</span>' : '') +
+               esc(h[0]) + '</span></button>';
       }).join('') + '</div>';
   }).join('');
 
