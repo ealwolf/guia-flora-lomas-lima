@@ -2,13 +2,14 @@
      lomas, y un segundo árbol menor. La tara sale de la foto de la propia
      guía (125_caesalpinia-spinosa_detalle2): tronco corto que se abre bajo,
      tres ramas y una copa plana y ancha que sobresale por fuera de ellas.
-     La copa va rota y con sombra tenue: a 60 px, dibujada sólo con la
-     línea de fuera, parecía un paraguas. -->
+     El borde de la copa va a saltos y en tres tramos, que es lo que la
+     separa del árbol de cuento; la sombra tenue le da el cuerpo que la
+     línea sola no daba -sin ella parecía un paraguas colgado-. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 <path d="M6 82H74"/>
-<path d="M7 40C8 33 15 30 28 30C41 30 46 33 47 40C38 45 33 43 27 44C20 43 14 45 7 40Z" fill="currentColor" opacity=".1" stroke="none"/>
+<path d="M7 41C8 36 10 34 13 34C15 34 16 32 19 32C21 32 22 33 24 33C25 31 30 29 33 29C36 29 38 30 41 32C44 33 46 36 47 41C38 45 33 43 27 44C20 43 14 45 7 41Z" fill="currentColor" opacity=".1" stroke="none"/>
 <path d="M26 82V72M60 82V66"/>
-<path d="M26 72l-8-14-5-14M26 72l2-14-1-14M26 72l9-12 6-14M7 40C8 33 15 30 25 30M31 30C41 30 46 33 47 40"/>
+<path d="M26 72l-8-14-5-14M26 72l2-14-1-14M26 72l9-12 6-14M7 41C8 36 10 34 13 34C15 34 16 32 19 32C21 32 22 33 24 33M27 32C28 30 30 29 33 29C35 29 36 30 38 31M41 32C44 33 46 36 47 41"/>
 <path d="M50 66a6 6 0 0 1 2-10a8 8 0 0 1 10-6a8 7 0 0 1 8 6a6 6 0 0 1 0 10a5 4 0 0 1-10 0a5 4 0 0 1-10 0z"/>
 <path stroke-width="1.4" d="M13 44l-3-4M13 44l3-5M27 44l-4-4M27 44l4-5M41 46l-3-5M41 46l4-4M60 66v-6M60 63l-4-4M60 61l4-4"/>
 </svg>
