@@ -829,9 +829,14 @@ function chip(texto, activo, extra) {
    pone nombre de grupo -los enumera y ya-, así que el nombre es nuestro.
 
    Van sin artículo. Son rótulos de un panel, no frases, y sin «la» y «el»
-   se leen antes y pesan menos encima de las fichas. */
+   se leen antes y pesan menos encima de las fichas.
+
+   La primera familia lleva «franja»: sus cuatro no son cuatro fichas sino
+   cuatro tramos de un mismo campo, pegados y sin filete, con la línea del
+   suelo cruzando de lado a lado sin cortarse. Sólo el tramo elegido saca su
+   recuadro, y la línea le pasa por dentro. */
 var HABITATS = [
-  { tit: 'Vegetación de alrededor', hay: [
+  { tit: 'Vegetación de alrededor', franja: true, hay: [
       ['Loma arbórea',      'arborea'],
       ['Loma arbustiva',    'arbustiva'],
       ['Loma herbácea',     'herbacea'],
@@ -880,7 +885,8 @@ function pintarFiltros() {
 
   $('#f-habitat').innerHTML = HABITATS.map(function (fam) {
     return '<p class="hab-fam">' + esc(fam.tit) + '</p>' +
-      '<div class="hab-fila">' + fam.hay.map(function (h) {
+      '<div class="hab-fila' + (fam.franja ? ' franja' : '') + '">' +
+      fam.hay.map(function (h) {
         return '<button class="hab" aria-pressed="' +
                (F.habitat.indexOf(h[0]) >= 0) + '" data-f="habitat" data-v="' +
                esc(h[0]) + '">' + dibujoHabitat(h[1]) +

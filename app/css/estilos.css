@@ -609,6 +609,34 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   background: var(--acento-sua); border-color: var(--acento); color: var(--acento-txt);
 }
 .hab[aria-pressed="true"] .hab-dib { color: var(--acento); }
+
+/* La franja: «Vegetación de alrededor». Sus cuatro no son cuatro fichas, son
+   cuatro tramos de un mismo campo. Pegados -sin hueco- y sin filete ni fondo
+   mientras no se eligen, que es lo que deja la línea del suelo cruzar los
+   cuatro de un tirón: cada dibujo la lleva de 0 a 80, se corta con su lienzo
+   y empalma con la del vecino sin costura.
+   El filete sigue ahí pero transparente: así el ancho no cambia al elegir y
+   los cuatro tramos no se mueven. */
+.hab-fila.franja { gap: 0; }
+/* Sin filete ninguno, ni transparente: medido, el filete izquierdo de un
+   tramo y el derecho del de al lado dejaban 2 px entre dibujo y dibujo y la
+   línea del suelo se partía en los tres empalmes. Con border-width:0 los
+   lienzos se tocan exactamente y la línea cruza los cuatro de un tirón. El
+   acolchado sube 1 px arriba y abajo para quedarse a la misma altura que las
+   otras dos familias, que sí llevan filete. */
+.hab-fila.franja .hab {
+  border-width: 0; padding: 8px 0 9px; background: none;
+}
+/* Al pasar por encima no se pinta el fondo -partiría la línea por gusto-:
+   basta con que el nombre y el dibujo se despierten. */
+.hab-fila.franja .hab:hover { color: var(--acento-txt); }
+.hab-fila.franja .hab:hover .hab-dib { color: var(--acento); }
+/* Elegido sí: recuadro y fondo, y la línea del suelo le pasa por dentro,
+   como en el boceto. El recuadro va de sombra interior y no de filete,
+   porque un filete volvería a ocupar sitio y a abrir los 2 px. */
+.hab-fila.franja .hab[aria-pressed="true"] {
+  background: var(--acento-sua); box-shadow: inset 0 0 0 1px var(--acento);
+}
 /* Casillas y no fichas: estas tres son atributos sueltos de cada especie y se
    suman entre si -endemica Y amenazada-, mientras que las fichas de los demas
    grupos son alternativas -este color O este otro-. La forma lo dice sin

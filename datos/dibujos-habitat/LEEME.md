@@ -57,6 +57,12 @@ está. Las plantas sueltas —árboles, matas, cactus— van enteras dentro de s
 ficha, porque media mata cortada por el borde parece un fallo; la hierba no,
 que es una estera y se corta con el lienzo como el suelo.
 
+Del lado de la app, esa familia se pinta con la clase `franja`: los cuatro
+tramos van pegados y sin filete, así que los lienzos se tocan y la línea
+cruza los cuatro sin costura. Sólo el tramo elegido saca recuadro y fondo, y
+la línea le pasa por dentro. Si algún día se le devuelve el filete a esas
+fichas, la línea se parte: son 2 px por empalme.
+
 El `<svg>` de fuera lo pone `dibujoHabitat()`, en `app/js/app.js`;
 `construir.py` guarda sólo el interior, así que el archivo puede abrirse y
 verse por su cuenta sin que eso cambie lo que llega a la app.
