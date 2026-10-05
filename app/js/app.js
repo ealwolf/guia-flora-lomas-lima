@@ -826,17 +826,20 @@ function chip(texto, activo, extra) {
    hábitats de...». El tercero decía «La forma del terreno», y «terreno»
    tira a parcela y a lindes; estos dos no son una forma sino un sitio, lo
    más alto del cerro y el fondo por donde pasa el agua. El libro no les
-   pone nombre de grupo -los enumera y ya-, así que el nombre es nuestro. */
+   pone nombre de grupo -los enumera y ya-, así que el nombre es nuestro.
+
+   Van sin artículo. Son rótulos de un panel, no frases, y sin «la» y «el»
+   se leen antes y pesan menos encima de las fichas. */
 var HABITATS = [
-  { tit: 'La vegetación de alrededor', hay: [
+  { tit: 'Vegetación de alrededor', hay: [
       ['Loma arbórea',      'arborea'],
       ['Loma arbustiva',    'arbustiva'],
       ['Loma herbácea',     'herbacea'],
       ['Zona de cactáceas', 'cactaceas'] ] },
-  { tit: 'El tipo de ladera', hay: [
+  { tit: 'Tipo de ladera', hay: [
       ['Ladera arenosa',    'arenosa'],
       ['Ladera rocosa',     'rocosa'] ] },
-  { tit: 'Lo alto y lo hondo', hay: [
+  { tit: 'Relieve de loma', hay: [
       ['Cresta rocosa',     'cresta'],
       ['Fondo de quebrada', 'quebrada'] ] }
 ];

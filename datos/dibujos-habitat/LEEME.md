@@ -8,9 +8,9 @@ Van en tres familias, y el reparto está en `HABITATS`, en `app/js/app.js`:
 
 | Familia | Dibujos |
 | --- | --- |
-| La vegetación de alrededor | `arborea` `arbustiva` `herbacea` `cactaceas` |
-| El tipo de ladera | `arenosa` `rocosa` |
-| Lo alto y lo hondo | `cresta` `quebrada` |
+| Vegetación de alrededor | `arborea` `arbustiva` `herbacea` `cactaceas` |
+| Tipo de ladera | `arenosa` `rocosa` |
+| Relieve de loma | `cresta` `quebrada` |
 
 ## De dónde viene cada uno
 
