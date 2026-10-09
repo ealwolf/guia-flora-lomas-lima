@@ -1369,6 +1369,11 @@ var ROT_PEGADO = 5;
    contorno -menos de ROT_PEGADO-, que es prueba de sobra, así que no hace
    falta exigirle tanto despejo y caben más nombres. */
 var ROT_CLARO_PEGADO = 10;
+/* Lo más larga que se admite una guía, medida del nombre a la mancha. San
+   Lorenzo, que es una isla suelta mar adentro, pide 34; de ahí el 60. */
+var ROT_GUIA_MAX = 60;
+// y en la pasada de rescate, menos: si cerca no cabe ni aflojando, no cabe
+var ROT_RESCATE = 30;
 var ROT_TAM = {};                       // id -> [ancho, alto] en px
 var ROT_PERFIL = {};                    // id -> contorno, en unidades del dibujo
 var ROT_N = 48;                         // puntos por contorno
@@ -1571,11 +1576,22 @@ function colocarRotulos() {
      a su mancha, y el tramo horizontal del final es el que dice en qué
      punto engancha. */
   var CODO = 11;
+  /* La guía no sale pegada a la letra, sino tres píxeles más allá. Pegada, y
+     más si el primer tramo va tumbado, no se leía como una guía sino como un
+     subrayado o una raya detrás de la palabra. Con el aire se ve que es otra
+     cosa que sale del nombre. */
+  var AIRE_GUIA = 3;
+  function despegar(L, hacia) {
+    var a = arrimar(L, hacia.x, hacia.y);
+    var dx = hacia.x - a.x, dy = hacia.y - a.y, n = Math.hypot(dx, dy);
+    if (!n) return a;
+    return { x: a.x + dx / n * AIRE_GUIA, y: a.y + dy / n * AIRE_GUIA };
+  }
   function caminos(L, b) {
     var cx = (L.x1 + L.x2) / 2;
     var codo = { x: b.x + (b.x < cx ? CODO : -CODO), y: b.y };
-    return [[arrimar(L, b.x, b.y), b],
-            [arrimar(L, codo.x, codo.y), codo, b]];
+    return [[despegar(L, b), b],
+            [despegar(L, codo), codo, b]];
   }
 
   // el punto de un rectángulo más cercano a otro sitio
@@ -1658,8 +1674,19 @@ function colocarRotulos() {
      esquina deja el nombre a 24- bastaba con que un lado fallara para que el
      nombre se fuera más lejos de lo necesario. */
 
-  var puestas = [], tiras = [], guias = [];
-  orden.forEach(function (f) {
+  /* Dos pasadas. En la primera se reparte con las reglas enteras. Lo que se
+     quede sin nombre va a una segunda en la que se afloja: la guía puede
+     pasar por debajo de un nombre ya puesto y se le pide la mitad de aire.
+     Sigue sin poder cruzar otra loma ni montarse sobre otro nombre, que es
+     lo que de verdad confunde.
+
+     Se afloja sólo donde la alternativa es no poner el nombre, que es peor:
+     en la vista de entrada del móvil, sin esta pasada faltaban dos. */
+  var puestas = [], tiras = [], guias = [], pendientes = [];
+  [false, true].forEach(function (flojo) {
+  var lista = orden;
+  if (flojo) { lista = pendientes.slice(); if (!lista.length) return; }
+  lista.forEach(function (f) {
     var t = ROT_TAM[f.id];
     if (!t) return;
     var aw = t[0], ah = t[1];
@@ -1677,6 +1704,7 @@ function colocarRotulos() {
     var mejor = null;
     for (var r = 0; r < ROT_SALTOS.length && !mejor; r++) {
       var sep = ROT_SALTOS[r];
+
       var sitios = [];
       for (var j = 0; j < ROT_SITIOS.length; j++) {
         var d = ROT_SITIOS[j];
@@ -1698,8 +1726,17 @@ function colocarRotulos() {
            veinte píxeles de la mancha, y entonces necesita línea. Y de ahí
            sale también el aire que hay que pedirle a las demás. */
         var prop = aPerfil(L, f.id);
+        /* Tope a lo larga que puede ser una guía, y se mide hasta la MANCHA,
+           no hasta la caja: topar el escalón no servía de nada, porque el
+           escalón sale de la caja y en una loma rota la mancha queda mucho
+           más allá. Con el tope por escalón, a Portillo le tocaba un hueco al
+           otro lado del mapa y le salía una guía de 110 px cruzándolo entero
+           en diagonal, que es peor que no poner el nombre. */
+        if (prop.d > (flojo ? ROT_RESCATE : ROT_GUIA_MAX)) continue;
         var conLinea = prop.d > ROT_PEGADO;
-        if (cercaDeOtra(L, f.id, conLinea ? ROT_CLARO_LINEA : ROT_CLARO_PEGADO)) continue;
+        var aire = conLinea ? ROT_CLARO_LINEA : ROT_CLARO_PEGADO;
+        if (flojo) aire = Math.round(aire / 2);
+        if (cercaDeOtra(L, f.id, aire)) continue;
         sitios.push({ L: L, pt: prop.pt, linea: conLinea, coste: prop.d });
       }
       sitios.sort(function (a, b) { return a.coste - b.coste; });
@@ -1713,21 +1750,22 @@ function colocarRotulos() {
         for (var v = 0; v < vias.length; v++) {
           var q = vias[v];
           // ni por debajo de un nombre, ni cruzando otra guía, ni otra loma
-          if (chocaLinea(q, puestas)) continue;
-          if (chocaOtraGuia(q, tiras)) continue;
+          if (!flojo && chocaLinea(q, puestas)) continue;
+          if (!flojo && chocaOtraGuia(q, tiras)) continue;
           if (pisaOtraLoma(q, f.id)) continue;
           mejor = { L: L2, tira: q };
           break;
         }
       }
     }
-    if (!mejor) return;
+    if (!mejor) { if (!flojo) pendientes.push(f); return; }
     puestas.push(mejor.L);
     ROT_CAJAS[f.id] = mejor.L;
     if (mejor.tira) {
       tiras.push(mejor.tira);
       guias.push({ id: f.id, tira: mejor.tira });
     }
+  });
   });
 
   var tela = caja.querySelector('.guias');
