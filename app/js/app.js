@@ -1360,6 +1360,15 @@ var ROT_SALTOS = [0, 7, 12, 17, 23, 30, 38, 48, 60, 74, 88, 104];
    con no rozar a nadie, y con que su caja de toque, que se ensancha un poco,
    no llegue a pisar la silueta de al lado. */
 var ROT_CLARO_LINEA = 8;
+/* Hasta aquí se considera que un nombre TOCA su mancha y no necesita línea.
+   Se mide contra el contorno, no contra la caja. */
+var ROT_PEGADO = 5;
+/* El aire que se le pide a un nombre pegado. Era el alto de su letra -16 px-
+   cuando «pegado» quería decir pegado a la CAJA, que es prueba floja: podía
+   estar a veinte píxeles de la mancha. Ahora pegado quiere decir pegado al
+   contorno -menos de ROT_PEGADO-, que es prueba de sobra, así que no hace
+   falta exigirle tanto despejo y caben más nombres. */
+var ROT_CLARO_PEGADO = 10;
 var ROT_TAM = {};                       // id -> [ancho, alto] en px
 var ROT_PERFIL = {};                    // id -> contorno, en unidades del dibujo
 var ROT_N = 48;                         // puntos por contorno
@@ -1499,9 +1508,16 @@ function colocarRotulos() {
     }
     return false;
   }
+  /* El aire que le queda a un nombre hasta la mancha ajena más cercana. La
+     caja sirve para descartar rápido -si ni la caja está cerca, la mancha
+     tampoco-, y sólo se mira el contorno de las pocas que quedan cerca. Con
+     la caja a secas, el campo vacío de una loma rota contaba como ocupado y
+     echaba a los nombres mucho más lejos de lo necesario. */
   function cercaDeOtra(L, propio, claro) {
     for (var i = 0; i < formas.length; i++) {
-      if (formas[i].id !== propio && entre(L, formas[i]) < claro) return true;
+      var o = formas[i];
+      if (o.id === propio || entre(L, o) >= claro) continue;
+      if (aPerfil(L, o.id).d < claro) return true;
     }
     return false;
   }
@@ -1544,20 +1560,22 @@ function colocarRotulos() {
     return false;
   }
 
-  /* Los caminos que se le prueban a una guía, de mejor a peor: recto, y si no
-     cabe, doblando una vez -primero en vertical y luego en horizontal, o al
-     revés-. El codo sale del borde del nombre en línea con el enganche, así
-     que se lee como una guía de mapa de papel y no como un garabato.
-     Hacen falta: en el nudo del móvil, Zorritos y Pacta tenían catorce y
-     veintiún sitios buenos para el nombre y se quedaban sin ninguno, porque
-     desde todos ellos la recta chocaba con algo. */
+  /* Los caminos que se le prueban a una guía: recto, y si no cabe, doblando
+     una vez.
+
+     El codo va en diagonal desde el nombre y entra en la mancha con un tramo
+     horizontal corto. En escuadra -todo en vertical y luego todo en
+     horizontal- las guías del nudo dibujaban un rectángulo alrededor de
+     Manchay, y lo que se leía era un recuadro y no unas guías. Con la
+     diagonal el camino se ve como lo que es, una raya que lleva de un nombre
+     a su mancha, y el tramo horizontal del final es el que dice en qué
+     punto engancha. */
+  var CODO = 11;
   function caminos(L, b) {
-    var mx = Math.max(L.x1, Math.min(b.x, L.x2));
-    var my = Math.max(L.y1, Math.min(b.y, L.y2));
-    var recto = [arrimar(L, b.x, b.y), b];
-    var vh = [{ x: mx, y: b.y > my ? L.y2 : L.y1 }, { x: mx, y: b.y }, b];
-    var hv = [{ x: b.x > mx ? L.x2 : L.x1, y: my }, { x: b.x, y: my }, b];
-    return [recto, vh, hv];
+    var cx = (L.x1 + L.x2) / 2;
+    var codo = { x: b.x + (b.x < cx ? CODO : -CODO), y: b.y };
+    return [[arrimar(L, b.x, b.y), b],
+            [arrimar(L, codo.x, codo.y), codo, b]];
   }
 
   // el punto de un rectángulo más cercano a otro sitio
@@ -1566,17 +1584,29 @@ function colocarRotulos() {
              y: Math.max(c.y1, Math.min(py, c.y2)) };
   }
 
-  /* El punto del contorno de una loma más cercano a un nombre, ya en píxeles.
-     Se transforma al vuelo y sólo para las pocas que acaban llevando línea. */
+  /* El contorno de una loma en píxeles. Se transforma una vez por vuelta y
+     se guarda, que si no habría que rehacerlo por cada sitio que se prueba. */
   var cachePerfil = {};
-  function engancheEn(id, L) {
+  function perfilPx(id) {
     var crudo = ROT_PERFIL[id];
     if (!crudo) return null;
     var pts = cachePerfil[id];
     if (!pts) {
       pts = cachePerfil[id] = crudo.map(function (q) { return aPantalla(q.x, q.y); });
     }
-    var cx = (L.x1 + L.x2) / 2, cy = (L.y1 + L.y2) / 2;
+    return pts;
+  }
+
+  /* Lo lejos que queda un nombre de una mancha, y por dónde se le engancharía.
+     Contra el CONTORNO y no contra la caja, y aquí estaba el fallo de fondo:
+     la caja de una loma rota es casi toda campo vacío -Pachacámac mide 52x38
+     px y su mancha no llena ni la mitad-, así que un nombre pegado a la caja
+     podía estar a veinte píxeles de la mancha. Contaba como pegado, se
+     quedaba sin línea, y se veía lejos y suelto. Eso eran Pachacámac y
+     Portillo. Con el contorno, lejos es lejos. */
+  function aPerfil(L, id) {
+    var pts = perfilPx(id);
+    if (!pts) return { d: entre(L, porId[id]), pt: null };
     var mejor = null, md = Infinity;
     for (var i = 0; i < pts.length; i++) {
       var qx = Math.max(L.x1, Math.min(pts[i].x, L.x2));
@@ -1584,7 +1614,7 @@ function colocarRotulos() {
       var d = Math.hypot(pts[i].x - qx, pts[i].y - qy);
       if (d < md) { md = d; mejor = pts[i]; }
     }
-    return mejor;
+    return { d: md, pt: mejor };
   }
 
   /* El orden importa tanto como las reglas. Iba por tamaño, y las pequeñas
@@ -1597,6 +1627,16 @@ function colocarRotulos() {
      son las que menos dónde elegir tienen. Es la regla de siempre para
      repartir lo escaso: sirve antes a quien tiene menos salidas. Sube de 20
      a 21 nombres en el móvil, y cuesta dos líneas más. */
+  /* Sólo se rotula lo que se ve. Antes se rotulaba todo, así que al acercar
+     y arrastrar quedaban nombres de lomas que estaban fuera de la pantalla,
+     con su guía saliendo del borde hacia la nada; y como entraban y salían,
+     los demás nombres se recolocaban y la cosa parpadeaba. */
+  var porId = {};
+  formas.forEach(function (o) { porId[o.id] = o; });
+  formas = formas.filter(function (o) {
+    return o.x2 > 0 && o.x1 < lienzo.width && o.y2 > 0 && o.y1 < lienzo.height;
+  });
+
   var APRETADO = 90;
   var vecinas = {};
   formas.forEach(function (a) {
@@ -1637,7 +1677,6 @@ function colocarRotulos() {
     var mejor = null;
     for (var r = 0; r < ROT_SALTOS.length && !mejor; r++) {
       var sep = ROT_SALTOS[r];
-      var claro = sep > 0 ? ROT_CLARO_LINEA : ah;
       var sitios = [];
       for (var j = 0; j < ROT_SITIOS.length; j++) {
         var d = ROT_SITIOS[j];
@@ -1649,20 +1688,26 @@ function colocarRotulos() {
         if (L.x1 < 2 || L.y1 < 2 ||
             L.x2 > lienzo.width - 2 || L.y2 > lienzo.height - 2) continue;
         if (chocaCaja(L, puestas)) continue;
-        if (cercaDeOtra(L, f.id, claro)) continue;
         if (tiras.some(function (q) {
               var ts = tramos(q);
               for (var z = 0; z < ts.length; z++) if (corta(ts[z], L)) return true;
               return false;
             })) continue;
-        sitios.push({ L: L, coste: entre(L, f) });
+        /* Si lleva línea o no lo dice la distancia a SU mancha, no el escalón
+           en el que estemos: un nombre puede estar pegado a la caja y a
+           veinte píxeles de la mancha, y entonces necesita línea. Y de ahí
+           sale también el aire que hay que pedirle a las demás. */
+        var prop = aPerfil(L, f.id);
+        var conLinea = prop.d > ROT_PEGADO;
+        if (cercaDeOtra(L, f.id, conLinea ? ROT_CLARO_LINEA : ROT_CLARO_PEGADO)) continue;
+        sitios.push({ L: L, pt: prop.pt, linea: conLinea, coste: prop.d });
       }
       sitios.sort(function (a, b) { return a.coste - b.coste; });
       for (var k = 0; k < sitios.length && !mejor; k++) {
         var L2 = sitios[k].L;
-        if (sep <= 0) { mejor = { L: L2, tira: null }; break; }
+        if (!sitios[k].linea) { mejor = { L: L2, tira: null }; break; }
         // al contorno; si por lo que sea no hubiera contorno, a la caja
-        var b = engancheEn(f.id, L2) ||
+        var b = sitios[k].pt ||
                 arrimar(f, (L2.x1 + L2.x2) / 2, (L2.y1 + L2.y2) / 2);
         var vias = caminos(L2, b);
         for (var v = 0; v < vias.length; v++) {
