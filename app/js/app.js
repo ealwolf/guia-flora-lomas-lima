@@ -1069,6 +1069,7 @@ function aplicarVista() {
     var tope = parseFloat(t.getAttribute('data-tope')) || Infinity;
     t.setAttribute('r', Math.min(Math.max(m, 4.2 / MV.z), tope).toFixed(2));
   });
+  colocarRotulos();
   var ampliado = MV.z > 1.001;
   $('#mapa-elige').classList.toggle('ampliado', ampliado);
   $('#mapa-menos').disabled = !ampliado;
@@ -1289,7 +1290,10 @@ function puntoDeLoma(id) {
 function etiquetaMapa(id, cx, cy) {
   var e = $('#mapa-etiqueta');
   if (!e) return;
-  if (!id) { e.classList.remove('visible'); return; }
+  /* Solo para las que se han quedado sin nombre escrito -una o dos al abrir,
+     ninguna a partir de 3x-. Si el nombre ya esta puesto, repetirlo en un
+     globo encima tapa el mapa y no dice nada nuevo. */
+  if (!id || ROT_CAJAS[id]) { e.classList.remove('visible'); return; }
   var m = $('.mapa-caja').getBoundingClientRect();
   e.textContent = nombreLoma[id] || id;
   e.style.left = (cx - m.left) + 'px';
@@ -1297,18 +1301,130 @@ function etiquetaMapa(id, cx, cy) {
   e.classList.add('visible');
 }
 
-var avisoLomaT;
-function avisarLoma(id, puesta) {
-  var a = $('#mapa-aviso'), p = puntoDeLoma(id);
-  if (!a || !p) return;
-  a.style.left = p.x + 'px';
-  a.style.top = p.y + 'px';
-  a.className = 'mapa-aviso' + (puesta ? '' : ' no');
-  a.innerHTML = svgIcono(puesta ? 'check' : 'x') + esc(nombreLoma[id] || id);
-  void a.offsetWidth;                   // reinicia la animacion si se repite
-  a.classList.add('vuela');
-  clearTimeout(avisoLomaT);
-  avisoLomaT = setTimeout(function () { a.classList.remove('vuela'); }, 1100);
+/* ---------- los nombres, sobre el mapa ----------
+
+   Probando el mapa con gente, lo que costaba no era tocar una loma sino
+   saber cual era: veintidos manchas sin nombre. Ahora el nombre va encima,
+   como en cualquier mapa.
+
+   El problema de poner nombres es que se pisan. Medido sobre este mapa, que
+   es una ristra de norte a sur con un solo nudo -Villa Maria, Zorritos,
+   Retamal, Lucumo y Manchay, con 1,7 unidades entre las dos mas juntas, unos
+   6 px al abrir-: colocando cada nombre siempre DEBAJO de su loma, a 343 px
+   de ancho solo caben 15 de los 22. Probando cuatro sitios -debajo, encima,
+   derecha, izquierda- caben 20; desde 1,5x, 21; desde 3x, los veintidos. Asi
+   que no hace falta agrupar en globos ni sacar lineas: basta con probar
+   cuatro sitios y rendirse con el que no cabe.
+
+   El orden decide quien gana un sitio: primero las elegidas -si la has
+   marcado, su nombre no se va- y luego las grandes, porque una mancha
+   grande sin nombre se lee como un olvido.
+
+   Un nombre nunca se posa encima de OTRA loma. Si lo hiciera, tocarlo
+   elegiria una y estarias mirando otra. */
+var ROT_SITIOS = [[0, 1], [0, -1], [1, 0], [-1, 0],
+                  [1, 1], [-1, 1], [1, -1], [-1, -1]];
+var ROT_HUECO = 5;                      // del borde de la silueta al nombre
+var ROT_TAM = {};                       // id -> [ancho, alto] en px
+var ROT_CAJAS = {};                     // id -> caja puesta, en px del lienzo
+var rotMontados = false;
+
+function montarRotulos() {
+  var caja = $('#mapa-rotulos'), toques = $$('#mapa-elige circle.toque');
+  if (!caja || !toques.length) return;
+  caja.innerHTML = toques.map(function (c) {
+    var id = c.getAttribute('data-loma');
+    return '<span class="mrot" data-loma="' + id + '">' +
+           esc(nombreLoma[id] || id) + '</span>';
+  }).join('');
+  rotMontados = true;
+  medirRotulos();
+}
+
+/* Se mide aparte y no en cada vuelta: el tamaño de un nombre no depende del
+   zoom del mapa sino de la letra, asi que medirlo al colocar obligaba al
+   navegador a recalcular la pagina en cada fotograma del arrastre. */
+function medirRotulos() {
+  ROT_TAM = {};
+  $$('#mapa-rotulos .mrot').forEach(function (s) {
+    ROT_TAM[s.getAttribute('data-loma')] = [s.offsetWidth, s.offsetHeight];
+  });
+}
+
+function colocarRotulos() {
+  ROT_CAJAS = {};
+  if (!rotMontados) montarRotulos();
+  var caja = $('#mapa-rotulos'), svg = $('#mapa-elige svg');
+  if (!caja || !svg || !rotMontados) return;
+  var m = svg.getScreenCTM();
+  if (!m) return;
+  var lienzo = $('.mapa-caja').getBoundingClientRect();
+  var esc = Math.hypot(m.a, m.b) || 1;          // px de pantalla por unidad
+  var p = svg.createSVGPoint();
+
+  var lomas = $$('#mapa-elige circle.toque').map(function (c) {
+    p.x = c.cx.baseVal.value; p.y = c.cy.baseVal.value;
+    var q = p.matrixTransform(m);
+    return { id: c.getAttribute('data-loma'),
+             x: q.x - lienzo.left, y: q.y - lienzo.top,
+             r: (parseFloat(c.getAttribute('data-mitad')) || 0) * esc };
+  });
+
+  var orden = lomas.slice().sort(function (a, b) {
+    var ea = F.loma.indexOf(a.id) >= 0, eb = F.loma.indexOf(b.id) >= 0;
+    if (ea !== eb) return ea ? -1 : 1;          // las elegidas, primero
+    return b.r - a.r;                           // y despues, las grandes
+  });
+
+  var puestas = [];
+  orden.forEach(function (d) {
+    var t = ROT_TAM[d.id];
+    if (!t) return;
+    var aw = t[0], ah = t[1];
+    for (var i = 0; i < ROT_SITIOS.length; i++) {
+      var s = ROT_SITIOS[i];
+      var cx = d.x + s[0] * (d.r + ROT_HUECO + aw / 2);
+      var cy = d.y + s[1] * (d.r + ROT_HUECO + ah / 2);
+      var b = { x1: cx - aw / 2, y1: cy - ah / 2, x2: cx + aw / 2, y2: cy + ah / 2 };
+      if (b.x1 < 2 || b.y1 < 2 ||
+          b.x2 > lienzo.width - 2 || b.y2 > lienzo.height - 2) continue;
+      if (puestas.some(function (o) {
+            return !(b.x2 < o.x1 || b.x1 > o.x2 || b.y2 < o.y1 || b.y1 > o.y2);
+          })) continue;
+      // el punto de la otra loma mas cercano a esta caja, contra su radio
+      if (lomas.some(function (o) {
+            if (o.id === d.id) return false;
+            var qx = Math.max(b.x1, Math.min(o.x, b.x2));
+            var qy = Math.max(b.y1, Math.min(o.y, b.y2));
+            return Math.hypot(o.x - qx, o.y - qy) < o.r + 1;
+          })) continue;
+      puestas.push(b);
+      ROT_CAJAS[d.id] = b;
+      break;
+    }
+  });
+
+  $$('#mapa-rotulos .mrot').forEach(function (s) {
+    var id = s.getAttribute('data-loma'), b = ROT_CAJAS[id];
+    s.classList.toggle('fuera', !b);
+    s.classList.toggle('puesta', F.loma.indexOf(id) >= 0);
+    if (b) s.style.transform = 'translate(' + b.x1.toFixed(1) + 'px,' +
+                               b.y1.toFixed(1) + 'px)';
+  });
+}
+
+/* Que loma hay bajo un punto del lienzo, si es que hay un nombre ahi. El
+   nombre es un blanco grande y la silueta es diminuta, asi que tocarlo vale
+   por tocarla. */
+function rotuloEn(cx, cy) {
+  var lienzo = $('.mapa-caja');
+  if (!lienzo) return null;
+  var r = lienzo.getBoundingClientRect(), x = cx - r.left, y = cy - r.top;
+  for (var id in ROT_CAJAS) {
+    var b = ROT_CAJAS[id];
+    if (x >= b.x1 && x <= b.x2 && y >= b.y1 && y <= b.y2) return id;
+  }
+  return null;
 }
 
 /* La pila de lo puesto: arriba la cuenta, que abre y cierra la lista, y al
@@ -1366,6 +1482,9 @@ function sincronizarMapa() {
   $$('#mapa-elige .loma').forEach(function (p) {
     p.classList.toggle('activa', F.loma.indexOf(p.getAttribute('data-loma')) >= 0);
   });
+  // aqui si se vuelve a medir: puede haber cambiado el tamaño de la letra
+  if (rotMontados) medirRotulos();
+  colocarRotulos();
   pintarPuestas();
 }
 
@@ -1388,6 +1507,11 @@ function lomaEn(ev) {
   var paths = $$('#mapa-elige path[data-loma]');
   var p = svg.createSVGPoint();
   p.x = ev.clientX; p.y = ev.clientY;
+  /* El nombre primero: es lo unico grande que hay en el mapa, y quien lo ve
+     escrito lo toca. Nunca cae encima de otra loma -colocarRotulos() no lo
+     permite-, asi que adelantarlo no le quita el sitio a nadie. */
+  var rot = rotuloEn(ev.clientX, ev.clientY);
+  if (rot) return rot;
   var u = p.matrixTransform(m.inverse());
   /* Se le pregunta al trazado, no a lo que hay pintado en ese pixel. En el
      borde de una silueta el navegador redondea, el toque cae en la tierra de
@@ -1414,7 +1538,6 @@ $('#mapa-elige').addEventListener('click', function (ev) {
   if (!id) return;
   alterna(F.loma, id);
   render();
-  avisarLoma(id, F.loma.indexOf(id) >= 0);
 });
 
 /* ---------- el mapa, a pantalla completa ----------
