@@ -1075,7 +1075,18 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   fill: none; stroke: var(--costa); stroke-width: var(--trazo-suelo);
   stroke-linejoin: round;
 }
-.ladera .rejilla { stroke: var(--borde); stroke-width: .7; stroke-dasharray: 4 5; }
+/* Lo justo para poder seguir una raya con el ojo de la cifra al otro margen,
+   y ni un punto más: esto es la cuadrícula, no el dibujo.
+   El color sale de mezclar el gris del texto con lo que haya debajo, y no de
+   --borde, porque --borde da resultados muy distintos en cada tema -1,22:1 en
+   claro contra 1,90:1 en oscuro, o sea casi invisible en claro-. Mezclando,
+   los dos temas quedan parejos: 1,72:1 en claro y 2,15:1 en oscuro, medido
+   tanto sobre el fondo como sobre la tierra. El trazo pasa de 0,7 a 0,8 y la
+   raya se acorta, que pone algo más de tinta por tramo sin subir el color. */
+.ladera .rejilla {
+  stroke: color-mix(in srgb, var(--tenue) 40%, transparent);
+  stroke-width: .8; stroke-dasharray: 3 3.5;
+}
 /* El cero no es una raya más: es el nivel del mar, el suelo de la cuenta.
    Entera y algo más marcada, para que se lea como el borde de abajo y no
    como otro peldaño. */
@@ -1240,6 +1251,16 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    «perfil de loma tipico» -asi lo llama el libro en la pagina 14- tiene dos
    cumbres, 947 y 1020 msnm, con una silla a 734 en medio; por ahi se parte. */
 .cara-cerro svg { display: block; width: 100%; height: auto; }
+/* Los rotulos del dibujo son parte del dibujo: ni se seleccionan ni reciben
+   toques. Se podian arrastrar y marcar como un texto cualquiera -«neblina»
+   quedaba en azul- y encima se tragaban el toque, asi que pulsar justo encima
+   de la palabra no elegia nada. */
+.cara-cerro, .cara-cerro * { -webkit-user-select: none; user-select: none; }
+.cara-cerro .rotulo { pointer-events: none; }
+/* Toda la mitad recibe el toque, cielo incluido: antes solo lo recibian la
+   ladera pintada y su cresta, y la gente pulsa el cielo. Invisible y de
+   arriba abajo del dibujo. */
+.cara-cerro .ladera .toque { fill: transparent; }
 .cara-cerro .agua { fill: var(--mar); }
 .cara-cerro .suelo { fill: var(--tierra); }
 .cara-cerro .seco { fill: var(--seco); }

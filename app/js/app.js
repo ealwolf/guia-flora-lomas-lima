@@ -1638,7 +1638,16 @@ function pintarCaras() {
   s += '<path class="linea" d="' + caraLinea(pts) + '"/>';
   LADOS.forEach(function (d) {
     var arr = d.l === 'o' ? oes : est;
+    /* Un rectángulo invisible por cara, de arriba abajo del dibujo y hasta la
+       ensillada. Antes el toque sólo lo recibían la ladera pintada y su
+       cresta, así que pulsar el cielo -o la neblina, o el mar- no elegía
+       nada, y ahí es donde se pulsa. Va el primero del grupo para no taparle
+       el relleno ni la cresta; da igual cuál de los tres reciba el toque,
+       porque los tres cuelgan del mismo <g> y es el <g> quien lleva el lado.
+       Los números son los del viewBox de arriba. */
+    var x0 = d.l === 'o' ? 2 : SILLA, x1 = d.l === 'o' ? SILLA : 64;
     s += '<g class="ladera" data-lado="' + d.l + '" data-on="' + (puesto(d.l) ? 1 : 0) + '">' +
+         '<rect class="toque" x="' + x0 + '" y="5" width="' + (x1 - x0) + '" height="41"/>' +
          '<path class="relleno" d="' + caraRelleno(arr) + '"/>' +
          '<path class="cresta" d="' +
          caraLinea(caraRecorta(arr, d.l === 'o', d.l === 'e')) + '"/></g>';
