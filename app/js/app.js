@@ -1340,6 +1340,8 @@ var ROT_SALTOS = [0, 18, 34, 52];
    un nombre pegado a la suya pero rozando a la vecina se vuelve a leer mal. */
 var ROT_CLARO = 4;
 var ROT_TAM = {};                       // id -> [ancho, alto] en px
+var ROT_PERFIL = {};                    // id -> contorno, en unidades del dibujo
+var ROT_N = 48;                         // puntos por contorno
 var ROT_CAJAS = {};                     // id -> caja puesta, en px del lienzo
 var rotMontados = false;
 
@@ -1353,6 +1355,30 @@ function montarRotulos() {
   }).join('');
   rotMontados = true;
   medirRotulos();
+  medirPerfiles();
+}
+
+/* El contorno de cada loma, en puntos. Hace falta porque la línea de guía
+   acababa en la CAJA de la silueta y no en la silueta: estas lomas son
+   manchas rotas, así que el punto más cercano de su caja casi siempre cae en
+   campo vacío, y si en ese vacío hay otra loma, la línea parece señalarla a
+   ella. Medido: las siete líneas acababan en el aire, ninguna tocaba su loma.
+   Con el contorno, la línea acaba encima de la mancha.
+   Se muestrea una vez, en unidades del dibujo, y se transforma al colocar.
+   getPointAtLength recorre también los trozos sueltos de una loma partida. */
+function medirPerfiles() {
+  ROT_PERFIL = {};
+  $$('#mapa-elige path[data-loma]').forEach(function (pa) {
+    var largo = 0;
+    try { largo = pa.getTotalLength(); } catch (e) {}
+    if (!largo) return;
+    var pts = [];
+    for (var i = 0; i < ROT_N; i++) {
+      var q = pa.getPointAtLength(largo * i / ROT_N);
+      pts.push({ x: q.x, y: q.y });
+    }
+    ROT_PERFIL[pa.getAttribute('data-loma')] = pts;
+  });
 }
 
 /* Se mide aparte y no en cada vuelta: el tamaño de un nombre no depende del
@@ -1394,8 +1420,33 @@ function colocarRotulos() {
   var formas = $$('#mapa-elige path[data-loma]').map(function (pa) {
     var b = pa.getBBox();
     var a = aPantalla(b.x, b.y), c = aPantalla(b.x + b.width, b.y + b.height);
-    return { id: pa.getAttribute('data-loma'), x1: a.x, y1: a.y, x2: c.x, y2: c.y };
+    return { id: pa.getAttribute('data-loma'), el: pa,
+             x1: a.x, y1: a.y, x2: c.x, y2: c.y };
   });
+
+  /* Si una línea de guía pasa por encima de OTRA loma. Pasaba: la de Zorritos
+     cruzaba Manchay, y una raya que sale de un nombre y atraviesa una mancha
+     ajena se lee como si saliera de esa mancha. Se pregunta al trazado, que
+     es lo único que sabe de siluetas rotas; la caja sirve sólo para descartar
+     rápido, y esto corre nada más para las pocas que acaban con línea. */
+  var minv = m.inverse(), pu = svg.createSVGPoint();
+  function cruzaOtra(S, propio) {
+    var dx = S.x2 - S.x1, dy = S.y2 - S.y1;
+    /* Una muestra cada 3 px y no doce por línea: con doce, en una línea de 76
+       px las muestras caen cada 6,3 y la de Zorritos se colaba entre dos, que
+       es como cruzaba Manchay sin que nadie se enterara. */
+    var N = Math.max(12, Math.round(Math.hypot(dx, dy) / 3));
+    for (var k = 1; k < N; k++) {
+      var t = k / N, x = S.x1 + dx * t, y = S.y1 + dy * t;
+      for (var i = 0; i < formas.length; i++) {
+        var o = formas[i];
+        if (o.id === propio || x < o.x1 || x > o.x2 || y < o.y1 || y > o.y2) continue;
+        pu.x = x + lienzo.left; pu.y = y + lienzo.top;
+        if (o.el.isPointInFill(pu.matrixTransform(minv))) return true;
+      }
+    }
+    return false;
+  }
 
   // distancia entre dos rectángulos; cero si se tocan o se montan
   function entre(A, B) {
@@ -1428,6 +1479,27 @@ function colocarRotulos() {
   function arrimar(c, px, py) {
     return { x: Math.max(c.x1, Math.min(px, c.x2)),
              y: Math.max(c.y1, Math.min(py, c.y2)) };
+  }
+
+  /* El punto del contorno de una loma más cercano a un nombre, ya en píxeles.
+     Se transforma al vuelo y sólo para las pocas que acaban llevando línea. */
+  var cachePerfil = {};
+  function engancheEn(id, L) {
+    var crudo = ROT_PERFIL[id];
+    if (!crudo) return null;
+    var pts = cachePerfil[id];
+    if (!pts) {
+      pts = cachePerfil[id] = crudo.map(function (q) { return aPantalla(q.x, q.y); });
+    }
+    var cx = (L.x1 + L.x2) / 2, cy = (L.y1 + L.y2) / 2;
+    var mejor = null, md = Infinity;
+    for (var i = 0; i < pts.length; i++) {
+      var qx = Math.max(L.x1, Math.min(pts[i].x, L.x2));
+      var qy = Math.max(L.y1, Math.min(pts[i].y, L.y2));
+      var d = Math.hypot(pts[i].x - qx, pts[i].y - qy);
+      if (d < md) { md = d; mejor = pts[i]; }
+    }
+    return mejor;
   }
 
   var orden = formas.slice().sort(function (a, b) {
@@ -1469,11 +1541,15 @@ function colocarRotulos() {
       if (tiras.some(function (S) { return corta(S, L); })) continue;
       var tira = null;
       if (sep > 0) {
-        var a = arrimar(L, fcx, fcy), b = arrimar(f, (L.x1 + L.x2) / 2, (L.y1 + L.y2) / 2);
+        // al contorno; si por lo que sea no hubiera contorno, a la caja
+        var b = engancheEn(f.id, L) ||
+                arrimar(f, (L.x1 + L.x2) / 2, (L.y1 + L.y2) / 2);
+        var a = arrimar(L, b.x, b.y);
         tira = { x1: a.x, y1: a.y, x2: b.x, y2: b.y };
         // y la línea, ni por debajo de un nombre ni cruzando otra línea
         if (puestas.some(function (c) { return corta(tira, c); })) continue;
         if (tiras.some(function (S) { return corta(tira, cajaDe(S)); })) continue;
+        if (cruzaOtra(tira, f.id)) continue;
       }
       puestas.push(L);
       ROT_CAJAS[f.id] = L;
@@ -1484,10 +1560,16 @@ function colocarRotulos() {
 
   var tela = caja.querySelector('.guias');
   if (tela) {
+    /* Y un punto donde la línea toca la loma. Sobre una mancha de ocho
+       píxeles, el final de una raya fina se pierde; el punto dice «es ésta»
+       sin lugar a dudas. */
     tela.innerHTML = guias.map(function (g) {
-      return '<line' + (F.loma.indexOf(g.id) >= 0 ? ' class="puesta"' : '') +
+      var cl = F.loma.indexOf(g.id) >= 0 ? ' class="puesta"' : '';
+      return '<line' + cl +
              ' x1="' + g.tira.x1.toFixed(1) + '" y1="' + g.tira.y1.toFixed(1) +
-             '" x2="' + g.tira.x2.toFixed(1) + '" y2="' + g.tira.y2.toFixed(1) + '"/>';
+             '" x2="' + g.tira.x2.toFixed(1) + '" y2="' + g.tira.y2.toFixed(1) + '"/>' +
+             '<circle' + cl + ' cx="' + g.tira.x2.toFixed(1) +
+             '" cy="' + g.tira.y2.toFixed(1) + '" r="2"/>';
     }).join('');
   }
 

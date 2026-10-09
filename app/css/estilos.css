@@ -990,6 +990,10 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .mapa-rotulos .guias { position: absolute; inset: 0; width: 100%; height: 100%; }
 .mapa-rotulos .guias line { stroke: var(--costa); stroke-width: 1; opacity: .6; }
 .mapa-rotulos .guias line.puesta { stroke: var(--acento); opacity: 1; }
+/* El punto donde la línea toca la loma: sobre una mancha de ocho píxeles el
+   final de una raya fina se pierde, y el punto dice «es ésta». */
+.mapa-rotulos .guias circle { fill: var(--costa); opacity: .85; }
+.mapa-rotulos .guias circle.puesta { fill: var(--acento); opacity: 1; }
 /* Escondido pero medido: con display:none no se puede saber lo que ocupa, y
    lo que ocupa es justo lo que hace falta para repartir los sitios. */
 .mrot.fuera { visibility: hidden; }
