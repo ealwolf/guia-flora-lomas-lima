@@ -983,6 +983,13 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   -webkit-user-select: none; user-select: none;
 }
 .mrot.puesta { color: var(--acento-txt); font-weight: 700; }
+/* La línea que ata un nombre a su loma cuando no ha cabido al lado. En el
+   nudo del medio -Villa María, Zorritos, Retamal, Lúcumo y Manchay- es la
+   única manera de que el nombre esté lejos y aun así se sepa de quién es;
+   es lo que hace un mapa de papel. Fina y tenue: ata, no dibuja. */
+.mapa-rotulos .guias { position: absolute; inset: 0; width: 100%; height: 100%; }
+.mapa-rotulos .guias line { stroke: var(--costa); stroke-width: 1; opacity: .6; }
+.mapa-rotulos .guias line.puesta { stroke: var(--acento); opacity: 1; }
 /* Escondido pero medido: con display:none no se puede saber lo que ocupa, y
    lo que ocupa es justo lo que hace falta para repartir los sitios. */
 .mrot.fuera { visibility: hidden; }

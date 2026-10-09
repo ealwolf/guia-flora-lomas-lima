@@ -1324,7 +1324,12 @@ function etiquetaMapa(id, cx, cy) {
    elegiria una y estarias mirando otra. */
 var ROT_SITIOS = [[0, 1], [0, -1], [1, 0], [-1, 0],
                   [1, 1], [-1, 1], [1, -1], [-1, -1]];
-var ROT_HUECO = 5;                      // del borde de la silueta al nombre
+/* Lo que se aparta el nombre del borde de su silueta. Se prueba primero
+   pegado; si ahí no cabe, encima de su propia loma; y si tampoco, se va
+   alejando. Pasado ROT_GUIA se le pone una línea que lo ata a la suya, que es
+   lo que hace un mapa de papel cuando el nombre no cabe al lado. */
+var ROT_SALTOS = [3, 17, 32, 50];
+var ROT_GUIA = 10;
 var ROT_TAM = {};                       // id -> [ancho, alto] en px
 var ROT_CAJAS = {};                     // id -> caja puesta, en px del lienzo
 var rotMontados = false;
@@ -1332,7 +1337,7 @@ var rotMontados = false;
 function montarRotulos() {
   var caja = $('#mapa-rotulos'), toques = $$('#mapa-elige circle.toque');
   if (!caja || !toques.length) return;
-  caja.innerHTML = toques.map(function (c) {
+  caja.innerHTML = '<svg class="guias"></svg>' + toques.map(function (c) {
     var id = c.getAttribute('data-loma');
     return '<span class="mrot" data-loma="' + id + '">' +
            esc(nombreLoma[id] || id) + '</span>';
@@ -1358,51 +1363,103 @@ function colocarRotulos() {
   if (!caja || !svg || !rotMontados) return;
   var m = svg.getScreenCTM();
   if (!m) return;
-  var lienzo = $('.mapa-caja').getBoundingClientRect();
-  var esc = Math.hypot(m.a, m.b) || 1;          // px de pantalla por unidad
+  /* El marco de referencia es la capa de los nombres y no .mapa-caja: la caja
+     lleva un filete de 1 px, así que su getBoundingClientRect() empieza en el
+     borde de fuera mientras que esta capa, con inset:0, se posiciona desde el
+     borde de dentro. Midiendo contra la caja, todo salía corrido 1 px -y con
+     él, el reparto de los toques-. Es el mismo tropiezo del filete de
+     .mapa-elige. */
+  var lienzo = caja.getBoundingClientRect();
   var p = svg.createSVGPoint();
-
-  var lomas = $$('#mapa-elige circle.toque').map(function (c) {
-    p.x = c.cx.baseVal.value; p.y = c.cy.baseVal.value;
+  function aPantalla(x, y) {
+    p.x = x; p.y = y;
     var q = p.matrixTransform(m);
-    return { id: c.getAttribute('data-loma'),
-             x: q.x - lienzo.left, y: q.y - lienzo.top,
-             r: (parseFloat(c.getAttribute('data-mitad')) || 0) * esc };
+    return { x: q.x - lienzo.left, y: q.y - lienzo.top };
+  }
+
+  /* La silueta de verdad, y no un círculo que la envuelva. Con el círculo una
+     loma alargada -Carabayllo mide 41 px de ancho y 15 de alto- empujaba su
+     nombre 20 px hacia abajo, al regazo de la vecina. Medido antes de esto:
+     6 de los 21 nombres acababan más cerca de otra loma que de la suya, y el
+     peor -Carabayllo- a 18,6 px de la suya y a 1,6 de Collique. */
+  var formas = $$('#mapa-elige path[data-loma]').map(function (pa) {
+    var b = pa.getBBox();
+    var a = aPantalla(b.x, b.y), c = aPantalla(b.x + b.width, b.y + b.height);
+    return { id: pa.getAttribute('data-loma'), x1: a.x, y1: a.y, x2: c.x, y2: c.y };
   });
 
-  var orden = lomas.slice().sort(function (a, b) {
+  // distancia entre dos rectángulos; cero si se tocan o se montan
+  function entre(A, B) {
+    var dx = Math.max(0, Math.max(A.x1 - B.x2, B.x1 - A.x2));
+    var dy = Math.max(0, Math.max(A.y1 - B.y2, B.y1 - A.y2));
+    return Math.hypot(dx, dy);
+  }
+  // el punto de un rectángulo más cercano a otro sitio
+  function arrimar(c, px, py) {
+    return { x: Math.max(c.x1, Math.min(px, c.x2)),
+             y: Math.max(c.y1, Math.min(py, c.y2)) };
+  }
+
+  var orden = formas.slice().sort(function (a, b) {
     var ea = F.loma.indexOf(a.id) >= 0, eb = F.loma.indexOf(b.id) >= 0;
     if (ea !== eb) return ea ? -1 : 1;          // las elegidas, primero
-    return b.r - a.r;                           // y despues, las grandes
+    return (b.x2 - b.x1) + (b.y2 - b.y1) - (a.x2 - a.x1) - (a.y2 - a.y1);
   });
 
-  var puestas = [];
-  orden.forEach(function (d) {
-    var t = ROT_TAM[d.id];
+  /* Por dónde se prueba, en orden: pegado por los ocho lados; encima de su
+     propia loma -el nombre sobre la cosa nombrada no deja ninguna duda, pero
+     tapa la silueta, así que va después de los sitios limpios-; y después
+     cada vez más lejos, ya con línea. */
+  var intentos = [];
+  ROT_SITIOS.forEach(function (d) { intentos.push([d, ROT_SALTOS[0]]); });
+  intentos.push([[0, 0], 0]);
+  ROT_SALTOS.slice(1).forEach(function (sep) {
+    ROT_SITIOS.forEach(function (d) { intentos.push([d, sep]); });
+  });
+
+  var puestas = [], guias = [];
+  orden.forEach(function (f) {
+    var t = ROT_TAM[f.id];
     if (!t) return;
     var aw = t[0], ah = t[1];
-    for (var i = 0; i < ROT_SITIOS.length; i++) {
-      var s = ROT_SITIOS[i];
-      var cx = d.x + s[0] * (d.r + ROT_HUECO + aw / 2);
-      var cy = d.y + s[1] * (d.r + ROT_HUECO + ah / 2);
-      var b = { x1: cx - aw / 2, y1: cy - ah / 2, x2: cx + aw / 2, y2: cy + ah / 2 };
-      if (b.x1 < 2 || b.y1 < 2 ||
-          b.x2 > lienzo.width - 2 || b.y2 > lienzo.height - 2) continue;
+    var fcx = (f.x1 + f.x2) / 2, fcy = (f.y1 + f.y2) / 2;
+    for (var i = 0; i < intentos.length; i++) {
+      var d = intentos[i][0], sep = intentos[i][1];
+      var cx = d[0] === 0 ? fcx
+             : d[0] > 0 ? f.x2 + sep + aw / 2 : f.x1 - sep - aw / 2;
+      var cy = d[1] === 0 ? fcy
+             : d[1] > 0 ? f.y2 + sep + ah / 2 : f.y1 - sep - ah / 2;
+      var L = { x1: cx - aw / 2, y1: cy - ah / 2, x2: cx + aw / 2, y2: cy + ah / 2 };
+      if (L.x1 < 2 || L.y1 < 2 ||
+          L.x2 > lienzo.width - 2 || L.y2 > lienzo.height - 2) continue;
       if (puestas.some(function (o) {
-            return !(b.x2 < o.x1 || b.x1 > o.x2 || b.y2 < o.y1 || b.y1 > o.y2);
+            return !(L.x2 < o.x1 || L.x1 > o.x2 || L.y2 < o.y1 || L.y1 > o.y2);
           })) continue;
-      // el punto de la otra loma mas cercano a esta caja, contra su radio
-      if (lomas.some(function (o) {
-            if (o.id === d.id) return false;
-            var qx = Math.max(b.x1, Math.min(o.x, b.x2));
-            var qy = Math.max(b.y1, Math.min(o.y, b.y2));
-            return Math.hypot(o.x - qx, o.y - qy) < o.r + 1;
+      /* Y la regla que arregla lo de antes: el nombre tiene que quedar más
+         cerca de SU loma que de cualquier otra. Antes sólo se prohibía que se
+         posara encima de otra, que no es lo mismo: se puede no tocar a nadie
+         y aun así estar pegado a quien no es. */
+      var mia = entre(L, f);
+      if (formas.some(function (o) {
+            return o.id !== f.id && entre(L, o) <= mia;
           })) continue;
-      puestas.push(b);
-      ROT_CAJAS[d.id] = b;
-      break;
+      puestas.push(L);
+      ROT_CAJAS[f.id] = L;
+      if (mia > ROT_GUIA) guias.push({ id: f.id, L: L, f: f });
+      return;
     }
   });
+
+  var tela = caja.querySelector('.guias');
+  if (tela) {
+    tela.innerHTML = guias.map(function (g) {
+      var a = arrimar(g.L, (g.f.x1 + g.f.x2) / 2, (g.f.y1 + g.f.y2) / 2);
+      var b = arrimar(g.f, (g.L.x1 + g.L.x2) / 2, (g.L.y1 + g.L.y2) / 2);
+      return '<line' + (F.loma.indexOf(g.id) >= 0 ? ' class="puesta"' : '') +
+             ' x1="' + a.x.toFixed(1) + '" y1="' + a.y.toFixed(1) +
+             '" x2="' + b.x.toFixed(1) + '" y2="' + b.y.toFixed(1) + '"/>';
+    }).join('');
+  }
 
   $$('#mapa-rotulos .mrot').forEach(function (s) {
     var id = s.getAttribute('data-loma'), b = ROT_CAJAS[id];
@@ -1417,7 +1474,7 @@ function colocarRotulos() {
    nombre es un blanco grande y la silueta es diminuta, asi que tocarlo vale
    por tocarla. */
 function rotuloEn(cx, cy) {
-  var lienzo = $('.mapa-caja');
+  var lienzo = $('#mapa-rotulos');       // el mismo marco con el que se reparten
   if (!lienzo) return null;
   var r = lienzo.getBoundingClientRect(), x = cx - r.left, y = cy - r.top;
   for (var id in ROT_CAJAS) {
