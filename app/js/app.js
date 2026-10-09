@@ -1324,12 +1324,21 @@ function etiquetaMapa(id, cx, cy) {
    elegiria una y estarias mirando otra. */
 var ROT_SITIOS = [[0, 1], [0, -1], [1, 0], [-1, 0],
                   [1, 1], [-1, 1], [1, -1], [-1, -1]];
-/* Lo que se aparta el nombre del borde de su silueta. Se prueba primero
-   pegado; si ahí no cabe, encima de su propia loma; y si tampoco, se va
-   alejando. Pasado ROT_GUIA se le pone una línea que lo ata a la suya, que es
-   lo que hace un mapa de papel cuando el nombre no cabe al lado. */
-var ROT_SALTOS = [3, 17, 32, 50];
-var ROT_GUIA = 10;
+/* O el nombre TOCA su loma, o se va lejos y lleva una línea que lo ata a
+   ella. Nada entre medias, y ése es todo el truco.
+
+   Antes había un hueco de 3 px y bastaba con que el nombre quedase más cerca
+   de la suya que de cualquier otra. Medido, eso se cumplía por milésimas:
+   Collique a 2,7 px de la suya y a 3,0 de Puquio, Manchay a 2,7 y 3,7...
+   seis de los diecinueve con menos de 5 px de diferencia. Es verdad y no
+   sirve de nada: a esa distancia nadie distingue de quién es el nombre.
+
+   Tocando no hay nada que distinguir, y con línea tampoco. El hueco de 3 px
+   era justo la única forma que creaba la duda. */
+var ROT_SALTOS = [0, 18, 34, 52];
+/* Y aun tocando la suya, ninguna otra silueta puede estar a menos de esto:
+   un nombre pegado a la suya pero rozando a la vecina se vuelve a leer mal. */
+var ROT_CLARO = 4;
 var ROT_TAM = {};                       // id -> [ancho, alto] en px
 var ROT_CAJAS = {};                     // id -> caja puesta, en px del lienzo
 var rotMontados = false;
@@ -1394,6 +1403,27 @@ function colocarRotulos() {
     var dy = Math.max(0, Math.max(A.y1 - B.y2, B.y1 - A.y2));
     return Math.hypot(dx, dy);
   }
+  /* Si un segmento corta un rectángulo (Liang-Barsky). Hace falta porque la
+     línea de guía no puede pasar por debajo de un nombre -pasaba: la de
+     Lúcumo cruzaba «Pachacámac»- ni un nombre posarse encima de una línea ya
+     puesta. */
+  function corta(S, b) {
+    var t0 = 0, t1 = 1, dx = S.x2 - S.x1, dy = S.y2 - S.y1;
+    var pp = [-dx, dx, -dy, dy];
+    var qq = [S.x1 - b.x1, b.x2 - S.x1, S.y1 - b.y1, b.y2 - S.y1];
+    for (var i = 0; i < 4; i++) {
+      if (pp[i] === 0) { if (qq[i] < 0) return false; continue; }
+      var t = qq[i] / pp[i];
+      if (pp[i] < 0) { if (t > t1) return false; if (t > t0) t0 = t; }
+      else { if (t < t0) return false; if (t < t1) t1 = t; }
+    }
+    return true;
+  }
+  function cajaDe(S) {
+    return { x1: Math.min(S.x1, S.x2), y1: Math.min(S.y1, S.y2),
+             x2: Math.max(S.x1, S.x2), y2: Math.max(S.y1, S.y2) };
+  }
+
   // el punto de un rectángulo más cercano a otro sitio
   function arrimar(c, px, py) {
     return { x: Math.max(c.x1, Math.min(px, c.x2)),
@@ -1406,18 +1436,14 @@ function colocarRotulos() {
     return (b.x2 - b.x1) + (b.y2 - b.y1) - (a.x2 - a.x1) - (a.y2 - a.y1);
   });
 
-  /* Por dónde se prueba, en orden: pegado por los ocho lados; encima de su
-     propia loma -el nombre sobre la cosa nombrada no deja ninguna duda, pero
-     tapa la silueta, así que va después de los sitios limpios-; y después
-     cada vez más lejos, ya con línea. */
+  /* Por dónde se prueba: pegado por los ocho lados, y si no cabe, cada vez
+     más lejos por los mismos ocho, ya con línea. */
   var intentos = [];
-  ROT_SITIOS.forEach(function (d) { intentos.push([d, ROT_SALTOS[0]]); });
-  intentos.push([[0, 0], 0]);
-  ROT_SALTOS.slice(1).forEach(function (sep) {
+  ROT_SALTOS.forEach(function (sep) {
     ROT_SITIOS.forEach(function (d) { intentos.push([d, sep]); });
   });
 
-  var puestas = [], guias = [];
+  var puestas = [], tiras = [], guias = [];
   orden.forEach(function (f) {
     var t = ROT_TAM[f.id];
     if (!t) return;
@@ -1435,17 +1461,23 @@ function colocarRotulos() {
       if (puestas.some(function (o) {
             return !(L.x2 < o.x1 || L.x1 > o.x2 || L.y2 < o.y1 || L.y1 > o.y2);
           })) continue;
-      /* Y la regla que arregla lo de antes: el nombre tiene que quedar más
-         cerca de SU loma que de cualquier otra. Antes sólo se prohibía que se
-         posara encima de otra, que no es lo mismo: se puede no tocar a nadie
-         y aun así estar pegado a quien no es. */
-      var mia = entre(L, f);
+      // ninguna otra silueta cerca, toque o no toque la suya
       if (formas.some(function (o) {
-            return o.id !== f.id && entre(L, o) <= mia;
+            return o.id !== f.id && entre(L, o) < ROT_CLARO;
           })) continue;
+      // ni encima de una línea ya puesta
+      if (tiras.some(function (S) { return corta(S, L); })) continue;
+      var tira = null;
+      if (sep > 0) {
+        var a = arrimar(L, fcx, fcy), b = arrimar(f, (L.x1 + L.x2) / 2, (L.y1 + L.y2) / 2);
+        tira = { x1: a.x, y1: a.y, x2: b.x, y2: b.y };
+        // y la línea, ni por debajo de un nombre ni cruzando otra línea
+        if (puestas.some(function (c) { return corta(tira, c); })) continue;
+        if (tiras.some(function (S) { return corta(tira, cajaDe(S)); })) continue;
+      }
       puestas.push(L);
       ROT_CAJAS[f.id] = L;
-      if (mia > ROT_GUIA) guias.push({ id: f.id, L: L, f: f });
+      if (tira) { tiras.push(tira); guias.push({ id: f.id, tira: tira }); }
       return;
     }
   });
@@ -1453,11 +1485,9 @@ function colocarRotulos() {
   var tela = caja.querySelector('.guias');
   if (tela) {
     tela.innerHTML = guias.map(function (g) {
-      var a = arrimar(g.L, (g.f.x1 + g.f.x2) / 2, (g.f.y1 + g.f.y2) / 2);
-      var b = arrimar(g.f, (g.L.x1 + g.L.x2) / 2, (g.L.y1 + g.L.y2) / 2);
       return '<line' + (F.loma.indexOf(g.id) >= 0 ? ' class="puesta"' : '') +
-             ' x1="' + a.x.toFixed(1) + '" y1="' + a.y.toFixed(1) +
-             '" x2="' + b.x.toFixed(1) + '" y2="' + b.y.toFixed(1) + '"/>';
+             ' x1="' + g.tira.x1.toFixed(1) + '" y1="' + g.tira.y1.toFixed(1) +
+             '" x2="' + g.tira.x2.toFixed(1) + '" y2="' + g.tira.y2.toFixed(1) + '"/>';
     }).join('');
   }
 
