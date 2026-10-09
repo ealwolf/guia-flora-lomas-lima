@@ -1341,9 +1341,20 @@ var ROT_SITIOS = [[0, 1], [0, -1], [1, 0], [-1, 0],
    loma-. No le faltaba hueco al nombre, le faltaba camino a la línea. Con
    más escalones la encuentra: 22 de 22 con cuatro líneas. */
 var ROT_SALTOS = [0, 16, 28, 42, 58, 76, 96];
-/* Y aun tocando la suya, ninguna otra silueta puede estar a menos de esto:
-   un nombre pegado a la suya pero rozando a la vecina se vuelve a leer mal. */
-var ROT_CLARO = 4;
+/* Cuánto aire tiene que haber entre un nombre y cualquier loma que no sea
+   la suya. Son dos cifras, y ahí estaba el fallo.
+
+   Un nombre SIN línea sólo dice de quién es por estar pegado a ella, así que
+   necesita quedar lejos de las demás: con los 4 px de antes, «Portillo»
+   quedaba a 4 de Malanche y Malanche acababa con dos nombres encima, el suyo
+   y el del vecino. Ahora se le pide el alto de su propia letra -16 px-, que
+   además crece si se sube el tamaño de letra en Apariencia. Medido: el más
+   justo de los pegados pasa de 4,1 px a 16,3, y no se pierde ningún nombre.
+
+   Uno CON línea no necesita tanto: la línea ya dice de quién es. Le basta
+   con no rozar a nadie, y con que su caja de toque, que se ensancha un poco,
+   no llegue a pisar la silueta de al lado. */
+var ROT_CLARO_LINEA = 8;
 var ROT_TAM = {};                       // id -> [ancho, alto] en px
 var ROT_PERFIL = {};                    // id -> contorno, en unidades del dibujo
 var ROT_N = 48;                         // puntos por contorno
@@ -1538,9 +1549,10 @@ function colocarRotulos() {
       if (puestas.some(function (o) {
             return !(L.x2 < o.x1 || L.x1 > o.x2 || L.y2 < o.y1 || L.y1 > o.y2);
           })) continue;
-      // ninguna otra silueta cerca, toque o no toque la suya
+      // ninguna otra silueta cerca; cuánto, según lleve línea o no
+      var claro = sep > 0 ? ROT_CLARO_LINEA : ah;
       if (formas.some(function (o) {
-            return o.id !== f.id && entre(L, o) < ROT_CLARO;
+            return o.id !== f.id && entre(L, o) < claro;
           })) continue;
       // ni encima de una línea ya puesta
       if (tiras.some(function (S) { return corta(S, L); })) continue;
@@ -1590,13 +1602,20 @@ function colocarRotulos() {
 /* Que loma hay bajo un punto del lienzo, si es que hay un nombre ahi. El
    nombre es un blanco grande y la silueta es diminuta, asi que tocarlo vale
    por tocarla. */
+/* El blanco de un nombre es algo mayor que el nombre. Tocando justo en el
+   hueco que queda entre un nombre y la loma de debajo se elegía esa loma, y
+   quien apunta ahí va al nombre, no a la mancha. Con el aire que se les pide
+   ahora -el alto de la letra para los pegados, 8 px para los de línea- estos
+   3 px se los come el hueco y no le quitan el sitio a ninguna silueta. */
+var ROT_ANCHA = 3;
 function rotuloEn(cx, cy) {
   var lienzo = $('#mapa-rotulos');       // el mismo marco con el que se reparten
   if (!lienzo) return null;
   var r = lienzo.getBoundingClientRect(), x = cx - r.left, y = cy - r.top;
   for (var id in ROT_CAJAS) {
     var b = ROT_CAJAS[id];
-    if (x >= b.x1 && x <= b.x2 && y >= b.y1 && y <= b.y2) return id;
+    if (x >= b.x1 - ROT_ANCHA && x <= b.x2 + ROT_ANCHA &&
+        y >= b.y1 - ROT_ANCHA && y <= b.y2 + ROT_ANCHA) return id;
   }
   return null;
 }
