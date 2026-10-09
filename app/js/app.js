@@ -1491,10 +1491,6 @@ function colocarRotulos() {
     }
     return true;
   }
-  function cajaDe(S) {
-    return { x1: Math.min(S.x1, S.x2), y1: Math.min(S.y1, S.y2),
-             x2: Math.max(S.x1, S.x2), y2: Math.max(S.y1, S.y2) };
-  }
 
   function chocaCaja(L, lista) {
     for (var i = 0; i < lista.length; i++) {
@@ -1509,9 +1505,59 @@ function colocarRotulos() {
     }
     return false;
   }
-  function chocaLinea(S, lista) {
-    for (var i = 0; i < lista.length; i++) if (corta(S, lista[i])) return true;
+  /* Una guía es una quebrada: dos puntos si va recta, tres si dobla. Todo lo
+     que se le pregunta se le pregunta tramo a tramo. */
+  function tramos(q) {
+    var t = [];
+    for (var i = 1; i < q.length; i++) {
+      t.push({ x1: q[i - 1].x, y1: q[i - 1].y, x2: q[i].x, y2: q[i].y });
+    }
+    return t;
+  }
+  function chocaLinea(q, lista) {
+    var ts = tramos(q);
+    for (var i = 0; i < ts.length; i++) {
+      for (var j = 0; j < lista.length; j++) if (corta(ts[i], lista[j])) return true;
+    }
     return false;
+  }
+  function cajaDeQuebrada(q) {
+    var c = { x1: q[0].x, y1: q[0].y, x2: q[0].x, y2: q[0].y };
+    for (var i = 1; i < q.length; i++) {
+      c.x1 = Math.min(c.x1, q[i].x); c.y1 = Math.min(c.y1, q[i].y);
+      c.x2 = Math.max(c.x2, q[i].x); c.y2 = Math.max(c.y2, q[i].y);
+    }
+    return c;
+  }
+  function chocaOtraGuia(q, lista) {
+    var ts = tramos(q);
+    for (var i = 0; i < ts.length; i++) {
+      for (var j = 0; j < lista.length; j++) {
+        if (corta(ts[i], cajaDeQuebrada(lista[j]))) return true;
+      }
+    }
+    return false;
+  }
+  function pisaOtraLoma(q, propio) {
+    var ts = tramos(q);
+    for (var i = 0; i < ts.length; i++) if (cruzaOtra(ts[i], propio)) return true;
+    return false;
+  }
+
+  /* Los caminos que se le prueban a una guía, de mejor a peor: recto, y si no
+     cabe, doblando una vez -primero en vertical y luego en horizontal, o al
+     revés-. El codo sale del borde del nombre en línea con el enganche, así
+     que se lee como una guía de mapa de papel y no como un garabato.
+     Hacen falta: en el nudo del móvil, Zorritos y Pacta tenían catorce y
+     veintiún sitios buenos para el nombre y se quedaban sin ninguno, porque
+     desde todos ellos la recta chocaba con algo. */
+  function caminos(L, b) {
+    var mx = Math.max(L.x1, Math.min(b.x, L.x2));
+    var my = Math.max(L.y1, Math.min(b.y, L.y2));
+    var recto = [arrimar(L, b.x, b.y), b];
+    var vh = [{ x: mx, y: b.y > my ? L.y2 : L.y1 }, { x: mx, y: b.y }, b];
+    var hv = [{ x: b.x > mx ? L.x2 : L.x1, y: my }, { x: b.x, y: my }, b];
+    return [recto, vh, hv];
   }
 
   // el punto de un rectángulo más cercano a otro sitio
@@ -1541,9 +1587,27 @@ function colocarRotulos() {
     return mejor;
   }
 
+  /* El orden importa tanto como las reglas. Iba por tamaño, y las pequeñas
+     se quedaban para el final, cuando las grandes ya habían ocupado el nudo:
+     medido en el móvil, a Zorritos y Pacta les quedaban catorce y veintiún
+     sitios buenos para el nombre y ninguno con camino para la línea, porque
+     todos los caminos pasaban por debajo de un nombre ya puesto.
+
+     Ahora van primero las apretadas -las que tienen más vecinas cerca-, que
+     son las que menos dónde elegir tienen. Es la regla de siempre para
+     repartir lo escaso: sirve antes a quien tiene menos salidas. Sube de 20
+     a 21 nombres en el móvil, y cuesta dos líneas más. */
+  var APRETADO = 90;
+  var vecinas = {};
+  formas.forEach(function (a) {
+    vecinas[a.id] = formas.filter(function (o) {
+      return o.id !== a.id && entre(a, o) < APRETADO;
+    }).length;
+  });
   var orden = formas.slice().sort(function (a, b) {
     var ea = F.loma.indexOf(a.id) >= 0, eb = F.loma.indexOf(b.id) >= 0;
     if (ea !== eb) return ea ? -1 : 1;          // las elegidas, primero
+    if (vecinas[a.id] !== vecinas[b.id]) return vecinas[b.id] - vecinas[a.id];
     return (b.x2 - b.x1) + (b.y2 - b.y1) - (a.x2 - a.x1) - (a.y2 - a.y1);
   });
 
@@ -1586,25 +1650,30 @@ function colocarRotulos() {
             L.x2 > lienzo.width - 2 || L.y2 > lienzo.height - 2) continue;
         if (chocaCaja(L, puestas)) continue;
         if (cercaDeOtra(L, f.id, claro)) continue;
-        if (tiras.some(function (S) { return corta(S, L); })) continue;
+        if (tiras.some(function (q) {
+              var ts = tramos(q);
+              for (var z = 0; z < ts.length; z++) if (corta(ts[z], L)) return true;
+              return false;
+            })) continue;
         sitios.push({ L: L, coste: entre(L, f) });
       }
       sitios.sort(function (a, b) { return a.coste - b.coste; });
-      for (var k = 0; k < sitios.length; k++) {
-        var L2 = sitios[k].L, tira = null;
-        if (sep > 0) {
-          // al contorno; si por lo que sea no hubiera contorno, a la caja
-          var b = engancheEn(f.id, L2) ||
-                  arrimar(f, (L2.x1 + L2.x2) / 2, (L2.y1 + L2.y2) / 2);
-          var a = arrimar(L2, b.x, b.y);
-          tira = { x1: a.x, y1: a.y, x2: b.x, y2: b.y };
-          // la línea, ni por debajo de un nombre ni cruzando otra línea
-          if (chocaLinea(tira, puestas)) continue;
-          if (tiras.some(function (S) { return corta(tira, cajaDe(S)); })) continue;
-          if (cruzaOtra(tira, f.id)) continue;
+      for (var k = 0; k < sitios.length && !mejor; k++) {
+        var L2 = sitios[k].L;
+        if (sep <= 0) { mejor = { L: L2, tira: null }; break; }
+        // al contorno; si por lo que sea no hubiera contorno, a la caja
+        var b = engancheEn(f.id, L2) ||
+                arrimar(f, (L2.x1 + L2.x2) / 2, (L2.y1 + L2.y2) / 2);
+        var vias = caminos(L2, b);
+        for (var v = 0; v < vias.length; v++) {
+          var q = vias[v];
+          // ni por debajo de un nombre, ni cruzando otra guía, ni otra loma
+          if (chocaLinea(q, puestas)) continue;
+          if (chocaOtraGuia(q, tiras)) continue;
+          if (pisaOtraLoma(q, f.id)) continue;
+          mejor = { L: L2, tira: q };
+          break;
         }
-        mejor = { L: L2, tira: tira };
-        break;
       }
     }
     if (!mejor) return;
@@ -1623,11 +1692,12 @@ function colocarRotulos() {
        sin lugar a dudas. */
     tela.innerHTML = guias.map(function (g) {
       var cl = F.loma.indexOf(g.id) >= 0 ? ' class="puesta"' : '';
-      return '<line' + cl +
-             ' x1="' + g.tira.x1.toFixed(1) + '" y1="' + g.tira.y1.toFixed(1) +
-             '" x2="' + g.tira.x2.toFixed(1) + '" y2="' + g.tira.y2.toFixed(1) + '"/>' +
-             '<circle' + cl + ' cx="' + g.tira.x2.toFixed(1) +
-             '" cy="' + g.tira.y2.toFixed(1) + '" r="2"/>';
+      var fin = g.tira[g.tira.length - 1];
+      return '<polyline' + cl + ' points="' + g.tira.map(function (q) {
+               return q.x.toFixed(1) + ',' + q.y.toFixed(1);
+             }).join(' ') + '"/>' +
+             '<circle' + cl + ' cx="' + fin.x.toFixed(1) +
+             '" cy="' + fin.y.toFixed(1) + '" r="2"/>';
     }).join('');
   }
 
