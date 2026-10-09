@@ -1335,7 +1335,12 @@ var ROT_SITIOS = [[0, 1], [0, -1], [1, 0], [-1, 0],
 
    Tocando no hay nada que distinguir, y con línea tampoco. El hueco de 3 px
    era justo la única forma que creaba la duda. */
-var ROT_SALTOS = [0, 18, 34, 52];
+/* Siete escalones y no cuatro. Medido a dos pasos de zoom, Zorritos se
+   quedaba sin nombre teniendo CUATRO sitios libres: eran todos de línea, y
+   desde cada uno la línea chocaba con algo -otro nombre, otra línea, otra
+   loma-. No le faltaba hueco al nombre, le faltaba camino a la línea. Con
+   más escalones la encuentra: 22 de 22 con cuatro líneas. */
+var ROT_SALTOS = [0, 16, 28, 42, 58, 76, 96];
 /* Y aun tocando la suya, ninguna otra silueta puede estar a menos de esto:
    un nombre pegado a la suya pero rozando a la vecina se vuelve a leer mal. */
 var ROT_CLARO = 4;

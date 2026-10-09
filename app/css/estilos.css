@@ -982,7 +982,22 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
                0 0 2px var(--fondo), 0 0 2px var(--fondo);
   -webkit-user-select: none; user-select: none;
 }
-.mrot.puesta { color: var(--acento-txt); font-weight: 700; }
+/* Elegida: pastilla llena, no letra en negrita.
+
+   No es cuestión de contraste. Medido, la letra verde sobre la tierra daba
+   7,2:1 en claro y 9,4:1 en oscuro, y la pastilla da 6,3 y 9,0: algo menos,
+   de hecho. Lo que cambia es la CLASE de marca. Un cambio de grosor y de
+   tono hay que mirarlo para verlo -y a pleno sol, con el teléfono a un brazo
+   y la pantalla medio lavada, los tonos se juntan-; una mancha llena salta
+   sola sin mirarla, porque lo que cambia es la forma y no el color.
+
+   El acolchado es el mismo que el del nombre sin elegir -1px 4px-, a
+   propósito: así la pastilla mide igual que el texto y al marcar una loma no
+   hay que volver a repartir los sitios ni se mueve nada. */
+.mrot.puesta {
+  color: var(--sobre-acento); background: var(--acento);
+  border-radius: 999px; text-shadow: none; font-weight: 700;
+}
 /* La línea que ata un nombre a su loma cuando no ha cabido al lado. En el
    nudo del medio -Villa María, Zorritos, Retamal, Lúcumo y Manchay- es la
    única manera de que el nombre esté lejos y aun así se sepa de quién es;
