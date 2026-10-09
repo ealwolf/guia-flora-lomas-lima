@@ -1335,12 +1335,17 @@ var ROT_SITIOS = [[0, 1], [0, -1], [1, 0], [-1, 0],
 
    Tocando no hay nada que distinguir, y con línea tampoco. El hueco de 3 px
    era justo la única forma que creaba la duda. */
-/* Siete escalones y no cuatro. Medido a dos pasos de zoom, Zorritos se
-   quedaba sin nombre teniendo CUATRO sitios libres: eran todos de línea, y
-   desde cada uno la línea chocaba con algo -otro nombre, otra línea, otra
-   loma-. No le faltaba hueco al nombre, le faltaba camino a la línea. Con
-   más escalones la encuentra: 22 de 22 con cuatro líneas. */
-var ROT_SALTOS = [0, 16, 28, 42, 58, 76, 96];
+/* Lo que se aleja el nombre de su loma, escalón a escalón. Muchos y
+   apretados cerca, pocos y sueltos lejos: lo que importa es afinar el
+   primer sitio que valga, porque es donde va a acabar casi todo.
+
+   Con cuatro escalones gordos (0, 18, 34, 52) pasaban dos cosas. Zorritos
+   se quedaba sin nombre porque a la línea le faltaba camino -por eso hay
+   escalones hasta 104-. Y del 0 se saltaba al 18, así que un nombre que no
+   cabía pegado se iba de golpe a 18 px, o a 25 si le tocaba una esquina.
+   Portillo acababa a 22,5 px de su loma mientras los demás estaban a 16, y
+   se notaba. */
+var ROT_SALTOS = [0, 7, 12, 17, 23, 30, 38, 48, 60, 74, 88, 104];
 /* Cuánto aire tiene que haber entre un nombre y cualquier loma que no sea
    la suya. Son dos cifras, y ahí estaba el fallo.
 
@@ -1491,6 +1496,24 @@ function colocarRotulos() {
              x2: Math.max(S.x1, S.x2), y2: Math.max(S.y1, S.y2) };
   }
 
+  function chocaCaja(L, lista) {
+    for (var i = 0; i < lista.length; i++) {
+      var o = lista[i];
+      if (!(L.x2 < o.x1 || L.x1 > o.x2 || L.y2 < o.y1 || L.y1 > o.y2)) return true;
+    }
+    return false;
+  }
+  function cercaDeOtra(L, propio, claro) {
+    for (var i = 0; i < formas.length; i++) {
+      if (formas[i].id !== propio && entre(L, formas[i]) < claro) return true;
+    }
+    return false;
+  }
+  function chocaLinea(S, lista) {
+    for (var i = 0; i < lista.length; i++) if (corta(S, lista[i])) return true;
+    return false;
+  }
+
   // el punto de un rectángulo más cercano a otro sitio
   function arrimar(c, px, py) {
     return { x: Math.max(c.x1, Math.min(px, c.x2)),
@@ -1524,12 +1547,12 @@ function colocarRotulos() {
     return (b.x2 - b.x1) + (b.y2 - b.y1) - (a.x2 - a.x1) - (a.y2 - a.y1);
   });
 
-  /* Por dónde se prueba: pegado por los ocho lados, y si no cabe, cada vez
-     más lejos por los mismos ocho, ya con línea. */
-  var intentos = [];
-  ROT_SALTOS.forEach(function (sep) {
-    ROT_SITIOS.forEach(function (d) { intentos.push([d, sep]); });
-  });
+  /* Se prueba escalón por escalón, y DENTRO de cada escalón se miran los
+     ocho lados enteros para quedarse con el que deje el nombre más cerca de
+     su loma. Antes valía el primero que cupiera, y como las esquinas se
+     prueban después de los lados pero miden más -a 17 de separación, una
+     esquina deja el nombre a 24- bastaba con que un lado fallara para que el
+     nombre se fuera más lejos de lo necesario. */
 
   var puestas = [], tiras = [], guias = [];
   orden.forEach(function (f) {
@@ -1537,41 +1560,59 @@ function colocarRotulos() {
     if (!t) return;
     var aw = t[0], ah = t[1];
     var fcx = (f.x1 + f.x2) / 2, fcy = (f.y1 + f.y2) / 2;
-    for (var i = 0; i < intentos.length; i++) {
-      var d = intentos[i][0], sep = intentos[i][1];
-      var cx = d[0] === 0 ? fcx
-             : d[0] > 0 ? f.x2 + sep + aw / 2 : f.x1 - sep - aw / 2;
-      var cy = d[1] === 0 ? fcy
-             : d[1] > 0 ? f.y2 + sep + ah / 2 : f.y1 - sep - ah / 2;
-      var L = { x1: cx - aw / 2, y1: cy - ah / 2, x2: cx + aw / 2, y2: cy + ah / 2 };
-      if (L.x1 < 2 || L.y1 < 2 ||
-          L.x2 > lienzo.width - 2 || L.y2 > lienzo.height - 2) continue;
-      if (puestas.some(function (o) {
-            return !(L.x2 < o.x1 || L.x1 > o.x2 || L.y2 < o.y1 || L.y1 > o.y2);
-          })) continue;
-      // ninguna otra silueta cerca; cuánto, según lleve línea o no
+    /* Escalón por escalón. En cada uno se miran los ocho lados, pero en dos
+       tiempos: primero las comprobaciones baratas -que quepa, que no pise
+       otro nombre, que deje aire a las demás lomas-, y los que pasan se
+       ordenan por lo cerca que dejan el nombre de SU loma. Sólo entonces se
+       hacen las caras -el enganche al contorno y los cruces de la línea- y
+       en ese orden, parando en la primera que valga.
+
+       Hacerlas para los ocho y quedarse con la mejor daba lo mismo y costaba
+       el triple: medido, 12,3 ms por vuelta de zoom contra 3,9. Como se
+       prueban de mejor a peor, la primera que pasa ya es la mejor. */
+    var mejor = null;
+    for (var r = 0; r < ROT_SALTOS.length && !mejor; r++) {
+      var sep = ROT_SALTOS[r];
       var claro = sep > 0 ? ROT_CLARO_LINEA : ah;
-      if (formas.some(function (o) {
-            return o.id !== f.id && entre(L, o) < claro;
-          })) continue;
-      // ni encima de una línea ya puesta
-      if (tiras.some(function (S) { return corta(S, L); })) continue;
-      var tira = null;
-      if (sep > 0) {
-        // al contorno; si por lo que sea no hubiera contorno, a la caja
-        var b = engancheEn(f.id, L) ||
-                arrimar(f, (L.x1 + L.x2) / 2, (L.y1 + L.y2) / 2);
-        var a = arrimar(L, b.x, b.y);
-        tira = { x1: a.x, y1: a.y, x2: b.x, y2: b.y };
-        // y la línea, ni por debajo de un nombre ni cruzando otra línea
-        if (puestas.some(function (c) { return corta(tira, c); })) continue;
-        if (tiras.some(function (S) { return corta(tira, cajaDe(S)); })) continue;
-        if (cruzaOtra(tira, f.id)) continue;
+      var sitios = [];
+      for (var j = 0; j < ROT_SITIOS.length; j++) {
+        var d = ROT_SITIOS[j];
+        var cx = d[0] === 0 ? fcx
+               : d[0] > 0 ? f.x2 + sep + aw / 2 : f.x1 - sep - aw / 2;
+        var cy = d[1] === 0 ? fcy
+               : d[1] > 0 ? f.y2 + sep + ah / 2 : f.y1 - sep - ah / 2;
+        var L = { x1: cx - aw / 2, y1: cy - ah / 2, x2: cx + aw / 2, y2: cy + ah / 2 };
+        if (L.x1 < 2 || L.y1 < 2 ||
+            L.x2 > lienzo.width - 2 || L.y2 > lienzo.height - 2) continue;
+        if (chocaCaja(L, puestas)) continue;
+        if (cercaDeOtra(L, f.id, claro)) continue;
+        if (tiras.some(function (S) { return corta(S, L); })) continue;
+        sitios.push({ L: L, coste: entre(L, f) });
       }
-      puestas.push(L);
-      ROT_CAJAS[f.id] = L;
-      if (tira) { tiras.push(tira); guias.push({ id: f.id, tira: tira }); }
-      return;
+      sitios.sort(function (a, b) { return a.coste - b.coste; });
+      for (var k = 0; k < sitios.length; k++) {
+        var L2 = sitios[k].L, tira = null;
+        if (sep > 0) {
+          // al contorno; si por lo que sea no hubiera contorno, a la caja
+          var b = engancheEn(f.id, L2) ||
+                  arrimar(f, (L2.x1 + L2.x2) / 2, (L2.y1 + L2.y2) / 2);
+          var a = arrimar(L2, b.x, b.y);
+          tira = { x1: a.x, y1: a.y, x2: b.x, y2: b.y };
+          // la línea, ni por debajo de un nombre ni cruzando otra línea
+          if (chocaLinea(tira, puestas)) continue;
+          if (tiras.some(function (S) { return corta(tira, cajaDe(S)); })) continue;
+          if (cruzaOtra(tira, f.id)) continue;
+        }
+        mejor = { L: L2, tira: tira };
+        break;
+      }
+    }
+    if (!mejor) return;
+    puestas.push(mejor.L);
+    ROT_CAJAS[f.id] = mejor.L;
+    if (mejor.tira) {
+      tiras.push(mejor.tira);
+      guias.push({ id: f.id, tira: mejor.tira });
     }
   });
 
