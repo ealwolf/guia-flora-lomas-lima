@@ -2246,7 +2246,27 @@ $('#btn-reset').addEventListener('click', function () { tirarFiltros(false); });
    vuelve mas suave. Es la unica parte que da de si. */
 var ALT_FILA = 31, ALT_ARRIBA = 10;
 var ALT_XLAB = 51;                      // la columna de cifras, fija
-var ALT_LAB_DY = 12;                    // de la raya de la franja a la base de su cifra
+var ALT_MEDIA_CIFRA = 3.7;              // de la base de la cifra a su centro
+
+/* Las cifras rotulan NIVELES, no franjas, y por eso está el cero.
+
+   Antes rotulaban la franja: el «100» se apoyaba dentro de la banda que va
+   del cero a los cien, y el cero no se escribía en ninguna parte. Probado con
+   gente: uno leyó el «100» como el nombre de esa banda -«la de los cien»- y,
+   para coger desde el suelo, se fue a pulsar por debajo de ella, al agua,
+   donde no hay nada que marcar. Y quien quiere precisión no sabe si «200» es
+   el techo de su tramo o el suelo, es decir si llega a 200 o a 299.
+
+   Puesta la cifra ENCIMA de su raya y escrito el cero, las dos dudas se caen
+   solas: las rayas son alturas y lo de en medio es el tramo, así que marcar
+   entre el 0 y el 200 se lee «de cero a doscientos» sin más explicación.
+   Las franjas que se marcan siguen siendo las mismas diez; lo que cambia es
+   dónde se escribe el número. */
+var ALT_MARCAS = (function () {
+  var v = [];
+  for (var h = 0; h <= ALT_MAX; h += ALT_PASO) v.push(h);
+  return v;
+})();
 // el alto sale del tramo de altitud que se dibuja, no de contar filas: asi una
 // fila mide ALT_FILA exacto y las zonas de toque no se pisan entre si
 var ALT_ALTO;
@@ -2277,9 +2297,13 @@ var ALT_SUP = [];
 function altCurva() {
   var k = altCima();
   ALT_SUP = [];
+  /* Arranca en la columna de cifras y no en el cero del lienzo: el cero de
+     altitud cae justo donde el agua toca la orilla, y con el dibujo pegado
+     al margen su cifra quedaba encima del mar. Corrido a la derecha, la
+     columna queda limpia y el cero entra. */
   for (var i = 0; i <= 240; i++) {
     var t = i / 240, e = t * t * (3 - 2 * t);
-    ALT_SUP.push({ x: t * k, a: ALT_PIE + e * (ALT_TOPE - ALT_PIE) });
+    ALT_SUP.push({ x: ALT_XLAB + t * (k - ALT_XLAB), a: ALT_PIE + e * (ALT_TOPE - ALT_PIE) });
   }
 }
 altCurva();
@@ -2327,30 +2351,30 @@ function pintarAltitud() {
   var s = '<svg viewBox="0 0 ' + ALT_ANCHO + ' ' + ALT_ALTO + '" height="' + ALT_ALTO +
           '" role="group" aria-label="Altitud">';
   // la tierra entera, la de debajo del agua incluida, y el agua por encima
-  s += '<path class="tierra" d="M 0 ' + yPie + ' L ' + traza(ALT_SUP) +
+  s += '<path class="tierra" d="M ' + ALT_XLAB + ' ' + yPie + ' L ' + traza(ALT_SUP) +
        ' L ' + altDer() + ' ' + altY(ALT_TOPE).toFixed(1) +
        ' L ' + altDer() + ' ' + yPie + ' Z"/>';
   var sumergido = ALT_SUP.filter(function (p) { return p.a <= 0; }).reverse();
-  s += '<path class="mar" d="M 0 ' + y0.toFixed(1) + ' L ' + costa.toFixed(1) + ' ' +
-       y0.toFixed(1) + ' L ' + traza(sumergido) + ' Z"/>';
-  s += '<line class="rejilla" x1="0" y1="' + y0.toFixed(1) + '" x2="' + altDer() +
-       '" y2="' + y0.toFixed(1) + '"/>';
-  ALTURAS.forEach(function (h) {
-    s += '<line class="rejilla" x1="' + altX(h).toFixed(1) + '" y1="' + altY(h).toFixed(1) +
-         '" x2="' + altDer() + '" y2="' + altY(h).toFixed(1) + '"/>';
+  s += '<path class="mar" d="M ' + ALT_XLAB + ' ' + y0.toFixed(1) + ' L ' +
+       costa.toFixed(1) + ' ' + y0.toFixed(1) + ' L ' + traza(sumergido) + ' Z"/>';
+  /* Las rayas cruzan el cerro de lado a lado y no empiezan donde la ladera
+     las alcanza. Si el número dice hasta dónde llega un tramo, su raya tiene
+     que poder seguirse con el ojo desde la cifra hasta el otro margen. */
+  ALT_MARCAS.forEach(function (h) {
+    s += '<line class="' + (h ? 'rejilla' : 'nivel0') + '" x1="' + ALT_XLAB +
+         '" y1="' + altY(h).toFixed(1) + '" x2="' + altDer() +
+         '" y2="' + altY(h).toFixed(1) + '"/>';
   });
   var tr = tramosAlt();
   tr.forEach(function (r) {
     var a1 = r[0] - ALT_PASO, a2 = r[1];       // del suelo del tramo a su techo
     s += '<path class="tramo" d="' + altMancha(a1, a2) + '"/>';
-    /* El rastro de las cifras se centra en las CIFRAS, no en la franja. La
-       franja de 100 va del cero a los 100 y su numero se apoya arriba, asi
-       que un rastro con la forma de la franja dejaba el numero pegado al
-       borde de arriba y parecia descolocado. */
-    var cMedio = ALT_LAB_DY - 3.7;              // del alto de la cifra a su centro
-    s += '<rect class="pilalab" x="5" y="' + (altY(r[1]) + cMedio - ALT_FILA / 2).toFixed(1) +
+    /* El rastro va de la cifra de abajo a la de arriba, las dos incluidas:
+       son los dos extremos del tramo y es lo que hay que leer. */
+    var yAlto = altY(r[1]) - 9, yBajo = altY(a1) + 9;
+    s += '<rect class="pilalab" x="5" y="' + yAlto.toFixed(1) +
          '" width="' + (ALT_XLAB - 14) + '" height="' +
-         (altY(r[0]) - altY(r[1]) + ALT_FILA).toFixed(1) + '" rx="8"/>';
+         (yBajo - yAlto).toFixed(1) + '" rx="8"/>';
   });
   s += '<path class="suelo" d="M ' + ALT_SUP.map(function (p) {
     return p.x.toFixed(1) + ' ' + altY(p.a).toFixed(1); }).join(' L ') + '"/>';
@@ -2360,17 +2384,28 @@ function pintarAltitud() {
     if (arr.length < 2) return;
     s += '<path class="cuesta-on" d="M ' + traza(arr) + '"/>';
   });
-  /* Lo que se toca es la franja, no una banda centrada en la cifra: va de la
-     raya de su numero hacia abajo, que es exactamente lo que se pinta al
-     marcarla. La cifra se apoya dentro de su propia franja, un poco por
-     debajo de la raya, para que se vea de cual habla. */
+  /* Lo que se toca es la franja: de la raya de arriba a la de abajo, que es
+     exactamente lo que se pinta al marcarla. A la de abajo del todo se le
+     añaden 9 px por debajo del cero para que la cifra del cero también la
+     coja: es justo donde fue a pulsar quien quería «desde el suelo», y es el
+     tramo que buscaba. */
   ALTURAS.forEach(function (h) {
-    var y = altY(h), on = F.alt.indexOf(h) >= 0;
-    s += '<g class="fila" data-h="' + h + '" data-on="' + (on ? 1 : 0) + '">' +
+    var y = altY(h);
+    s += '<g class="fila" data-h="' + h + '">' +
          '<rect class="cel" x="0" y="' + y.toFixed(1) + '" width="' + ALT_ANCHO +
-         '" height="' + ALT_FILA + '"/>' +
-         '<text class="lab" x="' + (ALT_XLAB - 15) + '" y="' + (y + ALT_LAB_DY).toFixed(1) +
-         '" text-anchor="end">' + h + '</text></g>';
+         '" height="' + (ALT_FILA + (h === ALT_MIN ? 9 : 0)) + '"/></g>';
+  });
+  /* Las cifras van aparte de las zonas de toque: hay once y las franjas son
+     diez, porque una franja se marca con sus dos extremos. Encendida la cifra
+     si cae dentro de algún tramo marcado, extremos incluidos. */
+  var vivos = {};
+  tr.forEach(function (r) {
+    for (var k = r[0] - ALT_PASO; k <= r[1]; k += ALT_PASO) vivos[k] = 1;
+  });
+  ALT_MARCAS.forEach(function (h) {
+    s += '<text class="lab' + (vivos[h] ? ' lab-on' : '') + '" x="' + (ALT_XLAB - 15) +
+         '" y="' + (altY(h) + ALT_MEDIA_CIFRA).toFixed(1) +
+         '" text-anchor="end">' + h + '</text>';
   });
   caja.innerHTML = s + '</svg>';
 

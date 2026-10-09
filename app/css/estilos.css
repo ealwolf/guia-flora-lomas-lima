@@ -1076,6 +1076,10 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   stroke-linejoin: round;
 }
 .ladera .rejilla { stroke: var(--borde); stroke-width: .7; stroke-dasharray: 4 5; }
+/* El cero no es una raya más: es el nivel del mar, el suelo de la cuenta.
+   Entera y algo más marcada, para que se lea como el borde de abajo y no
+   como otro peldaño. */
+.ladera .nivel0 { stroke: var(--costa); stroke-width: 1; }
 /* el rastro de las cifras va de una pieza por tramo, no una pastilla por
    altura: si no, un rango se leia como alturas sueltas puestas en fila */
 .ladera .pilalab { fill: var(--acento-sua); }
@@ -1087,7 +1091,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    es un simbolo de unidad, no una sigla. El titulo del grupo va en versalitas
    por CSS, asi que la unidad tiene que salirse de esa regla. */
 .grupo h3 .unidad-tit { text-transform: none; letter-spacing: 0; font-weight: 600; }
-.ladera .fila[data-on="1"] .lab { fill: var(--acento-txt); font-weight: 700; }
+.ladera .lab-on { fill: var(--acento-txt); font-weight: 700; }
 /* centrada: va con el dibujo que tiene encima, no con el texto del grupo */
 #mes-pista, #alt-pista { text-align: center; }
 .alt-fichas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
