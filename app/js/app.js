@@ -1376,6 +1376,13 @@ var ROT_GUIA_MAX = 60;
 var ROT_RESCATE = 30;
 var ROT_TAM = {};                       // id -> [ancho, alto] en px
 var ROT_PERFIL = {};                    // id -> contorno, en unidades del dibujo
+/* Cuántas especies cita la guía en cada loma. Es lo que ordena el reparto de
+   los nombres, y viene del libro: así no depende del zoom ni del ancho. */
+var nEspDe = (function () {
+  var m = {};
+  (G.lomas || []).forEach(function (l) { m[l.id] = l.nEsp || 0; });
+  return m;
+})();
 var ROT_N = 48;                         // puntos por contorno
 var ROT_CAJAS = {};                     // id -> caja puesta, en px del lienzo
 var rotMontados = false;
@@ -1653,17 +1660,22 @@ function colocarRotulos() {
     return o.x2 > 0 && o.x1 < lienzo.width && o.y2 > 0 && o.y1 < lienzo.height;
   });
 
-  var APRETADO = 90;
-  var vecinas = {};
-  formas.forEach(function (a) {
-    vecinas[a.id] = formas.filter(function (o) {
-      return o.id !== a.id && entre(a, o) < APRETADO;
-    }).length;
-  });
+  /* El orden decide quién se queda sin nombre cuando no caben todos, así que
+     tiene que ser siempre el mismo. Iba por lo apretada que estuviera cada
+     loma, que depende del zoom y del ancho de la pantalla: al mover el mapa
+     cambiaba el orden, y con él qué dos nombres faltaban. Eso es lo que hacía
+     que aparecieran y desaparecieran al arrastrar.
+
+     Ahora manda cuántas especies cita la guía en cada loma. Es un número del
+     libro, no de la pantalla: no cambia nunca, así que si falta un nombre
+     falta siempre el mismo, y es el de la loma de la que menos hay que
+     contar -Cicasos y Mala, con dos especies cada una, contra las 75 de
+     Lúcumo-. El tamaño queda de desempate. */
   var orden = formas.slice().sort(function (a, b) {
     var ea = F.loma.indexOf(a.id) >= 0, eb = F.loma.indexOf(b.id) >= 0;
     if (ea !== eb) return ea ? -1 : 1;          // las elegidas, primero
-    if (vecinas[a.id] !== vecinas[b.id]) return vecinas[b.id] - vecinas[a.id];
+    var na = nEspDe[a.id] || 0, nb = nEspDe[b.id] || 0;
+    if (na !== nb) return nb - na;
     return (b.x2 - b.x1) + (b.y2 - b.y1) - (a.x2 - a.x1) - (a.y2 - a.y1);
   });
 
