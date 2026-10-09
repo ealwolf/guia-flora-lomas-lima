@@ -1082,9 +1082,13 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .ladera .nivel0 { stroke: var(--costa); stroke-width: 1; }
 /* el rastro de las cifras va de una pieza por tramo, no una pastilla por
    altura: si no, un rango se leia como alturas sueltas puestas en fila */
-.ladera .pilalab { fill: var(--acento-sua); }
+.ladera .pilalab { fill: var(--acento-sua); pointer-events: none; }
 .ladera .lab {
   font-size: 10.5px; fill: var(--tenue); font-variant-numeric: tabular-nums;
+  /* El glifo se tragaba el toque: al caer sobre un palo del número, lo que
+     recibía el toque era el <text>, que no es ninguna franja, y no pasaba
+     nada. Quien toca un número quiere su tramo, no el hueco entre palos. */
+  pointer-events: none;
 }
 .ladera .lecho { fill: var(--tierra); }
 /* «msnm» va en minuscula: la guia lo escribe asi las 159 veces que aparece, y

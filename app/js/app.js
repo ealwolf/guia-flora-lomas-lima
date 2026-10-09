@@ -2270,9 +2270,11 @@ var ALT_MARCAS = (function () {
 // el alto sale del tramo de altitud que se dibuja, no de contar filas: asi una
 // fila mide ALT_FILA exacto y las zonas de toque no se pisan entre si
 var ALT_ALTO;
-// bajo cero hay sitio para el agua: una franja entera. Con 70 quedaban 22 px
-// y el lecho en cuesta no se apreciaba
-var ALT_TOPE = ALT_MAX + ALT_PASO / 2, ALT_PIE = -ALT_PASO;
+/* Bajo cero hay sitio para el agua, pero MENOS de una franja: con una franja
+   entera el agua medía lo mismo que un tramo marcable y se leía como uno más
+   -ahí fue a pulsar quien buscaba «desde el suelo»-. A 55 son 17 px: se ve
+   que hay mar y lecho, y ya no parece un peldaño de la escalera. */
+var ALT_TOPE = ALT_MAX + ALT_PASO / 2, ALT_PIE = -55;
 ALT_ALTO = ALT_ARRIBA + (ALT_TOPE - ALT_PIE) / ALT_PASO * ALT_FILA;
 var ALT_ANCHO = 340;                    // lo ultimo que se midio
 
@@ -2384,16 +2386,26 @@ function pintarAltitud() {
     if (arr.length < 2) return;
     s += '<path class="cuesta-on" d="M ' + traza(arr) + '"/>';
   });
-  /* Lo que se toca es la franja: de la raya de arriba a la de abajo, que es
-     exactamente lo que se pinta al marcarla. A la de abajo del todo se le
-     añaden 9 px por debajo del cero para que la cifra del cero también la
-     coja: es justo donde fue a pulsar quien quería «desde el suelo», y es el
-     tramo que buscaba. */
+  /* Sobre el dibujo, lo que se toca es la franja: de la raya de arriba a la
+     de abajo, que es exactamente lo que se pinta al marcarla. */
   ALTURAS.forEach(function (h) {
-    var y = altY(h);
     s += '<g class="fila" data-h="' + h + '">' +
-         '<rect class="cel" x="0" y="' + y.toFixed(1) + '" width="' + ALT_ANCHO +
-         '" height="' + (ALT_FILA + (h === ALT_MIN ? 9 : 0)) + '"/></g>';
+         '<rect class="cel" x="0" y="' + altY(h).toFixed(1) + '" width="' + ALT_ANCHO +
+         '" height="' + ALT_FILA + '"/></g>';
+  });
+  /* La columna de cifras va aparte y se reparte CENTRADA en cada número, no
+     entre rayas: tocar el 500 coge de 400 a 500, «hasta aquí», que es como se
+     lee una cifra al lado de una escala. Encaja con el dibujo, porque la
+     mitad de abajo de cada número cae ya dentro de su propia franja; lo que
+     cambia es la mitad de arriba, y ahí es justo donde hay que decidir, y la
+     cifra manda. El cero no tiene franja debajo, así que coge la de encima,
+     que es la que quiere quien pulsa ahí.
+     Van después de las franjas para quedar por encima, y las cifras no
+     reciben toques -el glifo se los tragaba y no pasaba nada-. */
+  ALT_MARCAS.forEach(function (h) {
+    s += '<g class="fila" data-h="' + (h || ALT_MIN) + '">' +
+         '<rect class="cel" x="0" y="' + (altY(h) - ALT_FILA / 2).toFixed(1) +
+         '" width="' + (ALT_XLAB - 6) + '" height="' + ALT_FILA + '"/></g>';
   });
   /* Las cifras van aparte de las zonas de toque: hay once y las franjas son
      diez, porque una franja se marca con sus dos extremos. Encendida la cifra
