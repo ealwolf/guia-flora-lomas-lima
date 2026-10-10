@@ -1747,8 +1747,15 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .perfil .banda-relieve { fill: color-mix(in srgb, var(--acento) 30%, var(--superficie-2)); }
 .perfil .silueta { fill: none; stroke: var(--tenue); stroke-width: .3; opacity: .7; }
 .perfil .rejilla-l { stroke: var(--borde); stroke-width: .18; }
+/* Verde, el mismo que marca el tramo elegido en el filtro de altitud. Iba en
+   rojo y chocaba dos veces. Una, porque es el mismo concepto -«este tramo de
+   altura»- pintado de dos colores según dónde se mire: verde en el filtro,
+   rojo en la ficha. Y otra, peor: --rojo es #c8443c, que es exactamente la
+   muestra de «Rojo» de la paleta de flores. En una guía donde el rojo quiere
+   decir «flor roja» en todas partes, pintar de rojo una franja de altitud es
+   decir otra cosa con la misma palabra. */
 .perfil .trazo {
-  fill: none; stroke: var(--rojo); stroke-width: 1.5;
+  fill: none; stroke: var(--acento); stroke-width: 1.5;
   stroke-linecap: round; stroke-linejoin: round;
 }
 .perfil .cara {
