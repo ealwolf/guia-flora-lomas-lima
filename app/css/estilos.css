@@ -711,7 +711,13 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   transition: background .15s, border-color .15s, color .15s;
 }
 .hab:hover { border-color: color-mix(in srgb, var(--acento) 45%, var(--borde)); }
-.hab span { padding: 0 4px; }
+/* Al nombre, no a todo lo que haya dentro. «.hab span» alcanzaba también a
+   la casilla, que es un span, y le metía 4 px de acolchado a cada lado: la
+   casilla mide 14 y la paloma 10, así que con 1,5 de filete y 4 de acolchado
+   a la paloma le quedaban 3 px de caja donde caber. No cabía, se apoyaba en
+   el borde izquierdo y se salía 1 px por el derecho. Medido: 5 de holgura a
+   la izquierda y -1 a la derecha, donde tocaba 2 y 2. */
+.hab > span { padding: 0 4px; }
 /* El dibujo, más tenue que el nombre: es el apoyo, no el dato. */
 .hab-dib { width: 100%; aspect-ratio: 4 / 5; display: block; color: var(--tenue); }
 .hab[aria-pressed="true"] {
@@ -785,7 +791,14 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   display: grid; place-items: center;
   transition: background .12s, border-color .12s;
 }
-.hab-fila.franja .caja .ico { width: 10px; height: 10px; color: var(--sobre-acento); opacity: 0; }
+/* La paloma llena la caja en vez de centrarse dentro de ella. Centrar 10 px
+   en los 11 que dejan 14 menos un filete de 1,5 deja medio píxel por lado, y
+   medio píxel no existe: el navegador lo redondeaba todo al mismo lado y
+   quedaba en 1 y 3. Llenándola no hay nada que repartir. El propio dibujo de
+   Phosphor ya trae su aire dentro del lienzo. */
+.hab-fila.franja .caja .ico {
+  width: 100%; height: 100%; color: var(--sobre-acento); opacity: 0;
+}
 .hab-fila.franja .hab[aria-pressed="true"] .caja {
   background: var(--acento); border-color: var(--acento);
 }
