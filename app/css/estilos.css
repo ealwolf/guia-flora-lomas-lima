@@ -502,17 +502,29 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .btn-barra .ico { width: 17px; height: 17px; color: var(--tenue); flex: none; }
 .btn-barra .txt { white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
 .btn-barra .txt i { font-style: normal; }
-/* el nombre entero en pantalla ancha, recortado en el móvil; sin medir nada
-   en js ni escuchar el resize, lo decide el ancho */
-.btn-barra .txt .corto { display: none; }
 @media (max-width: 600px) {
-  .btn-barra .txt .largo { display: none; }
-  .btn-barra .txt .corto { display: inline; }
   /* El criterio de orden deja de leerse: ocupaba 147 px de los 292 que hay
      en un móvil de 320, y en las pruebas de campo nadie llegó a usarlo. El
      sitio sí se lee, que es lo que explica el total. */
   #btn-orden .txt { display: none; }
   #btn-orden { padding: 0 11px; }
+}
+
+/* El nombre de la loma, entero. Estuvo recortado en todo el móvil por un
+   cálculo hecho con la pantalla más estrecha que existe, y resulta que sobra
+   sitio en todas las demás. Medido el peor caso de verdad -«Mangomarca», que
+   es el nombre más ancho con 78 px, más «+2», más un filtro puesto para que
+   el recuento diga «33/81 especies»-: a 360 sobran 26 px, a 375 sobran 41, a
+   390 sobran 56 y a 412 sobran 78. Sólo a 320 se pasa, y por 14.
+
+   Así que el recorte baja a 359 y deja de verse en los teléfonos que la gente
+   lleva. Abajo sigue, porque un nombre entero a 320 parte la fila en dos. Y
+   sigue siendo el prefijo más corto que no se confunde con otro, que es lo
+   que hace que «Manc.» y «Mang.» no sean la misma cosa. */
+.btn-barra .txt .corto { display: none; }
+@media (max-width: 359px) {
+  .btn-barra .txt .largo { display: none; }
+  .btn-barra .txt .corto { display: inline; }
 }
 /* «+2» no es parte del nombre: es cuántas lomas más hay, y es lo que mueve
    el total. Por eso va con su propio fondo y no pegado a la palabra. */
