@@ -193,6 +193,32 @@ button {
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
 /* ---------- cabecera ---------- */
+/* ---------- la portada ----------
+   Aire y la marca en grande antes de las fotos. Solo en pantalla ancha: en un
+   movil de 667 px de alto cada fila de portada es una fila de flores que no
+   se ve, y lo que se viene a ver son las flores. */
+.portada { display: none; }
+.portada-int {
+  max-width: 1400px; margin-inline: auto; padding: 44px 14px 26px;
+  text-align: center;
+}
+.portada-marca {
+  display: flex; align-items: baseline; justify-content: center; gap: 9px;
+  font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+}
+.portada-marca b { font-size: 1.75rem; font-weight: 600; letter-spacing: -.015em; }
+.portada-marca span { color: var(--tenue); font-size: 1.0625rem; }
+@media (min-width: 601px) {
+  .portada { display: block; }
+  /* salvo que no haya alto que gastar: un telefono tumbado mide 844 de ancho
+     -o sea, cae del lado ancho del corte- pero solo 390 de alto, y 113 de
+     ellos en un titulo son casi un tercio de la pantalla */
+  @media (max-height: 560px) { .portada { display: none; } }
+  /* el hueco se reserva igual: lo que cambia es si se ve */
+  .cab .marca { opacity: 0; transition: opacity .18s; }
+  .bajado .cab .marca { opacity: 1; }
+}
+
 .cab {
   position: sticky; top: 0; z-index: 40;
   /* opaca: translucida se veian las tarjetas por debajo y la barra pegada
@@ -247,6 +273,12 @@ button {
 .marca span { color: var(--tenue); font-size: 0.8125rem; white-space: nowrap; }
 /* con cuatro botones al lado, en un movil estrecho el titulo se cortaba */
 @media (max-width: 430px) { .marca span { display: none; } }
+
+.velo-busca {
+  position: fixed; inset: 0; z-index: 55;
+  background: color-mix(in srgb, var(--fondo) 72%, transparent);
+  opacity: 0; pointer-events: none; transition: opacity .15s;
+}
 .btn-icono {
   width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
   color: var(--tenue); flex: none;
@@ -279,6 +311,13 @@ button {
   transition: border-color .15s, box-shadow .15s;
 }
 .buscador:focus-within { border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-sua); }
+/* Hay algo escrito y sigue acortando la lista aunque el campo ya no tenga el
+   foco. Un filo por dentro y no un borde mas gordo: cambiar el grosor del
+   borde corre un pixel todo lo que hay dentro. */
+.buscador.con-texto { border-color: var(--acento); box-shadow: inset 0 0 0 1px var(--acento); }
+.buscador.con-texto:focus-within {
+  box-shadow: inset 0 0 0 1px var(--acento), 0 0 0 3px var(--acento-sua);
+}
 .buscador .ico-lupa {
   position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
   color: var(--tenue); pointer-events: none;
@@ -1689,4 +1728,43 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   /* sin animacion la barra se quedaria llena y mentiria: mejor no ponerla */
   .tostada-barra { display: none; }
   .tostada { padding-bottom: 11px; }
+}
+
+/* ================= el movil: un solo corte, y lo decide el pulgar =========
+   600 px y no «tableta o telefono». La barra de abajo existe por una razon
+   concreta -que el pulgar llegue con una mano- y esa razon se evapora en una
+   tableta de diez pulgadas, que ademas mide 744 px o mas de ancho y no tiene
+   ninguno de los apreturas que estamos resolviendo. Un corte de ancho da lo
+   correcto en los dos casos, y de paso en un telefono tumbado, donde tampoco
+   hay sitio vertical para una portada. Ni una comprobacion de aparato ni una
+   escucha de la orientacion. */
+@media (max-width: 600px) {
+  /* la cabecera se va al bajar: sus tres botones son de una vez -guardar,
+     sobre la guia, apariencia- y el sitio de arriba vale mas para las fotos.
+     Lo que sigue pegado es la fila del recuento, que es la que hace falta
+     mientras se mira la lista. */
+  .cab { position: static; }
+  .barra-filtros.compacta { top: 0; }
+
+  /* El buscador baja al borde de abajo y se queda. Es lo que mas se toca y
+     es donde cae el pulgar con el telefono en una mano; ademas, arriba se iba
+     con la cabecera justo cuando hacia falta. */
+  .buscador {
+    position: fixed; inset: auto 0 0 0; z-index: 60;
+    margin: 0 10px calc(10px + env(safe-area-inset-bottom));
+    background: var(--superficie);
+    box-shadow: 0 6px 24px rgb(0 0 0 / .16), 0 1px 3px rgb(0 0 0 / .1);
+  }
+  /* las sugerencias salen hacia arriba, que es donde hay sitio */
+  .sug { top: auto; bottom: calc(100% + 6px); }
+
+  /* y con el teclado fuera, el buscador se va arriba */
+  .buscando .buscador { inset: 0 0 auto 0; margin: 10px; }
+  .buscando .sug { top: calc(100% + 6px); bottom: auto; }
+  .buscando .velo-busca { opacity: 1; pointer-events: auto; }
+
+  /* sitio para la barra de abajo: ni la ultima fila de fotos ni el aviso que
+     se va solo pueden quedar debajo de ella */
+  main { padding-bottom: calc(82px + env(safe-area-inset-bottom)); }
+  .tostada { bottom: calc(80px + env(safe-area-inset-bottom)); }
 }

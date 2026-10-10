@@ -596,6 +596,11 @@ function pintarHerramientas() {
      pleno sol en la loma, y para quien no distingue el verde. Una cifra se ve
      en los dos casos, y además dice cuántos son, que es lo que uno quiere
      saber antes de abrir el panel. */
+  /* Lo escrito se ve en el propio buscador: un filo del color de acento todo
+     alrededor. No es el mismo trato que el del boton de filtros -que se
+     rellena entero- porque no son la misma cosa: una palabra no es un filtro.
+     Pero comparten color, que es lo que dice «esto esta acortando la lista». */
+  $('.buscador').classList.toggle('con-texto', !!F.q);
   var n = activos();
   var b = $('#btn-filtros');
   b.classList.toggle('puesto', n > 0);
@@ -721,6 +726,36 @@ $('#orden-dir').addEventListener('click', function (ev) {
   if (b) elegirOrden(null, b.dataset.dir);
 });
 
+/* Modo de busqueda, solo en el movil. El buscador vive abajo, al alcance del
+   pulgar, pero en cuanto sale el teclado ese borde deja de existir: un
+   position:fixed anclado abajo se queda DETRAS del teclado en iOS. Asi que al
+   enfocarlo sube arriba, que es donde queda sitio, y las sugerencias caen
+   hacia abajo en vez de hacia arriba.
+
+   El salto es seco a proposito. Animar un fixed de un borde al otro pide
+   atarlo a una altura de ventana, y la altura de ventana en un movil es justo
+   lo que no se puede dar por sabido mientras entra y sale el teclado. */
+var ESTRECHO = window.matchMedia('(max-width: 600px)');
+
+function modoBusqueda(si) {
+  si = si && ESTRECHO.matches;
+  document.documentElement.classList.toggle('buscando', si);
+}
+
+$('#q').addEventListener('focus', function () { modoBusqueda(true); });
+/* Al salir el foco del buscador ENTERO, no del campo: si no, tocar una
+   sugerencia cerraba el modo antes de que llegara el toque. */
+$('.buscador').addEventListener('focusout', function (ev) {
+  if (!ev.relatedTarget || !$('.buscador').contains(ev.relatedTarget)) {
+    modoBusqueda(false);
+  }
+});
+$('#velo-busca').addEventListener('click', function () {
+  $('#q').blur();
+  modoBusqueda(false);
+});
+ESTRECHO.addEventListener('change', function () { modoBusqueda(false); });
+
 function quitarBusqueda(callado) {
   F.q = ''; $('#q').value = ''; $('#limpiar').classList.add('oculto');
   cerrarSug();
@@ -750,16 +785,28 @@ function pintarCuenta() {
 }
 
 /* La cabecera es pegajosa y su alto cambia con el tema, el tamaño del texto y
-   el ancho, asi que se mide en vez de darlo por sabido. */
+   el ancho, asi que se mide en vez de darlo por sabido. En el movil no se
+   queda pegada -el sitio de arriba es para las fotos y los tres botones de la
+   cabecera son de una vez, no de andar- asi que entonces mide cero: lo que
+   dice si cuenta o no es su propio position, no una copia del corte de ancho
+   escrita aparte que se quedaria vieja. */
 function medirCabecera() {
   var cab = $('.cab');
-  if (cab) {
-    document.documentElement.style.setProperty('--alto-cab', cab.offsetHeight + 'px');
-  }
+  if (!cab) return;
+  var pegada = getComputedStyle(cab).position === 'sticky';
+  document.documentElement.style.setProperty(
+      '--alto-cab', (pegada ? cab.offsetHeight : 0) + 'px');
 }
 if (window.ResizeObserver) new ResizeObserver(medirCabecera).observe($('.cab'));
 
 function mirarBarra() {
+  /* Con la portada a la vista, la marca pequeña de la cabecera sobra: estaba
+     saliendo dos veces, grande arriba y pequeña justo debajo. Se apaga y se
+     enciende al bajar, pero sin quitarla de la rejilla: si se quitara, el
+     buscador se correría a la izquierda al aparecer, y eso es un salto. Así
+     solo cambia la opacidad y no se mueve nada. */
+  document.documentElement.classList.toggle('bajado', window.scrollY > 8);
+
   var barra = $('#barra-filtros');
   /* Siempre, haya filtros o no. Antes solo se pegaba si habia algo filtrando,
      porque solo llevaba las fichas; ahora lleva Ordenar y Filtros, y sin ella
@@ -3173,6 +3220,9 @@ document.addEventListener('keydown', function (ev) {
   if (ev.key === 'Escape') {
     if (!$('#sug').hidden) { cerrarSug(); return; }
     if ($('#visor').classList.contains('abierto')) { $('#visor').classList.remove('abierto'); return; }
+    if (document.documentElement.classList.contains('buscando')) {
+      $('#q').blur(); modoBusqueda(false); return;
+    }
     if (panelActual) { cerrarPanelAbierto(); return; }
     if ($('#ficha').classList.contains('abierta')) history.back();
   }

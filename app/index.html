@@ -24,6 +24,20 @@ window.addEventListener('beforeinstallprompt', function (ev) {
 </head>
 <body>
 
+<!-- La portada es solo de pantalla ancha: la marca en grande y aire, y se va
+     al bajar como cualquier contenido. No lleva el buscador dentro -el
+     buscador vive en la barra pegajosa de abajo- porque encogerle el alto a
+     una barra pegajosa al bajar reflota todo lo que tiene debajo y el
+     contenido pega un salto. Así la barra nunca cambia de alto. -->
+<div class="portada" id="portada" aria-hidden="true">
+  <div class="portada-int">
+    <div class="portada-marca">
+      <b>Flora de las Lomas</b>
+      <span>de Lima</span>
+    </div>
+  </div>
+</div>
+
 <header class="cab">
   <div class="cab-int">
     <div class="marca">
@@ -100,6 +114,9 @@ window.addEventListener('beforeinstallprompt', function (ev) {
   <i class="tostada-barra" id="tostada-barra" aria-hidden="true"></i>
 </div>
 
+<!-- velo propio y no el de los paneles: este se va con un toque fuera del
+     buscador y no cierra nada más -->
+<div class="velo-busca" id="velo-busca"></div>
 <div class="velo" id="velo"></div>
 <section class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="panel-tit">
   <div class="panel-cab">
