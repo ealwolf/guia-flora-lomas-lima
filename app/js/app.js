@@ -3093,7 +3093,12 @@ function pintarGrupos() {
     g.querySelector('.grupo-cab').setAttribute('aria-label',
         tit + (n ? ', ' + n + (n === 1 ? ' puesto' : ' puestos') : ', sin filtrar'));
     var k = g.querySelector('.candado');
-    k.innerHTML = svgIcono(cerrado(c) ? 'lock-simple' : 'lock-simple-open');
+    /* Macizo cuando está echado, de línea cuando está abierto. Entre el
+       candado abierto y el cerrado de línea sólo cambiaba de sitio el arco,
+       y a 19 px eso casi no se ve; macizo contra hueco se ve de lejos y se
+       ve igual sin distinguir el color. Es el mismo recurso que marcar o no
+       marcar una estrella. */
+    k.innerHTML = svgIcono(cerrado(c) ? 'lock-simple-fill' : 'lock-simple-open');
     k.classList.toggle('cerrado', cerrado(c));
     k.setAttribute('aria-pressed', cerrado(c) ? 'true' : 'false');
     k.setAttribute('aria-label', cerrado(c)

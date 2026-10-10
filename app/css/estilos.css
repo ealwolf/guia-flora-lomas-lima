@@ -676,21 +676,21 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 }
 .candado .ico { width: 19px; height: 19px; }
 .candado:hover, .candado:focus-visible { background: var(--superficie-2); color: var(--texto); }
-/* Cerrado se ve de lejos: relleno entero, como el botón de filtros cuando
-   hay filtros puestos. Con el verde claro de antes, un candado echado se
-   parecía demasiado a uno abierto -y la diferencia importa justo cuando uno
-   va a pulsar «Limpiar»-. Además cambia el dibujo, no sólo el color: el arco
-   se cierra. Eso es lo que se ve a pleno sol y lo que ve quien no distingue
-   el verde, que es la misma razón por la que el botón de filtros lleva
-   cifra y no sólo tono. */
-.candado.cerrado {
-  background: var(--acento); color: var(--sobre-acento);
-  box-shadow: 0 1px 2px rgb(0 0 0 / .18);
-}
+/* Cerrado, la tinta más fuerte que hay; abierto, el gris de lo secundario.
+   Sin relleno: con la pastilla entera el candado pesaba más que el nombre
+   del grupo y la fila se leía al revés, como si lo importante fuera el
+   candado. Un renglón plegado tiene tres cosas -nombre, cuántos filtros,
+   candado- y el orden de importancia es ése.
+
+   Lo que de verdad separa los dos estados no es el color sino el dibujo:
+   echado es un candado macizo, abierto es uno de línea con el arco suelto.
+   El color lo refuerza y marca la jerarquía -de gris de apoyo a tinta de
+   texto-, pero quien no distinga el tono sigue viendo un candado macizo, que
+   es lo que hay que ver antes de pulsar «Limpiar». */
+.candado.cerrado { color: var(--texto); }
 .candado.cerrado:hover, .candado.cerrado:focus-visible {
-  background: var(--acento-txt); color: var(--sobre-acento);
+  background: var(--superficie-2); color: var(--texto);
 }
-.candado.cerrado .ico { width: 20px; height: 20px; }
 .envoltura { display: flex; flex-wrap: wrap; gap: 7px; }
 
 /* Los ocho hábitats, en tres familias y con dibujo. Eran ocho fichas de texto
