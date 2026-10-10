@@ -2600,8 +2600,17 @@ function svgPerfil(e) {
   var y200 = P.y_200, y1000 = P.y_1000;
   var y = function (a) { return y200 - (a - 200) * (y200 - y1000) / 800; };
   var min = e.altitud[0], max = e.altitud[1];
+  /* El contorno es la curva del libro tal cual, no los 200 puntos con los que
+     caraPuntos() la muestrea. Dibujada con la polilínea, la ladera del este
+     se veía facetada: el muestreo existe para poder PARTIR el cerro por la
+     ensillada y para saber dónde apoya el pie, no para pintarlo. Para la
+     cara seca, en vez de rellenar media polilínea, se recorta un rectángulo
+     con la silueta entera: el borde de arriba lo pone la curva y el de la
+     izquierda es el corte recto de la ensillada. */
   var pts = caraPuntos();
-  var mit = caraPartir(pts, SILLA), est = mit[1];
+  var pie = pts[0], fin = pts[pts.length - 1];
+  var cerro = P.silueta + ' L ' + fin.x.toFixed(2) + ' ' + CARA_SUELO +
+              ' L ' + pie.x.toFixed(2) + ' ' + CARA_SUELO + ' Z';
 
   var rejilla = '', etiquetas = '';
   [200, 400, 600, 800, 1000].forEach(function (a) {
@@ -2618,7 +2627,8 @@ function svgPerfil(e) {
       '<stop offset="0" class="nb" stop-opacity=".9"/>' +
       '<stop offset=".5" class="nb" stop-opacity=".7"/>' +
       '<stop offset="1" class="nb" stop-opacity="0"/>' +
-    '</linearGradient></defs>' +
+    '</linearGradient>' +
+    '<clipPath id="cerroPerfil"><path d="' + cerro + '"/></clipPath></defs>' +
     /* Bajada 8 respecto al dibujo de las caras. Allí el lienzo va recortado
        -viewBox 2 5 62 41- y la neblina queda a media ladera; aquí se ve el
        cerro entero y, en su sitio de allí, subía por encima de la cota de
@@ -2628,7 +2638,6 @@ function svgPerfil(e) {
       'q 3.4 -4 7.6 -1.4 q 3.6 -2.6 6.8 .6 q 4 -1 7 2.4 q 3 2 4.6 5.6 ' +
       'L ' + (SILLA + 3) + ' 33 L 1 33 Z" fill="url(#nieblaPerfil)"/>';
   // el mar se cuelga del pie del cerro, no de una altura puesta a mano
-  var pie = pts[0];
   var agua = '<rect class="agua" x="0" y="' + pie.y.toFixed(2) + '" width="' +
              pie.x.toFixed(2) + '" height="' + (CARA_SUELO - pie.y).toFixed(2) + '"/>';
 
@@ -2643,10 +2652,11 @@ function svgPerfil(e) {
   return '<svg class="perfil" viewBox="0 0 ' + W + ' ' + (H + 2) + '" role="img" ' +
          'aria-label="Rango de altitud: ' + desc + '">' +
            niebla + agua +
-           '<path class="tierra-f" d="' + caraRelleno(pts) + '"/>' +
-           '<path class="seco" d="' + caraRelleno(est) + '"/>' +
+           '<path class="tierra-f" d="' + cerro + '"/>' +
+           '<rect class="seco" x="' + SILLA + '" y="0" width="' + (W - SILLA) +
+             '" height="' + CARA_SUELO + '" clip-path="url(#cerroPerfil)"/>' +
            rejilla +
-           '<path class="linea" d="' + caraLinea(pts) + '"/>' +
+           '<path class="linea" d="' + P.silueta + '"/>' +
            trazo + etiquetas + caras +
          '</svg>';
 }
