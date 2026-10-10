@@ -266,8 +266,10 @@ function textoTramo(r) {
   return (r[0] - ALT_PASO) + '–' + r[1] + ' msnm';
 }
 
+/* Lo que cuenta el botón de filtros. La loma no está: es dónde se mira, no
+   qué se busca, y meterla aquí la metía también en «Limpiar». */
 function activos() {
-  return F.color.length + F.grupo.length + F.mes.length + F.loma.length +
+  return F.color.length + F.grupo.length + F.mes.length +
          F.habitat.length + F.familia.length + F.conserv.length + F.cara.length +
          tramosAlt().length;
 }
@@ -284,6 +286,25 @@ function coloresDe(e) {
    en cada mes con todo lo demas puesto -la loma, el color- pero sin el propio
    filtro de meses: contandolo, al elegir agosto los otros once se irian a
    cero y la grafica dejaria de decir nada. */
+/* El sitio no es un filtro más: es el universo. Las 134 de la guía son 48 si
+   estás parado en Pachacámac, y sobre esas 48 muerden los filtros. De ahí que
+   el recuento diga 7/48 y no 7/134: el total que importa es el de donde uno
+   está, y cambiar de loma cambia el total, no el resultado de un filtro. */
+function enSitio(e) {
+  if (!F.loma.length) return true;
+  for (var i = 0; i < F.loma.length; i++) {
+    if (e.lomas.indexOf(F.loma[i]) >= 0) return true;
+  }
+  return false;
+}
+
+function totalSitio() {
+  if (!F.loma.length) return G.especies.length;
+  var n = 0;
+  for (var i = 0; i < G.especies.length; i++) if (enSitio(G.especies[i])) n++;
+  return n;
+}
+
 function filtrar(omitir) {
   var q = sinTildes(F.q).trim();
   var term = q ? q.split(/\s+/) : [];
@@ -297,7 +318,7 @@ function filtrar(omitir) {
     if (F.familia.length && F.familia.indexOf(e.familia) < 0) return false;
     if (omitir !== 'mes' && F.mes.length &&
         !F.mes.some(function (m) { return e.flor.indexOf(m) >= 0; })) return false;
-    if (F.loma.length    && !F.loma.some(function (l) { return e.lomas.indexOf(l) >= 0; })) return false;
+    if (!enSitio(e)) return false;
     if (F.habitat.length && !F.habitat.some(function (h) { return e.habitats.indexOf(h) >= 0; })) return false;
     // aqui SI se cruzan: son atributos sueltos y marcarlos es pedirlos todos.
     // «Endemica + Amenazada» son 2 especies, no 40. Por eso se dibujan como
@@ -395,11 +416,13 @@ function renderYa() {
   $('#vacio').classList.toggle('oculto', r.length > 0);
   ultimoN = r.length;
   pintarCuenta();
-  var tot = G.especies.length;
-  $('#btn-aplicar').textContent = r.length === tot
+  var tot = totalSitio();
+  var verN = r.length === tot
       ? 'Ver las ' + tot
       : 'Ver ' + r.length + (r.length === 1 ? ' resultado' : ' resultados');
-  pintarActivos();
+  $('#btn-aplicar').textContent = verN;
+  $('#lomas-aplicar').textContent = verN;
+  pintarHerramientas();
   sincronizarChips();
   mirarBarra();
 }
@@ -509,7 +532,8 @@ $('#tostada').addEventListener('pointermove', function (ev) {
    puede cerrar a mano o de un manotazo. */
 var ESPERA_DESHACER = 6000;
 var borrado = null, huellaBorrado = null;
-var GUARDABLES = ['q', 'color', 'grupo', 'mes', 'loma', 'habitat', 'familia',
+// sin 'loma': lo que no se borra tampoco hay que devolverlo
+var GUARDABLES = ['q', 'color', 'grupo', 'mes', 'habitat', 'familia',
                   'conserv', 'cara', 'alt'];
 
 function huellaFiltros() {
@@ -537,7 +561,7 @@ function tirarFiltros(tambienBusqueda) {
 
 function olvidarBorrado() {
   borrado = null; huellaBorrado = null;
-  pintarActivos();
+  pintarHerramientas();
 }
 
 function devolverBorrado() {
@@ -550,104 +574,84 @@ function devolverBorrado() {
   render();
 }
 
-/* Las fichas de lo puesto. Llevan data-f/data-v, asi que las quita el mismo
-   manejador que ya destildaba las fichas del panel. */
-var TOPE_CHIPS = 8, chipsAbiertos = false, compacto = false;
+var compacto = false;
 
-function pintarActivos() {
-  // en cuanto se vuelve a filtrar, lo borrado deja de estar a mano: el unico
-  // sitio donde se comprueba, en vez de en cada manejador
+/* Antes aquí había una fila de fichas, una por filtro puesto, cada una con su
+   aspa. Decía qué estaba filtrando y dejaba quitarlo de un toque. Se quita.
+
+   Costaba una fila entera encima de las fotos, y en un móvil no cabía: con
+   más de ocho fichas había que plegarlas tras un «+3 más», y en la barra
+   pegada se deslizaban a los lados, así que de todas formas no se veían
+   todas. Lo que las sustituye son dos cosas que no ocupan ninguna fila: el
+   recuento pasa a decir 7/48 -o sea, algo está mordiendo- y el botón de
+   filtros lleva encima cuántos hay. Qué filtros son exactamente se ve
+   abriendo el panel, que es donde se editan de todos modos. */
+function pintarHerramientas() {
+  // en cuanto se vuelve a filtrar, lo borrado deja de estar a mano
   if (borrado && huellaBorrado !== null && huellaFiltros() !== huellaBorrado) {
     borrado = null; huellaBorrado = null;
     quitarTostada();
   }
-  var f = [];
-  // la busqueda tambien es un filtro puesto, y asi «Quitar todo» tiene sitio
-  // aunque lo unico activo sea el texto
-  if (F.q) {
-    f.push({ ico: 'magnifying-glass', et: '“' + F.q + '”', tipo: 'Búsqueda',
-             quita: 'quita-q' });
-  }
-  F.color.forEach(function (v) {
-    f.push({ marca: '<span class="punto" style="background:' + colorHex(v) + '"></span>',
-             et: v, tipo: 'Color', f: 'color', v: v });
-  });
-  F.loma.forEach(function (v) {
-    f.push({ ico: 'map-pin', et: nombreLoma[v] || v, tipo: 'Loma', f: 'loma', v: v });
-  });
-  F.familia.forEach(function (v) {
-    f.push({ ico: 'leaf', et: v, tipo: 'Familia', f: 'familia', v: v });
-  });
-  F.grupo.forEach(function (v) {
-    f.push({ ico: 'plant', et: v, tipo: 'Grupo', f: 'grupo', v: v });
-  });
-  F.habitat.forEach(function (v) {
-    f.push({ ico: 'drop', et: v, tipo: 'Hábitat', f: 'habitat', v: v });
-  });
-  F.conserv.forEach(function (v) {
-    var c = CONSERV.filter(function (x) { return x.id === v; })[0];
-    f.push({ ico: 'seal-check', et: c ? c.txt : v, tipo: 'Conservación',
-             f: 'conserv', v: v });
-  });
-  F.cara.forEach(function (v) {
-    f.push({ ico: 'circle-half', et: ladoDe(v).txt, tipo: 'Ladera donde crece',
-             f: 'cara', v: v });
-  });
-  var tramo = tramoMeses();
-  if (tramo) {
-    f.push({ ico: 'calendar-blank', quita: 'quita-mes', tipo: 'Floración',
-             et: 'En flor de ' + G.meses[tramo[0] - 1] + ' a ' + G.meses[tramo[1] - 1] });
-  } else {
-    F.mes.slice().sort(function (a, b) { return a - b; }).forEach(function (v) {
-      f.push({ ico: 'calendar-blank', et: 'En flor en ' + G.meses[v - 1],
-               tipo: 'Floración', f: 'mes', v: v });
-    });
-  }
-
-  var caja = $('#activos');
-  // con doce lomas puestas la fila se comia dos lineas y empujaba la rejilla
-  if (f.length <= TOPE_CHIPS) chipsAbiertos = false;
-  // el tope vale en los dos modos: arriba ahorra filas que habria que pasar
-  // antes de llegar a las tarjetas, y apretada alarga la fila que se desliza
-  // en vez de crear otra
-  var sobran = (!chipsAbiertos && f.length > TOPE_CHIPS) ? f.length - TOPE_CHIPS : 0;
-  var html = (sobran ? f.slice(0, TOPE_CHIPS) : f).map(function (x) {
-    var senas = x.quita ? 'id="' + x.quita + '"'
-                        : 'data-f="' + x.f + '" data-v="' + esc('' + x.v) + '"';
-    return '<button class="chip" ' + senas + ' ' +
-        'title="' + esc(x.tipo + ': ' + x.et) + '" ' +
-        'aria-label="Quitar el filtro ' + esc(x.tipo + ': ' + x.et) + '">' +
-        (x.marca || svgIcono(x.ico)) + esc(x.et) + svgIcono('x', 'quita') + '</button>';
-  }).join('');
-
-  tramosAlt().forEach(function (r) {
-    var txt = textoTramo(r);
-    html += '<button class="chip" data-alt="' + r[0] + '-' + r[1] + '" ' +
-        'title="Altitud: ' + txt + '" aria-label="Quitar el filtro de altitud ' +
-        txt + '">' + svgIcono('mountains') + txt + svgIcono('x', 'quita') + '</button>';
-  });
-
-  if (sobran) {
-    html += '<button class="chip todo" id="mas-chips">+' + sobran + ' más</button>';
-  } else if (chipsAbiertos) {
-    html += '<button class="chip todo" id="menos-chips">Ver menos</button>';
-  }
-  if (html) {
-    html += '<button class="chip todo" id="quita-todo">' + svgIcono('x', 'quita') +
-            'Quitar todo</button>';
-  }
-  caja.innerHTML = html;
-  caja.classList.toggle('oculto', !html);
+  /* El número y no solo el color. El color solo falla dos veces a la vez: a
+     pleno sol en la loma, y para quien no distingue el verde. Una cifra se ve
+     en los dos casos, y además dice cuántos son, que es lo que uno quiere
+     saber antes de abrir el panel. */
+  var n = activos();
+  var b = $('#btn-filtros');
+  b.classList.toggle('puesto', n > 0);
+  $('#filtros-n').textContent = n ? n : '';
+  b.setAttribute('aria-label',
+      n ? 'Filtros, ' + n + (n === 1 ? ' puesto' : ' puestos') : 'Filtros');
+  pintarBotonLomas();
 }
 
-$('#activos').addEventListener('click', function (ev) {
-  if (ev.target.closest('#mas-chips')) { chipsAbiertos = true; pintarActivos(); }
-  else if (ev.target.closest('#menos-chips')) { chipsAbiertos = false; pintarActivos(); }
-  else if (ev.target.closest('[data-alt]')) quitarTramoAlt(ev.target.closest('[data-alt]'));
-  else if (ev.target.closest('#quita-mes')) { F.mes = []; render(); }
-  else if (ev.target.closest('#quita-q')) quitarBusqueda();
-  else if (ev.target.closest('#quita-todo')) tirarFiltros(true);
-});
+/* «Lúc. +2». El nombre entero no cabe en la fila del recuento de un móvil
+   estrecho -medido: «Pachacámac» se come 130 de los 347 px que hay-, pero
+   esconderlo tras un chinche a secas devuelve el problema que trajo todo
+   esto: el sitio es la razón de que la lista mida lo que mide, y tiene que
+   verse. Así que se recorta el nombre y la cuenta de las demás va aparte,
+   que es la que de verdad cambia el total. Los dos textos van en el html y
+   elige el ancho de la pantalla, no un listener de resize. */
+/* El recorte más corto que no se confunda con otro. «Man.» serviría igual
+   para Manchay que para Mangomarca, así que a esa pareja le tocan cuatro
+   letras y a las demás tres; «Mala» es tan corto que se queda entero y es
+   «Malanche» el que cede. Se calcula una vez con los 22 nombres del libro.
+
+   Los nombres de hasta seis letras no se tocan: ya caben, y un «Pact.» en
+   lugar de «Pacta» no ahorra nada y encima da a entender que falta algo. */
+var CORTO_DESDE = 7;
+var cortoDe = (function () {
+  var m = {}, ids = [], nom = {};
+  (G.lomas || []).forEach(function (l) { ids.push(l.id); nom[l.id] = l.nombre; });
+  ids.forEach(function (id) {
+    var n = nom[id];
+    if (n.length < CORTO_DESDE) { m[id] = n; return; }
+    for (var k = 3; k < n.length; k++) {
+      var pre = n.slice(0, k);
+      var choca = ids.some(function (o) {
+        return o !== id && nom[o].slice(0, k) === pre;
+      });
+      if (!choca) { m[id] = pre + '.'; return; }
+    }
+    m[id] = n;
+  });
+  return m;
+})();
+
+function pintarBotonLomas() {
+  var n = F.loma.length;
+  var b = $('#btn-lomas');
+  var nom = n ? (nombreLoma[F.loma[0]] || F.loma[0]) : '';
+  $('#btn-lomas-txt').innerHTML = !n
+      ? 'Lomas'
+      : '<i class="largo">' + esc(nom) + '</i>' +
+        '<i class="corto">' + esc(cortoDe[F.loma[0]] || nom) + '</i>' +
+        (n > 1 ? '<b class="mas">+' + (n - 1) + '</b>' : '');
+  b.classList.toggle('puesto', n > 0);
+  b.setAttribute('aria-label', !n ? 'Lomas'
+      : n === 1 ? 'Lomas: ' + nom
+      : 'Lomas: ' + nom + ' y ' + (n - 1) + ' más');
+}
 
 /* «1 → 134» llevaba la flecha en texto, y la del tipo de letra se apoya en la
    linea base: al lado de las cifras se veia caida. Va la del juego de iconos,
@@ -735,13 +739,14 @@ document.addEventListener('contextmenu', function (ev) {
 
 /* ---------- la barra que se queda arriba al bajar ---------- */
 var ultimoN = 0;
+/* 7/48 y no «7 de 134 especies». El total es el de la loma elegida, así que
+   la loma mueve el denominador y los filtros el numerador, y de un vistazo se
+   ve lo que hace cada cosa. Sin nada puesto no hay quebrado que enseñar. */
 function pintarCuenta() {
-  var tot = G.especies.length, n = ultimoN;
-  // la forma corta es para dejarle sitio a las fichas; sin fichas no hace falta
-  var apretar = compacto && (activos() > 0 || !!F.q);
-  $('#cuenta').textContent = apretar
-      ? (n === tot ? '' + tot : n + '/' + tot)
-      : (n === tot ? tot + ' especies' : n + ' de ' + tot + ' especies');
+  var tot = totalSitio(), n = ultimoN;
+  $('#cuenta').textContent = n === tot
+      ? tot + ' especies'
+      : n + '/' + tot + (compacto ? '' : ' especies');
 }
 
 /* La cabecera es pegajosa y su alto cambia con el tema, el tamaño del texto y
@@ -783,7 +788,7 @@ function mirarBarra() {
   barra.classList.toggle('compacta', compacto);
   if (!toca) hueco.style.height = '';
   pintarCuenta();
-  pintarActivos();
+  pintarHerramientas();
 }
 
 /* Directo, sin requestAnimationFrame: el navegador ya limita los eventos de
@@ -1957,6 +1962,7 @@ function abrirMapa(si) {
   }
 }
 
+
 $('#loma-locator').addEventListener('click', function () { abrirMapa(true); });
 $('#vista-mapa-atras').addEventListener('click', function () { abrirMapa(false); });
 document.addEventListener('keydown', function (ev) {
@@ -2749,12 +2755,26 @@ function cerrarPanelAbierto() {
   if (panelActual) abrirPanel(false, panelActual);
 }
 $('#btn-filtros').addEventListener('click', function () { abrirPanel(true); });
+$('#btn-lomas').addEventListener('click', function () {
+  abrirPanel(true, '#panel-lomas');
+});
+$('#cerrar-lomas').addEventListener('click', function () {
+  abrirPanel(false, '#panel-lomas');
+});
+$('#lomas-aplicar').addEventListener('click', function () {
+  abrirPanel(false, '#panel-lomas');
+});
+$('#lomas-quitar').addEventListener('click', function () { F.loma = []; render(); });
 $('#cerrar-panel').addEventListener('click', function () { abrirPanel(false); });
 $('#velo').addEventListener('click', cerrarPanelAbierto);
 $('#btn-aplicar').addEventListener('click', function () { abrirPanel(false); });
 
+/* La loma y el orden no se van con esto: se quitan desde su propia ventana.
+   Antes «Limpiar» borraba de golpe la loma en la que uno está parado, que es
+   justo lo que no hay que perder en el campo, y se ofrecía deshacerlo. Ya no
+   hace falta deshacer nada que no se haya roto. */
 function limpiarTodo() {
-  F.color = []; F.grupo = []; F.mes = []; F.loma = []; F.habitat = []; F.familia = [];
+  F.color = []; F.grupo = []; F.mes = []; F.habitat = []; F.familia = [];
   F.conserv = []; F.cara = [];
   quitarAltitud();   // repinta
 }

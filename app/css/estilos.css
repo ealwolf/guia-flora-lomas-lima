@@ -263,20 +263,59 @@ button {
    sigue muy por encima del minimo, y el glifo se queda en 24 */
 @media (max-width: 430px) { .btn-icono { width: 40px; height: 40px; } }
 
-.buscador { position: relative; }
+/* El buscador es una FILA, y la caja -el borde, el fondo, el redondeo- es de
+   la fila y no del campo. Antes la caja era el campo y los botones iban
+   encima en posición absoluta, a base de reservarles hueco con el relleno de
+   la derecha. Con dos botones deja de funcionar: el de filtros cambia de
+   ancho según cuántos haya puestos, así que el hueco que habría que
+   reservarle no es un número fijo, y la cifra se salía por el canto
+   redondeado. En fila cada cosa ocupa lo suyo y no hay nada que calcular. */
+.buscador {
+  position: relative;
+  display: flex; align-items: center; gap: 2px;
+  padding: 0 5px 0 34px;
+  background: var(--superficie);
+  border: 1px solid var(--borde); border-radius: 12px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.buscador:focus-within { border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-sua); }
 .buscador .ico-lupa {
-  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
   color: var(--tenue); pointer-events: none;
 }
+
+/* Las dos formas de acortar la lista -lo que se escribe y lo que se marca-
+   juntas en el mismo sitio, que es donde se las busca. */
+.btn-filtros {
+  position: relative; flex: none;
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 32px; padding: 0 9px; border-radius: 9px;
+  color: var(--tenue); border: 1px solid transparent;
+  font-size: var(--t-1); font-weight: 700;
+}
+.btn-filtros:hover, .btn-filtros:focus-visible {
+  background: var(--superficie-2); color: var(--texto);
+}
+.btn-filtros .ico { width: 19px; height: 19px; flex: none; }
+.btn-filtros.puesto {
+  background: var(--acento); border-color: var(--acento); color: var(--sobre-acento);
+}
+.btn-filtros.puesto:hover { color: var(--sobre-acento); }
+/* La cifra al lado del icono, no una pegatina en la esquina. Una pegatina de
+   diez píxeles dentro de un campo de texto se sale por el canto y no se lee;
+   el número entero, en el mismo renglón, se ve de lejos. Y hace falta que se
+   vea: el color solo falla justo donde esta app se usa -a pleno sol- y para
+   quien no distingue el verde. */
+.btn-filtros .cuantos { font-variant-numeric: tabular-nums; }
+.btn-filtros .cuantos:empty { display: none; }
+
 #q {
-  width: 100%; padding: 11px 40px 11px 40px;
-  background: var(--superficie); color: var(--texto);
-  border: 1px solid var(--borde); border-radius: 12px;
+  flex: 1; min-width: 0; padding: 11px 4px;
+  background: transparent; color: var(--texto); border: 0;
   /* por debajo de 16px iOS hace zoom al enfocar el campo */
   font-size: max(16px, var(--t-3));
-  outline: none; transition: border-color .15s, box-shadow .15s;
+  outline: none;
 }
-#q:focus { border-color: var(--acento); box-shadow: 0 0 0 3px var(--acento-sua); }
 /* el navegador pone su propia aspa en los input de busqueda: sobraba, porque
    al lado esta la nuestra, que ademas cierra la lista de sugerencias */
 #q::-webkit-search-cancel-button,
@@ -361,10 +400,10 @@ button {
 .sug button[aria-selected="true"] .sug-tipo { background: var(--fondo); }
 
 #limpiar {
-  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
-  width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center;
-  color: var(--tenue);
+  flex: none; width: 30px; height: 30px; border-radius: 9px;
+  display: grid; place-items: center; color: var(--tenue);
 }
+#limpiar:hover, #limpiar:focus-visible { background: var(--superficie-2); color: var(--texto); }
 
 /* ---------- fichas de filtro ---------- */
 .chips {
@@ -407,7 +446,6 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .herramientas {
   display: flex; gap: 8px; padding: 6px 0 10px; flex: none; margin-left: auto;
 }
-.activos { flex: 0 0 100%; }
 .btn-barra {
   display: inline-flex; align-items: center; gap: 7px; min-height: 38px;
   padding: 0 14px; border-radius: 999px; font-size: var(--t-1); font-weight: 600;
@@ -415,7 +453,31 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 }
 .btn-barra:hover { border-color: color-mix(in srgb, var(--acento) 45%, var(--borde-control)); }
 .btn-barra .ico { width: 17px; height: 17px; color: var(--tenue); flex: none; }
-.btn-barra .txt { white-space: nowrap; }
+.btn-barra .txt { white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
+.btn-barra .txt i { font-style: normal; }
+/* el nombre entero en pantalla ancha, recortado en el móvil; sin medir nada
+   en js ni escuchar el resize, lo decide el ancho */
+.btn-barra .txt .corto { display: none; }
+@media (max-width: 600px) {
+  .btn-barra .txt .largo { display: none; }
+  .btn-barra .txt .corto { display: inline; }
+  /* El criterio de orden deja de leerse: ocupaba 147 px de los 292 que hay
+     en un móvil de 320, y en las pruebas de campo nadie llegó a usarlo. El
+     sitio sí se lee, que es lo que explica el total. */
+  #btn-orden .txt { display: none; }
+  #btn-orden { padding: 0 11px; }
+}
+/* «+2» no es parte del nombre: es cuántas lomas más hay, y es lo que mueve
+   el total. Por eso va con su propio fondo y no pegado a la palabra. */
+.btn-barra .txt .mas {
+  font-size: 11.5px; font-weight: 700; line-height: 1;
+  padding: 3px 5px; border-radius: 6px;
+  background: var(--acento-sua); color: var(--acento-txt);
+}
+.btn-barra.puesto {
+  border-color: var(--acento); background: var(--acento-sua); color: var(--acento-txt);
+}
+.btn-barra.puesto .ico { color: var(--acento-txt); }
 /* Al bajar, el recuento y los filtros puestos se quedan pegados bajo la
    cabecera y se aprietan en una sola fila que se desliza a los lados. Si no,
    desaparecen justo cuando hace falta saber por que se ve lo que se ve, y
@@ -433,15 +495,12 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   position: fixed; top: var(--alto-cab, 0px); left: 0; right: 0; z-index: 30;
   background: var(--fondo); border-bottom: 1px solid var(--borde);
 }
-/* apretada, todo en una linea: recuento, fichas que se deslizan, y los dos
-   botones al final para que filtrar siga a mano sin volver arriba */
+/* apretada, todo en una linea: el recuento y los dos botones al final, para
+   que ordenar y elegir loma sigan a mano sin volver arriba */
 .barra-filtros.compacta .barra-int {
   display: flex; flex-wrap: nowrap; align-items: center; gap: 10px;
   max-width: 1400px; margin-inline: auto; padding: 7px 14px;
 }
-/* margin-left:auto y no solo el orden: sin fichas que ocupen el hueco -porque
-   .oculto las quita del flujo- los botones se quedaban pegados al recuento, a
-   la izquierda. Con fichas el auto no hace nada, que ya empujan ellas. */
 .barra-filtros.compacta .herramientas { padding: 0; order: 3; flex: none; margin-left: auto; }
 .barra-filtros.compacta .btn-barra { padding: 0 11px; }
 .barra-filtros.compacta .btn-barra .txt { display: none; }
@@ -449,34 +508,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   margin: 0; flex: none; font-variant-numeric: tabular-nums; font-weight: 600;
   color: var(--texto);
 }
-.barra-filtros.compacta .activos {
-  margin: 0; flex: 1; min-width: 0; flex-wrap: nowrap;
-  overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none;
-  padding-block: 2px;
-}
-.barra-filtros.compacta .activos::-webkit-scrollbar { display: none; }
 .barra-filtros.compacta .chip { flex: none; }
-
-/* ---------- lo que esta filtrando ahora mismo ----------
-   Elegir una sugerencia aplicaba el filtro sin dejar rastro: la busqueda se
-   vaciaba y solo cambiaba el numero de resultados. Estas fichas dicen por que
-   se esta viendo lo que se ve, y cada una se quita por separado. */
-.activos { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
-.activos .chip {
-  /* mismo alto que los de la cabecera y los del panel: son la misma cosa */
-  min-height: 36px; padding: 5px 8px 5px 12px; font-size: var(--t-1);
-  background: var(--acento-sua); border-color: transparent; color: var(--acento-txt);
-}
-.activos .chip:hover { border-color: var(--acento); }
-.activos .chip .punto { width: 12px; height: 12px; }
-.activos .chip .ico { width: 14px; height: 14px; }
-.activos .chip .quita { width: 15px; height: 15px; opacity: .55; margin-left: 1px; }
-.activos .chip:hover .quita { opacity: 1; }
-/* quitarlo todo va al final de lo que quita, no al otro extremo de la fila */
-.activos .todo {
-  background: transparent; border-color: var(--borde); color: var(--tenue);
-}
-.activos .todo:hover { border-color: var(--tenue); color: var(--texto); }
 
 .rejilla {
   display: grid; gap: 12px;
