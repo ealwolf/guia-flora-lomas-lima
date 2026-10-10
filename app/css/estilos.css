@@ -1657,13 +1657,25 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 }
 .encabezado .cient .aut { font-style: normal; font-size: var(--t-1); }
 .etiquetas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+/* ---------- etiquetas, que no son botones ----------
+   En esta app una caja redonda con relleno quiere decir «esto se pulsa»: lo
+   dicen las fichas de los filtros, el espectro y las del hábitat. La ficha
+   de especie rompía esa promesa veinticinco veces -«Endémica del Perú»,
+   «VU», el origen, el grupo, los hábitats, las lomas- contra cuatro mandos
+   de verdad: las dos miniaturas y los dos vecinos.
+
+   Así que la pastilla -redondeo 999- se reserva para lo que se pulsa, y lo
+   que sólo informa baja a una esquina de 6 y se queda sin filete. Una regla
+   y se ve de un vistazo: redondo entero se pulsa, esquina cuadrada te está
+   contando algo. El color se queda donde significa -verde endémica, ámbar
+   amenazada-, que eso es dato y no adorno. */
 .eti {
   display: inline-flex; align-items: center; gap: 5px;
-  font-size: var(--t-1); font-weight: 600; padding: 5px 10px; border-radius: 999px;
-  background: var(--superficie-2); color: var(--texto); border: 1px solid var(--borde);
+  font-size: var(--t-1); font-weight: 600; padding: 6px 10px; border-radius: 6px;
+  background: var(--superficie-2); color: var(--texto); border: 0;
 }
-.eti.verde { background: var(--acento-sua); color: var(--acento-txt); border-color: transparent; }
-.eti.ambar { background: color-mix(in srgb, var(--ambar) 18%, transparent); color: var(--ambar); border-color: transparent; }
+.eti.verde { background: var(--acento-sua); color: var(--acento-txt); }
+.eti.ambar { background: color-mix(in srgb, var(--ambar) 18%, transparent); color: var(--ambar); }
 
 .datos {
   display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
@@ -1694,10 +1706,19 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .bloque p { margin: 0; font-size: var(--t-2); line-height: 1.62; }
 .bloque + .bloque { border-top: 1px solid var(--borde); }
 
-.calendario { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; }
+/* El calendario es UNA tira, no doce fichas. Con hueco entre los meses y
+   esquina redonda en cada uno, los que están en flor salían idénticos a una
+   ficha elegida -mismo verde, mismo redondeo que las del panel de filtros- y
+   se leían como doce interruptores con dos encendidos. Pegados y sin esquina
+   propia es lo que de verdad es: una línea de tiempo con un tramo encendido.
+   La misma operación que convirtió los cuatro hábitats en un solo campo. */
+.calendario {
+  display: grid; grid-template-columns: repeat(12, 1fr); gap: 0;
+  border-radius: 7px; overflow: hidden;
+}
 .calendario span {
-  text-align: center; font-size: var(--t-0); font-weight: 600; padding: 6px 0 5px;
-  border-radius: 6px; background: var(--superficie-2); color: var(--tenue);
+  text-align: center; font-size: var(--t-0); font-weight: 600; padding: 7px 0 6px;
+  background: var(--superficie-2); color: var(--tenue);
 }
 .calendario span.on { background: var(--acento); color: var(--sobre-acento); }
 
@@ -1753,9 +1774,12 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    El borde punteado va encima, que el color solo no vale para todo el mundo */
 /* .activa va despues en el archivo y ganaba por orden con la misma
    especificidad, asi que el chip seguia saliendo verde */
+/* El filete discontinuo se queda: dice que ese dato no sale de la guía sino
+   de lo que hemos visto, y discontinuo no se lee como botón. */
 .lista-lomas .eti.activa.propia {
   background: var(--propia-sua); color: var(--propia-txt);
   border: 1px dashed color-mix(in srgb, var(--propia) 55%, transparent);
+  padding: 5px 9px;
 }
 /* la leyenda del pie: sin ella el color no dice de que es */
 .pie-propia { display: inline-flex; align-items: center; gap: 5px; }
@@ -1764,9 +1788,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   background: var(--propia); flex: none;
 }
 .lista-lomas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-.lista-lomas .eti.activa {
-  background: var(--acento-sua); color: var(--acento-txt); border-color: transparent;
-}
+.lista-lomas .eti.activa { background: var(--acento-sua); color: var(--acento-txt); }
 
 
 .fuente {
