@@ -445,15 +445,17 @@ function renderYa() {
   $('#btn-aplicar').textContent = r.length === tot
       ? 'Ver las ' + tot
       : 'Ver ' + r.length + (r.length === 1 ? ' resultado' : ' resultados');
-  /* El de la ventana de lomas dice otra cosa. «Ver las 134», en una ventana
-     titulada «Lomas», se lee como 134 lomas -y son 22-. Aquí el sustantivo no
-     se puede callar, y de paso el botón confirma lo que se acaba de elegir. */
-  var nl = F.loma.length;
-  $('#lomas-aplicar').textContent =
-      !nl ? 'Ver las ' + r.length + ' especies'
-      : 'Ver ' + r.length + ' de ' + (nl === 1
-            ? (nombreLoma[F.loma[0]] || F.loma[0])
-            : nl + ' lomas');
+  /* El de la ventana de lomas cuenta LOMAS, no especies. Decía «Ver las 134»
+     y en una ventana titulada «Lomas» eso se lee como 134 lomas, que son 22;
+     luego pasó a «Ver 31 de Caringa», ya cierto, pero seguía contando
+     especies en la ventana donde se eligen sitios. Lo que se está haciendo
+     aquí es decidir de cuántas lomas mirar, así que eso es lo que dice. De
+     cuántas especies salen ya se encarga la fila del recuento, que es lo
+     primero que se ve al cerrar. */
+  var nl = F.loma.length, tl = G.lomas.length;
+  $('#lomas-aplicar').textContent = nl
+      ? nl + ' de ' + tl + ' lomas'
+      : 'Todas las ' + tl + ' lomas';
   pintarHerramientas();
   sincronizarChips();
   mirarBarra();
