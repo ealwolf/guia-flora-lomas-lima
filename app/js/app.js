@@ -202,7 +202,7 @@ G.especies.forEach(function (e) { e._cara = caraDe(e); });
    de sobra. El icono de al lado ya dice «ordenar», así que en el botón basta
    con por qué. */
 var ORDENES = [
-  { id: 'guia',       txt: 'Guía',              corto: 'Guía',
+  { id: 'guia',       txt: 'Según la guía',     corto: 'Guía',
     ico: 'book-open', dir: ['1 → 134', '134 → 1'] },
   { id: 'comun',      txt: 'Nombre común',      corto: 'Común',
     ico: 'text-aa',   dir: ['A → Z', 'Z → A'] },
@@ -210,12 +210,23 @@ var ORDENES = [
     ico: 'flask',     dir: ['A → Z', 'Z → A'] },
   { id: 'altitud',    txt: 'Altitud',           corto: 'Altitud', ico: 'mountains',
     dir: ['Baja → Alta', 'Alta → Baja'] },
-  /* Lo que se ordena es en cuantas de las 22 lomas se registro la especie:
-     arriba, con «Pocas → Muchas», salen las que solo estan en una o dos.
-     «N.º de lomas» nombraba la cuenta; «Presencia en lomas» nombra lo que
-     esa cuenta significa. */
-  { id: 'lomas',      txt: 'Presencia en lomas', corto: 'Lomas', ico: 'map-pin',
-    dir: ['Pocas → Muchas', 'Muchas → Pocas'] }
+  /* Lo que se ordena es en cuántas de las 22 lomas registró la guía la
+     especie: arriba, con «Pocas lomas → Muchas», salen las que sólo están en
+     una o dos.
+
+     El nombre ha pasado por tres. «N.º de lomas» nombraba la cuenta, no lo
+     que significa. «Presencia en lomas» significaba, pero no es como lo
+     llamaría nadie. «Distribución» sí, y además es la palabra del propio
+     libro: cada ficha tiene su apartado DISTRIBUCIÓN.
+
+     Con una salvedad que conviene tener presente: esto no es la distribución
+     real de la especie, es en cuántas lomas la vieron los autores. 31 de las
+     134 están citadas en una sola, y eso es muestreo, no endemismo. La
+     salvedad ya está escrita donde hace falta -en la nota de «No citadas en
+     esta loma»- y el sentido del orden lo dice en lomas, que es el dato que
+     de verdad hay. */
+  { id: 'lomas',      txt: 'Distribución', corto: 'Lomas', ico: 'map-pin',
+    dir: ['Pocas lomas → Muchas', 'Muchas lomas → Pocas'] }
 ];
 function ordenActual() {
   return ORDENES.filter(function (x) { return x.id === F.orden; })[0] || ORDENES[0];
@@ -3036,7 +3047,11 @@ function prepararGrupos() {
     var marca = h.querySelector('[data-ico]');
     var icono = marca ? marca.outerHTML : '';
     if (marca) marca.remove();
-    var titulo = h.textContent.replace(/\s+/g, ' ').trim();
+    /* innerHTML y no textContent: el título de Altitud lleva dentro un
+       <span class="unidad-tit">(msnm)</span> que se libra de la versalita del
+       renglón. Aplanándolo a texto, el span se perdía y «(msnm)» salía en
+       mayúsculas. Es marcado nuestro, de index.html, así que no se escapa. */
+    var titulo = h.innerHTML.replace(/\s+/g, ' ').trim();
 
     var cuerpo = document.createElement('div');
     cuerpo.className = 'grupo-cuerpo';
@@ -3049,7 +3064,7 @@ function prepararGrupos() {
     h.innerHTML =
       '<button class="grupo-cab" aria-expanded="false" aria-controls="g-' + c + '">' +
         '<span class="grupo-ico">' + icono + '</span>' +
-        '<span class="grupo-tit">' + esc(titulo) + '</span>' +
+        '<span class="grupo-tit">' + titulo + '</span>' +
         '<b class="grupo-n"></b>' +
         '<span class="grupo-caret">' + svgIcono('caret-down') + '</span>' +
       '</button>' +
