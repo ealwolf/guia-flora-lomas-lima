@@ -2,7 +2,6 @@
 app/js/datos.js
 app/js/mapa.js
 app/js/iconos.js
-app/todo-en-uno.html
 __pycache__/
 *.pyc
 flora-lomas-app.zip
@@ -14,3 +13,6 @@ flora-lomas-app/
 # en el repositorio es lo que se exporta de el -assets/habitat-*.svg- y lo
 # que sale del importador. El .af se guarda aparte.
 assets/source/
+# respaldos completos antes de cambios grandes: pesan decenas de MB y ya
+# estan cubiertos por las etiquetas de git para lo que si va versionado
+respaldos/

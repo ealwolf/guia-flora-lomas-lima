@@ -42,13 +42,19 @@ Se intentó y no funciona en Android moderno. Al abrir un archivo desde el
 gestor de archivos, Chrome no recibe una dirección `file://` sino una
 `content://`, y con esa las rutas relativas no resuelven:
 
-| | Qué pasa |
-|---|---|
-| `index.html` | no carga `css/` ni `js/` → interfaz rota |
-| `todo-en-uno.html` | eso va incrustado → interfaz bien, pero **sin fotos** |
+Comprobado en un Pixel 6a: `index.html` abierto así no carga `css/` ni `js/`
+y la interfaz sale rota.
 
-Comprobado en un Pixel 6a. `todo-en-uno.html` sigue ahí porque para mirar los
-textos desde el PC va bien, pero para el campo la vía es la de arriba.
+Hubo un `todo-en-uno.html` que llevaba dentro el css y el js para salvar ese
+caso. Se quitó. Salvaba la interfaz pero no las fotos -las fotos siguen siendo
+rutas relativas-, o sea que resolvía el caso de una guía de campo dejándola sin
+lo único por lo que se mira una guía de campo. Pesaba 208 KB comprimido: el
+archivo más grande del zip, más que cualquier foto, en una descarga de 3,9 MB
+que nadie abría nunca. Y era una copia entera de la app que había que mantener
+al día a mano.
+
+Para leer los textos desde el PC está `python scripts/servir.py`, que además
+sí trae las fotos.
 
 ---
 
@@ -122,7 +128,6 @@ Guía de Flora de las Lomas de Lima/
 │   ├── index.html
 │   ├── manifest.webmanifest  nombre, colores e iconos de la app instalada
 │   ├── sw.js               guarda todo para usarlo sin red ← generado
-│   ├── todo-en-uno.html    respaldo de un solo archivo    ← generado
 │   ├── css/estilos.css     la apariencia. Edítala si quieres cambiarla.
 │   ├── js/app.js           la lógica
 │   ├── js/datos.js         las 134 especies        ← generado

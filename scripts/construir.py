@@ -373,23 +373,6 @@ def main():
         print('-> app/js/iconos.js %.0f KB  (%d iconos, %d dibujos)'
               % (os.path.getsize(pi) / 1024, len(cuerpo), len(dib)))
 
-    # versión de un solo archivo, por si el navegador del teléfono no deja
-    # cargar los .js vecinos al abrir desde file://
-    idx = os.path.join(RAIZ, 'app', 'index.html')
-    if os.path.exists(idx):
-        html = open(idx, encoding='utf-8').read()
-        for js in ('js/datos.js', 'js/mapa.js', 'js/iconos.js', 'js/app.js'):
-            cuerpo = open(os.path.join(RAIZ, 'app', js), encoding='utf-8').read()
-            html = html.replace('<script src="%s"></script>' % js,
-                                '<script>%s</script>' % cuerpo)
-        css = open(os.path.join(RAIZ, 'app', 'css', 'estilos.css'), encoding='utf-8').read()
-        html = html.replace('<link rel="stylesheet" href="css/estilos.css">',
-                            '<style>%s</style>' % css)
-        pu = os.path.join(RAIZ, 'app', 'todo-en-uno.html')
-        open(pu, 'w', encoding='utf-8').write(html)
-        print('-> app/todo-en-uno.html %.0f KB  (respaldo: no carga archivos vecinos)'
-              % (os.path.getsize(pu) / 1024))
-
     escribir_sw()
 
     nimg = len(os.listdir(os.path.join(RAIZ, 'app', 'img')))
