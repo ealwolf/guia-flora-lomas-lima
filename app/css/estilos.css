@@ -534,12 +534,42 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 }
 .barra-filtros.compacta .herramientas { padding: 0; order: 3; flex: none; margin-left: auto; }
 .barra-filtros.compacta .btn-barra { padding: 0 11px; }
-.barra-filtros.compacta .btn-barra .txt { display: none; }
+/* Al bajar se escondian los dos rotulos para dejarle sitio a la fila de
+   fichas que se deslizaba por el medio. Esa fila ya no existe, y el nombre de
+   la loma es justo lo que no puede desaparecer: es la razon de que la lista
+   mida lo que mide. Se queda el suyo; el criterio de orden sigue sin rotulo,
+   que nadie lo uso en el campo. */
+.barra-filtros.compacta #btn-orden .txt { display: none; }
 .barra-filtros.compacta .resumen {
   margin: 0; flex: none; font-variant-numeric: tabular-nums; font-weight: 600;
   color: var(--texto);
 }
 .barra-filtros.compacta .chip { flex: none; }
+
+/* ---------- la cola: lo que no cita en esa loma ----------
+   De trazo discontinuo a propósito. Todo lo que lleva borde entero en esta
+   app es algo puesto o algo elegible; esto es un umbral -lo de fuera de la
+   lista- y el trazo roto lo dice sin una palabra. */
+.cola { margin: 20px 0 0; }
+.cola-cab {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  min-height: 48px; padding: 10px 14px;
+  border: 1px dashed var(--borde-control); border-radius: 12px;
+  background: transparent; color: var(--texto);
+  font-size: var(--t-2); font-weight: 600; text-align: left;
+}
+.cola-cab:hover { border-color: var(--acento); background: var(--superficie); }
+.cola-txt { flex: 1; min-width: 0; }
+.cola-n {
+  flex: none; padding: 2px 9px; border-radius: 999px;
+  background: var(--superficie-2); color: var(--tenue);
+  font-size: var(--t-1); font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.cola-ico { flex: none; line-height: 0; color: var(--tenue); }
+.cola-ico .ico { width: 18px; height: 18px; transition: transform .16s; }
+.cola-cab[aria-expanded="true"] .cola-ico .ico { transform: rotate(180deg); }
+.cola-cuerpo { margin-top: 12px; }
+.cola-cuerpo .nota { margin: 0 0 14px; }
 
 .rejilla {
   display: grid; gap: 12px;

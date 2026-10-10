@@ -99,6 +99,23 @@ window.addEventListener('beforeinstallprompt', function (ev) {
     <div data-ico="list-magnifying-glass" aria-hidden="true"></div>
     <p><b>Sin resultados</b><br>Prueba con otro nombre o quita algún filtro.</p>
   </div>
+
+  <!-- Las que la guía no cita en esa loma. Van al final porque es justo ahí
+       donde aparece la duda: se ha recorrido lo probable y la flor no estaba.
+       Plegadas, que el que la encuentra arriba no tiene por qué verlas. -->
+  <section class="cola oculto" id="cola">
+    <button class="cola-cab" id="cola-abrir" aria-expanded="false"
+            aria-controls="cola-cuerpo">
+      <span class="cola-ico" data-ico="caret-down" aria-hidden="true"></span>
+      <span class="cola-txt" id="cola-txt"></span>
+      <span class="cola-n" id="cola-n"></span>
+    </button>
+    <div class="cola-cuerpo" id="cola-cuerpo" hidden>
+      <p class="nota"><span data-ico="info" aria-hidden="true"></span>
+        <span id="cola-nota"></span></p>
+      <div class="rejilla" id="cola-rejilla"></div>
+    </div>
+  </section>
 </main>
 
 <!-- ---------- panel de filtros ---------- -->

@@ -340,7 +340,7 @@ function filtrar(omitir) {
     if (F.familia.length && F.familia.indexOf(e.familia) < 0) return false;
     if (omitir !== 'mes' && F.mes.length &&
         !F.mes.some(function (m) { return e.flor.indexOf(m) >= 0; })) return false;
-    if (!enSitio(e)) return false;
+    if (omitir !== 'sitio' && !enSitio(e)) return false;
     if (F.habitat.length && !F.habitat.some(function (h) { return e.habitats.indexOf(h) >= 0; })) return false;
     // aqui SI se cruzan: son atributos sueltos y marcarlos es pedirlos todos.
     // «Endemica + Amenazada» son 2 especies, no 40. Por eso se dibujan como
@@ -433,17 +433,27 @@ function render() {
 
 function renderYa() {
   var r = ordenar(filtrar());
-  ultimo = r;
   $('#rejilla').innerHTML = r.map(tarjeta).join('');
   $('#vacio').classList.toggle('oculto', r.length > 0);
+  var cola = pintarCola();
+  /* Atrás y adelante dentro de una ficha recorren lo que se ve y nada más:
+     con la cola plegada no se cuela en el paso de una ficha a otra. */
+  ultimo = colaAbierta ? r.concat(cola) : r;
   ultimoN = r.length;
   pintarCuenta();
   var tot = totalSitio();
-  var verN = r.length === tot
+  $('#btn-aplicar').textContent = r.length === tot
       ? 'Ver las ' + tot
       : 'Ver ' + r.length + (r.length === 1 ? ' resultado' : ' resultados');
-  $('#btn-aplicar').textContent = verN;
-  $('#lomas-aplicar').textContent = verN;
+  /* El de la ventana de lomas dice otra cosa. «Ver las 134», en una ventana
+     titulada «Lomas», se lee como 134 lomas -y son 22-. Aquí el sustantivo no
+     se puede callar, y de paso el botón confirma lo que se acaba de elegir. */
+  var nl = F.loma.length;
+  $('#lomas-aplicar').textContent =
+      !nl ? 'Ver las ' + r.length + ' especies'
+      : 'Ver ' + r.length + ' de ' + (nl === 1
+            ? (nombreLoma[F.loma[0]] || F.loma[0])
+            : nl + ' lomas');
   pintarHerramientas();
   sincronizarChips();
   mirarBarra();
@@ -805,6 +815,94 @@ function pintarCuenta() {
       ? tot + ' especies'
       : n + '/' + tot + (compacto ? '' : ' especies');
 }
+
+/* ---------- las que no cita en esa loma ----------
+   El filtro de loma esconde especies que probablemente estén ahí. La guía no
+   es un mapa de distribución: es la lista de dónde las vieron sus tres
+   autores, y no llegaron a todo. El dato que lo dice: 31 de las 134 están
+   citadas en UNA sola loma, casi una cuarta parte, y eso no es endemismo, es
+   que nadie más las anotó. Esconderlas del todo sería afirmar algo que el
+   libro no dice.
+
+   Así que van al final, plegadas y ordenadas por cercanía: una citada en
+   Caringa, a 2,4 km, es mucho más probable que una citada solo en Asia, a
+   sesenta. El que encuentra su flor arriba no llega a verlas; el que no la
+   encuentra se topa con ellas justo donde le surge la duda. */
+var colaAbierta = false;
+
+/* Las distancias entre las 22, una vez. Son centroides y no contornos, que
+   para ordenar de cerca a lejos sobra: la pareja más próxima está a 2,4 km. */
+var KM = (function () {
+  var m = {}, L = G.lomas || [];
+  L.forEach(function (a) {
+    m[a.id] = {};
+    L.forEach(function (b) {
+      var dy = (a.lat - b.lat) * 111.32;
+      var dx = (a.lon - b.lon) * 111.32 * Math.cos(a.lat * Math.PI / 180);
+      m[a.id][b.id] = Math.sqrt(dx * dx + dy * dy);
+    });
+  });
+  return m;
+})();
+
+var SOLO_UNA = G.especies.filter(function (e) {
+  return (e.lomas || []).length === 1;
+}).length;
+
+// de la loma elegida más cercana a la loma más cercana donde SÍ se la cita
+function lejosDe(e) {
+  var min = Infinity;
+  for (var i = 0; i < F.loma.length; i++) {
+    var fila = KM[F.loma[i]];
+    if (!fila) continue;
+    for (var j = 0; j < e.lomas.length; j++) {
+      var d = fila[e.lomas[j]];
+      if (d != null && d < min) min = d;
+    }
+  }
+  return min;
+}
+
+function pintarCola() {
+  var caja = $('#cola');
+  var fuera = [];
+  if (F.loma.length) {
+    // todo lo demás sigue mordiendo: lo único que se suelta es el sitio
+    fuera = filtrar('sitio').filter(function (e) { return !enSitio(e); });
+    fuera.sort(function (a, b) { return (lejosDe(a) - lejosDe(b)) || (a.n - b.n); });
+  }
+  caja.classList.toggle('oculto', !fuera.length);
+  if (!fuera.length) return [];
+
+  var n = F.loma.length;
+  $('#cola-txt').textContent = n === 1
+      ? 'No citadas en ' + (nombreLoma[F.loma[0]] || F.loma[0])
+      : 'No citadas en esas ' + n + ' lomas';
+  $('#cola-n').textContent = fuera.length;
+  $('#cola-abrir').setAttribute('aria-expanded', colaAbierta ? 'true' : 'false');
+  $('#cola-cuerpo').hidden = !colaAbierta;
+
+  // plegada no se dibuja: son hasta 130 tarjetas con su foto
+  if (colaAbierta) {
+    var d0 = lejosDe(fuera[0]);
+    $('#cola-nota').innerHTML =
+        'La guía dice dónde vieron cada especie sus autores, no dónde crece: ' +
+        SOLO_UNA + ' de las ' + G.especies.length +
+        ' están citadas en una sola loma. Una planta puede estar aquí sin ' +
+        'salir arriba. Van de más cerca a más lejos' +
+        (isFinite(d0) ? '; la primera se cita a ' +
+            d0.toFixed(1).replace('.', ',') + ' km' : '') + '.';
+    $('#cola-rejilla').innerHTML = fuera.map(tarjeta).join('');
+  } else {
+    $('#cola-rejilla').innerHTML = '';
+  }
+  return fuera;
+}
+
+$('#cola-abrir').addEventListener('click', function () {
+  colaAbierta = !colaAbierta;
+  render();
+});
 
 /* La cabecera es pegajosa y su alto cambia con el tema, el tamaño del texto y
    el ancho, asi que se mide en vez de darlo por sabido. En el movil no se
@@ -2777,7 +2875,8 @@ function cerrarFicha() {
 }
 
 /* ---------- eventos ---------- */
-$('#rejilla').addEventListener('click', function (ev) {
+// en main y no en #rejilla: las tarjetas de la cola son tarjetas igual
+$('main').addEventListener('click', function (ev) {
   var t = ev.target.closest('.tarjeta');
   if (t) abrirFicha(t.dataset.id);
 });
