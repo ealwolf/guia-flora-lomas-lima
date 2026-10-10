@@ -911,13 +911,21 @@ $('#cola-abrir').addEventListener('click', function () {
    dice si cuenta o no es su propio position, no una copia del corte de ancho
    escrita aparte que se quedaria vieja. */
 function medirCabecera() {
-  var cab = $('.cab');
-  if (!cab) return;
-  var pegada = getComputedStyle(cab).position === 'sticky';
-  document.documentElement.style.setProperty(
-      '--alto-cab', (pegada ? cab.offsetHeight : 0) + 'px');
+  var d = document.documentElement;
+  function alto(sel) {
+    var e = $(sel);
+    return (e && getComputedStyle(e).position === 'sticky') ? e.offsetHeight : 0;
+  }
+  var hc = alto('.cab'), hb = alto('#busca-barra');
+  d.style.setProperty('--alto-cab', hc + 'px');
+  // lo que tapan las dos juntas, que es lo que tiene que esquivar el recuento
+  d.style.setProperty('--alto-fijo', (hc + hb) + 'px');
 }
-if (window.ResizeObserver) new ResizeObserver(medirCabecera).observe($('.cab'));
+if (window.ResizeObserver) {
+  var ojo = new ResizeObserver(medirCabecera);
+  ojo.observe($('.cab'));
+  ojo.observe($('#busca-barra'));
+}
 
 function mirarBarra() {
   /* Con la portada a la vista, la marca pequeña de la cabecera sobra: estaba
@@ -932,7 +940,7 @@ function mirarBarra() {
      porque solo llevaba las fichas; ahora lleva Ordenar y Filtros, y sin ella
      pegada habria que volver arriba del todo para usarlos. */
   var tope = parseFloat(getComputedStyle(document.documentElement)
-      .getPropertyValue('--alto-cab')) || 0;
+      .getPropertyValue('--alto-fijo')) || 0;
   /* Contra su sitio en el documento, no contra su posicion en pantalla: una
      vez fija su borde coincide con el de la cabecera igual que arriba del
      todo, asi que mirar la pantalla decia «fija» siempre. Los 6 px de holgura

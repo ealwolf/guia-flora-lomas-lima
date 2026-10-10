@@ -24,44 +24,18 @@ window.addEventListener('beforeinstallprompt', function (ev) {
 </head>
 <body>
 
-<!-- La portada es solo de pantalla ancha: la marca en grande y aire, y se va
-     al bajar como cualquier contenido. No lleva el buscador dentro -el
-     buscador vive en la barra pegajosa de abajo- porque encogerle el alto a
-     una barra pegajosa al bajar reflota todo lo que tiene debajo y el
-     contenido pega un salto. Así la barra nunca cambia de alto. -->
-<div class="portada" id="portada" aria-hidden="true">
-  <div class="portada-int">
-    <div class="portada-marca">
-      <b>Flora de las Lomas</b>
-      <span>de Lima</span>
-    </div>
-  </div>
-</div>
-
+<!-- Arriba del todo y pegada: la marca y los tres botones de la app. Los
+     botones son de la app entera -guardar, sobre la guía, apariencia- y su
+     sitio es la esquina, no al lado del buscador, que es del contenido.
+     Esta barra no cambia nunca de alto: lo que se va al bajar es la portada,
+     que es contenido normal. Encogerle el alto a una barra pegajosa reflota
+     todo lo que cuelga de ella y la página pega un salto. -->
 <header class="cab">
   <div class="cab-int">
     <div class="marca">
       <h1>Flora de las Lomas</h1>
       <span>de Lima</span>
     </div>
-
-    <div class="buscador">
-      <span class="ico-lupa" data-ico="magnifying-glass" aria-hidden="true"></span>
-      <input id="q" type="search" enterkeyhint="search" autocomplete="off"
-             placeholder="Buscar por nombre, familia, loma…"
-             role="combobox" aria-expanded="false" aria-controls="sug"
-             aria-label="Buscar especies">
-      <button id="limpiar" class="oculto" aria-label="Limpiar búsqueda" data-ico="x"></button>
-      <button class="btn-filtros" id="btn-filtros" aria-haspopup="dialog"
-              aria-label="Filtros">
-        <span data-ico="sliders-horizontal" aria-hidden="true"></span>
-        <b class="cuantos" id="filtros-n" aria-hidden="true"></b>
-      </button>
-      <div class="sug" id="sug" role="listbox" aria-label="Sugerencias" hidden></div>
-    </div>
-
-    <!-- de menos a mas usado, y lo mas usado en el extremo, que es donde
-         llega el pulgar con el telefono en una mano -->
     <div class="acciones">
       <button class="btn-icono" id="btn-guardar" aria-label="Usar sin conexión"
               data-ico="descargar"><i class="pendiente oculto" aria-hidden="true"></i></button>
@@ -71,6 +45,38 @@ window.addEventListener('beforeinstallprompt', function (ev) {
     </div>
   </div>
 </header>
+
+<!-- La portada es solo de pantalla ancha: la marca en grande y aire antes de
+     las fotos, y se va al bajar. -->
+<div class="portada" id="portada" aria-hidden="true">
+  <div class="portada-int">
+    <div class="portada-marca">
+      <b>Flora de las Lomas</b>
+      <span>de Lima</span>
+    </div>
+  </div>
+</div>
+
+<!-- El buscador, en su propia barra pegajosa debajo de la otra. Asi queda
+     centrado en la pagina esté donde esté la pagina: ni la marca de la
+     izquierda ni los botones de la derecha lo empujan, porque no comparten
+     fila con él. -->
+<div class="busca-barra" id="busca-barra">
+  <div class="buscador">
+    <span class="ico-lupa" data-ico="magnifying-glass" aria-hidden="true"></span>
+    <input id="q" type="search" enterkeyhint="search" autocomplete="off"
+           placeholder="Buscar por nombre, familia, loma…"
+           role="combobox" aria-expanded="false" aria-controls="sug"
+           aria-label="Buscar especies">
+    <button id="limpiar" class="oculto" aria-label="Limpiar búsqueda" data-ico="x"></button>
+    <button class="btn-filtros" id="btn-filtros" aria-haspopup="dialog"
+            aria-label="Filtros">
+      <span data-ico="sliders-horizontal" aria-hidden="true"></span>
+      <b class="cuantos" id="filtros-n" aria-hidden="true"></b>
+    </button>
+    <div class="sug" id="sug" role="listbox" aria-label="Sugerencias" hidden></div>
+  </div>
+</div>
 
 <main>
   <div class="barra-hueco" id="barra-hueco">

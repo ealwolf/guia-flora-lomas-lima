@@ -199,7 +199,7 @@ button {
    se ve, y lo que se viene a ver son las flores. */
 .portada { display: none; }
 .portada-int {
-  max-width: 1400px; margin-inline: auto; padding: 44px 14px 26px;
+  max-width: 1400px; margin-inline: auto; padding: 30px 14px 22px;
   text-align: center;
 }
 .portada-marca {
@@ -224,19 +224,31 @@ button {
   /* opaca: translucida se veian las tarjetas por debajo y la barra pegada
      parecia tener un borde donde no lo hay, con el recuento apretado contra el */
   background: var(--fondo);
-  border-bottom: 1px solid var(--borde);
-  padding: 10px 0 0;
+  padding: 7px 0;
 }
+/* La raya va debajo del grupo entero -o sea, debajo del buscador- y no aqui:
+   sin bajar, una raya bajo los tres botones corta la portada por la mitad. */
+.busca-barra {
+  position: sticky; top: var(--alto-cab, 0px); z-index: 39;
+  background: var(--fondo); border-bottom: 1px solid var(--borde);
+  padding: 4px 14px 15px;
+}
+/* Centrado en la PAGINA y no en el hueco que dejan los demas. Antes compartia
+   fila con la marca y los botones: con flex:1 y un tope de 620 px se quedaba
+   pegado a la izquierda y todo el aire sobrante caia a su derecha, asi que
+   nunca estaba centrado. Ahora no comparte fila con nadie. */
+.busca-barra .buscador { max-width: 560px; margin-inline: auto; }
 /* el fondo va de borde a borde, pero el contenido se alinea con la rejilla */
 .anchura { max-width: 1400px; margin-inline: auto; padding-inline: 14px; }
 
 /* movil: marca y acciones arriba, buscador debajo ocupando el ancho */
 .cab-int {
-  display: grid; grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center; column-gap: 10px; row-gap: 10px;
+  display: flex; align-items: center; gap: 10px;
   max-width: 1400px; margin-inline: auto; padding-inline: 14px;
 }
-.acciones { display: flex; align-items: center; gap: 4px; }
+.marca { flex: 0 1 auto; }
+/* en el extremo de la esquina, que es donde se busca lo que es de la app */
+.acciones { display: flex; align-items: center; gap: 4px; margin-left: auto; }
 /* Apariencia es un panel como Filtros, Sobre la guía y Usar sin conexión.
    Era un globo anclado al botón, sin velo detrás: al tocar fuera para
    cerrarlo, el mismo toque llegaba a la tarjeta y abría una especie. */
@@ -256,11 +268,8 @@ button {
 .opcion[aria-checked="true"] .opcion-aa { color: var(--acento-txt); }
 .opcion .visto { margin-left: auto; opacity: 0; }
 .opcion[aria-checked="true"] .visto { opacity: 1; }
-/* colocacion explicita: si no, el buscador (que va antes en el html) empuja
+/* colocacion explicita: si no, la marca y los botones se reparten mal
    los botones a una tercera fila */
-.marca    { grid-area: 1 / 1; }
-.acciones { grid-area: 1 / 2; }
-.buscador { grid-area: 2 / 1 / 3 / 3; }
 .marca { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
 .marca h1 {
   font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
@@ -523,7 +532,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    documento pega un salto al cambiar de modo */
 .barra-hueco { overflow-anchor: none; display: flow-root; }
 .barra-filtros.compacta {
-  position: fixed; top: var(--alto-cab, 0px); left: 0; right: 0; z-index: 30;
+  position: fixed; top: var(--alto-fijo, 0px); left: 0; right: 0; z-index: 30;
   background: var(--fondo); border-bottom: 1px solid var(--borde);
 }
 /* apretada, todo en una linea: el recuento y los dos botones al final, para
@@ -1742,11 +1751,6 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 }
 /* tableta y escritorio: todo en una fila y tarjetas mas holgadas */
 @media (min-width: 900px) {
-  .cab { padding-top: 12px; }
-  .cab-int { display: flex; gap: 18px; }
-  .marca { flex: none; }
-  .buscador { flex: 1; max-width: 620px; }
-  .acciones { margin-left: auto; }
   .rejilla { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
   main { padding-inline: 14px; }
 }
@@ -1755,15 +1759,11 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 }
 /* horizontal en móvil: cabecera compacta, más columnas */
 @media (max-height: 520px) and (orientation: landscape) {
-  .cab { padding-top: 6px; }
-  /* con 375px de alto, cada fila de cabecera cuesta: todo en una */
-  .cab-int { display: flex; gap: 12px; }
-  .marca { flex: none; }
-  .buscador { flex: 1; max-width: 420px; }
-  .acciones { margin-left: auto; }
+  /* con 375 px de alto cada fila de cabecera cuesta */
+  .cab { padding-block: 4px; }
+  .busca-barra { padding-block: 3px 8px; }
   .marca span { display: none; }
   #q { padding-block: 8px; }
-  .chips { padding: 7px 0; }
   .panel { max-height: 94vh; }
   .encabezado { padding-block: 10px 8px; }
   .encabezado h2 { font-size: var(--t-4); }
@@ -1835,12 +1835,23 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   /* El buscador baja al borde de abajo y se queda. Es lo que mas se toca y
      es donde cae el pulgar con el telefono en una mano; ademas, arriba se iba
      con la cabecera justo cuando hacia falta. */
+  /* esta barra no va en una mesa: se toca de pie, en la loma, a veces con
+     las manos frias. 56 px de alto y los dos botones de dentro a 42: por
+     encima de los 48 que pide Material y de los 44 de Apple, y sin pasarse
+     a un pulsador de 64 que se comeria la ultima fila de fotos. */
+  .busca-barra { position: static; padding: 0; border: 0; }
   .buscador {
     position: fixed; inset: auto 0 0 0; z-index: 60;
     margin: 0 10px calc(10px + env(safe-area-inset-bottom));
+    min-height: 56px; padding: 0 7px 0 40px; border-radius: 15px;
     background: var(--superficie);
     box-shadow: 0 6px 24px rgb(0 0 0 / .16), 0 1px 3px rgb(0 0 0 / .1);
   }
+  .buscador .ico-lupa { left: 14px; }
+  #q { padding-block: 15px; }
+  #limpiar { width: 42px; height: 42px; border-radius: 11px; }
+  .btn-filtros { height: 42px; padding: 0 12px; border-radius: 11px; }
+  .btn-filtros .ico { width: 21px; height: 21px; }
   /* las sugerencias salen hacia arriba, que es donde hay sitio */
   .sug { top: auto; bottom: calc(100% + 6px); }
 
@@ -1851,6 +1862,6 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 
   /* sitio para la barra de abajo: ni la ultima fila de fotos ni el aviso que
      se va solo pueden quedar debajo de ella */
-  main { padding-bottom: calc(82px + env(safe-area-inset-bottom)); }
-  .tostada { bottom: calc(80px + env(safe-area-inset-bottom)); }
+  main { padding-bottom: calc(94px + env(safe-area-inset-bottom)); }
+  .tostada { bottom: calc(92px + env(safe-area-inset-bottom)); }
 }
