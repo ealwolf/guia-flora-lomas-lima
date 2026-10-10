@@ -334,16 +334,23 @@ button {
 
 /* Las dos formas de acortar la lista -lo que se escribe y lo que se marca-
    juntas en el mismo sitio, que es donde se las busca. */
+/* Con su caja tambien sin filtros puestos. Suelto, dentro de un campo de
+   texto, un icono a secas no se lee como algo que se pulsa: parecia la
+   decoracion del otro extremo, enfrente de la lupa. El relleno y el filete lo
+   despegan del campo y dicen «esto es un boton» antes de tocarlo. */
 .btn-filtros {
   position: relative; flex: none;
   display: inline-flex; align-items: center; gap: 5px;
   height: 32px; padding: 0 9px; border-radius: 9px;
-  color: var(--tenue); border: 1px solid transparent;
+  color: var(--texto); background: var(--superficie-2);
+  border: 1px solid var(--borde-control);
   font-size: var(--t-1); font-weight: 700;
 }
 .btn-filtros:hover, .btn-filtros:focus-visible {
-  background: var(--superficie-2); color: var(--texto);
+  border-color: var(--acento); color: var(--acento-txt);
 }
+.btn-filtros .ico { color: var(--tenue); }
+.btn-filtros:hover .ico, .btn-filtros.puesto .ico { color: inherit; }
 .btn-filtros .ico { width: 19px; height: 19px; flex: none; }
 .btn-filtros.puesto {
   background: var(--acento); border-color: var(--acento); color: var(--sobre-acento);
@@ -762,6 +769,15 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    caso. Es la de Conservación, a 14 px en vez de 20. */
 .hab-fila.franja .hab span {
   display: inline-flex; align-items: center; gap: 5px; text-align: left;
+}
+/* Los cuatro nombres, alineados a la izquierda y no centrados. Centrados,
+   cada casilla caia a una distancia distinta del canto de su tramo -medido a
+   520 px: 11, 7, 7 y 0 px- porque los nombres miden distinto, y la fila de
+   casillas salia torcida. Alineados, las cuatro caen en la misma vertical
+   dentro de su tramo, que es lo que hace que se lean como una lista. */
+.hab-fila.franja .hab > span {
+  width: 100%; display: flex; align-items: center; gap: 6px;
+  padding: 0 7px; text-align: left;
 }
 .hab-fila.franja .caja {
   width: 14px; height: 14px; flex: none; border-radius: 4.5px;
@@ -1299,12 +1315,26 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   font-size: 11px; font-weight: 700; letter-spacing: .01em;
   white-space: nowrap; overflow: hidden;
 }
-/* La marca de elegido va DENTRO y del color de la tinta: un borde verde por
-   fuera se pierde encima de ocho colores distintos, y encima competiria con
-   la propia muestra, que es lo que hay que mirar. */
-.espectro .tic { width: 15px; height: 15px; opacity: 0; flex: none; }
-.espectro .franja[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--tinta); }
-.espectro .franja[aria-pressed="true"] .tic { opacity: 1; }
+/* La marca de elegido iba del color de la tinta de cada muestra, y la tinta
+   cambia con la muestra: en el rojo sale blanca y en las otras siete casi
+   negra, asi que el rojo elegido no se parecia a ningun otro elegido.
+
+   Que el NOMBRE siga a su muestra esta bien -eso es legibilidad, y cada
+   muestra pide una tinta-. Pero «esto esta marcado» no es legibilidad, es un
+   estado, y un estado tiene que verse igual en los ocho. Dos aros, el de
+   dentro del color del papel y el de fuera del color del texto, se leen
+   encima de cualquier color; y la paloma va en una pastilla de esos mismos
+   dos, que no depende de lo que tenga debajo. */
+.espectro .tic {
+  width: 17px; height: 17px; padding: 3px; box-sizing: border-box;
+  border-radius: 999px; opacity: 0; flex: none;
+}
+.espectro .franja[aria-pressed="true"] {
+  box-shadow: inset 0 0 0 2px var(--fondo), inset 0 0 0 4px var(--texto);
+}
+.espectro .franja[aria-pressed="true"] .tic {
+  opacity: 1; background: var(--texto); color: var(--fondo);
+}
 .espectro .franja:hover { filter: brightness(1.06); }
 /* sin nada que enseñar con lo que ya hay puesto */
 .espectro .franja.vacio { filter: grayscale(.75) opacity(.45); }
@@ -1840,14 +1870,20 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
      encima de los 48 que pide Material y de los 44 de Apple, y sin pasarse
      a un pulsador de 64 que se comeria la ultima fila de fotos. */
   .busca-barra { position: static; padding: 0; border: 0; }
-  .buscador {
-    position: fixed; inset: auto 0 0 0; z-index: 60;
-    margin: 0 10px calc(10px + env(safe-area-inset-bottom));
-    min-height: 56px; padding: 0 7px 0 40px; border-radius: 15px;
+  /* Con el mismo peso que «.busca-barra .buscador», que es quien lo centra
+     en la pantalla ancha: con «.buscador» a secas pesaba menos y el
+     margin-inline:auto de aquella ganaba aunque esta regla vaya despues, asi
+     que la barra salia pegada a los dos cantos. */
+  .busca-barra .buscador {
+    position: fixed; inset: auto 0 0 0; z-index: 60; max-width: none;
+    /* 14 a los lados, el mismo margen que la rejilla de fotos: con 10 la
+       barra se salia del cuerpo de la pagina y parecia pegada al canto */
+    margin: 0 14px calc(12px + env(safe-area-inset-bottom));
+    min-height: 56px; padding: 0 8px 0 42px; border-radius: 15px;
     background: var(--superficie);
     box-shadow: 0 6px 24px rgb(0 0 0 / .16), 0 1px 3px rgb(0 0 0 / .1);
   }
-  .buscador .ico-lupa { left: 14px; }
+  .buscador .ico-lupa { left: 15px; }
   #q { padding-block: 15px; }
   #limpiar { width: 42px; height: 42px; border-radius: 11px; }
   .btn-filtros { height: 42px; padding: 0 12px; border-radius: 11px; }
@@ -1856,7 +1892,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   .sug { top: auto; bottom: calc(100% + 6px); }
 
   /* y con el teclado fuera, el buscador se va arriba */
-  .buscando .buscador { inset: 0 0 auto 0; margin: 10px; }
+  .buscando .buscador { inset: 0 0 auto 0; margin: 12px 14px; }
   .buscando .sug { top: calc(100% + 6px); bottom: auto; }
   .buscando .velo-busca { opacity: 1; pointer-events: auto; }
 

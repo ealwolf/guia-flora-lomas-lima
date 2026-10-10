@@ -774,6 +774,19 @@ function modoBusqueda(si) {
   document.documentElement.classList.toggle('buscando', si);
 }
 
+/* El rotulo del buscador. Ya no dice «loma»: la loma salio de los filtros y
+   tiene ventana propia con su mapa, asi que invitar a escribirla aqui manda
+   al sitio equivocado -escribirla sigue funcionando, pero es un atajo, no el
+   camino-. Dice «color», que es lo primero que se mira en una flor y lo que
+   mas se usa en el campo. Y en el movil caben dos ejemplos, no tres. */
+function pintarRotuloBusca() {
+  $('#q').placeholder = ESTRECHO.matches
+      ? 'Buscar por color, nombre…'
+      : 'Buscar por nombre, color, familia…';
+}
+pintarRotuloBusca();
+ESTRECHO.addEventListener('change', pintarRotuloBusca);
+
 $('#q').addEventListener('focus', function () { modoBusqueda(true); });
 /* Al salir el foco del buscador ENTERO, no del campo: si no, tocar una
    sugerencia cerraba el modo antes de que llegara el toque. */
