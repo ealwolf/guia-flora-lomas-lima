@@ -195,17 +195,26 @@ G.especies.forEach(function (e) { e._cara = caraDe(e); });
 /* El criterio y el sentido van aparte: antes «de menos lomas a más» metia las
    dos cosas en una opcion, y para verlo al reves hacia falta otra opcion mas.
    Asi son cinco criterios y un interruptor, y no diez opciones. */
+/* Cada criterio lleva dos nombres. El largo es el del panel, donde hay sitio
+   y donde se elige. El corto es el del botón, que comparte fila con el
+   recuento y con «Filtros»: medidos, «Presencia en lomas» pide 112 px y
+   «Nombre científico» 106, y en un móvil de 360 la fila entera sólo tiene 4
+   de sobra. El icono de al lado ya dice «ordenar», así que en el botón basta
+   con por qué. */
 var ORDENES = [
-  { id: 'guia',       txt: 'Guía',              ico: 'book-open', dir: ['1 → 134', '134 → 1'] },
-  { id: 'comun',      txt: 'Nombre común',      ico: 'text-aa',   dir: ['A → Z', 'Z → A'] },
-  { id: 'cientifico', txt: 'Nombre científico', ico: 'flask',     dir: ['A → Z', 'Z → A'] },
-  { id: 'altitud',    txt: 'Altitud',           ico: 'mountains',
+  { id: 'guia',       txt: 'Guía',              corto: 'Guía',
+    ico: 'book-open', dir: ['1 → 134', '134 → 1'] },
+  { id: 'comun',      txt: 'Nombre común',      corto: 'Común',
+    ico: 'text-aa',   dir: ['A → Z', 'Z → A'] },
+  { id: 'cientifico', txt: 'Nombre científico', corto: 'Científico',
+    ico: 'flask',     dir: ['A → Z', 'Z → A'] },
+  { id: 'altitud',    txt: 'Altitud',           corto: 'Altitud', ico: 'mountains',
     dir: ['Baja → Alta', 'Alta → Baja'] },
   /* Lo que se ordena es en cuantas de las 22 lomas se registro la especie:
      arriba, con «Pocas → Muchas», salen las que solo estan en una o dos.
      «N.º de lomas» nombraba la cuenta; «Presencia en lomas» nombra lo que
      esa cuenta significa. */
-  { id: 'lomas',      txt: 'Presencia en lomas', ico: 'map-pin',
+  { id: 'lomas',      txt: 'Presencia en lomas', corto: 'Lomas', ico: 'map-pin',
     dir: ['Pocas → Muchas', 'Muchas → Pocas'] }
 ];
 function ordenActual() {
@@ -291,6 +300,7 @@ function activos() {
   return corridas(F.color, ORDEN_COLORES) +
          (F.color.indexOf(SIN_FLOR) >= 0 ? 1 : 0) +
          corridas(F.mes, ORDEN_MESES) +
+         F.loma.length +
          F.grupo.length + F.habitat.length + F.familia.length +
          F.conserv.length + F.cara.length +
          tramosAlt().length;
@@ -445,17 +455,6 @@ function renderYa() {
   $('#btn-aplicar').textContent = r.length === tot
       ? 'Ver las ' + tot
       : 'Ver ' + r.length + (r.length === 1 ? ' resultado' : ' resultados');
-  /* El de la ventana de lomas cuenta LOMAS, no especies. Decía «Ver las 134»
-     y en una ventana titulada «Lomas» eso se lee como 134 lomas, que son 22;
-     luego pasó a «Ver 31 de Caringa», ya cierto, pero seguía contando
-     especies en la ventana donde se eligen sitios. Lo que se está haciendo
-     aquí es decidir de cuántas lomas mirar, así que eso es lo que dice. De
-     cuántas especies salen ya se encarga la fila del recuento, que es lo
-     primero que se ve al cerrar. */
-  var nl = F.loma.length, tl = G.lomas.length;
-  $('#lomas-aplicar').textContent = nl
-      ? nl + ' de ' + tl + ' lomas'
-      : 'Todas las ' + tl + ' lomas';
   pintarHerramientas();
   sincronizarChips();
   mirarBarra();
@@ -566,8 +565,7 @@ $('#tostada').addEventListener('pointermove', function (ev) {
    puede cerrar a mano o de un manotazo. */
 var ESPERA_DESHACER = 6000;
 var borrado = null, huellaBorrado = null;
-// sin 'loma': lo que no se borra tampoco hay que devolverlo
-var GUARDABLES = ['q', 'color', 'grupo', 'mes', 'habitat', 'familia',
+var GUARDABLES = ['q', 'color', 'grupo', 'mes', 'loma', 'habitat', 'familia',
                   'conserv', 'cara', 'alt'];
 
 function huellaFiltros() {
@@ -641,56 +639,9 @@ function pintarHerramientas() {
   $('#filtros-n').textContent = n ? n : '';
   b.setAttribute('aria-label',
       n ? 'Filtros, ' + n + (n === 1 ? ' puesto' : ' puestos') : 'Filtros');
-  pintarBotonLomas();
 }
 
-/* «Lúc. +2». El nombre entero no cabe en la fila del recuento de un móvil
-   estrecho -medido: «Pachacámac» se come 130 de los 347 px que hay-, pero
-   esconderlo tras un chinche a secas devuelve el problema que trajo todo
-   esto: el sitio es la razón de que la lista mida lo que mide, y tiene que
-   verse. Así que se recorta el nombre y la cuenta de las demás va aparte,
-   que es la que de verdad cambia el total. Los dos textos van en el html y
-   elige el ancho de la pantalla, no un listener de resize. */
-/* El recorte más corto que no se confunda con otro. «Man.» serviría igual
-   para Manchay que para Mangomarca, así que a esa pareja le tocan cuatro
-   letras y a las demás tres; «Mala» es tan corto que se queda entero y es
-   «Malanche» el que cede. Se calcula una vez con los 22 nombres del libro.
 
-   Los nombres de hasta seis letras no se tocan: ya caben, y un «Pact.» en
-   lugar de «Pacta» no ahorra nada y encima da a entender que falta algo. */
-var CORTO_DESDE = 7;
-var cortoDe = (function () {
-  var m = {}, ids = [], nom = {};
-  (G.lomas || []).forEach(function (l) { ids.push(l.id); nom[l.id] = l.nombre; });
-  ids.forEach(function (id) {
-    var n = nom[id];
-    if (n.length < CORTO_DESDE) { m[id] = n; return; }
-    for (var k = 3; k < n.length; k++) {
-      var pre = n.slice(0, k);
-      var choca = ids.some(function (o) {
-        return o !== id && nom[o].slice(0, k) === pre;
-      });
-      if (!choca) { m[id] = pre + '.'; return; }
-    }
-    m[id] = n;
-  });
-  return m;
-})();
-
-function pintarBotonLomas() {
-  var n = F.loma.length;
-  var b = $('#btn-lomas');
-  var nom = n ? (nombreLoma[F.loma[0]] || F.loma[0]) : '';
-  $('#btn-lomas-txt').innerHTML = !n
-      ? 'Lomas'
-      : '<i class="largo">' + esc(nom) + '</i>' +
-        '<i class="corto">' + esc(cortoDe[F.loma[0]] || nom) + '</i>' +
-        (n > 1 ? '<b class="mas">+' + (n - 1) + '</b>' : '');
-  b.classList.toggle('puesto', n > 0);
-  b.setAttribute('aria-label', !n ? 'Lomas'
-      : n === 1 ? 'Lomas: ' + nom
-      : 'Lomas: ' + nom + ' y ' + (n - 1) + ' más');
-}
 
 /* «1 → 134» llevaba la flecha en texto, y la del tipo de letra se apoya en la
    linea base: al lado de las cifras se veia caida. Va la del juego de iconos,
@@ -733,7 +684,7 @@ function pintarBotonOrden() {
      entero a la vista: criterio y sentido. */
   b.querySelector('.ico').outerHTML =
       svgIcono(F.dir === 'desc' ? 'sort-descending' : 'sort-ascending');
-  $('#btn-orden-txt').textContent = o.txt;
+  $('#btn-orden-txt').textContent = o.corto || o.txt;
   b.setAttribute('aria-label', 'Ordenar. Ahora: ' + o.txt + ', ' + o.dir[i]);
 }
 
@@ -760,27 +711,16 @@ $('#orden-dir').addEventListener('click', function (ev) {
   if (b) elegirOrden(null, b.dataset.dir);
 });
 
-/* Modo de busqueda, solo en el movil. El buscador vive abajo, al alcance del
-   pulgar, pero en cuanto sale el teclado ese borde deja de existir: un
-   position:fixed anclado abajo se queda DETRAS del teclado en iOS. Asi que al
-   enfocarlo sube arriba, que es donde queda sitio, y las sugerencias caen
-   hacia abajo en vez de hacia arriba.
-
-   El salto es seco a proposito. Animar un fixed de un borde al otro pide
-   atarlo a una altura de ventana, y la altura de ventana en un movil es justo
-   lo que no se puede dar por sabido mientras entra y sale el teclado. */
+/* El corte de ancho, que lo usa el rótulo del buscador. El modo de búsqueda
+   que había aquí -el buscador saltaba de abajo arriba al enfocarlo- se fue
+   con la barra de abajo: ahora ya está arriba y no hay nada que mover. */
 var ESTRECHO = window.matchMedia('(max-width: 600px)');
 
-function modoBusqueda(si) {
-  si = si && ESTRECHO.matches;
-  document.documentElement.classList.toggle('buscando', si);
-}
-
-/* El rotulo del buscador. Ya no dice «loma»: la loma salio de los filtros y
-   tiene ventana propia con su mapa, asi que invitar a escribirla aqui manda
-   al sitio equivocado -escribirla sigue funcionando, pero es un atajo, no el
-   camino-. Dice «color», que es lo primero que se mira en una flor y lo que
-   mas se usa en el campo. Y en el movil caben dos ejemplos, no tres. */
+/* El rótulo del buscador. No dice «loma»: la loma se elige en el panel, con
+   su mapa, así que invitar a escribirla aquí manda al sitio equivocado
+   -escribirla sigue funcionando, pero es un atajo, no el camino-. Dice
+   «color», que es lo primero que se mira en una flor. Y en el móvil caben
+   dos ejemplos, no tres. */
 function pintarRotuloBusca() {
   $('#q').placeholder = ESTRECHO.matches
       ? 'Buscar por color, nombre…'
@@ -788,20 +728,6 @@ function pintarRotuloBusca() {
 }
 pintarRotuloBusca();
 ESTRECHO.addEventListener('change', pintarRotuloBusca);
-
-$('#q').addEventListener('focus', function () { modoBusqueda(true); });
-/* Al salir el foco del buscador ENTERO, no del campo: si no, tocar una
-   sugerencia cerraba el modo antes de que llegara el toque. */
-$('.buscador').addEventListener('focusout', function (ev) {
-  if (!ev.relatedTarget || !$('.buscador').contains(ev.relatedTarget)) {
-    modoBusqueda(false);
-  }
-});
-$('#velo-busca').addEventListener('click', function () {
-  $('#q').blur();
-  modoBusqueda(false);
-});
-ESTRECHO.addEventListener('change', function () { modoBusqueda(false); });
 
 function quitarBusqueda(callado) {
   F.q = ''; $('#q').value = ''; $('#limpiar').classList.add('oculto');
@@ -826,9 +752,14 @@ var ultimoN = 0;
    ve lo que hace cada cosa. Sin nada puesto no hay quebrado que enseñar. */
 function pintarCuenta() {
   var tot = totalSitio(), n = ultimoN;
+  /* Con quebrado, la palabra «especies» sobra en el móvil: debajo hay una
+     rejilla llena de especies y nadie duda de qué se cuenta. Y hace falta el
+     sitio, porque esta fila lleva ahora dos botones con rótulo. Medido a 360
+     en el peor caso -«Científico», «71/115» y cinco filtros-: con la palabra
+     se pasa 4 px y cae a dos líneas; sin ella sobran 46. */
   $('#cuenta').textContent = n === tot
       ? tot + ' especies'
-      : n + '/' + tot + (compacto ? '' : ' especies');
+      : n + '/' + tot + ((compacto || ESTRECHO.matches) ? '' : ' especies');
 }
 
 /* La guía, en el portal del Estado donde está publicada. Aquí arriba y no
@@ -2240,10 +2171,14 @@ function pintarLocator() {
     if (p) p.classList.add('activa');
   });
   $('#loc-mapa').innerHTML = c.innerHTML;
+  /* El rótulo de arriba no cambia nunca: dice lo que hace el botón. Llegó a
+     decir el nombre de la loma elegida y entonces dejaba de parecer un botón
+     -parecía la etiqueta de lo puesto- y nadie lo tocaba para ver el mapa.
+     Lo elegido va debajo, en pequeño. */
   var n = F.loma.length;
-  $('.loc-txt').textContent = n === 0 ? 'Ver en el mapa'
+  $('#loc-sub').textContent = !n ? 'Ninguna elegida'
       : n === 1 ? (nombreLoma[F.loma[0]] || F.loma[0])
-      : n + ' lomas elegidas';
+      : n + ' elegidas';
 }
 
 /* ---------- quitar un solo campo ---------- */
@@ -3007,26 +2942,12 @@ function cerrarPanelAbierto() {
   if (panelActual) abrirPanel(false, panelActual);
 }
 $('#btn-filtros').addEventListener('click', function () { abrirPanel(true); });
-$('#btn-lomas').addEventListener('click', function () {
-  abrirPanel(true, '#panel-lomas');
-});
-$('#cerrar-lomas').addEventListener('click', function () {
-  abrirPanel(false, '#panel-lomas');
-});
-$('#lomas-aplicar').addEventListener('click', function () {
-  abrirPanel(false, '#panel-lomas');
-});
-$('#lomas-quitar').addEventListener('click', function () { F.loma = []; render(); });
 $('#cerrar-panel').addEventListener('click', function () { abrirPanel(false); });
 $('#velo').addEventListener('click', cerrarPanelAbierto);
 $('#btn-aplicar').addEventListener('click', function () { abrirPanel(false); });
 
-/* La loma y el orden no se van con esto: se quitan desde su propia ventana.
-   Antes «Limpiar» borraba de golpe la loma en la que uno está parado, que es
-   justo lo que no hay que perder en el campo, y se ofrecía deshacerlo. Ya no
-   hace falta deshacer nada que no se haya roto. */
 function limpiarTodo() {
-  F.color = []; F.grupo = []; F.mes = []; F.habitat = []; F.familia = [];
+  F.color = []; F.grupo = []; F.mes = []; F.loma = []; F.habitat = []; F.familia = [];
   F.conserv = []; F.cara = [];
   quitarAltitud();   // repinta
 }
@@ -3442,9 +3363,6 @@ document.addEventListener('keydown', function (ev) {
   if (ev.key === 'Escape') {
     if (!$('#sug').hidden) { cerrarSug(); return; }
     if ($('#visor').classList.contains('abierto')) { $('#visor').classList.remove('abierto'); return; }
-    if (document.documentElement.classList.contains('buscando')) {
-      $('#q').blur(); modoBusqueda(false); return;
-    }
     if (panelActual) { cerrarPanelAbierto(); return; }
     if ($('#ficha').classList.contains('abierta')) history.back();
   }

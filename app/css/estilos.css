@@ -282,12 +282,6 @@ button {
 .marca span { color: var(--tenue); font-size: 0.8125rem; white-space: nowrap; }
 /* con cuatro botones al lado, en un movil estrecho el titulo se cortaba */
 @media (max-width: 430px) { .marca span { display: none; } }
-
-.velo-busca {
-  position: fixed; inset: 0; z-index: 55;
-  background: color-mix(in srgb, var(--fondo) 72%, transparent);
-  opacity: 0; pointer-events: none; transition: opacity .15s;
-}
 .btn-icono {
   width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
   color: var(--tenue); flex: none;
@@ -334,35 +328,7 @@ button {
 
 /* Las dos formas de acortar la lista -lo que se escribe y lo que se marca-
    juntas en el mismo sitio, que es donde se las busca. */
-/* Con su caja tambien sin filtros puestos. Suelto, dentro de un campo de
-   texto, un icono a secas no se lee como algo que se pulsa: parecia la
-   decoracion del otro extremo, enfrente de la lupa. El relleno y el filete lo
-   despegan del campo y dicen «esto es un boton» antes de tocarlo. */
-.btn-filtros {
-  position: relative; flex: none;
-  display: inline-flex; align-items: center; gap: 5px;
-  height: 32px; padding: 0 9px; border-radius: 9px;
-  color: var(--texto); background: var(--superficie-2);
-  border: 1px solid var(--borde-control);
-  font-size: var(--t-1); font-weight: 700;
-}
-.btn-filtros:hover, .btn-filtros:focus-visible {
-  border-color: var(--acento); color: var(--acento-txt);
-}
-.btn-filtros .ico { color: var(--tenue); }
-.btn-filtros:hover .ico, .btn-filtros.puesto .ico { color: inherit; }
-.btn-filtros .ico { width: 19px; height: 19px; flex: none; }
-.btn-filtros.puesto {
-  background: var(--acento); border-color: var(--acento); color: var(--sobre-acento);
-}
-.btn-filtros.puesto:hover { color: var(--sobre-acento); }
-/* La cifra al lado del icono, no una pegatina en la esquina. Una pegatina de
-   diez píxeles dentro de un campo de texto se sale por el canto y no se lee;
-   el número entero, en el mismo renglón, se ve de lejos. Y hace falta que se
-   vea: el color solo falla justo donde esta app se usa -a pleno sol- y para
-   quien no distingue el verde. */
-.btn-filtros .cuantos { font-variant-numeric: tabular-nums; }
-.btn-filtros .cuantos:empty { display: none; }
+
 
 #q {
   flex: 1; min-width: 0; padding: 11px 4px;
@@ -502,41 +468,20 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .btn-barra .ico { width: 17px; height: 17px; color: var(--tenue); flex: none; }
 .btn-barra .txt { white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
 .btn-barra .txt i { font-style: normal; }
-@media (max-width: 600px) {
-  /* El criterio de orden deja de leerse: ocupaba 147 px de los 292 que hay
-     en un móvil de 320, y en las pruebas de campo nadie llegó a usarlo. El
-     sitio sí se lee, que es lo que explica el total. */
-  #btn-orden .txt { display: none; }
-  #btn-orden { padding: 0 11px; }
-}
 
-/* El nombre de la loma, entero. Estuvo recortado en todo el móvil por un
-   cálculo hecho con la pantalla más estrecha que existe, y resulta que sobra
-   sitio en todas las demás. Medido el peor caso de verdad -«Mangomarca», que
-   es el nombre más ancho con 78 px, más «+2», más un filtro puesto para que
-   el recuento diga «33/81 especies»-: a 360 sobran 26 px, a 375 sobran 41, a
-   390 sobran 56 y a 412 sobran 78. Sólo a 320 se pasa, y por 14.
-
-   Así que el recorte baja a 359 y deja de verse en los teléfonos que la gente
-   lleva. Abajo sigue, porque un nombre entero a 320 parte la fila en dos. Y
-   sigue siendo el prefijo más corto que no se confunde con otro, que es lo
-   que hace que «Manc.» y «Mang.» no sean la misma cosa. */
-.btn-barra .txt .corto { display: none; }
-@media (max-width: 359px) {
-  .btn-barra .txt .largo { display: none; }
-  .btn-barra .txt .corto { display: inline; }
-}
-/* «+2» no es parte del nombre: es cuántas lomas más hay, y es lo que mueve
-   el total. Por eso va con su propio fondo y no pegado a la palabra. */
-.btn-barra .txt .mas {
-  font-size: 11.5px; font-weight: 700; line-height: 1;
-  padding: 3px 5px; border-radius: 6px;
-  background: var(--acento-sua); color: var(--acento-txt);
-}
 .btn-barra.puesto {
   border-color: var(--acento); background: var(--acento-sua); color: var(--acento-txt);
 }
 .btn-barra.puesto .ico { color: var(--acento-txt); }
+/* Cuantos filtros hay puestos, en cifra y no solo en color: a pleno sol, y
+   para quien no distingue el verde, el tono no dice nada y el numero si. */
+.btn-barra .cuantos {
+  min-width: 19px; padding: 2px 5px; border-radius: 999px;
+  font-size: 11.5px; font-weight: 700; line-height: 1.25; text-align: center;
+  font-variant-numeric: tabular-nums;
+  background: var(--acento); color: var(--sobre-acento);
+}
+.btn-barra .cuantos:empty { display: none; }
 /* Al bajar, el recuento y los filtros puestos se quedan pegados bajo la
    cabecera y se aprietan en una sola fila que se desliza a los lados. Si no,
    desaparecen justo cuando hace falta saber por que se ve lo que se ve, y
@@ -563,11 +508,9 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .barra-filtros.compacta .herramientas { padding: 0; order: 3; flex: none; margin-left: auto; }
 .barra-filtros.compacta .btn-barra { padding: 0 11px; }
 /* Al bajar se escondian los dos rotulos para dejarle sitio a la fila de
-   fichas que se deslizaba por el medio. Esa fila ya no existe, y el nombre de
-   la loma es justo lo que no puede desaparecer: es la razon de que la lista
-   mida lo que mide. Se queda el suyo; el criterio de orden sigue sin rotulo,
-   que nadie lo uso en el campo. */
-.barra-filtros.compacta #btn-orden .txt { display: none; }
+   fichas que se deslizaba por el medio. Esa fila ya no existe, asi que no hay
+   nada a lo que dejarle sitio y los rotulos se quedan: apretada y sin
+   apretar la barra dice lo mismo, que es lo que se espera de ella. */
 .barra-filtros.compacta .resumen {
   margin: 0; flex: none; font-variant-numeric: tabular-nums; font-weight: 600;
   color: var(--texto);
@@ -934,7 +877,11 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .loc-mapa { flex: none; width: 46px; line-height: 0; }
 .loc-mapa svg { width: 100%; height: auto; display: block; }
 .loc-mapa .activa { fill: var(--acento); }
-.loc-txt { flex: 1; min-width: 0; }
+.loc-txt {
+  flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px;
+}
+.loc-txt b { font-weight: 600; }
+.loc-sub { font-size: var(--t-0); font-weight: 500; color: var(--tenue); }
 .locator .loc-ir .ico { width: 18px; height: 18px; color: var(--tenue); }
 
 /* A lo ancho hay margen de sobra: el mapita se pone al lado y se hace mas
@@ -1892,58 +1839,15 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   .tostada { padding-bottom: 11px; }
 }
 
-/* ================= el movil: un solo corte, y lo decide el pulgar =========
-   600 px y no «tableta o telefono». La barra de abajo existe por una razon
-   concreta -que el pulgar llegue con una mano- y esa razon se evapora en una
-   tableta de diez pulgadas, que ademas mide 744 px o mas de ancho y no tiene
-   ninguno de los apreturas que estamos resolviendo. Un corte de ancho da lo
-   correcto en los dos casos, y de paso en un telefono tumbado, donde tampoco
-   hay sitio vertical para una portada. Ni una comprobacion de aparato ni una
-   escucha de la orientacion. */
+/* ================= el movil: un solo corte de ancho =================
+   600 px. Aqui vivia la barra de busqueda pegada abajo. Se fue: en el campo
+   se vio que separada del resto no se leia como parte de los mandos, asi que
+   el buscador vuelve arriba y todo lo que filtra se junta detras de un solo
+   boton. Lo que queda del corte es lo poco que de verdad depende del ancho. */
 @media (max-width: 600px) {
   /* la cabecera se va al bajar: sus tres botones son de una vez -guardar,
      sobre la guia, apariencia- y el sitio de arriba vale mas para las fotos.
-     Lo que sigue pegado es la fila del recuento, que es la que hace falta
-     mientras se mira la lista. */
+     Lo que sigue pegado es el buscador y la fila del recuento. */
   .cab { position: static; }
-  .barra-filtros.compacta { top: 0; }
-
-  /* El buscador baja al borde de abajo y se queda. Es lo que mas se toca y
-     es donde cae el pulgar con el telefono en una mano; ademas, arriba se iba
-     con la cabecera justo cuando hacia falta. */
-  /* esta barra no va en una mesa: se toca de pie, en la loma, a veces con
-     las manos frias. 56 px de alto y los dos botones de dentro a 42: por
-     encima de los 48 que pide Material y de los 44 de Apple, y sin pasarse
-     a un pulsador de 64 que se comeria la ultima fila de fotos. */
-  .busca-barra { position: static; padding: 0; border: 0; }
-  /* Con el mismo peso que «.busca-barra .buscador», que es quien lo centra
-     en la pantalla ancha: con «.buscador» a secas pesaba menos y el
-     margin-inline:auto de aquella ganaba aunque esta regla vaya despues, asi
-     que la barra salia pegada a los dos cantos. */
-  .busca-barra .buscador {
-    position: fixed; inset: auto 0 0 0; z-index: 60; max-width: none;
-    /* 14 a los lados, el mismo margen que la rejilla de fotos: con 10 la
-       barra se salia del cuerpo de la pagina y parecia pegada al canto */
-    margin: 0 14px calc(12px + env(safe-area-inset-bottom));
-    min-height: 56px; padding: 0 8px 0 42px; border-radius: 15px;
-    background: var(--superficie);
-    box-shadow: 0 6px 24px rgb(0 0 0 / .16), 0 1px 3px rgb(0 0 0 / .1);
-  }
-  .buscador .ico-lupa { left: 15px; }
-  #q { padding-block: 15px; }
-  #limpiar { width: 42px; height: 42px; border-radius: 11px; }
-  .btn-filtros { height: 42px; padding: 0 12px; border-radius: 11px; }
-  .btn-filtros .ico { width: 21px; height: 21px; }
-  /* las sugerencias salen hacia arriba, que es donde hay sitio */
-  .sug { top: auto; bottom: calc(100% + 6px); }
-
-  /* y con el teclado fuera, el buscador se va arriba */
-  .buscando .buscador { inset: 0 0 auto 0; margin: 12px 14px; }
-  .buscando .sug { top: calc(100% + 6px); bottom: auto; }
-  .buscando .velo-busca { opacity: 1; pointer-events: auto; }
-
-  /* sitio para la barra de abajo: ni la ultima fila de fotos ni el aviso que
-     se va solo pueden quedar debajo de ella */
-  main { padding-bottom: calc(94px + env(safe-area-inset-bottom)); }
-  .tostada { bottom: calc(92px + env(safe-area-inset-bottom)); }
+  .busca-barra { padding: 6px 14px 11px; }
 }

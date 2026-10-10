@@ -69,11 +69,6 @@ window.addEventListener('beforeinstallprompt', function (ev) {
            role="combobox" aria-expanded="false" aria-controls="sug"
            aria-label="Buscar especies">
     <button id="limpiar" class="oculto" aria-label="Limpiar búsqueda" data-ico="x"></button>
-    <button class="btn-filtros" id="btn-filtros" aria-haspopup="dialog"
-            aria-label="Filtros">
-      <span data-ico="sliders-horizontal" aria-hidden="true"></span>
-      <b class="cuantos" id="filtros-n" aria-hidden="true"></b>
-    </button>
     <div class="sug" id="sug" role="listbox" aria-label="Sugerencias" hidden></div>
   </div>
 </div>
@@ -83,18 +78,20 @@ window.addEventListener('beforeinstallprompt', function (ev) {
     <div class="barra-filtros" id="barra-filtros">
       <div class="barra-int">
         <div class="resumen"><span id="cuenta">—</span></div>
-        <!-- Ni el orden ni el sitio son filtros: dicen cómo se mira la
-             guía, no qué se busca. Por eso viven en la fila del recuento,
-             que es la que explica lo que se está viendo, y no en el panel
-             de filtros, cuyo «Limpiar» no los alcanza. -->
+        <!-- Dos y no tres, y los dos con su rótulo. Todo lo que filtra
+             está detrás de «Filtros»: en el campo se vio que la gente lo
+             busca ahí y no repartido por la pantalla. El rótulo de Ordenar
+             dice por qué está ordenado, que antes había que abrir el panel
+             para saberlo. -->
         <div class="herramientas">
           <button class="btn-barra" id="btn-orden" aria-haspopup="dialog">
             <span data-ico="arrows-down-up" aria-hidden="true"></span>
             <span class="txt" id="btn-orden-txt">Ordenar</span>
           </button>
-          <button class="btn-barra" id="btn-lomas" aria-haspopup="dialog">
-            <span data-ico="map-pin" aria-hidden="true"></span>
-            <span class="txt" id="btn-lomas-txt">Lomas</span>
+          <button class="btn-barra" id="btn-filtros" aria-haspopup="dialog">
+            <span data-ico="sliders-horizontal" aria-hidden="true"></span>
+            <span class="txt">Filtros</span>
+            <b class="cuantos" id="filtros-n" aria-hidden="true"></b>
           </button>
         </div>
       </div>
@@ -135,9 +132,6 @@ window.addEventListener('beforeinstallprompt', function (ev) {
   <i class="tostada-barra" id="tostada-barra" aria-hidden="true"></i>
 </div>
 
-<!-- velo propio y no el de los paneles: este se va con un toque fuera del
-     buscador y no cierra nada más -->
-<div class="velo-busca" id="velo-busca"></div>
 <div class="velo" id="velo"></div>
 <section class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="panel-tit">
   <div class="panel-cab">
@@ -154,6 +148,24 @@ window.addEventListener('beforeinstallprompt', function (ev) {
       <div id="f-sinflor"></div>
       <p class="pista">Mantén presionado y arrastra para elegir un tramo del
         espectro.</p>
+    </div>
+    <div class="grupo">
+      <h3><span data-ico="map-trifold" aria-hidden="true"></span> Loma
+        <button class="limpia oculto" data-limpia="loma">Quitar</button>
+      </h3>
+      <div class="loma-cuerpo">
+        <button class="locator" id="loma-locator" aria-haspopup="dialog">
+          <span class="loc-mapa" id="loc-mapa" aria-hidden="true"></span>
+          <!-- El rótulo dice siempre lo que hace el botón. Llegó a decir el
+               nombre de la loma elegida, y entonces dejaba de parecer un
+               botón: parecía la etiqueta de lo que había puesto. Lo elegido
+               se dice debajo, en pequeño, que es su sitio. -->
+          <span class="loc-txt"><b>Ver en el mapa</b>
+            <span class="loc-sub" id="loc-sub"></span></span>
+          <span class="loc-ir" data-ico="caret-right" aria-hidden="true"></span>
+        </button>
+        <div class="envoltura" id="f-loma"></div>
+      </div>
     </div>
     <div class="grupo">
       <h3><span data-ico="plant" aria-hidden="true"></span> Grupo
@@ -229,7 +241,7 @@ window.addEventListener('beforeinstallprompt', function (ev) {
 <section class="vista-mapa" id="vista-mapa" role="dialog" aria-modal="true"
          aria-labelledby="vista-mapa-tit">
   <div class="vm-cab">
-    <button class="btn-icono" id="vista-mapa-atras" aria-label="Volver a las lomas"
+    <button class="btn-icono" id="vista-mapa-atras" aria-label="Volver a los filtros"
             data-ico="arrow-left"></button>
     <h2 id="vista-mapa-tit">Lomas</h2>
   </div>
@@ -251,35 +263,6 @@ window.addEventListener('beforeinstallprompt', function (ev) {
       <div class="mapa-etiqueta" id="mapa-etiqueta" aria-hidden="true"></div>
       <div class="mapa-rotulos" id="mapa-rotulos" aria-hidden="true"></div>
     </div>
-  </div>
-</section>
-
-<!-- ---------- las lomas: dónde estoy ----------
-     Ventana propia y no un grupo más del panel de filtros. El sitio no es
-     una cosa de la flor -como el color o la altura- sino una de quien mira,
-     y mezclarlo con los filtros hacía que «Limpiar» se llevara por delante
-     la loma en la que uno está parado. -->
-<section class="panel" id="panel-lomas" role="dialog" aria-modal="true"
-         aria-labelledby="lomas-tit">
-  <div class="panel-cab">
-    <h2 id="lomas-tit">Lomas</h2>
-    <button class="btn-icono" id="cerrar-lomas" aria-label="Cerrar" data-ico="x"></button>
-  </div>
-  <div class="panel-cuerpo">
-    <div class="grupo">
-      <div class="loma-cuerpo">
-        <button class="locator" id="loma-locator" aria-haspopup="dialog">
-          <span class="loc-mapa" id="loc-mapa" aria-hidden="true"></span>
-          <span class="loc-txt">Ver en el mapa</span>
-          <span class="loc-ir" data-ico="caret-right" aria-hidden="true"></span>
-        </button>
-        <div class="envoltura" id="f-loma"></div>
-      </div>
-    </div>
-  </div>
-  <div class="panel-pie">
-    <button class="btn" id="lomas-quitar">Quitar</button>
-    <button class="btn principal" id="lomas-aplicar">Ver resultados</button>
   </div>
 </section>
 
