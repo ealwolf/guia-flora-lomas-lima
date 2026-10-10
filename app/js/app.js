@@ -2581,23 +2581,58 @@ arrastrable('#f-mes', 'mes', ORDEN_MESES, true);
 arrastrable('#f-color', 'color', ORDEN_COLORES, false);
 
 /* ---------- perfil de altitud ---------- */
+/* El mismo cerro que el filtro de altitud y que «Ladera donde crece», no un
+   dibujo aparte. Era una mancha verde plana con una raya encima, y tres
+   dibujos distintos para el mismo cerro: el de aquí, el del filtro -con mar-
+   y el de las caras -con mar y neblina-. Ahora los tres hablan igual.
+
+   Lo que se gana no es sólo parecido. El mar dice dónde está el oeste sin
+   tener que leer la palabra; la neblina entrando por la izquierda dice por
+   qué esa cara reverdece; y la cara seca en otro color dice que la de la
+   cordillera no es lo mismo. Son tres datos que la guía da y que el dibujo
+   plano se callaba.
+
+   La silueta sigue siendo la del libro -la misma que muestrea caraPuntos()-
+   y el tramo de la especie sigue yendo sobre su cara, no como una banda
+   horizontal, que daría a entender que ocupa el cerro entero. */
 function svgPerfil(e) {
   var P = G.perfil, vb = P.viewBox, W = vb[2], H = vb[3];
   var y200 = P.y_200, y1000 = P.y_1000;
   var y = function (a) { return y200 - (a - 200) * (y200 - y1000) / 800; };
   var min = e.altitud[0], max = e.altitud[1];
-  var bandas = P.bandas.map(function (d) { return '<path d="' + d + '"/>'; }).join('');
+  var pts = caraPuntos();
+  var mit = caraPartir(pts, SILLA), est = mit[1];
+
   var rejilla = '', etiquetas = '';
   [200, 400, 600, 800, 1000].forEach(function (a) {
     rejilla += '<line class="rejilla-l" x1="9" y1="' + y(a).toFixed(2) +
                '" x2="' + W + '" y2="' + y(a).toFixed(2) + '"/>';
     etiquetas += '<text x="8" y="' + (y(a) + 1).toFixed(2) + '" text-anchor="end">' + a + '</text>';
   });
-  // El trazo rojo de la guia va sobre la cara occidental, la oriental o ambas.
-  // Una banda horizontal daria a entender que la especie ocupa todo el cerro.
-  var trazo = e.perfil
-      ? '<path class="trazo" d="' + e.perfil + '"/>'
-      : '';
+
+  /* La neblina entra por la izquierda y se deshace al subir; va debajo de la
+     tierra, así que sólo asoma por el cielo de la cara marina. El id no puede
+     ser el del dibujo de las caras: los dos acaban en la misma página. */
+  var niebla =
+    '<defs><linearGradient id="nieblaPerfil" x1="0" y1="0" x2="1" y2="0">' +
+      '<stop offset="0" class="nb" stop-opacity=".9"/>' +
+      '<stop offset=".5" class="nb" stop-opacity=".7"/>' +
+      '<stop offset="1" class="nb" stop-opacity="0"/>' +
+    '</linearGradient></defs>' +
+    /* Bajada 8 respecto al dibujo de las caras. Allí el lienzo va recortado
+       -viewBox 2 5 62 41- y la neblina queda a media ladera; aquí se ve el
+       cerro entero y, en su sitio de allí, subía por encima de la cota de
+       1000 y se leía como un bloque en el cielo. La neblina de las lomas va
+       abajo, entrando del mar y deshaciéndose al subir. */
+    '<path transform="translate(0 8)" d="M1 17.5 q 4 -3.4 8 -1.2 ' +
+      'q 3.4 -4 7.6 -1.4 q 3.6 -2.6 6.8 .6 q 4 -1 7 2.4 q 3 2 4.6 5.6 ' +
+      'L ' + (SILLA + 3) + ' 33 L 1 33 Z" fill="url(#nieblaPerfil)"/>';
+  // el mar se cuelga del pie del cerro, no de una altura puesta a mano
+  var pie = pts[0];
+  var agua = '<rect class="agua" x="0" y="' + pie.y.toFixed(2) + '" width="' +
+             pie.x.toFixed(2) + '" height="' + (CARA_SUELO - pie.y).toFixed(2) + '"/>';
+
+  var trazo = e.perfil ? '<path class="trazo" d="' + e.perfil + '"/>' : '';
   var caras = '<text class="cara" x="11" y="' + (H - 1.2).toFixed(1) + '">Oeste</text>' +
               '<text class="cara" x="' + (W - 1) + '" y="' + (H - 1.2).toFixed(1) +
               '" text-anchor="end">Este</text>';
@@ -2607,9 +2642,11 @@ function svgPerfil(e) {
       : 'sin dato';
   return '<svg class="perfil" viewBox="0 0 ' + W + ' ' + (H + 2) + '" role="img" ' +
          'aria-label="Rango de altitud: ' + desc + '">' +
+           niebla + agua +
+           '<path class="tierra-f" d="' + caraRelleno(pts) + '"/>' +
+           '<path class="seco" d="' + caraRelleno(est) + '"/>' +
            rejilla +
-           '<g class="banda-relieve">' + bandas + '</g>' +
-           '<path class="silueta" d="' + P.silueta + '"/>' +
+           '<path class="linea" d="' + caraLinea(pts) + '"/>' +
            trazo + etiquetas + caras +
          '</svg>';
 }

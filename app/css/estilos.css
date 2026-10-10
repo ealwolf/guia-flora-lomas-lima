@@ -1743,10 +1743,18 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 
 /* perfil de altitud */
 .perfil { width: 100%; height: auto; display: block; }
-.perfil .cielo { fill: none; }
-.perfil .banda-relieve { fill: color-mix(in srgb, var(--acento) 30%, var(--superficie-2)); }
-.perfil .silueta { fill: none; stroke: var(--tenue); stroke-width: .3; opacity: .7; }
-.perfil .rejilla-l { stroke: var(--borde); stroke-width: .18; }
+/* Los mismos colores que el cerro del filtro y que el de las caras: agua,
+   tierra, la cara seca de la cordillera y la neblina. Tres dibujos del mismo
+   cerro que decían el mismo sitio de tres maneras. */
+.perfil .agua { fill: var(--mar); }
+.perfil .tierra-f { fill: var(--tierra); }
+.perfil .seco { fill: var(--seco); }
+.perfil .nb { stop-color: var(--niebla); }
+.perfil .linea {
+  fill: none; stroke: var(--costa); stroke-width: .35;
+  stroke-linejoin: round;
+}
+.perfil .rejilla-l { stroke: color-mix(in srgb, var(--tenue) 40%, transparent); stroke-width: .18; }
 /* Verde, el mismo que marca el tramo elegido en el filtro de altitud. Iba en
    rojo y chocaba dos veces. Una, porque es el mismo concepto -«este tramo de
    altura»- pintado de dos colores según dónde se mire: verde en el filtro,
@@ -1755,7 +1763,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    decir «flor roja» en todas partes, pintar de rojo una franja de altitud es
    decir otra cosa con la misma palabra. */
 .perfil .trazo {
-  fill: none; stroke: var(--acento); stroke-width: 1.5;
+  fill: none; stroke: var(--acento); stroke-width: 1.8;
   stroke-linecap: round; stroke-linejoin: round;
 }
 .perfil .cara {
