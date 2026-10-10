@@ -70,8 +70,6 @@ window.addEventListener('beforeinstallprompt', function (ev) {
               aria-haspopup="dialog"></button>
     </div>
   </div>
-
-  <div class="chips" id="chips-rapidos" role="group" aria-label="Filtros rápidos"></div>
 </header>
 
 <main>
@@ -128,7 +126,11 @@ window.addEventListener('beforeinstallprompt', function (ev) {
       <h3><span data-ico="flower" aria-hidden="true"></span> Color de la flor
         <button class="limpia oculto" data-limpia="color">Quitar</button>
       </h3>
-      <div class="envoltura" id="f-color"></div>
+      <div class="espectro" id="f-color" role="group"
+           aria-label="Colores del espectro"></div>
+      <div id="f-sinflor"></div>
+      <p class="pista">Mantén presionado y arrastra para elegir un tramo del
+        espectro.</p>
     </div>
     <div class="grupo">
       <h3><span data-ico="plant" aria-hidden="true"></span> Grupo

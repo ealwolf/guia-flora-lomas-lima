@@ -266,11 +266,33 @@ function textoTramo(r) {
   return (r[0] - ALT_PASO) + '–' + r[1] + ' msnm';
 }
 
-/* Lo que cuenta el botón de filtros. La loma no está: es dónde se mira, no
-   qué se busca, y meterla aquí la metía también en «Limpiar». */
+/* Lo que cuenta el botón de filtros. Dos cosas que no se ven venir.
+
+   La loma no está: es dónde se mira, no qué se busca, y meterla aquí la metía
+   también en «Limpiar».
+
+   Y un tramo seguido cuenta como UNO. Tocar «Estación húmeda» es un gesto y
+   una idea, y el botón decía 6; arrastrar del amarillo al rosado es «los
+   cálidos», y decía 4. La altitud ya se contaba así desde antes, así que esto
+   es ponerle a los meses y a los colores la misma vara. */
+function corridas(puestos, orden) {
+  if (!puestos.length) return 0;
+  var hay = {}, n = 0;
+  puestos.forEach(function (v) { hay[v] = 1; });
+  for (var i = 0; i < orden.length; i++) {
+    if (hay[orden[i]] && !(i && hay[orden[i - 1]])) n++;
+  }
+  return n;
+}
+
 function activos() {
-  return F.color.length + F.grupo.length + F.mes.length +
-         F.habitat.length + F.familia.length + F.conserv.length + F.cara.length +
+  // «Sin flor vistosa» va aparte: no está en el espectro, así que nunca es
+  // parte de un tramo
+  return corridas(F.color, ORDEN_COLORES) +
+         (F.color.indexOf(SIN_FLOR) >= 0 ? 1 : 0) +
+         corridas(F.mes, ORDEN_MESES) +
+         F.grupo.length + F.habitat.length + F.familia.length +
+         F.conserv.length + F.cara.length +
          tramosAlt().length;
 }
 function alterna(lista, valor) {
@@ -312,7 +334,7 @@ function filtrar(omitir) {
     for (var i = 0; i < term.length; i++) if (e._b.indexOf(term[i]) < 0) return false;
     // basta con que coincida cualquiera de sus colores: una flor entre
     // blanca y amarilla debe salir en las dos busquedas
-    if (F.color.length && !coloresDe(e).some(function (c) {
+    if (omitir !== 'color' && F.color.length && !coloresDe(e).some(function (c) {
           return F.color.indexOf(c) >= 0; })) return false;
     if (F.grupo.length   && F.grupo.indexOf(e.grupo) < 0) return false;
     if (F.familia.length && F.familia.indexOf(e.familia) < 0) return false;
@@ -852,6 +874,72 @@ window.addEventListener('resize', function () { medirCabecera(); mirarBarra(); }
    marcar algo: medido, el panel crecia 172 px de golpe, Familia ganaba dos
    filas y parecia que las opciones se movian o se iban. Lo unico que lleva
    numero ahora es el boton de resultados, que es donde se mira. */
+/* ---------- el espectro de colores ----------
+   Nueve fichas en una fila que se deslizaba: de los nueve colores se veían
+   tres -medido a 375 px, 557 de los 932 que mide la fila quedaban fuera de la
+   pantalla- y para llegar a «Morado/lila» había que arrastrar. Ahora es una
+   tira: se ven los ocho de un vistazo y están puestos en el orden en que el
+   ojo los busca.
+
+   El orden ya venía bien de COLORES en construir.py, que no es alfabético ni
+   caprichoso: es un paseo por la rueda de tonos. Medidos los tonos de las
+   muestras, 42° el amarillo, 26° el anaranjado, 3° el rojo, 339° el rosado,
+   260° el morado, 213° el azul; cae siempre, dando la vuelta por el 360, y el
+   verde cierra. El blanco va delante porque de tono no tiene -su saturación
+   es 0,22- y es el más claro.
+
+   «Sin flor vistosa» sale de la tira. No es un color, es la ausencia de uno,
+   y metido entre los demás se leía como un gris más del espectro. Va debajo y
+   con una hoja, que es por donde se reconoce una planta que no florece a la
+   vista. */
+var SIN_FLOR = 'Sin flor vistosa';
+var ORDEN_COLORES = (G.colores || []).map(function (c) { return c.nombre; })
+    .filter(function (n) { return n !== SIN_FLOR; });
+
+/* Blanca o negra según cuál se lea mejor encima, por la fórmula de contraste
+   de la WCAG y no a ojo. Comprobados los nueve: el peor es el morado con
+   4,72:1 y el mejor el blanco con 16,2:1, así que todos pasan el AA de 4,5
+   con el nombre escrito encima de la propia muestra. */
+function tintaSobre(hex) {
+  var c = [0, 2, 4].map(function (i) {
+    var v = parseInt(hex.slice(1 + i, 3 + i), 16) / 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  var L = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  return (L + 0.05) / 0.05 >= 1.05 / (L + 0.05) ? '#1b1a17' : '#ffffff';
+}
+
+/* Sin número en cada franja, a propósito: las opciones de este panel no los
+   llevan desde que se midió que un «x/n» vivo cambiaba el ancho de las fichas
+   y el panel pegaba un tirón de 172 px. Aquí el ancho no cambiaría -las
+   franjas son todas iguales- pero el dato que de verdad importa es si queda
+   algo, y eso lo dice la franja apagándose. La cuenta exacta va en el
+   aria-label, que no ocupa sitio. */
+function pintarColores() {
+  var n = {};
+  filtrar('color').forEach(function (e) {
+    coloresDe(e).forEach(function (c) { n[c] = (n[c] || 0) + 1; });
+  });
+  function uno(nom, clase, dentro) {
+    var c = n[nom] || 0;
+    var hex = colorHex(nom);
+    return '<button class="' + clase + (c ? '' : ' vacio') + '" data-f="color"' +
+        ' data-v="' + esc(nom) + '" aria-pressed="' +
+        (F.color.indexOf(nom) >= 0) + '" style="--mu:' + hex +
+        ';--tinta:' + tintaSobre(hex) + '" aria-label="' + esc(nom) + ', ' +
+        c + (c === 1 ? ' especie' : ' especies') + '">' + dentro(nom) + '</button>';
+  }
+  $('#f-color').innerHTML = ORDEN_COLORES.map(function (nom) {
+    return uno(nom, 'franja', function () {
+      return svgIcono('check', 'tic') + '<span class="et">' + esc(nom) + '</span>';
+    });
+  }).join('');
+  $('#f-sinflor').innerHTML = uno(SIN_FLOR, 'sinflor', function (x) {
+    return svgIcono('leaf') + '<span class="et">' + esc(x) + '</span>' +
+           svgIcono('check', 'tic');
+  });
+}
+
 function chip(texto, activo, extra) {
   return '<button class="chip" aria-pressed="' + (activo ? 'true' : 'false') + '" ' +
          (extra || '') + '>' + texto + '</button>';
@@ -912,12 +1000,7 @@ function dibujoHabitat(n) {
 }
 
 function pintarFiltros() {
-  $('#f-color').innerHTML = G.colores.map(function (c) {
-    return chip('<span class="punto" style="background:' + c.hex + '"></span>' +
-                esc(c.nombre),
-                F.color.indexOf(c.nombre) >= 0,
-                'data-f="color" data-v="' + esc(c.nombre) + '"');
-  }).join('');
+  pintarColores();
 
   $('#f-grupo').innerHTML = G.grupos.map(function (g) {
     return chip(esc(g.nombre),
@@ -2044,16 +2127,6 @@ $$('[data-limpia]').forEach(function (b) {
   });
 });
 
-/* fichas rápidas bajo el buscador: los colores, que es lo que se busca en campo */
-function pintarChipsRapidos() {
-  var h = G.colores.map(function (c) {
-    return chip('<span class="punto" style="background:' + c.hex + '"></span>' + esc(c.nombre),
-                F.color.indexOf(c.nombre) >= 0,
-                'data-f="color" data-v="' + esc(c.nombre) + '"');
-  }).join('');
-  $('#chips-rapidos').innerHTML = h;
-}
-
 function sincronizarChips() {
   $$('[data-f]').forEach(function (b) {
     var f = b.dataset.f, v = b.dataset.v;
@@ -2065,6 +2138,7 @@ function sincronizarChips() {
   $$('[data-limpia]').forEach(function (b) {
     b.classList.toggle('oculto', !F[b.dataset.limpia].length);
   });
+  pintarColores();
   pintarMeses();
   pintarAltitud();
   pintarCaras();
@@ -2076,11 +2150,9 @@ document.addEventListener('click', function (ev) {
   var b = ev.target.closest('[data-f]');
   if (!b) return;
   var f = b.dataset.f, v = b.dataset.v;
-  // la misma ficha significa cosas distintas segun donde este: en el panel
-  // elige un mes -o un extremo del rango-, y en la fila de arriba lo quita
-  if (f !== 'mes') alterna(F[f], v);
-  else if (tragarMes) { tragarMes = false; return; }   // venia de un arrastre
-  else alterna(F.mes, +v);
+  // el click con el que acaba un arrastre no debe deshacer el primero que marco
+  if (tragar[f]) { tragar[f] = false; return; }
+  alterna(F[f], f === 'mes' ? +v : v);
   render();
 });
 
@@ -2253,21 +2325,6 @@ $('#f-cara').addEventListener('click', function (ev) {
 
 
 /* ---------- meses ---------- */
-/* Si los meses puestos son un tramo seguido, una sola ficha lo dice mejor que
-   nueve. Hay tramo cuando solo un mes no tiene al anterior marcado. */
-function tramoMeses() {
-  var ms = F.mes;
-  if (ms.length < 2 || ms.length > 11) return null;
-  var hay = {}, ini = 0, fin = 0, cabos = 0;
-  ms.forEach(function (m) { hay[m] = 1; });
-  ms.forEach(function (m) {
-    if (!hay[m === 1 ? 12 : m - 1]) { ini = m; cabos++; }
-    if (!hay[m % 12 + 1]) fin = m;
-  });
-  return cabos === 1 ? [ini, fin] : null;
-}
-
-function tocarMes(m) { alterna(F.mes, m); }
 
 /* Doce barras con su recuento. Se repintan en cada render porque el recuento
    depende de los demas filtros: con una loma puesta, la grafica pasa a ser la
@@ -2322,99 +2379,119 @@ $$('[data-meses]').forEach(function (b) {
   });
 });
 
-/* ---------- mantener y arrastrar sobre los meses ----------
-   Como en Google Fotos: se mantiene pulsado un mes, y a partir de ahi el dedo
-   va marcando -o desmarcando, segun lo que hiciera el primero- los que pisa.
-   Solo aqui, y solo despues de la espera: antes de eso el dedo sigue siendo
-   para desplazar el panel, que es lo que se hace el 99 % de las veces. */
+/* ---------- mantener y arrastrar ----------
+   Como en Google Fotos: se mantiene pulsado uno, y a partir de ahi el dedo va
+   marcando -o desmarcando, segun lo que hiciera el primero- los que pisa.
+
+   Lo usan los meses y el espectro de colores. Es el mismo gesto sobre dos
+   tiras ordenadas, asi que es el mismo codigo con la tira y el campo
+   cambiados; estaba escrito a mano para los meses y copiarlo habria dejado
+   dos sitios donde arreglar cada cosa.
+
+   Solo despues de la espera: antes de eso el dedo sigue siendo para desplazar
+   el panel, que es lo que se hace el 99 % de las veces. Y por eso las dos
+   tiras van tumbadas y no de pie: con touch-action:pan-y el navegador nos
+   deja el gesto horizontal entero y se queda el vertical para desplazar. Una
+   lista en columna habria pedido quedarnos el vertical, y entonces el panel
+   no se podria desplazar pasando el dedo por encima de ella. */
 var ESPERA_PINTAR = 380;
-var pintado = null, relojPintar = 0;
+var tragar = {};
 
-function mesBajoElDedo(ev) {
-  var e = document.elementFromPoint(ev.clientX, ev.clientY);
-  var c = e && e.closest && e.closest('#f-mes [data-f="mes"]');
-  return c ? +c.dataset.v : 0;
-}
+function arrastrable(sel, campo, orden, numero) {
+  var caja = $(sel);
+  if (!caja) return;
+  var pint = null, reloj = 0;
 
-function soltarPintado() {
-  clearTimeout(relojPintar);
-  if (pintado && pintado.vivo) $('#f-mes').classList.remove('pintando');
-  pintado = null;
-}
+  function valorBajo(ev) {
+    var e = document.elementFromPoint(ev.clientX, ev.clientY);
+    var c = e && e.closest && e.closest(sel + ' [data-f="' + campo + '"]');
+    if (!c) return null;
+    return numero ? +c.dataset.v : c.dataset.v;
+  }
 
-$('#f-mes').addEventListener('pointerdown', function (ev) {
-  var m = mesBajoElDedo(ev);
-  if (!m) return;
-  tragarMes = false;                 // una pulsacion nueva: lo de antes ya paso
-  pintado = { x: ev.clientX, y: ev.clientY, id: ev.pointerId, vivo: false,
-              ancla: m, antes: F.mes.slice() };
-  clearTimeout(relojPintar);
-  relojPintar = setTimeout(function () {
-    if (!pintado) return;
-    pintado.vivo = true;
-    pintado.pone = F.mes.indexOf(m) < 0;     // lo que haga el primero manda
-    $('#f-mes').classList.add('pintando');
-    try { $('#f-mes').setPointerCapture(pintado.id); } catch (e) {}
-    try { navigator.vibrate && navigator.vibrate(12); } catch (e) {}
-    pintarHasta(m);
-  }, ESPERA_PINTAR);
-});
+  function soltar() {
+    clearTimeout(reloj);
+    if (pint && pint.vivo) caja.classList.remove('pintando');
+    pint = null;
+  }
 
-/* Pinta el tramo entero entre el mes donde empezo y donde esta el dedo, no
-   solo los que ha pisado. Las fichas van en dos filas, asi que al saltar de
-   fila el dedo se salta la mitad; y al volver atras hay que deshacer lo que ya
-   no queda dentro, de ahi que se parta siempre de como estaba. */
-function pintarHasta(m) {
-  /* Por sitio en la tira y no por numero de mes: empezando el año en junio,
+  /* Pinta el tramo ENTERO entre donde empezo y donde esta el dedo, no solo lo
+     que ha pisado: si los botones caen en dos filas, al saltar de fila el
+     dedo se salta la mitad. Y al volver atras hay que deshacer lo que ya no
+     queda dentro, de ahi que se parta siempre de como estaba.
+
+     Por sitio en la tira y no por el valor: el año empieza en junio, asi que
      arrastrar de setiembre a enero son cinco meses seguidos -9, 10, 11, 12,
      1- y con numeros habria cogido de enero a setiembre. */
-  var pa = posMes(pintado.ancla), pb = posMes(m);
-  var a = Math.min(pa, pb), b = Math.max(pa, pb);
-  var hay = {};
-  pintado.antes.forEach(function (x) { hay[x] = 1; });
-  for (var k = a; k <= b; k++) {
-    var mm = ORDEN_MESES[k];
-    if (pintado.pone) hay[mm] = 1; else delete hay[mm];
+  function hasta(v) {
+    var pa = orden.indexOf(pint.ancla), pb = orden.indexOf(v);
+    if (pa < 0 || pb < 0) return;
+    var a = Math.min(pa, pb), b = Math.max(pa, pb);
+    var hay = {};
+    pint.antes.forEach(function (x) { hay[x] = 1; });
+    for (var k = a; k <= b; k++) {
+      if (pint.pone) hay[orden[k]] = 1; else delete hay[orden[k]];
+    }
+    var nuevo = orden.filter(function (x) { return hay[x]; });
+    if (numero) nuevo = nuevo.sort(function (x, y) { return x - y; });
+    var hoy = F[campo].slice().map(String).sort().join('|');
+    if (nuevo.map(String).sort().join('|') === hoy) return;
+    F[campo] = nuevo;
+    render();
   }
-  var nuevo = Object.keys(hay).map(Number).sort(function (x, y) { return x - y; });
-  var ahora = F.mes.slice().sort(function (x, y) { return x - y; });
-  if (nuevo.join(',') === ahora.join(',')) return;
-  F.mes = nuevo;
-  render();
+
+  caja.addEventListener('pointerdown', function (ev) {
+    var v = valorBajo(ev);
+    if (v === null) return;
+    tragar[campo] = false;             // una pulsacion nueva: lo de antes ya paso
+    pint = { x: ev.clientX, y: ev.clientY, id: ev.pointerId, vivo: false,
+             ancla: v, antes: F[campo].slice() };
+    clearTimeout(reloj);
+    reloj = setTimeout(function () {
+      if (!pint) return;
+      pint.vivo = true;
+      pint.pone = F[campo].indexOf(v) < 0;     // lo que haga el primero manda
+      caja.classList.add('pintando');
+      try { caja.setPointerCapture(pint.id); } catch (e) {}
+      try { navigator.vibrate && navigator.vibrate(12); } catch (e) {}
+      hasta(v);
+    }, ESPERA_PINTAR);
+  });
+
+  caja.addEventListener('pointermove', function (ev) {
+    if (!pint) return;
+    if (!pint.vivo) {
+      // si se mueve antes de tiempo era un desplazamiento, no una pulsacion
+      if (Math.abs(ev.clientX - pint.x) + Math.abs(ev.clientY - pint.y) > 10) {
+        clearTimeout(reloj); pint = null;
+      }
+      return;
+    }
+    var v = valorBajo(ev);
+    if (v !== null) hasta(v);
+  });
+
+  // con el dedo, mientras se pinta manda el gesto y no el desplazamiento
+  caja.addEventListener('touchmove', function (ev) {
+    if (pint && pint.vivo) ev.preventDefault();
+  }, { passive: false });
+
+  ['pointerup', 'pointercancel'].forEach(function (t) {
+    caja.addEventListener(t, function () {
+      // el click que cierra el gesto no debe deshacer el primero que marco
+      if (pint && pint.vivo) tragar[campo] = true;
+      soltar();
+    });
+  });
+  // si el dedo se va antes de que arranque, no hay gesto que esperar. Despues
+  // de arrancar manda la captura y este aviso ya no llega.
+  caja.addEventListener('pointerleave', function () {
+    if (pint && !pint.vivo) { clearTimeout(reloj); pint = null; }
+  });
 }
 
-$('#f-mes').addEventListener('pointermove', function (ev) {
-  if (!pintado) return;
-  if (!pintado.vivo) {
-    // si se mueve antes de tiempo era un desplazamiento, no una pulsacion
-    if (Math.abs(ev.clientX - pintado.x) + Math.abs(ev.clientY - pintado.y) > 10) {
-      clearTimeout(relojPintar); pintado = null;
-    }
-    return;
-  }
-  var m = mesBajoElDedo(ev);
-  if (m) pintarHasta(m);
-});
-
-// con el dedo, mientras se pinta manda el gesto y no el desplazamiento
-$('#f-mes').addEventListener('touchmove', function (ev) {
-  if (pintado && pintado.vivo) ev.preventDefault();
-}, { passive: false });
-
-['pointerup', 'pointercancel'].forEach(function (t) {
-  $('#f-mes').addEventListener(t, function () {
-    // el click que cierra el gesto no debe deshacer el primer mes
-    if (pintado && pintado.vivo) tragarMes = true;
-    soltarPintado();
-  });
-});
-// si el dedo se va antes de que arranque, no hay gesto que esperar. Despues de
-// arrancar manda la captura y este aviso ya no llega.
-$('#f-mes').addEventListener('pointerleave', function () {
-  if (pintado && !pintado.vivo) { clearTimeout(relojPintar); pintado = null; }
-});
-
-var tragarMes = false;
+arrastrable('#f-mes', 'mes', ORDEN_MESES, true);
+arrastrable('#f-color', 'color', ORDEN_COLORES, false);
 
 /* ---------- perfil de altitud ---------- */
 function svgPerfil(e) {
@@ -3586,7 +3663,6 @@ window.addEventListener('appinstalled', function () {
 /* ---------- arranque ---------- */
 aplicarTema(leerTema());
 aplicarTexto(leerTexto());
-pintarChipsRapidos();
 pintarFiltros();
 pintarAltitud();
 pintarIconos(document);

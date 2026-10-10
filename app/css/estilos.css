@@ -445,14 +445,6 @@ button {
 #limpiar:hover, #limpiar:focus-visible { background: var(--superficie-2); color: var(--texto); }
 
 /* ---------- fichas de filtro ---------- */
-.chips {
-  display: flex; gap: 7px; overflow-x: auto; padding-block: 10px;
-  max-width: 1400px; margin-inline: auto; padding-inline: 14px;
-  scrollbar-width: none; -ms-overflow-style: none;
-}
-.chips::-webkit-scrollbar { display: none; }
-/* el unico control que se usa con las manos frias en la loma: 44 px */
-#chips-rapidos .chip { min-height: 44px; }
 .chip {
   display: inline-flex; align-items: center; gap: 6px; flex: none;
   padding: 7px 12px; border-radius: 999px;
@@ -1236,6 +1228,70 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   font-size: var(--t-1); font-weight: 600; color: var(--texto);
   font-variant-numeric: tabular-nums;
 }
+/* ---------- el espectro de colores ----------
+   Tumbado y no de pie, en los dos tamaños. De pie se leerian los nombres de
+   corrido, que es mejor, pero cuesta dos cosas: el gesto de arrastrar pide
+   quedarse con el movimiento vertical y entonces el panel no se desplaza
+   pasando el dedo por encima; y nueve filas de 44 px son 400 px, casi toda la
+   hoja de un movil, cuando la tira entera cabe en 110. */
+.espectro {
+  display: flex; gap: 2px; height: 118px;
+  border-radius: var(--r-s); overflow: hidden;
+  touch-action: pan-y; -webkit-tap-highlight-color: transparent;
+}
+.espectro .franja {
+  flex: 1; min-width: 0; position: relative;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-end; gap: 6px; padding: 7px 0 9px;
+  background: var(--mu); color: var(--tinta);
+  border: 0; border-radius: 4px;
+  /* Un filo finisimo del color de la tinta. Sin el, el blanco -#f8f7f4- no se
+     distingue del fondo del panel y parece un hueco en la tira. En los demas
+     casi no se ve, que es lo que se quiere: lo que hay que mirar es el color,
+     no su marco. */
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tinta) 18%, transparent);
+  transition: filter .12s, box-shadow .12s;
+}
+/* El nombre escrito de abajo arriba dentro de la propia muestra. En una tira
+   de ocho no caben tumbados -«Anaranjado» pide 62 px y la franja mide 43- y
+   el nombre tiene que verse: es la mitad del trabajo que hace el color. */
+.espectro .et {
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  font-size: 11px; font-weight: 700; letter-spacing: .01em;
+  white-space: nowrap; overflow: hidden;
+}
+/* La marca de elegido va DENTRO y del color de la tinta: un borde verde por
+   fuera se pierde encima de ocho colores distintos, y encima competiria con
+   la propia muestra, que es lo que hay que mirar. */
+.espectro .tic { width: 15px; height: 15px; opacity: 0; flex: none; }
+.espectro .franja[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--tinta); }
+.espectro .franja[aria-pressed="true"] .tic { opacity: 1; }
+.espectro .franja:hover { filter: brightness(1.06); }
+/* sin nada que enseñar con lo que ya hay puesto */
+.espectro .franja.vacio { filter: grayscale(.75) opacity(.45); }
+.espectro.pintando { cursor: grabbing; }
+
+/* «Sin flor vistosa» no es un color: no entra en la tira. Va debajo, con una
+   hoja, que es por donde se reconoce una planta que no florece a la vista. */
+.sinflor {
+  display: flex; align-items: center; gap: 9px; width: 100%;
+  min-height: 44px; margin-top: 8px; padding: 7px 12px;
+  border: 1px solid var(--borde-control); border-radius: 999px;
+  background: var(--superficie); color: var(--texto);
+  font-size: var(--t-1); font-weight: 500; text-align: left;
+}
+.sinflor .et { flex: 1; }
+.sinflor .ico { width: 18px; height: 18px; flex: none; color: var(--tenue); }
+.sinflor .tic { width: 16px; height: 16px; opacity: 0; }
+.sinflor[aria-pressed="true"] {
+  background: var(--acento); border-color: var(--acento); color: var(--sobre-acento);
+}
+.sinflor[aria-pressed="true"] .ico { color: var(--sobre-acento); }
+.sinflor[aria-pressed="true"] .tic { opacity: 1; }
+.sinflor.vacio { opacity: .5; }
+
+@media (max-width: 600px) { .espectro { height: 104px; } }
+
 .pista { margin: 8px 0 0; font-size: var(--t-1); color: var(--tenue); line-height: 1.45; }
 .pista + .pista { margin-top: 5px; }
 /* De donde sale el dato, al margen. Sin recuadro ni relleno a proposito: en
