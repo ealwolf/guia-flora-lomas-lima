@@ -562,6 +562,24 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 }
 .barra-filtros.compacta .chip { flex: none; }
 
+/* ---------- el enlace de salida ----------
+   Una fila entera y no una palabra subrayada en mitad de un párrafo: es el
+   único enlace de la app, se va fuera, y en el campo hay que poder darle con
+   el dedo. Misma forma que el botón del mapa en la ventana de lomas, que es
+   el otro «esto te lleva a otro sitio» que hay. */
+.enlace {
+  display: flex; align-items: center; gap: 11px; width: 100%;
+  margin-top: 12px; padding: 11px 12px; border-radius: var(--r-s);
+  border: 1px solid var(--borde-control); background: var(--superficie);
+  color: var(--texto); text-decoration: none;
+}
+.enlace:hover, .enlace:focus-visible { border-color: var(--acento); }
+.enlace > .ico { width: 21px; height: 21px; flex: none; color: var(--acento); }
+.enlace-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.enlace-txt b { font-size: var(--t-1); font-weight: 600; }
+.enlace-txt span { font-size: var(--t-0); color: var(--tenue); line-height: 1.35; }
+.enlace .enlace-ir { width: 17px; height: 17px; flex: none; color: var(--tenue); }
+
 /* ---------- la cola: lo que no cita en esa loma ----------
    De trazo discontinuo a propósito. Todo lo que lleva borde entero en esta
    app es algo puesto o algo elegible; esto es un umbral -lo de fuera de la

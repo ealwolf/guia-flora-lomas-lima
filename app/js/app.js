@@ -831,6 +831,12 @@ function pintarCuenta() {
       : n + '/' + tot + (compacto ? '' : ' especies');
 }
 
+/* La guía, en el portal del Estado donde está publicada. Aquí arriba y no
+   metido en el texto: si algún día cambia la dirección, se cambia en un
+   sitio. */
+var ENLACE_SERFOR = 'https://www.gob.pe/institucion/serfor/informes-publicaciones/' +
+                    '1124091-guia-de-flora-de-las-lomas-de-lima-2015';
+
 /* ---------- las que no cita en esa loma ----------
    El filtro de loma esconde especies que probablemente estén ahí. La guía no
    es un mapa de distribución: es la lista de dónde las vieron sus tres
@@ -3378,6 +3384,23 @@ function abrirInfo(v) {
           (G.meta.nFotos || '') + ' fotografías</p>' +
         '<p>Fotografías: ' + esc(G.meta.fotografias) + '</p>' +
         '<p class="cita">' + esc(G.meta.cita) + '</p>' +
+        /* Al portal del Estado, no al PDF. Lleva a la página oficial del
+           SERFOR donde está publicada la guía; desde ahí el que quiera se
+           baja el libro entero de la fuente. Así cualquiera puede comprobar
+           de dónde sale todo esto y quedarse con el original, que es lo
+           honrado teniendo el contenido ajeno dentro.
+
+           Es el primer -y único- enlace de la app, y sale fuera: se abre en
+           otra pestaña y lleva rel=noopener, y se avisa de que necesita
+           conexión, que aquí no se da por supuesta. */
+        '<a class="enlace" href="' + ENLACE_SERFOR + '" target="_blank" ' +
+          'rel="noopener noreferrer">' +
+          svgIcono('globe-hemisphere-west') +
+          '<span class="enlace-txt"><b>La guía en el portal del SERFOR</b>' +
+            '<span>gob.pe — la página oficial del libro, no una descarga. ' +
+            'Necesita conexión.</span></span>' +
+          svgIcono('caret-right', 'enlace-ir') +
+        '</a>' +
       '</div>' +
 
       '<h3>' + svgIcono('seal-check') + 'Gratis, y sin nada a cambio</h3>' +
