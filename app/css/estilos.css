@@ -1763,10 +1763,19 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   content: ''; width: 9px; height: 9px; border-radius: 2px;
   background: var(--propia); flex: none;
 }
-.lista-lomas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.lista-lomas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .lista-lomas .eti.activa {
   background: var(--acento-sua); color: var(--acento-txt); border-color: transparent;
 }
+/* Las que se pueden añadir son botones de verdad y responden al dedo; las
+   que ya están puestas llevan paloma y no son botón. La diferencia tiene que
+   verse sin tocar: es la misma ficha para dos cosas distintas. */
+.lista-lomas button.eti { min-height: 34px; }
+.lista-lomas button.eti:hover, .lista-lomas button.eti:focus-visible {
+  background: var(--acento); color: var(--sobre-acento);
+}
+.lista-lomas .eti.ya { opacity: .72; }
+.lista-lomas .ya-tic { width: 14px; height: 14px; margin-left: 1px; }
 
 .fuente {
   padding: 16px; border-top: 1px solid var(--borde); color: var(--tenue); font-size: var(--t-1);

@@ -471,7 +471,12 @@ function renderYa() {
   pintarHerramientas();
   sincronizarChips();
   mirarBarra();
+  /* Con retraso: pintando un tramo con el dedo hay un render por cada paso, y
+     escribir en el almacén en cada uno no hace falta para nada. */
+  clearTimeout(relojGuardar);
+  relojGuardar = setTimeout(guardarEstado, 300);
 }
+var relojGuardar = 0;
 
 /* Quitar todo borraba de golpe lo que habia costado varios toques, y con ello
    la loma en la que uno esta parado. Dejar la loma fuera del borrado la
@@ -2763,13 +2768,34 @@ function abrirFicha(id, empujar) {
            '<img loading="lazy" src="img/' + f + '" alt=""></button>';
   }).join('');
 
-  // se distingue lo que dice la guia de lo que hemos visto nosotros
+  /* Las lomas de la ficha se pulsan y añaden esa loma al filtro. Tenían
+     forma de ficha y nadie las había hecho pulsables: en el campo la gente
+     las tocaba esperando ver lo demás de esa loma y no pasaba nada.
+
+     Sólo AÑADEN. Tocar una que ya está puesta no la quita: desde aquí no se
+     ve la lista, así que quitar un filtro a ciegas sería el gesto más
+     destructivo de la app -y el más fácil de hacer sin querer-. Las que ya
+     están puestas se marcan con una paloma y dejan de ser botón.
+
+     Lo demás que haya filtrado se queda. Con la loma añadida encima, un
+     filtrado largo se estrecha pero no se pierde, y la lista de abajo sigue
+     diciendo lo que hay.
+
+     Se distingue además lo que dice la guía de lo que hemos visto nosotros. */
   var propias = e.lomasPropias || [];
   var lomasEti = e.lomas.map(function (id2) {
     var mia = propias.indexOf(id2) >= 0;
-    return '<span class="eti activa' + (mia ? ' propia' : '') + '"' +
-           (mia ? ' title="Observación propia: no figura en la guía"' : '') + '>' +
-           svgIcono('map-pin') + esc(nombreLoma[id2] || id2) + '</span>';
+    var nom = nombreLoma[id2] || id2;
+    var clase = 'eti activa' + (mia ? ' propia' : '');
+    var pista = mia ? 'Observación propia: no figura en la guía. ' : '';
+    if (F.loma.indexOf(id2) >= 0) {
+      return '<span class="' + clase + ' ya" title="' + esc(pista) +
+             'Ya estás filtrando por ' + esc(nom) + '">' +
+             svgIcono('map-pin') + esc(nom) + svgIcono('check', 'ya-tic') + '</span>';
+    }
+    return '<button class="' + clase + '" data-masloma="' + esc(id2) +
+           '" title="' + esc(pista) + 'Filtrar también por ' + esc(nom) + '">' +
+           svgIcono('map-pin') + esc(nom) + '</button>';
   }).join('');
 
   var html =
@@ -2816,6 +2842,7 @@ function abrirFicha(id, empujar) {
           (propias.length ? '<br><span class="pie-propia">+ ' + propias.length +
             ' de observación propia</span>' : '') +
         '</figcaption></figure>' +
+        '<p class="pista">Toca una loma para añadirla al filtro.</p>' +
         '<div class="lista-lomas">' + lomasEti + '</div></section>' +
       (e.flor.length ? '<section class="bloque"><h3>' + svgIcono('calendar-blank') + 'Calendario de floración</h3>' + cal + '</section>' : '') +
       (e.habitats.length ? '<section class="bloque"><h3>' + svgIcono('drop') + 'Hábitats</h3><div class="envoltura">' +
@@ -2851,6 +2878,31 @@ function abrirFicha(id, empujar) {
   bloquearFondo(true);
   if (empujar !== false) history.pushState({ ficha: id }, '');
 }
+
+/* Añadir y volver a la lista, que es donde se ve el efecto: desde la ficha,
+   aplicar un filtro y quedarse no enseña nada. Por history.back() y no
+   cerrando a mano, que es como se cierra con el botón de volver y así el
+   historial no se descuadra.
+
+   Y con Deshacer. Confirmar antes cuesta un toque SIEMPRE, incluso cuando era
+   justo lo que se quería; deshacer no cuesta nada cuando acertó y un toque
+   cuando no. */
+function masLoma(id) {
+  if (F.loma.indexOf(id) >= 0) return;      // ya puesta: desde aquí no se quita
+  F.loma.push(id);
+  render();
+  history.back();
+  var nom = nombreLoma[id] || id;
+  tostada('Añadida la loma ' + nom, 'Deshacer', function () {
+    var i = F.loma.indexOf(id);
+    if (i >= 0) { F.loma.splice(i, 1); render(); }
+  }, ESPERA_DESHACER);
+}
+
+$('#ficha-int').addEventListener('click', function (ev) {
+  var b = ev.target.closest('[data-masloma]');
+  if (b) masLoma(b.dataset.masloma);
+});
 
 function cerrarFicha() {
   $('#ficha').classList.remove('abierta');
@@ -3071,6 +3123,48 @@ var BLOQUEO = (function () {
 })();
 
 function cerrado(c) { return !!BLOQUEO[c]; }
+
+/* ---------- lo filtrado sobrevive a una recarga ----------
+   Se recarga sin querer y se pierde un filtrado que ha costado seis toques.
+   Avisar antes de salir no sirve: beforeunload lo ignoran casi todos los
+   navegadores de móvil justo en el caso de la recarga, no se puede escribir
+   el mensaje y salta también cuando uno se va a propósito. Así que en vez de
+   avisar, se devuelve.
+
+   En sessionStorage: aguanta la recarga -que es el accidente- y se muere al
+   cerrar la pestaña o la app. Así no se abre mañana con los cinco filtros de
+   ayer puestos, que es la trampa en la que ya caímos con la loma.
+
+   Y lo que tenga candado va ADEMÁS a localStorage. El candado ya dice «esto
+   no cambia mientras estoy aquí», y eso vale igual para volver mañana: es el
+   único filtro que tiene sentido conservar en frío. En un arranque sin
+   sesión, vuelve sólo eso. */
+function guardarEstado() {
+  var vivo = {}, fijo = {};
+  CAMPOS.forEach(function (c) {
+    vivo[c] = F[c];
+    if (cerrado(c) && F[c].length) fijo[c] = F[c];
+  });
+  vivo.q = F.q;
+  try { sessionStorage.setItem('filtros', JSON.stringify(vivo)); } catch (x) {}
+  try { localStorage.setItem('filtros-fijos', JSON.stringify(fijo)); } catch (x) {}
+}
+
+function leerEstado() {
+  var e = null;
+  try { e = JSON.parse(sessionStorage.getItem('filtros') || 'null'); } catch (x) {}
+  // arranque en frío: sólo vuelve lo que llevaba candado
+  if (!e) { try { e = JSON.parse(localStorage.getItem('filtros-fijos') || 'null'); } catch (x) {} }
+  if (!e || typeof e !== 'object') return;
+  CAMPOS.forEach(function (c) {
+    if (Object.prototype.toString.call(e[c]) === '[object Array]') F[c] = e[c];
+  });
+  if (typeof e.q === 'string' && e.q) {
+    F.q = e.q;
+    $('#q').value = e.q;
+    $('#limpiar').classList.remove('oculto');
+  }
+}
 
 function alternarCandado(c) {
   if (BLOQUEO[c]) delete BLOQUEO[c]; else BLOQUEO[c] = 1;
@@ -3863,6 +3957,7 @@ window.addEventListener('appinstalled', function () {
 /* ---------- arranque ---------- */
 aplicarTema(leerTema());
 aplicarTexto(leerTexto());
+leerEstado();
 pintarFiltros();
 pintarAltitud();
 pintarIconos(document);
