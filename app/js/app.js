@@ -294,16 +294,29 @@ function corridas(puestos, orden) {
   return n;
 }
 
+/* Los nueve campos que se filtran, en el orden en que salen en el panel. La
+   lista manda: de aquí salen la cuenta de cada grupo, la cuenta total, lo que
+   borra «Limpiar» y lo que puede llevar candado. */
+var CAMPOS = ['color', 'loma', 'grupo', 'mes', 'conserv', 'alt', 'cara',
+              'habitat', 'familia'];
+
+/* Lo que hay puesto en un campo, contando un tramo seguido como uno.
+   «Sin flor vistosa» va aparte: no está en el espectro, así que nunca es
+   parte de un tramo. */
+function puestosEn(c) {
+  if (c === 'alt') return tramosAlt().length;
+  if (c === 'mes') return corridas(F.mes, ORDEN_MESES);
+  if (c === 'color') {
+    return corridas(F.color, ORDEN_COLORES) +
+           (F.color.indexOf(SIN_FLOR) >= 0 ? 1 : 0);
+  }
+  return (F[c] || []).length;
+}
+
 function activos() {
-  // «Sin flor vistosa» va aparte: no está en el espectro, así que nunca es
-  // parte de un tramo
-  return corridas(F.color, ORDEN_COLORES) +
-         (F.color.indexOf(SIN_FLOR) >= 0 ? 1 : 0) +
-         corridas(F.mes, ORDEN_MESES) +
-         F.loma.length +
-         F.grupo.length + F.habitat.length + F.familia.length +
-         F.conserv.length + F.cara.length +
-         tramosAlt().length;
+  var n = 0;
+  CAMPOS.forEach(function (c) { n += puestosEn(c); });
+  return n;
 }
 function alterna(lista, valor) {
   var i = lista.indexOf(valor);
@@ -586,8 +599,14 @@ function tirarFiltros(tambienBusqueda) {
   limpiarTodo();                     // repinta
   if (borrado) {
     huellaBorrado = huellaFiltros();
-    tostada('Se quitaron los filtros', 'Deshacer', devolverBorrado,
-            ESPERA_DESHACER, olvidarBorrado);
+    var salvados = CAMPOS.filter(function (c) {
+      return cerrado(c) && puestosEn(c);
+    }).length;
+    tostada(salvados
+              ? 'Se quitaron los filtros · ' + salvados +
+                (salvados === 1 ? ' con candado sigue' : ' con candado siguen')
+              : 'Se quitaron los filtros',
+            'Deshacer', devolverBorrado, ESPERA_DESHACER, olvidarBorrado);
   }
 }
 
@@ -2200,6 +2219,7 @@ function sincronizarChips() {
   $$('[data-limpia]').forEach(function (b) {
     b.classList.toggle('oculto', !F[b.dataset.limpia].length);
   });
+  pintarGrupos();
   pintarColores();
   pintarMeses();
   pintarAltitud();
@@ -2931,8 +2951,94 @@ function bloquearFondo(v) {
   }
 }
 
+/* ---------- los grupos del panel, plegados ----------
+   En el campo se vio que la gente tarda en enterarse de qué se puede filtrar:
+   con los nueve grupos abiertos el panel es una pared de fichas y hay que
+   recorrerla entera para descubrir que existe «Altitud». Plegados es un
+   índice -nueve renglones con su icono, su nombre y lo que lleve puesto- y se
+   abre el que interesa.
+
+   El armazón se monta aquí y no en el html: los nueve grupos son iguales
+   -título, y debajo lo suyo- y escribirlo nueve veces a mano es nueve sitios
+   donde se puede escribir distinto. En el html queda lo que cambia: el
+   data-campo. */
+function prepararGrupos() {
+  $$('#panel .grupo[data-campo]').forEach(function (g) {
+    var c = g.dataset.campo;
+    var h = g.querySelector('h3');
+    var limpia = h.querySelector('.limpia');
+    if (limpia) limpia.remove();            // se va al cuerpo, bajo lo suyo
+    var marca = h.querySelector('[data-ico]');
+    var icono = marca ? marca.outerHTML : '';
+    if (marca) marca.remove();
+    var titulo = h.textContent.replace(/\s+/g, ' ').trim();
+
+    var cuerpo = document.createElement('div');
+    cuerpo.className = 'grupo-cuerpo';
+    cuerpo.id = 'g-' + c;
+    cuerpo.hidden = true;
+    while (h.nextSibling) cuerpo.appendChild(h.nextSibling);
+    if (limpia) cuerpo.appendChild(limpia);
+    g.appendChild(cuerpo);
+
+    h.innerHTML =
+      '<button class="grupo-cab" aria-expanded="false" aria-controls="g-' + c + '">' +
+        '<span class="grupo-ico">' + icono + '</span>' +
+        '<span class="grupo-tit">' + esc(titulo) + '</span>' +
+        '<b class="grupo-n"></b>' +
+        '<span class="grupo-caret">' + svgIcono('caret-down') + '</span>' +
+      '</button>' +
+      '<button class="candado" data-candado="' + c + '"></button>';
+  });
+  pintarIconos($('#panel'));
+  pintarGrupos();
+}
+
+function abrirGrupo(c, si) {
+  var g = $('#panel .grupo[data-campo="' + c + '"]');
+  if (!g) return;
+  g.classList.toggle('abierto', si);
+  g.querySelector('.grupo-cab').setAttribute('aria-expanded', si ? 'true' : 'false');
+  g.querySelector('.grupo-cuerpo').hidden = !si;
+}
+
+/* La cuenta de cada grupo y el estado de su candado. Se repinta en cada
+   render: con el panel plegado, esa cifra es lo único que dice qué hay
+   puesto dentro. */
+function pintarGrupos() {
+  $$('#panel .grupo[data-campo]').forEach(function (g) {
+    var c = g.dataset.campo, n = puestosEn(c);
+    var tit = g.querySelector('.grupo-tit').textContent;
+    g.querySelector('.grupo-n').textContent = n ? n : '';
+    g.querySelector('.grupo-cab').setAttribute('aria-label',
+        tit + (n ? ', ' + n + (n === 1 ? ' puesto' : ' puestos') : ', sin filtrar'));
+    var k = g.querySelector('.candado');
+    k.innerHTML = svgIcono(cerrado(c) ? 'lock-simple' : 'lock-simple-open');
+    k.classList.toggle('cerrado', cerrado(c));
+    k.setAttribute('aria-pressed', cerrado(c) ? 'true' : 'false');
+    k.setAttribute('aria-label', cerrado(c)
+        ? 'Quitarle el candado a ' + tit
+        : 'Ponerle candado a ' + tit + ': «Limpiar» no lo borrará');
+    k.setAttribute('title', k.getAttribute('aria-label'));
+  });
+}
+
+$('#panel').addEventListener('click', function (ev) {
+  var k = ev.target.closest('.candado');
+  if (k) { alternarCandado(k.dataset.candado); return; }
+  var cab = ev.target.closest('.grupo-cab');
+  if (!cab) return;
+  var g = cab.closest('.grupo');
+  abrirGrupo(g.dataset.campo, !g.classList.contains('abierto'));
+});
+
 function abrirPanel(v, cual) {
   cual = cual || '#panel';
+  /* Cada vez que se abre, el índice entero. Dejar abierto lo de la última vez
+     devolvía la pared de fichas al segundo uso, que es justo lo que se quería
+     quitar; y con la cuenta en el renglón no hace falta abrir para saber qué
+     hay puesto. */
+  if (v && cual === '#panel') CAMPOS.forEach(function (c) { abrirGrupo(c, false); });
   $(cual).classList.toggle('abierto', v);
   panelActual = v ? cual : null;
   $('#velo').classList.toggle('abierto', v);
@@ -2946,10 +3052,35 @@ $('#cerrar-panel').addEventListener('click', function () { abrirPanel(false); })
 $('#velo').addEventListener('click', cerrarPanelAbierto);
 $('#btn-aplicar').addEventListener('click', function () { abrirPanel(false); });
 
+/* ---------- el candado ----------
+   «Limpiar» se llevaba por delante la loma en la que uno está parado, que es
+   lo único que no cambia mientras se camina: se tarda varios toques en
+   ponerla y se pierde en uno. Se probó sacarla de los filtros, y en el campo
+   resultó peor -la gente busca todo lo que filtra detrás de «Filtros»-.
+
+   Así que se queda dentro y lo que cambia es «Limpiar»: cada grupo tiene un
+   candado, y lo que esté cerrado no se borra. Vale para cualquier grupo, no
+   sólo para la loma; el mes de floración, en una salida de un día, es igual
+   de fijo.
+
+   Se guarda entre visitas: el candado dice «esto no cambia mientras estoy
+   aquí», y eso sigue siendo verdad mañana. */
+var BLOQUEO = (function () {
+  try { return JSON.parse(localStorage.getItem('bloqueo') || '{}') || {}; }
+  catch (e) { return {}; }
+})();
+
+function cerrado(c) { return !!BLOQUEO[c]; }
+
+function alternarCandado(c) {
+  if (BLOQUEO[c]) delete BLOQUEO[c]; else BLOQUEO[c] = 1;
+  try { localStorage.setItem('bloqueo', JSON.stringify(BLOQUEO)); } catch (e) {}
+  pintarGrupos();
+}
+
 function limpiarTodo() {
-  F.color = []; F.grupo = []; F.mes = []; F.loma = []; F.habitat = []; F.familia = [];
-  F.conserv = []; F.cara = [];
-  quitarAltitud();   // repinta
+  CAMPOS.forEach(function (c) { if (!cerrado(c)) F[c] = []; });
+  render();
 }
 // el panel es de filtros: «Limpiar» no toca el texto del buscador
 $('#btn-reset').addEventListener('click', function () { tirarFiltros(false); });
@@ -3729,6 +3860,10 @@ aplicarTexto(leerTexto());
 pintarFiltros();
 pintarAltitud();
 pintarIconos(document);
+/* Despues de pintarIconos, que el armazon de cada grupo se lleva el icono
+   que haya en su titulo; y aqui abajo y no donde se define, que necesita
+   BLOQUEO y ORDEN_COLORES, que se arman mas adelante en el archivo. */
+prepararGrupos();
 pintarBotonOrden();
 pintarGuardar();
 render();

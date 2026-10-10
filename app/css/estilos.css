@@ -636,13 +636,47 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .grupo { padding: 14px 0; border-bottom: 1px solid var(--borde); }
 .grupo:last-child { border-bottom: 0; }
 .grupo h3 {
-  margin: 0 0 9px; font-size: var(--t-0); font-weight: 700; letter-spacing: .07em;
+  margin: 0; font-size: var(--t-0); font-weight: 700; letter-spacing: .07em;
   text-transform: uppercase; color: var(--tenue);
-  display: flex; align-items: center; gap: 7px;
-  /* la altura del boton Quitar, que aparece y desaparece: sin esto la fila
-     del titulo daba un salto al poner el primer filtro de cada campo */
-  min-height: 27px;
+  display: flex; align-items: center; gap: 4px;
 }
+/* ---------- el renglon de cada grupo ----------
+   Plegado, el panel es un indice y esto es cada renglon. Alto de dedo, el
+   icono mas grande que antes -era decoracion al lado de un titulo, ahora es
+   la mitad de lo que distingue un renglon del de al lado- y la cifra de lo
+   que lleve puesto, que plegado es lo unico que lo dice. */
+.grupo-cab {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 11px;
+  min-height: 48px; padding: 4px 2px; text-align: left;
+  color: var(--tenue); font: inherit; letter-spacing: inherit;
+  text-transform: inherit;
+}
+.grupo-cab:hover .grupo-tit, .grupo-cab:focus-visible .grupo-tit { color: var(--texto); }
+.grupo-ico { flex: none; line-height: 0; color: var(--tenue); }
+.grupo-ico .ico { width: 22px; height: 22px; }
+.grupo-tit { flex: 1; min-width: 0; }
+.grupo-n {
+  flex: none; min-width: 19px; padding: 2px 5px; border-radius: 999px;
+  font-size: 11.5px; font-weight: 700; letter-spacing: 0; line-height: 1.25;
+  text-align: center; font-variant-numeric: tabular-nums;
+  background: var(--acento); color: var(--sobre-acento);
+}
+.grupo-n:empty { display: none; }
+.grupo-caret { flex: none; line-height: 0; color: var(--tenue); }
+.grupo-caret .ico { width: 18px; height: 18px; transition: transform .16s; }
+.grupo.abierto .grupo-caret .ico { transform: rotate(180deg); }
+.grupo.abierto .grupo-ico, .grupo.abierto .grupo-tit { color: var(--texto); }
+.grupo-cuerpo { padding-top: 4px; }
+
+/* El candado: lo que esta cerrado no se lo lleva «Limpiar». Fuera del boton
+   que pliega, que si no se abriria el grupo al ponerlo. */
+.candado {
+  flex: none; width: 40px; height: 40px; border-radius: 10px;
+  display: grid; place-items: center; color: var(--tenue);
+}
+.candado .ico { width: 19px; height: 19px; }
+.candado:hover, .candado:focus-visible { background: var(--superficie-2); color: var(--texto); }
+.candado.cerrado { color: var(--acento-txt); background: var(--acento-sua); }
 .envoltura { display: flex; flex-wrap: wrap; gap: 7px; }
 
 /* Los ocho hábitats, en tres familias y con dibujo. Eran ocho fichas de texto
@@ -852,7 +886,8 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 
 /* quitar un solo campo, sin tocar los demas */
 .limpia {
-  margin-left: auto; font-size: var(--t-0); font-weight: 700; letter-spacing: .03em;
+  display: block; margin: 10px 0 0 auto;
+  font-size: var(--t-0); font-weight: 700; letter-spacing: .03em;
   text-transform: none; padding: 4px 10px; border-radius: 8px;
   color: var(--acento-txt); background: var(--acento-sua);
 }

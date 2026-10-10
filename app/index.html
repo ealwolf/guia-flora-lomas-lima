@@ -139,7 +139,7 @@ window.addEventListener('beforeinstallprompt', function (ev) {
     <button class="btn-icono" id="cerrar-panel" aria-label="Cerrar" data-ico="x"></button>
   </div>
   <div class="panel-cuerpo">
-    <div class="grupo">
+    <div class="grupo" data-campo="color">
       <h3><span data-ico="flower" aria-hidden="true"></span> Color de la flor
         <button class="limpia oculto" data-limpia="color">Quitar</button>
       </h3>
@@ -149,7 +149,7 @@ window.addEventListener('beforeinstallprompt', function (ev) {
       <p class="pista">Mantén presionado y arrastra para elegir un tramo del
         espectro.</p>
     </div>
-    <div class="grupo">
+    <div class="grupo" data-campo="loma">
       <h3><span data-ico="map-trifold" aria-hidden="true"></span> Loma
         <button class="limpia oculto" data-limpia="loma">Quitar</button>
       </h3>
@@ -167,13 +167,13 @@ window.addEventListener('beforeinstallprompt', function (ev) {
         <div class="envoltura" id="f-loma"></div>
       </div>
     </div>
-    <div class="grupo">
+    <div class="grupo" data-campo="grupo">
       <h3><span data-ico="plant" aria-hidden="true"></span> Grupo
         <button class="limpia oculto" data-limpia="grupo">Quitar</button>
       </h3>
       <div class="envoltura" id="f-grupo"></div>
     </div>
-    <div class="grupo">
+    <div class="grupo" data-campo="mes">
       <h3><span data-ico="calendar-blank" aria-hidden="true"></span> Mes de floración
         <button class="limpia oculto" data-limpia="mes">Quitar</button>
       </h3>
@@ -189,13 +189,13 @@ window.addEventListener('beforeinstallprompt', function (ev) {
       <p class="pista" id="mes-pista">Mantén presionado y arrastra para elegir
         un rango.</p>
     </div>
-    <div class="grupo">
+    <div class="grupo" data-campo="conserv">
       <h3><span data-ico="seal-check" aria-hidden="true"></span> Conservación
         <button class="limpia oculto" data-limpia="conserv">Quitar</button>
       </h3>
       <div class="casillas" id="f-conserv"></div>
     </div>
-    <div class="grupo">
+    <div class="grupo" data-campo="alt">
       <h3><span data-ico="mountains" aria-hidden="true"></span> Altitud
         <span class="unidad-tit">(msnm)</span>
         <button class="limpia oculto" data-limpia="alt">Quitar</button>
@@ -205,7 +205,7 @@ window.addEventListener('beforeinstallprompt', function (ev) {
         un rango.</p>
       <div class="alt-fichas" id="alt-fichas"></div>
     </div>
-    <div class="grupo">
+    <div class="grupo" data-campo="cara">
       <h3><span data-ico="circle-half" aria-hidden="true"></span> Ladera donde crece
         <button class="limpia oculto" data-limpia="cara">Quitar</button>
       </h3>
@@ -218,13 +218,13 @@ window.addEventListener('beforeinstallprompt', function (ev) {
           el texto de la guía sólo lo dice en 103, y en 12 no coinciden. En la
           guía estas caras son la <b>occidental</b> y la <b>oriental</b>.</span></p>
     </div>
-    <div class="grupo">
+    <div class="grupo" data-campo="habitat">
       <h3><span data-ico="drop" aria-hidden="true"></span> Hábitat
         <button class="limpia oculto" data-limpia="habitat">Quitar</button>
       </h3>
       <div id="f-habitat"></div>
     </div>
-    <div class="grupo">
+    <div class="grupo" data-campo="familia">
       <h3><span data-ico="leaf" aria-hidden="true"></span> Familia
         <button class="limpia oculto" data-limpia="familia">Quitar</button>
       </h3>
