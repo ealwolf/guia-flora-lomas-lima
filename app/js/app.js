@@ -3518,8 +3518,14 @@ function aplicarTema(id) {
   var t = TEMAS.filter(function (x) { return x.id === id; })[0] || TEMAS[0];
   if (t.id === 'auto') document.documentElement.removeAttribute('data-tema');
   else document.documentElement.setAttribute('data-tema', t.id);
+  /* Siempre la paleta, no el sol ni la luna. El botón abre «Apariencia», que
+     es el tema Y el tamaño del texto, así que un sol nombraba la mitad de lo
+     que hay detrás; y suelto, en una fila con descargar e información, se
+     leía como el tiempo y no como un ajuste de la app. El modo en el que
+     está se dice en el título y se ve marcado dentro del panel, que es donde
+     se cambia. */
   var b = $('#btn-tema');
-  b.innerHTML = svgIcono(t.ico);
+  b.innerHTML = svgIcono('palette');
   b.setAttribute('aria-label', 'Apariencia. ' + t.txt);
   b.setAttribute('title', 'Apariencia · ' + t.txt.replace('Tema: ', 'tema '));
   // guardar antes de repintar: pintarApariencia lee el tema de localStorage,
