@@ -1656,10 +1656,27 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 }
 
 .galeria { position: relative; background: var(--superficie-2); }
+/* El hueco de la foto mide SIEMPRE lo mismo, y antes no: se amoldaba a la
+   foto que tocara, desde el js. Suena bien hasta que se usa, porque las
+   fotos de una misma especie no tienen la misma forma -la principal es
+   apaisada en 128 de 137, y las de detalle son cuadradas en 152 de 158-, así
+   que tocar una miniatura cambiaba el alto del hueco y empujaba hacia abajo
+   la ficha entera: el nombre, los datos, todo. Se tocaba una foto y se movía
+   lo que estabas leyendo.
+
+   4/3 y no otra cosa porque es justo la forma de la foto principal, que es
+   la que se ve primero y la que más se mira; sale sin franjas. Las de
+   detalle, cuadradas, dejan franja a los lados, y es el precio.
+
+   contain, no cover, y aquí los números no dejan lugar a dudas: con cover en
+   una caja 4/3 habría que recortar más del 20 % de la foto en 163 de las
+   295, y a la peor -una principal de proporción 0,64- se le iría el 52 %. En
+   una guía de campo eso es quitar justo lo que hay que mirar: 26 fotos son
+   más altas que anchas y perderían la planta por arriba y por abajo. Que
+   ahora haya visor con zoom no lo cambia, porque la foto de la ficha es la
+   que se mira en el cerro, y obligar a abrir el visor para ver el ápice de
+   la planta es peor que una franja. */
 .galeria .grande { aspect-ratio: 4/3; position: relative; margin-inline: auto; }
-/* contain, no cover: en la ficha se ve la foto entera. Las 26 verticales de
-   la guia perdian la planta por arriba y por abajo. El marco se amolda a cada
-   foto desde el js, asi que casi nunca quedan franjas. */
 .galeria .grande img {
   position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
 }

@@ -2818,17 +2818,6 @@ function bloque(icono, titulo, texto) {
 /* El marco de la foto grande se amolda a la foto, en vez de la foto al marco.
    Se limita cuanto puede estirarse: una vertical muy alta empujaria el texto
    fuera de la pantalla, y ahi si aparecen franjas a los lados. */
-function amoldarMarco(img) {
-  if (!img || !img.naturalWidth) return;
-  var r = img.naturalWidth / img.naturalHeight;
-  img.parentNode.style.aspectRatio = Math.max(0.75, Math.min(1.9, r));
-}
-function vigilarFoto(img) {
-  if (!img) return;
-  img.onload = function () { amoldarMarco(img); };
-  if (img.complete) amoldarMarco(img);
-}
-
 /* Pasar a la siguiente sin volver al catalogo. Sigue la lista que se esta
    viendo -filtrada y ordenada-, no la numeracion del libro, que es lo que
    espera quien esta repasando unos resultados.
@@ -3006,7 +2995,6 @@ function abrirFicha(id, empujar) {
       tarjetaVecina(vecina(1), 1) + '</div>';
 
   $('#ficha-int').innerHTML = html;
-  vigilarFoto($('#foto-grande'));
   $('#ficha-titulo').textContent = e.comun;
   $('#ficha-int').scrollTop = 0;
   $('#ficha').scrollTop = 0;
@@ -3038,7 +3026,7 @@ $('#ficha-int').addEventListener('click', function (ev) {
     if (id) id.setAttribute('aria-current', 'false');
     m.setAttribute('aria-current', 'true');
     var g = $('#foto-grande');
-    if (g) { g.src = m.querySelector('img').src; vigilarFoto(g); }
+    if (g) g.src = m.querySelector('img').src;
     return;
   }
   if (ev.target.id === 'foto-grande') {
