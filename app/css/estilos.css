@@ -1921,13 +1921,42 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    El velo no se queda los toques: lo que caiga en el hueco oscuro de los
    lados llega al carril y enseña o esconde los mandos, como el resto de la
    foto. Sólo la tira los recoge. */
+/* Todo lo que depende del ancho se dice con clamp() y min(), no con una
+   media query, y es a propósito. Lo había con un corte en 601 px y el
+   corte creaba un escalón absurdo: justo por debajo cabían ocho miniaturas
+   y justo por encima no, porque al cruzar saltaban las tres cosas a la vez
+   -la miniatura de 54 a 64, el relleno de 12 a 24 y el tope de nada a
+   464-. Una pantalla un píxel más ancha enseñaba menos fotos.
+
+   Así cada cosa crece sola y no hay ningún ancho donde algo salte:
+
+     relleno     12 px, hasta 24 en pantalla ancha
+     miniatura   58 px, igual en todas partes
+     tope        561 px, pero nunca más que el ancho disponible
+
+   La miniatura NO crece con el ancho, y ésa fue la segunda lección. Se
+   probó con clamp(54px, 7vw, 64px), que es continuo sobre el papel, y el
+   barrido de pruebas/visor-tira.html encontró diez parpadeos entre 779 y
+   908 px: la miniatura engorda 0,07 px por cada píxel de pantalla y la
+   tira unos 0,94, y como los redondeos no van al mismo paso, la última
+   entraba y salía del borde alternándose. Invisible, pero la flecha de la
+   derecha se encendía y se apagaba al estirar la ventana. Un tamaño fijo
+   no tiene ese problema, y 58 px queda por encima del dedo de 44 y cabe
+   cuatro veces hasta en una pantalla de 320.
+
+   El tope en 561 no es redondo: con la miniatura a 58 y el hueco de 8 son
+   ocho enteras más media. El medio es el recorte, que es lo que dice que
+   hay más. Y como es min(100%, 561px), por debajo de unos 585 px manda el
+   100 %: en un móvil la tira llega de lado a lado, que es donde no sobra
+   ancho. El tope sólo muerde cuando de verdad hay pantalla que sobra. */
 .visor-abajo {
   bottom: 0; display: flex; justify-content: center;
-  padding: 24px 12px calc(12px + env(safe-area-inset-bottom));
+  padding: 24px clamp(12px, 3vw, 24px) calc(12px + env(safe-area-inset-bottom));
   background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.65));
   pointer-events: none;
 }
 .visor-abajo:empty { display: none; }
+.visor-tira-caja { position: relative; max-width: min(100%, 561px); }
 .visor-tira {
   pointer-events: auto;
   display: flex; gap: 8px; max-width: 100%;
@@ -1937,25 +1966,36 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 }
 .visor-tira::-webkit-scrollbar { display: none; }
 .visor-tira button {
-  flex: none; width: 54px; height: 54px; border-radius: 9px; overflow: hidden;
+  flex: none; border-radius: 10px; overflow: hidden;
+  width: 58px; height: 58px;
   border: 2px solid transparent; opacity: .5; transition: opacity .15s, border-color .15s;
 }
 .visor-tira button[aria-current="true"] { opacity: 1; border-color: #fff; }
 .visor-tira button:hover, .visor-tira button:focus-visible { opacity: 1; }
 .visor-tira img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-/* En pantalla ancha la tira no se estira hasta los bordes: se queda en su
-   sitio, centrada, y si algún día no cupiera se desplaza dentro de ese
-   ancho. El tope está puesto a seis miniaturas y media -464 px con las de
-   64- a propósito: el medio es para que la séptima salga cortada y se vea
-   que hay más. Hoy no llega a pasar, porque la guía trae cuatro fotos como
-   mucho en una ficha y caben de sobra; la regla está para cuando las haya.
+/* Las flechas. Con el dedo la tira se arrastra y no hacen falta; con ratón
+   no había forma de moverla, porque una rueda empuja hacia abajo y aquí no
+   hay abajo -la rueda ya la recorre de lado, pero eso hay que descubrirlo y
+   una flecha se ve-. Así que salen sólo donde hay puntero fino y sólo del
+   lado por el que queda tira.
 
-   En móvil la tira sí llega de lado a lado, porque ahí no sobra ancho. */
-@media (min-width: 601px) {
-  .visor-abajo { padding-inline: 24px; }
-  .visor-tira { max-width: min(100%, 464px); }
-  .visor-tira button { width: 64px; height: 64px; border-radius: 10px; }
+   No entran en el tabulador: lo que hay detrás son las propias miniaturas,
+   que son botones y el navegador las trae a la vista al tabular. Repetir el
+   recorrido con dos paradas más sería estorbo. */
+.tira-flecha {
+  position: absolute; top: 50%; translate: 0 -50%; z-index: 2;
+  width: 34px; height: 34px; border-radius: 999px; display: none;
+  place-items: center; color: #fff; background: rgba(0,0,0,.72);
+  border: 1px solid rgba(255,255,255,.26); pointer-events: auto;
+}
+.tira-flecha.izq { left: -6px; }
+.tira-flecha.der { right: -6px; }
+.tira-flecha:hover { background: rgba(0,0,0,.9); }
+.tira-flecha .ico { width: 18px; height: 18px; }
+@media (hover: hover) and (pointer: fine) {
+  .visor-tira-caja.hay-izq .tira-flecha.izq,
+  .visor-tira-caja.hay-der .tira-flecha.der { display: grid; }
 }
 
 /* Quitados de en medio: con un toque, o solos en cuanto empieza un gesto. */

@@ -6,7 +6,7 @@
 
 <!-- La hoja de estilos DE VERDAD. Lo que se ve aquí son las reglas que usa
      la app; si cambian allí, cambian aquí. Lo único propio de esta página
-     son los mandos y el marco. -->
+     son los mandos, el marco y el barrido. -->
 <link rel="stylesheet" href="../app/css/estilos.css">
 
 <style>
@@ -20,15 +20,15 @@
   }
   .cabecera { padding: 14px 18px 12px; border-bottom: 1px solid var(--borde); }
   .cabecera h1 { margin: 0 0 3px; font-size: 17px; }
-  .cabecera p { margin: 0; color: var(--tenue); font-size: 13px; max-width: 70ch; }
+  .cabecera p { margin: 0; color: var(--tenue); font-size: 13px; max-width: 78ch; }
   .mandos-fila {
     display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px;
     padding: 11px 18px; border-bottom: 1px solid var(--borde);
   }
   .mandos-fila label { font-size: 13px; font-weight: 600; color: var(--tenue); }
-  .mandos-fila input[type=range] { width: 190px; vertical-align: middle; }
+  .mandos-fila input[type=range] { width: 170px; vertical-align: middle; }
   .anchos { display: flex; flex-wrap: wrap; gap: 6px; }
-  .anchos button {
+  .anchos button, .barrido-btn {
     font: inherit; font-size: 13px; padding: 5px 11px; border-radius: 8px;
     border: 1px solid var(--borde-control); background: var(--superficie);
     color: var(--texto); cursor: pointer;
@@ -36,6 +36,7 @@
   .anchos button[aria-pressed="true"] {
     background: var(--acento); border-color: var(--acento); color: #fff;
   }
+  .barrido-btn { font-weight: 600; }
   .escenario {
     flex: 1; min-height: 0; display: grid; place-items: center;
     padding: 18px; background: var(--superficie-2);
@@ -46,15 +47,23 @@
   }
   .escenario iframe {
     border: 0; height: 100%; max-height: 780px; width: 100%;
-    border-radius: 14px; box-shadow: 0 10px 34px rgba(0,0,0,.3);
-    background: #000;
+    border-radius: 14px; box-shadow: 0 10px 34px rgba(0,0,0,.3); background: #000;
   }
+  .informe {
+    display: none; padding: 12px 18px 16px; border-top: 1px solid var(--borde);
+    font: 400 12px/1.6 ui-monospace, Menlo, Consolas, monospace;
+    white-space: pre; overflow: auto; max-height: 42vh; background: var(--superficie);
+  }
+  .informe.sale { display: block; }
+  .informe .bien { color: #1d7a3e; font-weight: 700; }
+  .informe .mal { color: #b3261e; font-weight: 700; }
 
-  /* ---------- el marco: sólo el visor y una chapa con las medidas ---------- */
+  /* ---------- el marco ---------- */
   body.marco { background: #000; overflow: hidden; }
   .medidas {
-    position: fixed; left: 50%; bottom: 50%; transform: translateX(-50%);
-    z-index: 100; color: #fff;   /* el visor va en 90 */ font: 400 12px/1.6 ui-monospace, Menlo, Consolas, monospace;
+    position: fixed; left: 50%; bottom: 50%; translate: -50% 0;
+    z-index: 100; color: #fff;   /* el visor va en 90 */
+    font: 400 12px/1.6 ui-monospace, Menlo, Consolas, monospace;
     background: rgba(0,0,0,.72); border: 1px solid rgba(255,255,255,.2);
     border-radius: 10px; padding: 9px 13px; white-space: pre; pointer-events: none;
   }
@@ -79,6 +88,15 @@
     '011_commelina-fasciculata', '012_tinantia-erecta']
     .map(function (s) { return '../app/img/' + s + '_principal1.avif'; });
 
+  var CARET = {
+    izq: 'M163.66 216a8 8 0 0 1-11.32 0l-80-80a8 8 0 0 1 0-11.32l80-80a8 8 0 1 1 11.32 11.32L89.31 128l74.35 74.34a8 8 0 0 1 0 11.66',
+    der: 'M181.66 133.66l-80 80a8 8 0 0 1-11.32-11.32L164.69 128L90.34 53.66a8 8 0 0 1 11.32-11.32l80 80a8 8 0 0 1 0 11.32'
+  };
+  function caret(d) {
+    return '<svg class="ico" viewBox="0 0 256 256" aria-hidden="true">' +
+           '<path fill="currentColor" d="' + CARET[d] + '"/></svg>';
+  }
+
   // ===================================================== el marco
   if (esMarco) {
     document.body.className = 'marco';
@@ -89,10 +107,9 @@
     var i = 0;
 
     document.body.innerHTML =
-      '<div class="visor abierto" id="visor">' +
-        '<div class="visor-carril" id="carril">' +
-          '<div class="visor-hoja"><img src="' + FOTOS[0] + '" alt=""></div>' +
-        '</div>' +
+      '<div class="visor abierto">' +
+        '<div class="visor-carril"><div class="visor-hoja">' +
+          '<img id="grande" src="' + FOTOS[0] + '" alt=""></div></div>' +
         '<div class="visor-arriba">' +
           '<span class="visor-cuenta" id="cuenta"></span>' +
           '<button id="x" aria-label="Cerrar"></button>' +
@@ -101,7 +118,6 @@
       '</div>' +
       '<div class="medidas" id="medidas"></div>';
 
-    // la X con el mismo trazo que la de la app
     document.getElementById('x').innerHTML =
       '<svg class="ico" viewBox="0 0 256 256" aria-hidden="true" width="22" height="22">' +
       '<path fill="currentColor" d="M205.66 194.34a8 8 0 0 1-11.32 11.32L128 139.31l-66.34 ' +
@@ -109,89 +125,135 @@
       '116.69l66.34-66.35a8 8 0 0 1 11.32 11.32L139.31 128Z"/></svg>';
 
     var abajo = document.getElementById('abajo');
-    abajo.innerHTML = n < 2 ? '' : '<div class="visor-tira">' +
-      FOTOS.slice(0, n).map(function (s, k) {
-        return '<button data-k="' + k + '" aria-label="Foto ' + (k + 1) + '" ' +
-               'aria-current="' + (k === 0) + '"><img src="' + s + '" alt=""></button>';
-      }).join('') + '</div>';
+    abajo.innerHTML = n < 2 ? '' :
+      '<div class="visor-tira-caja">' +
+        '<div class="visor-tira">' + FOTOS.slice(0, n).map(function (s, k) {
+          return '<button data-k="' + k + '" aria-label="Foto ' + (k + 1) + '" ' +
+                 'aria-current="' + (k === 0) + '"><img src="' + s + '" alt=""></button>';
+        }).join('') + '</div>' +
+        '<button class="tira-flecha izq" aria-label="Anteriores" tabindex="-1">' + caret('izq') + '</button>' +
+        '<button class="tira-flecha der" aria-label="Siguientes" tabindex="-1">' + caret('der') + '</button>' +
+      '</div>';
+
+    function tira() { return abajo.querySelector('.visor-tira'); }
+
+    function bordes() {
+      var t = tira(); if (!t) return;
+      var hay = t.scrollWidth > t.clientWidth + 1;
+      t.parentNode.classList.toggle('hay-izq', hay && t.scrollLeft > 2);
+      t.parentNode.classList.toggle('hay-der',
+        hay && t.scrollLeft < t.scrollWidth - t.clientWidth - 2);
+    }
 
     function ir(k) {
       i = k;
-      document.querySelector('#carril img').src = FOTOS[k];
-      var b = abajo.querySelectorAll('[data-k]');
-      [].forEach.call(b, function (x) {
+      document.getElementById('grande').src = FOTOS[k];
+      var t = tira();
+      [].forEach.call(t.querySelectorAll('[data-k]'), function (x) {
         x.setAttribute('aria-current', +x.dataset.k === k ? 'true' : 'false');
       });
-      var act = abajo.querySelector('[aria-current="true"]');
-      var tira = act && act.parentNode;
-      if (tira && tira.scrollWidth > tira.clientWidth + 1) {
-        tira.scrollTo({ left: act.offsetLeft - (tira.clientWidth - act.offsetWidth) / 2,
-                        behavior: 'smooth' });
+      if (t.scrollWidth > t.clientWidth + 1) {
+        var act = t.querySelector('[aria-current="true"]');
+        t.scrollTo({ left: act.offsetLeft - (t.clientWidth - act.offsetWidth) / 2,
+                     behavior: 'smooth' });
       }
       medir();
     }
+
     abajo.addEventListener('click', function (ev) {
-      var b = ev.target.closest('[data-k]');
-      if (b) ir(+b.dataset.k);
+      var f = ev.target.closest('.tira-flecha');
+      if (f) {
+        var t = tira(), b = t.querySelector('[data-k]');
+        var paso = (b ? b.offsetWidth + 8 : 62) * 3;
+        t.scrollBy({ left: f.classList.contains('izq') ? -paso : paso, behavior: 'smooth' });
+        return;
+      }
+      var b2 = ev.target.closest('[data-k]');
+      if (b2) ir(+b2.dataset.k);
     });
+    abajo.addEventListener('wheel', function (ev) {
+      var t = ev.target.closest('.visor-tira');
+      if (!t || t.scrollWidth <= t.clientWidth + 1) return;
+      var d = Math.abs(ev.deltaY) > Math.abs(ev.deltaX) ? ev.deltaY : ev.deltaX;
+      if (!d) return;
+      t.scrollLeft += d; ev.preventDefault();
+    }, { passive: false });
+    abajo.addEventListener('scroll', function (ev) {
+      if (ev.target.classList.contains('visor-tira')) { bordes(); medir(); }
+    }, true);
+
+    /* Lo que mide el barrido de la página de mandos. Vive aquí porque sólo
+       aquí se sabe el ancho real de la ventana del marco. */
+    window.ver = function () {
+      var t = tira(), W = document.documentElement.clientWidth;
+      if (!t) return { W: W, n: n, tira: 0, mini: 0, enteras: 0, desborda: false, asoma: 0 };
+      var bs = t.querySelectorAll('button');
+      var mini = bs[0].getBoundingClientRect().width;
+      var paso = bs.length > 1 ? bs[1].offsetLeft - bs[0].offsetLeft : mini;
+      var rt = t.getBoundingClientRect(), ra = abajo.getBoundingClientRect();
+      return {
+        W: W, n: n, mini: Math.round(mini), paso: Math.round(paso),
+        tira: Math.round(rt.width), velo: Math.round(ra.width),
+        centrada: Math.abs((rt.left + rt.width / 2) - (ra.left + ra.width / 2)) < 1.5,
+        desborda: t.scrollWidth > t.clientWidth + 1,
+        /* Cuántas miniaturas se ven ENTERAS de una vez. Es la cifra del
+           barrido: al ensanchar la pantalla no puede bajar nunca. */
+        enteras: Math.min(n, Math.floor((t.clientWidth + 8) / paso)),
+        asoma: Math.round(t.clientWidth % paso)
+      };
+    };
 
     function medir() {
+      var v = window.ver();
       document.getElementById('cuenta').textContent = n > 1 ? (i + 1) + ' de ' + n : '';
-      var tira = abajo.querySelector('.visor-tira');
-      var W = document.documentElement.clientWidth;
-      var txt = 'ventana      ' + W + ' px   (' + (W >= 601 ? 'escritorio / tableta' : 'móvil') + ')\n' +
-                'fotos        ' + n + '\n';
-      if (!tira) {
+      var txt = 'ventana      ' + v.W + ' px\n' + 'fotos        ' + n + '\n';
+      if (!tira()) {
         txt += 'tira         no sale: con una sola foto no hay nada que elegir';
       } else {
-        var rt = tira.getBoundingClientRect(), ra = abajo.getBoundingClientRect();
-        var bs = tira.querySelectorAll('button');
-        var mini = Math.round(bs[0].getBoundingClientRect().width);
-        var paso = bs.length > 1 ? bs[1].offsetLeft - bs[0].offsetLeft : mini;
-        var desborda = tira.scrollWidth > tira.clientWidth + 1;
-        var centrada = Math.abs((rt.left + rt.width / 2) - (ra.left + ra.width / 2)) < 1.5;
-        var asoma = Math.round(tira.clientWidth % paso);
-        txt += 'miniatura    ' + mini + ' px\n' +
-               'tira         ' + Math.round(rt.width) + ' px de ' + Math.round(ra.width) +
-                 '   ' + (centrada ? '<b>centrada</b>' : '<span class="mal">DESCENTRADA</span>') + '\n' +
-               'desborda     ' + (desborda ? '<b>sí</b>, sobran ' +
-                 Math.round(tira.scrollWidth - tira.clientWidth) + ' px a la derecha'
-                 : 'no, caben las ' + n + ' enteras') + '\n' +
-               'recorte      ' + (desborda
-                 ? (asoma > 4 ? '<b>sí</b>: de la siguiente asoman ' + asoma + ' de ' + mini + ' px'
-                              : '<span class="mal">no</span>: corta justo en el borde de una miniatura')
-                 : '—');
+        txt += 'miniatura    ' + v.mini + ' px\n' +
+               'tira         ' + v.tira + ' px de ' + v.velo + '   ' +
+                 (v.centrada ? '<b>centrada</b>' : '<span class="mal">DESCENTRADA</span>') + '\n' +
+               'se ven       ' + v.enteras + ' de ' + n + ' enteras\n' +
+               'desborda     ' + (v.desborda ? '<b>sí</b>' : 'no, caben todas') + '\n' +
+               'recorte      ' + (v.desborda
+                 ? (v.asoma > 4 ? '<b>sí</b>: asoman ' + v.asoma + ' de ' + v.mini + ' px'
+                    : '<span class="mal">no</span>: corta en el borde de una miniatura')
+                 : '—') + '\n' +
+               'flechas      ' + (v.desborda ? 'con ratón, del lado que queda tira' : 'no hacen falta');
       }
       document.getElementById('medidas').innerHTML = txt;
     }
-    addEventListener('resize', medir);
-    ir(0);
+    addEventListener('resize', function () { bordes(); medir(); });
+    if (n > 1) { bordes(); ir(0); } else { medir(); }
     return;
   }
 
   // ================================================== la página de mandos
   document.body.className = 'mandos';
-  var ANCHOS = [320, 360, 375, 414, 600, 601, 768, 1024, 0];
-  var ancho = 375, cuantas = 8;
+  var ANCHOS = [320, 360, 375, 414, 598, 600, 602, 768, 1024, 0];
+  var ancho = 768, cuantas = 8;
 
   document.body.innerHTML =
     '<div class="cabecera">' +
       '<h1>La tira de miniaturas del visor</h1>' +
-      '<p>Carga <code>app/css/estilos.css</code>, o sea las reglas de verdad. ' +
-      'El corte de ancho de la app está en 601 px, y el marco de abajo es una ' +
-      'ventana propia, así que la media query responde a su ancho y no al de ' +
-      'esta página. Hoy la ficha con más fotos de la guía tiene cuatro: con ' +
-      'siete u ocho se ve lo que pasará el día que haya más.</p>' +
+      '<p>Carga <code>app/css/estilos.css</code>, o sea las reglas de verdad. El marco ' +
+      'de abajo es un <code>iframe</code>, o sea una ventana propia, así que lo que ' +
+      'depende del ancho responde a su ancho y no al de esta página. Hoy la ficha con ' +
+      'más fotos de la guía tiene cuatro: con siete u ocho se ve lo que pasará el día ' +
+      'que haya más.</p>' +
     '</div>' +
     '<div class="mandos-fila">' +
       '<label for="n">Fotos: <output id="nv"></output></label>' +
       '<input type="range" id="n" min="1" max="12" step="1">' +
       '<label>Ancho del marco</label>' +
       '<div class="anchos" id="anchos"></div>' +
+      '<button class="barrido-btn" id="barrer">Barrer 300 → 1280 px</button>' +
     '</div>' +
-    '<div class="escenario"><iframe id="marco" title="El visor"></iframe></div>';
+    '<div class="escenario"><iframe id="marco" title="El visor"></iframe></div>' +
+    '<div class="informe" id="informe"></div>';
 
   var rango = document.getElementById('n'), marco = document.getElementById('marco');
+  var informe = document.getElementById('informe');
   rango.value = cuantas;
 
   document.getElementById('anchos').innerHTML = ANCHOS.map(function (a) {
@@ -211,6 +273,50 @@
     var b = ev.target.closest('[data-a]');
     if (b) { ancho = +b.dataset.a; pintar(); }
   });
+
+  /* El barrido ensancha el marco píxel a píxel y comprueba lo único que de
+     verdad no puede pasar: que al ENSANCHAR la pantalla se vean MENOS fotos
+     que antes. Eso era el escalón de 600 a 601 -la miniatura, el relleno y
+     el tope saltaban los tres a la vez al cruzar la media query- y una
+     pantalla un píxel más ancha enseñaba una foto menos. */
+  document.getElementById('barrer').addEventListener('click', async function () {
+    var antesAncho = marco.style.width;
+    informe.className = 'informe sale';
+    informe.textContent = 'barriendo…';
+    var filas = [], saltos = [], prev = null;
+    for (var w = 300; w <= 1280; w++) {
+      marco.style.width = w + 'px';
+      var v = marco.contentWindow.ver();   // el marco no se recarga, sólo cambia de tamaño
+      if (!prev || v.mini !== prev.mini || v.tira !== prev.tira || v.enteras !== prev.enteras) {
+        if (prev && v.enteras < prev.enteras) saltos.push([prev, v]);
+        filas.push(v); prev = v;
+      }
+      if (w % 120 === 0) await new Promise(function (r) { setTimeout(r, 0); });
+    }
+    marco.style.width = antesAncho;
+
+    var t = 'Barrido de 300 a 1280 px con ' + cuantas + ' fotos.\n' +
+            'Solo los anchos donde algo cambia.\n\n' +
+            'ancho   miniatura   tira    enteras   recorte\n' +
+            '-----   ---------   ----    -------   -------\n';
+    filas.forEach(function (v) {
+      t += String(v.W).padStart(5) + String(v.mini).padStart(12) +
+           String(v.tira).padStart(8) + String(v.enteras + '/' + v.n).padStart(11) +
+           '   ' + (v.desborda ? (v.asoma > 4 ? 'asoman ' + v.asoma : 'CORTE EN EL BORDE') : '—') + '\n';
+    });
+    t += '\n';
+    if (saltos.length) {
+      t += '<span class="mal">' + saltos.length + ' escalon(es): al ensanchar se ven MENOS fotos</span>\n';
+      saltos.forEach(function (p) {
+        t += '  ' + p[0].W + ' px: ' + p[0].enteras + ' enteras, pero ' +
+             p[1].W + ' px: ' + p[1].enteras + '\n';
+      });
+    } else {
+      t += '<span class="bien">Sin escalones: ensanchar nunca ensena menos fotos.</span>';
+    }
+    informe.innerHTML = t;
+  });
+
   pintar();
 })();
 </script>

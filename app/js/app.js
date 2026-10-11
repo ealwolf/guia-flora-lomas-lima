@@ -3114,10 +3114,19 @@ function abrirVisor(lista, i) {
      que no se baja ni un byte más por enseñarla. Con una sola foto no sale,
      que sería una tira de un elemento. */
   $('#visor-abajo').innerHTML = VIS.n < 2 ? '' :
-    '<div class="visor-tira">' + lista.map(function (s, k) {
-      return '<button data-vfoto="' + k + '" aria-label="Foto ' + (k + 1) + ' de ' + VIS.n +
-             '" aria-current="' + (k === VIS.i) + '"><img src="' + esc(s) + '" alt=""></button>';
-    }).join('') + '</div>';
+    '<div class="visor-tira-caja">' +
+      '<div class="visor-tira">' + lista.map(function (s, k) {
+        return '<button data-vfoto="' + k + '" aria-label="Foto ' + (k + 1) + ' de ' + VIS.n +
+               '" aria-current="' + (k === VIS.i) + '"><img src="' + esc(s) + '" alt=""></button>';
+      }).join('') + '</div>' +
+      /* Las flechas sólo salen donde hacen falta: en una pantalla con ratón
+         y cuando la tira no cabe entera. Con el dedo sobra arrastrarla, y
+         ahí además taparían miniaturas. */
+      '<button class="tira-flecha izq" aria-label="Fotos anteriores" tabindex="-1">' +
+        svgIcono('caret-left') + '</button>' +
+      '<button class="tira-flecha der" aria-label="Fotos siguientes" tabindex="-1">' +
+        svgIcono('caret-right') + '</button>' +
+    '</div>';
   $('#visor').classList.add('abierto');
   bloquearFondo(true);
   visMandos(true);
@@ -3238,15 +3247,35 @@ function visIr(i, animar) {
   $$('#visor-abajo [data-vfoto]').forEach(function (b) {
     b.setAttribute('aria-current', +b.dataset.vfoto === VIS.i ? 'true' : 'false');
   });
-  /* Si la tira no cabe entera, se mueve para que la miniatura de la foto que
-     se está viendo quede a la vista. Se hace con scrollLeft y no con
+  /* Si la tira no cabe entera, se mueve para dejar centrada la miniatura de
+     la foto que se está viendo. Se hace con scrollLeft y no con
      scrollIntoView, que además del contenedor mueve la página. */
-  var act = $('#visor-abajo [data-vfoto][aria-current="true"]');
-  var tira = act && act.parentNode;
-  if (tira && tira.scrollWidth > tira.clientWidth + 1) {
-    tira.scrollTo({ left: act.offsetLeft - (tira.clientWidth - act.offsetWidth) / 2,
-                    behavior: 'smooth' });
+  visTiraCentrar();
+}
+
+function visTira() { return $('#visor-abajo .visor-tira'); }
+
+function visTiraCentrar() {
+  var t = visTira();
+  if (!t || t.scrollWidth <= t.clientWidth + 1) { visTiraBordes(); return; }
+  var act = t.querySelector('[data-vfoto][aria-current="true"]');
+  if (act) {
+    t.scrollTo({ left: act.offsetLeft - (t.clientWidth - act.offsetWidth) / 2,
+                 behavior: 'smooth' });
   }
+  visTiraBordes();
+}
+
+/* Qué flechas tienen sentido ahora mismo. Una flecha que no lleva a ningún
+   sitio es peor que no tenerla, así que cada una sale sólo si queda tira por
+   ese lado. */
+function visTiraBordes() {
+  var t = visTira();
+  if (!t) return;
+  var caja = t.parentNode;
+  var hay = t.scrollWidth > t.clientWidth + 1;
+  caja.classList.toggle('hay-izq', hay && t.scrollLeft > 2);
+  caja.classList.toggle('hay-der', hay && t.scrollLeft < t.scrollWidth - t.clientWidth - 2);
 }
 
 function visMandos(si) {
@@ -3376,12 +3405,39 @@ function visToque(ev) {
 
 $('#visor-cerrar').addEventListener('click', function () { cerrarVisor(); });
 $('#visor-abajo').addEventListener('click', function (ev) {
-  var b = ev.target.closest('[data-vfoto]');
-  if (b) visIr(+b.dataset.vfoto, true);
+  var f = ev.target.closest('.tira-flecha');
+  if (f) {
+    /* Un salto de tres miniaturas: lo bastante para avanzar y lo bastante
+       poco para no perder de vista dónde estabas. */
+    var t = visTira(), b = t.querySelector('[data-vfoto]');
+    var paso = (b ? b.offsetWidth + 8 : 62) * 3;
+    t.scrollBy({ left: f.classList.contains('izq') ? -paso : paso, behavior: 'smooth' });
+    return;
+  }
+  var b2 = ev.target.closest('[data-vfoto]');
+  if (b2) visIr(+b2.dataset.vfoto, true);
 });
+
+/* La rueda del ratón sobre la tira la recorre de lado. Sin esto, en
+   escritorio la tira desbordada no tenía forma de moverse: el dedo la
+   arrastra, pero una rueda sólo empuja hacia abajo y aquí no hay abajo.
+   El teclado ya funcionaba, porque las miniaturas son botones y el
+   navegador las trae a la vista al tabular. */
+$('#visor-abajo').addEventListener('wheel', function (ev) {
+  var t = ev.target.closest('.visor-tira');
+  if (!t || t.scrollWidth <= t.clientWidth + 1) return;
+  var d = Math.abs(ev.deltaY) > Math.abs(ev.deltaX) ? ev.deltaY : ev.deltaX;
+  if (!d) return;
+  t.scrollLeft += d;
+  ev.preventDefault();
+}, { passive: false });
+
+$('#visor-abajo').addEventListener('scroll', function (ev) {
+  if (ev.target.classList.contains('visor-tira')) visTiraBordes();
+}, true);
 window.addEventListener('resize', function () {
   if (!VIS.n) return;
-  visMedir(); visCenir(); visPintar(false);
+  visMedir(); visCenir(); visPintar(false); visTiraBordes();
 });
 
 $('#volver').addEventListener('click', function () { history.back(); });
