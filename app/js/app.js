@@ -67,7 +67,8 @@ var MESES_LARGO = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
                    'julio', 'agosto', 'setiembre septiembre', 'octubre',
                    'noviembre', 'diciembre'];
 var ORDEN_SUG = { 'Especie': 0, 'Sinónimo': 1, 'Color': 2, 'Loma': 3,
-                  'Familia': 4, 'Grupo': 5, 'Hábitat': 6, 'En flor': 7 };
+                  'Familia': 4, 'Tipo de planta': 5, 'Hábitat': 6,
+                  'En flor': 7 };
 var SUG = [];
 (function () {
   function meter(o) {
@@ -86,7 +87,8 @@ var SUG = [];
     meter({ tipo: 'Familia', ico: 'leaf', et: f.nombre, n: f.n, f: 'familia', v: f.nombre });
   });
   G.grupos.forEach(function (g) {
-    meter({ tipo: 'Grupo', ico: 'plant', et: g.nombre, n: g.n, f: 'grupo', v: g.nombre });
+    meter({ tipo: 'Tipo de planta', ico: 'plant', et: g.nombre, n: g.n,
+            f: 'grupo', v: g.nombre });
   });
   G.habitats.forEach(function (h) {
     meter({ tipo: 'Hábitat', ico: 'drop', et: h.nombre, n: h.n, f: 'habitat', v: h.nombre });

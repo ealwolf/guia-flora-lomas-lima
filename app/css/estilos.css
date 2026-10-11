@@ -712,10 +712,17 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    de las de 80 de la familia de cuatro, como si pesaran más. Cuatro columnas
    fijas -las de la familia mayor- dan a las ocho el mismo tamaño, y las
    familias de dos dejan dos huecos, que es justo lo que hace que se vean
-   como familias. El tope es para que en una ventana ancha los dibujos no se
-   conviertan en láminas. */
+   como familias.
+
+   Sin tope de ancho: lo llevó -37em, para que en una ventana ancha los
+   dibujos no se volvieran láminas- y esa ventana ancha no existe. El panel se
+   para en 520 px, así que el cuerpo mide 471 y el tope 407: no protegía de
+   nada y dejaba 64 px de blanco a la derecha de la cuarta ficha, con todo lo
+   demás del panel llegando al filete. Y aquí el blanco estorba el doble,
+   porque la primera familia es un campo partido en cuatro y su línea del
+   suelo tiene que llegar al borde. El tope es el panel. */
 .hab-fila {
-  display: grid; gap: 8px; font-size: var(--t-0); max-width: 37em;
+  display: grid; gap: 8px; font-size: var(--t-0);
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 .hab-fila + .hab-fam { margin-top: 13px; }
@@ -725,7 +732,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    paisaje. */
 #f-grupo {
   display: grid; gap: 8px; font-size: var(--t-0);
-  grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 37em;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 .hab {
   display: flex; flex-direction: column; align-items: center; gap: 6px;
@@ -767,7 +774,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 /* La franja ocupa todo el ancho que haya, sin tope: es un campo y tiene que
    llegar de un filo al otro. El tope de las otras dos familias le dejaba un
    claro a la derecha y la línea se quedaba a medio camino. */
-.hab-fila.franja { gap: 0; max-width: none; }
+.hab-fila.franja { gap: 0; }
 /* Sin filete ninguno, ni transparente: medido, el filete izquierdo de un
    tramo y el derecho del de al lado dejaban 2 px entre dibujo y dibujo y la
    línea del suelo se partía en los tres empalmes. Con border-width:0 los
