@@ -291,10 +291,13 @@ function textoTramo(r) {
    La loma no está: es dónde se mira, no qué se busca, y meterla aquí la metía
    también en «Limpiar».
 
-   Y un tramo seguido cuenta como UNO. Tocar «Estación húmeda» es un gesto y
-   una idea, y el botón decía 6; arrastrar del amarillo al rosado es «los
-   cálidos», y decía 4. La altitud ya se contaba así desde antes, así que esto
-   es ponerle a los meses y a los colores la misma vara. */
+   Y un tramo seguido cuenta como UNO, pero sólo donde el tramo ES una idea.
+   «Estación húmeda» son seis meses y un solo gesto, y el botón decía 6; «de
+   300 a 800» es una franja y no cinco alturas. En los colores no: amarillo,
+   anaranjado y rojo son tres colores que se están buscando, no «los
+   cálidos». Que estén pegados en el espectro es lo que hace cómodo
+   arrastrarlos, no lo que los convierte en uno. Así que los colores se
+   cuentan de uno en uno. */
 function corridas(puestos, orden) {
   if (!puestos.length) return 0;
   var hay = {}, n = 0;
@@ -317,11 +320,7 @@ var CAMPOS = ['color', 'loma', 'grupo', 'mes', 'conserv', 'alt', 'cara',
 function puestosEn(c) {
   if (c === 'alt') return tramosAlt().length;
   if (c === 'mes') return corridas(F.mes, ORDEN_MESES);
-  if (c === 'color') {
-    return corridas(F.color, ORDEN_COLORES) +
-           (F.color.indexOf(SIN_FLOR) >= 0 ? 1 : 0);
-  }
-  return (F[c] || []).length;
+  return (F[c] || []).length;        // los colores, uno por uno
 }
 
 function activos() {
