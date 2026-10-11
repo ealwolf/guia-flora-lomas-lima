@@ -3113,10 +3113,11 @@ function abrirVisor(lista, i) {
   /* La tira de abajo reusa las mismas fotos: no hay miniaturas aparte, así
      que no se baja ni un byte más por enseñarla. Con una sola foto no sale,
      que sería una tira de un elemento. */
-  $('#visor-abajo').innerHTML = VIS.n < 2 ? '' : lista.map(function (s, k) {
-    return '<button data-vfoto="' + k + '" aria-label="Foto ' + (k + 1) + ' de ' + VIS.n +
-           '" aria-current="' + (k === VIS.i) + '"><img src="' + esc(s) + '" alt=""></button>';
-  }).join('');
+  $('#visor-abajo').innerHTML = VIS.n < 2 ? '' :
+    '<div class="visor-tira">' + lista.map(function (s, k) {
+      return '<button data-vfoto="' + k + '" aria-label="Foto ' + (k + 1) + ' de ' + VIS.n +
+             '" aria-current="' + (k === VIS.i) + '"><img src="' + esc(s) + '" alt=""></button>';
+    }).join('') + '</div>';
   $('#visor').classList.add('abierto');
   bloquearFondo(true);
   visMandos(true);
@@ -3237,6 +3238,15 @@ function visIr(i, animar) {
   $$('#visor-abajo [data-vfoto]').forEach(function (b) {
     b.setAttribute('aria-current', +b.dataset.vfoto === VIS.i ? 'true' : 'false');
   });
+  /* Si la tira no cabe entera, se mueve para que la miniatura de la foto que
+     se está viendo quede a la vista. Se hace con scrollLeft y no con
+     scrollIntoView, que además del contenedor mueve la página. */
+  var act = $('#visor-abajo [data-vfoto][aria-current="true"]');
+  var tira = act && act.parentNode;
+  if (tira && tira.scrollWidth > tira.clientWidth + 1) {
+    tira.scrollTo({ left: act.offsetLeft - (tira.clientWidth - act.offsetWidth) / 2,
+                    behavior: 'smooth' });
+  }
 }
 
 function visMandos(si) {

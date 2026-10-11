@@ -1913,26 +1913,55 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 #visor-cerrar:hover, #visor-cerrar:focus-visible { background: rgba(0,0,0,.8); }
 #visor-cerrar .ico { width: 22px; height: 22px; }
 
+/* Dos piezas y no una: el velo ocupa todo el ancho -es lo que hace legible
+   la tira sobre cualquier foto- y la tira va centrada dentro de él. Antes
+   eran la misma cosa, así que las miniaturas se quedaban pegadas a la
+   esquina de abajo a la izquierda, que es donde empieza un flex.
+
+   El velo no se queda los toques: lo que caiga en el hueco oscuro de los
+   lados llega al carril y enseña o esconde los mandos, como el resto de la
+   foto. Sólo la tira los recoge. */
 .visor-abajo {
-  bottom: 0; display: flex; gap: 8px; overflow-x: auto; overflow-y: hidden;
+  bottom: 0; display: flex; justify-content: center;
   padding: 24px 12px calc(12px + env(safe-area-inset-bottom));
   background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.65));
+  pointer-events: none;
+}
+.visor-abajo:empty { display: none; }
+.visor-tira {
+  pointer-events: auto;
+  display: flex; gap: 8px; max-width: 100%;
+  overflow-x: auto; overflow-y: hidden;
   touch-action: pan-x;                 /* la tira sí se desplaza con el dedo */
   scrollbar-width: none;
 }
-.visor-abajo::-webkit-scrollbar { display: none; }
-.visor-abajo:empty { display: none; }
-.visor-abajo button {
+.visor-tira::-webkit-scrollbar { display: none; }
+.visor-tira button {
   flex: none; width: 54px; height: 54px; border-radius: 9px; overflow: hidden;
   border: 2px solid transparent; opacity: .5; transition: opacity .15s, border-color .15s;
 }
-.visor-abajo button[aria-current="true"] { opacity: 1; border-color: #fff; }
-.visor-abajo button:hover, .visor-abajo button:focus-visible { opacity: 1; }
-.visor-abajo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.visor-tira button[aria-current="true"] { opacity: 1; border-color: #fff; }
+.visor-tira button:hover, .visor-tira button:focus-visible { opacity: 1; }
+.visor-tira img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* En pantalla ancha la tira no se estira hasta los bordes: se queda en su
+   sitio, centrada, y si algún día no cupiera se desplaza dentro de ese
+   ancho. El tope está puesto a seis miniaturas y media -464 px con las de
+   64- a propósito: el medio es para que la séptima salga cortada y se vea
+   que hay más. Hoy no llega a pasar, porque la guía trae cuatro fotos como
+   mucho en una ficha y caben de sobra; la regla está para cuando las haya.
+
+   En móvil la tira sí llega de lado a lado, porque ahí no sobra ancho. */
+@media (min-width: 601px) {
+  .visor-abajo { padding-inline: 24px; }
+  .visor-tira { max-width: min(100%, 464px); }
+  .visor-tira button { width: 64px; height: 64px; border-radius: 10px; }
+}
 
 /* Quitados de en medio: con un toque, o solos en cuanto empieza un gesto. */
 .visor.sin-mandos .visor-arriba { opacity: 0; transform: translateY(-10px); pointer-events: none; }
-.visor.sin-mandos .visor-abajo { opacity: 0; transform: translateY(10px); pointer-events: none; }
+.visor.sin-mandos .visor-abajo { opacity: 0; transform: translateY(10px); }
+.visor.sin-mandos .visor-tira { pointer-events: none; }
 
 /* ---------- adaptación ---------- */
 @media (min-width: 560px) {
