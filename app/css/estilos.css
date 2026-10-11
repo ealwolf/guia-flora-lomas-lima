@@ -676,10 +676,13 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .grupo-lock:empty { display: none; }
 .grupo-lock .ico { width: 16px; height: 16px; }
 
-/* El pie de cada grupo: mantener a la izquierda, quitar a la derecha. */
+/* La barra de cada grupo, arriba del todo: mantener a la izquierda, quitar a
+   la derecha. Una raya debajo para que se lea como lo que es -los mandos del
+   grupo- y no como la primera de sus opciones. */
 .grupo-pie {
   display: flex; align-items: center; gap: 10px;
-  margin-top: 12px; padding-top: 2px;
+  margin: 2px 0 12px; padding-bottom: 11px;
+  border-bottom: 1px solid var(--borde);
 }
 /* Con su nombre escrito. Era un candado suelto en la fila del título, y un
    candado a secas no dice «Limpiar no se lo va a llevar»: lo decía el

@@ -3059,13 +3059,20 @@ function prepararGrupos() {
     cuerpo.hidden = true;
     while (h.nextSibling) cuerpo.appendChild(h.nextSibling);
 
-    /* El pie del grupo: mantener a la izquierda, quitar a la derecha. Las dos
-       cosas que se le hacen al grupo entero, juntas y al final de lo suyo. */
+    /* Las dos cosas que se le hacen al grupo entero -mantener a la izquierda,
+       quitar a la derecha- van ARRIBA del todo, nada más abrirlo.
+
+       Estuvieron al final y había que pasar el grupo entero para llegar.
+       Medido: la hoja del panel enseña 555 px y el cuerpo de Hábitat mide
+       626, el de Familia 515 y el de Ladera 476, así que en tres de los
+       nueve los dos botones caían fuera de la pantalla y había que bajar una
+       pantalla larga para quitar un filtro. Arriba se ven siempre, porque lo
+       primero que se ve al abrir un grupo es su principio. */
     var pie = document.createElement('div');
     pie.className = 'grupo-pie';
     pie.innerHTML = '<button class="mantener" data-candado="' + c + '"></button>';
     if (limpia) pie.appendChild(limpia);
-    cuerpo.appendChild(pie);
+    cuerpo.insertBefore(pie, cuerpo.firstChild);
     g.appendChild(cuerpo);
 
     /* El renglón lleva el ESTADO, no el mando. Había un candado pulsable por
