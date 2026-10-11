@@ -1,0 +1,21 @@
+<!-- Cactácea — un solo cactus columnar, al modo de Armatocereus procerus o
+     Haageocereus acranthus: una columna gruesa de punta redonda, con un
+     brazo que sale en codo por la izquierda.
+
+     Lo que lo hace cactus son las COSTILLAS, dos líneas verticales que
+     dividen la columna en tres gajos, y las espinas: pares en uve sobre las
+     costillas y púas cortas que asoman por el borde. La mancha tenue le da
+     cuerpo, pero la columna se lee sola por el contorno. Es el único dibujo
+     del juego sin una línea curva de hoja ni de rama: todo es vertical y
+     romo. La zona de cactáceas del juego de hábitats son tres columnas
+     flacas y separadas; ésta es una sola, ancha, para que se vean las
+     costillas, que allí no caben. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<path d="M26 86H54"/>
+<path d="M31 86V28a9 9 0 0 1 18 0V86Z" fill="currentColor" opacity=".12" stroke="none"/>
+<path d="M31 64h-6a3 3 0 0 1-3-3V48a4.5 4.5 0 0 1 9 0Z" fill="currentColor" opacity=".12" stroke="none"/>
+<path d="M31 86V28a9 9 0 0 1 18 0V86"/>
+<path d="M31 64h-6a3 3 0 0 1-3-3V48a4.5 4.5 0 0 1 9 0"/>
+<path d="M37 83V24M43 83V24"/>
+<path stroke-width="1.4" d="M26.5 60V51M37 42l-2-2M37 42l2-2M37 58l-2-2M37 58l2-2M37 74l-2-2M37 74l2-2M43 50l-2-2M43 50l2-2M43 66l-2-2M43 66l2-2M49 36l3-2M49 48l3-2M49 60l3-2M49 72l3-2M31 36l-3-2M31 76l-3-2M22 56l-3-2"/>
+</svg>

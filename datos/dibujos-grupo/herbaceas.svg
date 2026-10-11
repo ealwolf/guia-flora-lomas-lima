@@ -1,0 +1,28 @@
+<!-- Herbácea — una sola planta de tallo blando, al modo de Alstroemeria
+     lineatiflora o Anthericum eccremorrhizum, las hierbas de flor de la
+     loma.
+
+     Un tallo fino que sube derecho con un leve vaivén, tres hojas
+     lanceoladas alternas, una flor abierta de cinco pétalos arriba y un
+     capullo a un lado. Nada más: es el grupo de 102 especies, el «por
+     defecto», y por eso es el dibujo más desnudo del juego. Lo que lo
+     separa de la trepadora es que el tallo va ERGUIDO y solo, sin tutor y
+     sin enroscarse; de la arbustiva, que es un tallo y no una mata; de la
+     Ephedra, que lleva hojas y flor. La hierba del juego de hábitats es una
+     estera que se corta con el lienzo; ésta es una planta entera, con su
+     suelo corto debajo. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<path d="M26 86H54"/>
+<path d="M40 86C41 74 38 60 40 44C40.5 39 40 35 40 33"/>
+<path d="M40 74C33 74 27 70 25 63C31 62 38 67 40 74Z"/>
+<path d="M40 63C47 63 53 59 55 52C49 51 42 56 40 63Z"/>
+<path d="M40 52C34 52 29 48 28 42C33 42 38 46 40 52Z"/>
+<path d="M40 48C44 46 48 44 51.5 41.5"/>
+<ellipse cx="54" cy="38" rx="2.5" ry="4.5" transform="rotate(35 54 38)"/>
+<circle cx="40" cy="30" r="3"/>
+<path d="M40 27C36.5 24 36 20.5 40 19C44 20.5 43.5 24 40 27Z"/>
+<path d="M40 27C36.5 24 36 20.5 40 19C44 20.5 43.5 24 40 27Z" transform="rotate(72 40 30)"/>
+<path d="M40 27C36.5 24 36 20.5 40 19C44 20.5 43.5 24 40 27Z" transform="rotate(144 40 30)"/>
+<path d="M40 27C36.5 24 36 20.5 40 19C44 20.5 43.5 24 40 27Z" transform="rotate(216 40 30)"/>
+<path d="M40 27C36.5 24 36 20.5 40 19C44 20.5 43.5 24 40 27Z" transform="rotate(288 40 30)"/>
+</svg>

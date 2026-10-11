@@ -4,6 +4,16 @@
 'use strict';
 
 var G = window.GUIA, ICO = window.ICONOS || {}, DIBH = window.DIBUJOS || {};
+var DIBG = window.DIBUJOS_GRUPO || {};
+/* El nombre de archivo del dibujo de cada grupo. El dato trae el nombre con
+   tildes y el archivo no las lleva, así que el puente va escrito y no
+   adivinado. construir.py avisa si el dato deja de cuadrar. */
+var ARCHIVO_GRUPO = {
+  'Herbáceas': 'herbaceas', 'Arbustivas': 'arbustivas',
+  'Cactáceas': 'cactaceas', 'Trepadoras': 'trepadoras',
+  'Arbóreas': 'arboreas', 'Helechos': 'helechos',
+  'Ephedrales': 'ephedrales', 'Parásitas': 'parasitas'
+};
 var $  = function (s, r) { return (r || document).querySelector(s); };
 var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
@@ -1083,10 +1093,16 @@ var HABITATS = [
 
 /* El envoltorio va aquí y no en cada dibujo: así los ocho comparten lienzo y
    grosor de trazo por construcción, y el archivo guarda sólo las líneas. */
-function dibujoHabitat(n) {
-  var cuerpo = DIBH[n];
+function dibujoHabitat(n) { return lienzo(DIBH[n], 'hab-dib'); }
+function dibujoGrupo(n) { return lienzo(DIBG[n], 'hab-dib'); }
+
+/* El envoltorio de los dibujos, uno para los dos juegos. En el archivo cada
+   dibujo lo lleva -para poder abrirlo y verlo suelto- pero lo que se guarda
+   es sólo el interior, así que el lienzo y el trazo los pone aquí: no hay
+   forma de que un dibujo se salga del juego. */
+function lienzo(cuerpo, clase) {
   if (!cuerpo) return '';
-  return '<svg class="hab-dib" viewBox="0 0 80 100" aria-hidden="true" ' +
+  return '<svg class="' + clase + '" viewBox="0 0 80 100" aria-hidden="true" ' +
          'focusable="false" fill="none" stroke="currentColor" stroke-width="2" ' +
          'stroke-linecap="round" stroke-linejoin="round">' + cuerpo + '</svg>';
 }
@@ -1094,10 +1110,19 @@ function dibujoHabitat(n) {
 function pintarFiltros() {
   pintarColores();
 
+  /* Con dibujo, como los hábitats. El grupo es el PORTE de la planta -si es
+     hierba, mata, árbol, trepadora- y eso es una forma: dibujada se reconoce
+     de un vistazo y escrita hay que leer ocho palabras que se parecen.
+
+     Los dibujos son de una sola planta, no de un paisaje, justo para que no
+     se confundan con los de «Hábitat», que son escenas y están dos grupos más
+     abajo preguntando otra cosa: aquéllos, qué crece alrededor; éstos, qué es
+     esta planta. */
   $('#f-grupo').innerHTML = G.grupos.map(function (g) {
-    return chip(esc(g.nombre),
-                F.grupo.indexOf(g.nombre) >= 0,
-                'data-f="grupo" data-v="' + esc(g.nombre) + '"');
+    var dib = dibujoGrupo(ARCHIVO_GRUPO[g.nombre]);
+    return '<button class="hab" aria-pressed="' +
+           (F.grupo.indexOf(g.nombre) >= 0) + '" data-f="grupo" data-v="' +
+           esc(g.nombre) + '">' + dib + '<span>' + esc(g.nombre) + '</span></button>';
   }).join('');
 
   // alfabetico: G.lomas viene en el orden de la leyenda del libro, que aqui

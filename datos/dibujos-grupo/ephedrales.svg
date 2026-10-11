@@ -1,0 +1,18 @@
+<!-- Ephedrales — una sola mata de pinco-pinco, Ephedra americana, la única
+     del grupo: una escoba de tallos verdes, rectos y rígidos, sin una hoja,
+     que se abren desde el pie.
+
+     Lo que la hace reconocible son los NUDOS: el tallo va articulado como
+     una caña, y en cada nudo hay un anillo de escamas y, a veces, salen
+     ramitas en verticilo. Por eso cada tallo lleva rayitas cruzadas a
+     trechos y de algunos nudos salen ramas rectas en ángulo cerrado. Todas
+     las líneas son RECTAS: eso es lo que la separa de la hierba, que sube
+     con vaivén y lleva hojas y flor, y de la cuscuta, que también va sin
+     hojas pero es un hilo blando enroscado en otra planta. La Ephedra se
+     sostiene sola, tiesa, y no se enrosca en nada. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<path d="M24 86H56"/>
+<path d="M33 85L18 46M36.5 86L28 30M40 86V22M43.5 86L52 30M47 85L62 46"/>
+<path d="M31.1 50.7L22 35M48.9 50.7L58 35M40 56L35 44M40 56L45 44"/>
+<path d="M24.7 70.3L29.3 68.5M19.4 56.7L24.1 54.9M31.2 67.9L36.2 67.1M28.6 51.1L33.6 50.3M26.5 37.1L31.5 36.3M37.5 70H42.5M37.5 56H42.5M37.5 42H42.5M37.5 30H42.5M43.8 67.1L48.8 67.9M46.4 50.3L51.4 51.1M48.5 36.3L53.5 37.1M50.7 68.5L55.3 70.3M55.9 54.9L60.6 56.7M24.8 43.8L28.2 41.8M51.8 41.8L55.2 43.8"/>
+</svg>

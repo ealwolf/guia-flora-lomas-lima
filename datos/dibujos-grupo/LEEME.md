@@ -1,0 +1,61 @@
+# Los dibujos de los grupos
+
+Los ocho grupos de porte que usa la guía, dibujados para esta app.
+**No salen del PDF**: son ilustración propia, y por eso viven en `datos/` y no
+en `datos/crudo/`.
+
+| Archivo | Grupo | Especies |
+| --- | --- | --- |
+| `herbaceas.svg` | Herbáceas | 102 |
+| `arbustivas.svg` | Arbustivas | 13 |
+| `cactaceas.svg` | Cactáceas | 8 |
+| `trepadoras.svg` | Trepadoras | 5 |
+| `arboreas.svg` | Arbóreas | 3 |
+| `helechos.svg` | Helechos | 1 |
+| `ephedrales.svg` | Ephedrales | 1 |
+| `parasitas.svg` | Parásitas | 1 |
+
+## Las reglas: las mismas que los hábitats
+
+Lienzo `0 0 80 100`, mismo envoltorio, todo en `currentColor`, un solo grosor
+-2, y 1,4 para el detalle-, y los rellenos tenues (`opacity` .12) son sombra y
+nunca información. `scripts/construir.py` lo comprueba con el mismo lector que
+usa para los hábitats, así que un dibujo que se salga del juego no entra.
+
+Están en [LEEME de los hábitats](../dibujos-habitat/LEEME.md) con más detalle.
+
+## Lo único que cambia, y es lo importante
+
+**Aquí se dibuja UNA planta; allí, un paisaje.**
+
+Cuatro de estos ocho se llaman casi igual que cuatro hábitats -arbórea,
+arbustiva, herbácea, cactáceas- y no son lo mismo: el hábitat dice qué crece
+*alrededor* de la especie, el grupo dice qué *es* la especie. Los dos filtros
+están en el mismo panel, a dos grupos de distancia.
+
+Si los dibujos se parecieran, nadie distinguiría los filtros. Por eso:
+
+- El hábitat es una escena: varias plantas, y la línea del suelo cruza el
+  lienzo entero (`M0 82H80`) porque sus cuatro primeras son cuatro ventanas de
+  un mismo campo.
+- El grupo es un ejemplar: una planta sola, centrada, y la línea del suelo es
+  corta (`M22 86H58`) o no está, que es la firma contraria.
+
+## Las parejas que se confunden
+
+Al retocar uno, mirar a su pareja. Son tres y están resueltas así:
+
+- **Arbóreas / Arbustivas** — el árbol tiene UN tronco, dibujado con dos
+  líneas que convergen, y la copa en alto, con aire entre la copa y el suelo.
+  La mata tiene tallos finos de una línea que salen de un pie ancho, y la copa
+  le baja hasta el suelo por los dos lados. Lo demás -contorno de bultos,
+  mancha tenue, ramitas de 1,4- es igual en los dos, para que se vea que lo
+  único que cambia es el esqueleto.
+- **Herbáceas / Trepadoras** — la hierba se sostiene sola, tallo casi vertical
+  con hojas lanceoladas y una flor. La trepadora se enrosca en un tutor
+  visible, con cortes de línea en cada cruce y zarcillos en espiral.
+- **Ephedrales / Parásitas** — la efedra es todo recto: un haz rígido de
+  tallos sin hojas con las marcas de los nudos, de pie sobre su línea de
+  suelo. La cuscuta es una hebra curva en espiras apretadas alrededor de OTRA
+  planta -el huésped es lo único con hojas- con los cabos colgando y sin línea
+  de suelo.

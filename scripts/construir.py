@@ -290,6 +290,14 @@ def main():
                          'añade o renombra el dibujo en datos/dibujos-habitat/ '
                          'y la familia en HABITATS, en app/js/app.js'
                          % (sobran or '-', faltan or '-'))
+    # Lo mismo con los grupos de porte, que tambien llevan dibujo a mano.
+    if set(cgru) != set(GRUPOS_DIBUJADOS):
+        raise SystemExit('grupos sin dibujo: %s; dibujos sin grupo: %s. '
+                         'anade o renombra el dibujo en datos/dibujos-grupo/ '
+                         'y el nombre de archivo en ARCHIVO_GRUPO, en '
+                         'app/js/app.js'
+                         % (sorted(set(cgru) - set(GRUPOS_DIBUJADOS)) or '-',
+                            sorted(set(GRUPOS_DIBUJADOS) - set(cgru)) or '-'))
     # se cuenta por 'colores' porque el filtro acepta cualquiera de ellos
     ccol, clom = cuenta('colores'), cuenta('lomas')
 
@@ -360,7 +368,8 @@ def main():
         # iconos -son dibujos y se cargan a la vez- pero en otra variable: no
         # son cuadrados de 256 como los de Phosphor sino rectángulos de 4:5,
         # y svgIcono() no sabría envolverlos.
-        dib = dibujos_habitat()
+        dib = dibujos('dibujos-habitat')
+        dgr = dibujos('dibujos-grupo')
         pi = os.path.join(APPJS, 'iconos.js')
         with open(pi, 'w', encoding='utf-8') as fh:
             fh.write('window.ICONOS=')
@@ -370,8 +379,12 @@ def main():
                 fh.write('window.DIBUJOS=')
                 json.dump(dib, fh, ensure_ascii=False, separators=(',', ':'))
                 fh.write(';\n')
-        print('-> app/js/iconos.js %.0f KB  (%d iconos, %d dibujos)'
-              % (os.path.getsize(pi) / 1024, len(cuerpo), len(dib)))
+            if dgr:
+                fh.write('window.DIBUJOS_GRUPO=')
+                json.dump(dgr, fh, ensure_ascii=False, separators=(',', ':'))
+                fh.write(';\n')
+        print('-> app/js/iconos.js %.0f KB  (%d iconos, %d dibujos, %d de grupo)'
+              % (os.path.getsize(pi) / 1024, len(cuerpo), len(dib), len(dgr)))
 
     escribir_sw()
 
@@ -399,14 +412,17 @@ ENVOLTORIO = ('viewBox="0 0 80 100"', 'fill="none"', 'stroke="currentColor"',
 PROHIBIDO = ('<text', '<style', '<defs', ' id=', '<image', 'xlink', '#')
 
 
-def dibujos_habitat():
-    """Los .svg de datos/dibujos-habitat, sin su <svg> de fuera.
+def dibujos(carpeta):
+    """Los .svg de una carpeta de dibujos, sin su <svg> de fuera.
 
-    Se guarda sólo el interior: el envoltorio lo pone dibujoHabitat(), en
-    app/js/app.js, y así los ocho comparten lienzo y trazo por construcción.
-    El archivo de disco sí lo lleva, para poder abrirlo y verlo por su cuenta.
+    Se guarda sólo el interior: el envoltorio lo pone la app, y así todos los
+    dibujos de un juego comparten lienzo y trazo por construcción. El archivo
+    de disco sí lo lleva, para poder abrirlo y verlo por su cuenta.
+
+    Hay dos juegos, «dibujos-habitat» y «dibujos-grupo», y las reglas son las
+    mismas para los dos, así que el lector también.
     """
-    d = os.path.join(RAIZ, 'datos', 'dibujos-habitat')
+    d = os.path.join(RAIZ, 'datos', carpeta)
     if not os.path.isdir(d):
         return {}
     dib = {}
@@ -420,17 +436,27 @@ def dibujos_habitat():
             raise SystemExit('%s: no encuentro el <svg>' % f)
         for a in ENVOLTORIO:
             if a not in m.group(1):
-                raise SystemExit('%s: al <svg> le falta %s. Los ocho dibujos '
-                                 'comparten envoltorio; mira '
-                                 'datos/dibujos-habitat/LEEME.md' % (f, a))
+                raise SystemExit('%s: al <svg> le falta %s. Los dibujos de '
+                                 'un juego comparten envoltorio; mira '
+                                 'datos/%s/LEEME.md' % (f, a, carpeta))
         cuerpo = re.sub(r'\s*\n\s*', '', m.group(2)).strip()
         for p in PROHIBIDO:
             if p in cuerpo:
-                raise SystemExit('%s: lleva «%s», y los ocho van incrustados '
+                raise SystemExit('%s: lleva «%s», y todos van incrustados '
                                  'en la misma página' % (f, p.strip()))
         dib[f[:-4]] = cuerpo
     return dib
 
+
+# Los ocho grupos de porte que usa la guia. Igual que con los habitats: estan
+# aqui para que la construccion avise si el dato deja de cuadrar con los
+# dibujos, y el nombre de archivo de cada uno esta en app/js/app.js.
+GRUPOS_DIBUJADOS = {
+    'Herbáceas': 'herbaceas', 'Arbustivas': 'arbustivas',
+    'Cactáceas': 'cactaceas', 'Trepadoras': 'trepadoras',
+    'Arbóreas': 'arboreas', 'Helechos': 'helechos',
+    'Ephedrales': 'ephedrales', 'Parásitas': 'parasitas',
+}
 
 # Los ocho del libro (pag. 12). Van aqui para que construir.py pueda avisar si
 # el dato deja de coincidir con los dibujos; el reparto en tres familias y el

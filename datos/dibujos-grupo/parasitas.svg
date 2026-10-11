@@ -1,0 +1,21 @@
+<!-- Parásita — la cuscuta, Cuscuta foetida, la única del grupo: un hilo sin
+     hojas ni raíz enroscado en el tallo de otra planta, de la que vive.
+
+     Aquí hay dos plantas y hay que ver cuál es cuál. La huésped es el tallo
+     recto del centro con dos hojas arriba: es ella la que tiene hojas, y
+     por eso van, para que se entienda que lo que da vueltas no es suyo. La
+     cuscuta es el muelle: tres vueltas APRETADAS alrededor del tallo, y de
+     cada extremo un cabo suelto y flojo, uno que cuelga hacia el suelo y
+     otro que se descuelga a la derecha buscando otro apoyo. Lo que la
+     separa de la trepadora es que no tiene hoja ninguna, que las vueltas
+     son muchas y juntas y no pocas y anchas, y que lo que abraza es una
+     planta con hojas, no una vara. Y de la Ephedra, que también va sin
+     hojas, la separa que ésta es un hilo blando que se enrosca y aquélla
+     una escoba tiesa. Sin línea de suelo: la cuscuta no toca el suelo, vive
+     en el aire. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<path d="M40 88V24"/>
+<path d="M40 36C34 36 28 33 26 26C32 25 38 30 40 36Z"/>
+<path d="M40 28C46 28 51 25 53 18C47 17 42 22 40 28Z"/>
+<path d="M29 87C27 86 26 83 27 80C29 75 34 73 40 72C48 71.5 48 67.5 40 67C32 66.5 32 62.5 40 62C48 61.5 48 57.5 40 57C32 56.5 32 52.5 40 52C48 51.5 48 47.5 40 47C32 46.5 32 42.5 40 42C47 39 56 42 58 50C59 56 57 62 54 66"/>
+</svg>

@@ -719,6 +719,14 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 .hab-fila + .hab-fam { margin-top: 13px; }
+/* Los ocho grupos, en la misma rejilla de cuatro que los hábitats: son la
+   misma clase de pregunta -elige una forma- y conviene que se manejen igual.
+   Lo que los separa es el dibujo, que aquí es una planta sola y allí un
+   paisaje. */
+#f-grupo {
+  display: grid; gap: 8px; font-size: var(--t-0);
+  grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 37em;
+}
 .hab {
   display: flex; flex-direction: column; align-items: center; gap: 6px;
   /* Sin acolchado a los lados: la primera familia es un campo partido en cuatro
