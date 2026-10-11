@@ -2,38 +2,11 @@
 # buscadores, y de eso se encargan de verdad el <meta name="robots"
 # noindex> del index y la cabecera X-Robots-Tag de _headers; esto solo pide
 # que no lo rastreen.
+#
+# Una sola regla y sin excepciones a proposito. Hubo una version con nueve
+# lectores de vista previa abiertos por nombre, para que WhatsApp pudiera
+# leer las og:, y se quito: mantener a mano una lista de que aplicacion
+# puede mirar es mas de lo que esta guia necesita. Los que no consultan
+# este archivo -Telegram, Signal, Discord- siguen enseniando la previa.
 User-agent: *
 Disallow: /
-
-# Excepcion, y solo esta: los lectores que hacen la vista previa de un
-# enlace cuando alguien lo pega en un chat. No son buscadores y no indexan
-# nada; lo unico que hacen es leer las etiquetas og: para enseniar el nombre
-# y la foto en vez de una direccion pelada. Sin esta excepcion, el Disallow
-# de arriba les impide mirar y el enlace llega al chat desnudo.
-# El noindex les sigue llegando igual, asi que el sitio sigue sin indexarse.
-User-agent: facebookexternalhit
-Allow: /
-
-User-agent: WhatsApp
-Allow: /
-
-User-agent: TelegramBot
-Allow: /
-
-User-agent: Discordbot
-Allow: /
-
-User-agent: Slackbot
-Allow: /
-
-User-agent: Slackbot-LinkExpanding
-Allow: /
-
-User-agent: LinkedInBot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: SkypeUriPreview
-Allow: /
