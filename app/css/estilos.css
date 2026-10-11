@@ -668,28 +668,35 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .grupo.abierto .grupo-ico, .grupo.abierto .grupo-tit { color: var(--texto); }
 .grupo-cuerpo { padding-top: 4px; }
 
-/* El candado: lo que esta cerrado no se lo lleva «Limpiar». Fuera del boton
-   que pliega, que si no se abriria el grupo al ponerlo. */
-.candado {
-  flex: none; width: 40px; height: 40px; border-radius: 10px;
-  display: grid; place-items: center; color: var(--tenue);
-}
-.candado .ico { width: 19px; height: 19px; }
-.candado:hover, .candado:focus-visible { background: var(--superficie-2); color: var(--texto); }
-/* Cerrado, la tinta más fuerte que hay; abierto, el gris de lo secundario.
-   Sin relleno: con la pastilla entera el candado pesaba más que el nombre
-   del grupo y la fila se leía al revés, como si lo importante fuera el
-   candado. Un renglón plegado tiene tres cosas -nombre, cuántos filtros,
-   candado- y el orden de importancia es ése.
+/* El candadito del renglón: sólo dice que ese grupo se mantiene al limpiar.
+   No se pulsa -el mando está dentro, con su nombre- y por eso no tiene forma
+   de botón ni hueco reservado: aparece y ya. Macizo, que es lo que se ve de
+   lejos y lo que se ve sin distinguir el color. */
+.grupo-lock { flex: none; line-height: 0; color: var(--texto); }
+.grupo-lock:empty { display: none; }
+.grupo-lock .ico { width: 16px; height: 16px; }
 
-   Lo que de verdad separa los dos estados no es el color sino el dibujo:
-   echado es un candado macizo, abierto es uno de línea con el arco suelto.
-   El color lo refuerza y marca la jerarquía -de gris de apoyo a tinta de
-   texto-, pero quien no distinga el tono sigue viendo un candado macizo, que
-   es lo que hay que ver antes de pulsar «Limpiar». */
-.candado.cerrado { color: var(--texto); }
-.candado.cerrado:hover, .candado.cerrado:focus-visible {
-  background: var(--superficie-2); color: var(--texto);
+/* El pie de cada grupo: mantener a la izquierda, quitar a la derecha. */
+.grupo-pie {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 12px; padding-top: 2px;
+}
+/* Con su nombre escrito. Era un candado suelto en la fila del título, y un
+   candado a secas no dice «Limpiar no se lo va a llevar»: lo decía el
+   tooltip, y un tooltip no lo tiene un dedo. */
+.mantener {
+  display: inline-flex; align-items: center; gap: 7px;
+  min-height: 36px; padding: 5px 12px 5px 10px; border-radius: 999px;
+  border: 1px solid var(--borde-control); background: var(--superficie);
+  color: var(--tenue); font-size: var(--t-1); font-weight: 600;
+}
+.mantener .ico { width: 17px; height: 17px; flex: none; }
+.mantener:hover, .mantener:focus-visible {
+  border-color: var(--acento); color: var(--texto);
+}
+.mantener[aria-pressed="true"] {
+  background: var(--acento-sua); border-color: var(--acento);
+  color: var(--acento-txt);
 }
 .envoltura { display: flex; flex-wrap: wrap; gap: 7px; }
 
@@ -900,7 +907,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 
 /* quitar un solo campo, sin tocar los demas */
 .limpia {
-  display: block; margin: 10px 0 0 auto;
+  margin-left: auto;
   font-size: var(--t-0); font-weight: 700; letter-spacing: .03em;
   text-transform: none; padding: 4px 10px; border-radius: 8px;
   color: var(--acento-txt); background: var(--acento-sua);

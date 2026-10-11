@@ -3058,17 +3058,37 @@ function prepararGrupos() {
     cuerpo.id = 'g-' + c;
     cuerpo.hidden = true;
     while (h.nextSibling) cuerpo.appendChild(h.nextSibling);
-    if (limpia) cuerpo.appendChild(limpia);
+
+    /* El pie del grupo: mantener a la izquierda, quitar a la derecha. Las dos
+       cosas que se le hacen al grupo entero, juntas y al final de lo suyo. */
+    var pie = document.createElement('div');
+    pie.className = 'grupo-pie';
+    pie.innerHTML = '<button class="mantener" data-candado="' + c + '"></button>';
+    if (limpia) pie.appendChild(limpia);
+    cuerpo.appendChild(pie);
     g.appendChild(cuerpo);
 
+    /* El renglón lleva el ESTADO, no el mando. Había un candado pulsable por
+       grupo -nueve- y casi todos no hacían nada: echarle el candado a un
+       grupo vacío no protege nada, porque «Limpiar» lo deja vacío y ya lo
+       está. Nueve mandos para uno o dos que importan.
+
+       Y un candado a secas no dice lo que hace. Ahora el mando está dentro,
+       con su nombre escrito, y aquí sólo queda un candadito que aparece
+       cuando ese grupo está protegido Y tiene algo que proteger.
+
+       Va antes de la cifra y no al final: el título es el elemento flexible
+       de la fila, así que lo que se meta por delante del chevrón no lo mueve.
+       Escondiendo el botón de antes con display:none los chevrones se
+       desplazaban 44 px y la columna quedaba en escalera. */
     h.innerHTML =
       '<button class="grupo-cab" aria-expanded="false" aria-controls="g-' + c + '">' +
         '<span class="grupo-ico">' + icono + '</span>' +
         '<span class="grupo-tit">' + titulo + '</span>' +
+        '<span class="grupo-lock" aria-hidden="true"></span>' +
         '<b class="grupo-n"></b>' +
         '<span class="grupo-caret">' + svgIcono('caret-down') + '</span>' +
-      '</button>' +
-      '<button class="candado" data-candado="' + c + '"></button>';
+      '</button>';
   });
   pintarIconos($('#panel'));
   pintarGrupos();
@@ -3087,29 +3107,29 @@ function abrirGrupo(c, si) {
    puesto dentro. */
 function pintarGrupos() {
   $$('#panel .grupo[data-campo]').forEach(function (g) {
-    var c = g.dataset.campo, n = puestosEn(c);
+    var c = g.dataset.campo, n = puestosEn(c), k = cerrado(c);
     var tit = g.querySelector('.grupo-tit').textContent;
     g.querySelector('.grupo-n').textContent = n ? n : '';
+    /* El candadito del renglón sólo sale cuando hay algo que proteger: un
+       grupo con candado y vacío no está protegiendo nada todavía. */
+    g.querySelector('.grupo-lock').innerHTML =
+        (k && n) ? svgIcono('lock-simple-fill') : '';
     g.querySelector('.grupo-cab').setAttribute('aria-label',
-        tit + (n ? ', ' + n + (n === 1 ? ' puesto' : ' puestos') : ', sin filtrar'));
-    var k = g.querySelector('.candado');
-    /* Macizo cuando está echado, de línea cuando está abierto. Entre el
-       candado abierto y el cerrado de línea sólo cambiaba de sitio el arco,
-       y a 19 px eso casi no se ve; macizo contra hueco se ve de lejos y se
-       ve igual sin distinguir el color. Es el mismo recurso que marcar o no
-       marcar una estrella. */
-    k.innerHTML = svgIcono(cerrado(c) ? 'lock-simple-fill' : 'lock-simple-open');
-    k.classList.toggle('cerrado', cerrado(c));
-    k.setAttribute('aria-pressed', cerrado(c) ? 'true' : 'false');
-    k.setAttribute('aria-label', cerrado(c)
-        ? 'Quitarle el candado a ' + tit
-        : 'Ponerle candado a ' + tit + ': «Limpiar» no lo borrará');
-    k.setAttribute('title', k.getAttribute('aria-label'));
+        tit + (n ? ', ' + n + (n === 1 ? ' puesto' : ' puestos') : ', sin filtrar') +
+        (k && n ? ', se mantiene al limpiar' : ''));
+
+    var m = g.querySelector('.mantener');
+    m.innerHTML = svgIcono(k ? 'lock-simple-fill' : 'lock-simple-open') +
+                  '<span>Mantener al limpiar</span>';
+    m.setAttribute('aria-pressed', k ? 'true' : 'false');
+    m.setAttribute('title', k
+        ? '«Limpiar» no borrará ' + tit
+        : '«Limpiar» borrará ' + tit + ' con lo demás');
   });
 }
 
 $('#panel').addEventListener('click', function (ev) {
-  var k = ev.target.closest('.candado');
+  var k = ev.target.closest('[data-candado]');
   if (k) { alternarCandado(k.dataset.candado); return; }
   var cab = ev.target.closest('.grupo-cab');
   if (!cab) return;
