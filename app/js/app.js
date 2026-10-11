@@ -3059,43 +3059,36 @@ function prepararGrupos() {
     cuerpo.hidden = true;
     while (h.nextSibling) cuerpo.appendChild(h.nextSibling);
 
-    /* Las dos cosas que se le hacen al grupo entero -mantener a la izquierda,
-       quitar a la derecha- van ARRIBA del todo, nada más abrirlo.
-
-       Estuvieron al final y había que pasar el grupo entero para llegar.
-       Medido: la hoja del panel enseña 555 px y el cuerpo de Hábitat mide
-       626, el de Familia 515 y el de Ladera 476, así que en tres de los
-       nueve los dos botones caían fuera de la pantalla y había que bajar una
-       pantalla larga para quitar un filtro. Arriba se ven siempre, porque lo
-       primero que se ve al abrir un grupo es su principio. */
-    var pie = document.createElement('div');
-    pie.className = 'grupo-pie';
-    pie.innerHTML = '<button class="mantener" data-candado="' + c + '"></button>';
-    if (limpia) pie.appendChild(limpia);
-    cuerpo.insertBefore(pie, cuerpo.firstChild);
+    if (limpia) limpia.remove();            // se rehace en la fila del título
     g.appendChild(cuerpo);
 
-    /* El renglón lleva el ESTADO, no el mando. Había un candado pulsable por
-       grupo -nueve- y casi todos no hacían nada: echarle el candado a un
-       grupo vacío no protege nada, porque «Limpiar» lo deja vacío y ya lo
-       está. Nueve mandos para uno o dos que importan.
+    /* La fila del título: lo que es, cuántos lleva, los dos mandos del grupo
+       y el chevrón. Los mandos salen sólo si el grupo tiene algo -sin nada no
+       hay qué reiniciar ni qué proteger- y salen AQUÍ y no dentro.
 
-       Y un candado a secas no dice lo que hace. Ahora el mando está dentro,
-       con su nombre escrito, y aquí sólo queda un candadito que aparece
-       cuando ese grupo está protegido Y tiene algo que proteger.
+       Dentro estuvieron, y aparecer dentro movía las cosas: al marcar la
+       primera opción, la barra se metía arriba del cuerpo y empujaba todas
+       las opciones 48 px hacia abajo, justo con el dedo encima. El segundo
+       toque caía en otra ficha. Esta fila, en cambio, tiene alto fijo: lo que
+       aparezca dentro de ella no mueve nada de lo de abajo.
 
-       Va antes de la cifra y no al final: el título es el elemento flexible
-       de la fila, así que lo que se meta por delante del chevrón no lo mueve.
-       Escondiendo el botón de antes con display:none los chevrones se
-       desplazaban 44 px y la columna quedaba en escalera. */
+       El chevrón sale del botón que pliega y pasa a ser el último de la fila,
+       siempre. Dentro del botón, que es el elemento flexible, se corría al
+       aparecer los mandos y la columna quedaba en escalera; fuera y el
+       último, no se mueve nunca. Es un adorno pulsable que repite lo que ya
+       hace la fila, así que va oculto al lector de pantalla: quien navega con
+       teclado usa el botón de la fila, que es el que lleva aria-expanded. */
     h.innerHTML =
       '<button class="grupo-cab" aria-expanded="false" aria-controls="g-' + c + '">' +
         '<span class="grupo-ico">' + icono + '</span>' +
         '<span class="grupo-tit">' + titulo + '</span>' +
-        '<span class="grupo-lock" aria-hidden="true"></span>' +
         '<b class="grupo-n"></b>' +
-        '<span class="grupo-caret">' + svgIcono('caret-down') + '</span>' +
-      '</button>';
+      '</button>' +
+      '<button class="candado" data-candado="' + c + '"></button>' +
+      '<button class="reinicia" data-limpia="' + c + '">' +
+        svgIcono('arrow-counter-clockwise') + '</button>' +
+      '<button class="grupo-caret" tabindex="-1" aria-hidden="true">' +
+        svgIcono('caret-down') + '</button>';
   });
   pintarIconos($('#panel'));
   pintarGrupos();
@@ -3117,39 +3110,42 @@ function pintarGrupos() {
     var c = g.dataset.campo, n = puestosEn(c), k = cerrado(c);
     var tit = g.querySelector('.grupo-tit').textContent;
     g.querySelector('.grupo-n').textContent = n ? n : '';
-    /* El candadito del renglón sólo sale cuando hay algo que proteger: un
-       grupo con candado y vacío no está protegiendo nada todavía. */
-    g.querySelector('.grupo-lock').innerHTML =
-        (k && n) ? svgIcono('lock-simple-fill') : '';
     g.querySelector('.grupo-cab').setAttribute('aria-label',
         tit + (n ? ', ' + n + (n === 1 ? ' puesto' : ' puestos') : ', sin filtrar') +
         (k && n ? ', se mantiene al limpiar' : ''));
 
-    /* El pie entero -mantener y quitar- sólo cuando hay algo marcado: sin
-       nada no hay qué quitar ni qué proteger, y dos botones muertos al final
-       de cada grupo son dos cosas que leer y descartar nueve veces.
+    /* Los dos mandos aparecen y desaparecen juntos con la cifra, y los tres
+       por la misma razón: que haya algo en el grupo. Al aparecer, la cifra
+       cae ya en su sitio definitivo -el botón de la fila encoge para hacerles
+       hueco-, así que no hay nada que se recoloque después. */
+    var m = g.querySelector('.candado'), r = g.querySelector('.reinicia');
+    m.classList.toggle('oculto', !n);
+    r.classList.toggle('oculto', !n);
 
-       Se pierde con esto poder echarle el candado a un grupo vacío, o sea
-       «lo que ponga aquí luego, guárdamelo». Era un uso raro y no se
-       explicaba solo; y lo que de verdad lo hacía útil -que lo guardado con
-       candado vuelva al abrir la app en frío- sigue funcionando, porque eso
-       guarda el valor y no sólo el candado. */
-    g.querySelector('.grupo-pie').classList.toggle('oculto', !n);
-
-    var m = g.querySelector('.mantener');
-    m.innerHTML = svgIcono(k ? 'lock-simple-fill' : 'lock-simple-open') +
-                  '<span>Mantener al limpiar</span>';
+    m.innerHTML = svgIcono(k ? 'lock-simple-fill' : 'lock-simple-open');
+    m.classList.toggle('cerrado', k);
     m.setAttribute('aria-pressed', k ? 'true' : 'false');
+    m.setAttribute('aria-label', k
+        ? tit + ': «Limpiar» no lo borrará. Quitar la protección'
+        : tit + ': mantener al limpiar');
     m.setAttribute('title', k
         ? '«Limpiar» no borrará ' + tit
-        : '«Limpiar» borrará ' + tit + ' con lo demás');
+        : 'Mantener ' + tit + ' al limpiar');
+    r.setAttribute('aria-label', 'Quitar lo marcado en ' + tit);
+    r.setAttribute('title', 'Quitar lo marcado en ' + tit);
   });
 }
 
 $('#panel').addEventListener('click', function (ev) {
   var k = ev.target.closest('[data-candado]');
   if (k) { alternarCandado(k.dataset.candado); return; }
-  var cab = ev.target.closest('.grupo-cab');
+  /* El de reiniciar se atiende aquí y no con los [data-limpia] de siempre:
+     aquéllos se enganchan al arrancar, uno por botón, y estos botones aún no
+     existen -los hace prepararGrupos()-. Delegando en el panel da igual
+     cuándo nazcan. */
+  var r = ev.target.closest('.reinicia');
+  if (r) { F[r.dataset.limpia] = []; render(); return; }
+  var cab = ev.target.closest('.grupo-cab, .grupo-caret');
   if (!cab) return;
   var g = cab.closest('.grupo');
   abrirGrupo(g.dataset.campo, !g.classList.contains('abierto'));

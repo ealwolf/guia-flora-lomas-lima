@@ -662,45 +662,33 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   background: var(--acento); color: var(--sobre-acento);
 }
 .grupo-n:empty { display: none; }
-.grupo-caret { flex: none; line-height: 0; color: var(--tenue); }
+.grupo-caret {
+  flex: none; line-height: 0; color: var(--tenue);
+  width: 30px; height: 36px; display: grid; place-items: center;
+}
 .grupo-caret .ico { width: 18px; height: 18px; transition: transform .16s; }
 .grupo.abierto .grupo-caret .ico { transform: rotate(180deg); }
 .grupo.abierto .grupo-ico, .grupo.abierto .grupo-tit { color: var(--texto); }
 .grupo-cuerpo { padding-top: 4px; }
 
-/* El candadito del renglón: sólo dice que ese grupo se mantiene al limpiar.
-   No se pulsa -el mando está dentro, con su nombre- y por eso no tiene forma
-   de botón ni hueco reservado: aparece y ya. Macizo, que es lo que se ve de
-   lejos y lo que se ve sin distinguir el color. */
-.grupo-lock { flex: none; line-height: 0; color: var(--texto); }
-.grupo-lock:empty { display: none; }
-.grupo-lock .ico { width: 16px; height: 16px; }
-
-/* La barra de cada grupo, arriba del todo: mantener a la izquierda, quitar a
-   la derecha. Una raya debajo para que se lea como lo que es -los mandos del
-   grupo- y no como la primera de sus opciones. */
-.grupo-pie {
-  display: flex; align-items: center; gap: 10px;
-  margin: 2px 0 12px; padding-bottom: 11px;
-  border-bottom: 1px solid var(--borde);
+/* Los dos mandos del grupo, en la fila del título y sólo si hay algo. Fuera
+   del botón que pliega -si no, tocarlos abriría el grupo- y antes del
+   chevrón, que es el último de la fila y nunca se mueve. */
+.candado, .reinicia {
+  flex: none; width: 36px; height: 36px; border-radius: 10px;
+  display: grid; place-items: center; color: var(--tenue);
 }
-/* Con su nombre escrito. Era un candado suelto en la fila del título, y un
-   candado a secas no dice «Limpiar no se lo va a llevar»: lo decía el
-   tooltip, y un tooltip no lo tiene un dedo. */
-.mantener {
-  display: inline-flex; align-items: center; gap: 7px;
-  min-height: 36px; padding: 5px 12px 5px 10px; border-radius: 999px;
-  border: 1px solid var(--borde-control); background: var(--superficie);
-  color: var(--tenue); font-size: var(--t-1); font-weight: 600;
+.candado .ico, .reinicia .ico { width: 18px; height: 18px; }
+.candado:hover, .candado:focus-visible,
+.reinicia:hover, .reinicia:focus-visible {
+  background: var(--superficie-2); color: var(--texto);
 }
-.mantener .ico { width: 17px; height: 17px; flex: none; }
-.mantener:hover, .mantener:focus-visible {
-  border-color: var(--acento); color: var(--texto);
-}
-.mantener[aria-pressed="true"] {
-  background: var(--acento-sua); border-color: var(--acento);
-  color: var(--acento-txt);
-}
+/* Echado, la tinta más fuerte que hay. Lo que de verdad separa los dos
+   estados no es el color sino el dibujo: echado es un candado macizo y
+   abierto uno de línea con el arco suelto. Eso se ve de lejos y se ve igual
+   sin distinguir el color. */
+.candado.cerrado { color: var(--texto); }
+.candado.cerrado:hover, .candado.cerrado:focus-visible { color: var(--texto); }
 .envoltura { display: flex; flex-wrap: wrap; gap: 7px; }
 
 /* Los ocho hábitats, en tres familias y con dibujo. Eran ocho fichas de texto
