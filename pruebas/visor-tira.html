@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Banco de pruebas · la tira del visor</title>
+
+<!-- La hoja de estilos DE VERDAD. Lo que se ve aquí son las reglas que usa
+     la app; si cambian allí, cambian aquí. Lo único propio de esta página
+     son los mandos y el marco. -->
+<link rel="stylesheet" href="../app/css/estilos.css">
+
+<style>
+  html, body { margin: 0; height: 100%; }
+
+  /* ---------- la página de mandos ---------- */
+  body.mandos {
+    background: var(--fondo); color: var(--texto);
+    font: 400 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex; flex-direction: column; height: 100%;
+  }
+  .cabecera { padding: 14px 18px 12px; border-bottom: 1px solid var(--borde); }
+  .cabecera h1 { margin: 0 0 3px; font-size: 17px; }
+  .cabecera p { margin: 0; color: var(--tenue); font-size: 13px; max-width: 70ch; }
+  .mandos-fila {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px;
+    padding: 11px 18px; border-bottom: 1px solid var(--borde);
+  }
+  .mandos-fila label { font-size: 13px; font-weight: 600; color: var(--tenue); }
+  .mandos-fila input[type=range] { width: 190px; vertical-align: middle; }
+  .anchos { display: flex; flex-wrap: wrap; gap: 6px; }
+  .anchos button {
+    font: inherit; font-size: 13px; padding: 5px 11px; border-radius: 8px;
+    border: 1px solid var(--borde-control); background: var(--superficie);
+    color: var(--texto); cursor: pointer;
+  }
+  .anchos button[aria-pressed="true"] {
+    background: var(--acento); border-color: var(--acento); color: #fff;
+  }
+  .escenario {
+    flex: 1; min-height: 0; display: grid; place-items: center;
+    padding: 18px; background: var(--superficie-2);
+    background-image:
+      linear-gradient(45deg, rgba(128,128,128,.07) 25%, transparent 25%, transparent 75%, rgba(128,128,128,.07) 75%),
+      linear-gradient(45deg, rgba(128,128,128,.07) 25%, transparent 25%, transparent 75%, rgba(128,128,128,.07) 75%);
+    background-size: 22px 22px; background-position: 0 0, 11px 11px;
+  }
+  .escenario iframe {
+    border: 0; height: 100%; max-height: 780px; width: 100%;
+    border-radius: 14px; box-shadow: 0 10px 34px rgba(0,0,0,.3);
+    background: #000;
+  }
+
+  /* ---------- el marco: sólo el visor y una chapa con las medidas ---------- */
+  body.marco { background: #000; overflow: hidden; }
+  .medidas {
+    position: fixed; left: 50%; bottom: 50%; transform: translateX(-50%);
+    z-index: 100; color: #fff;   /* el visor va en 90 */ font: 400 12px/1.6 ui-monospace, Menlo, Consolas, monospace;
+    background: rgba(0,0,0,.72); border: 1px solid rgba(255,255,255,.2);
+    border-radius: 10px; padding: 9px 13px; white-space: pre; pointer-events: none;
+  }
+  .medidas b { color: #8ee6a8; font-weight: 400; }
+  .medidas .mal { color: #ff9a9a; }
+</style>
+
+<body>
+<script>
+(function () {
+  var par = new URLSearchParams(location.search);
+  var esMarco = par.has('n');
+
+  /* Doce fotos de la propia guía. Con menos de siete no se puede ver lo que
+     esta página existe para ver -el recorte de la última-, porque la tira
+     cabe entera: hoy la ficha con más fotos de toda la guía tiene cuatro. */
+  var FOTOS = ['001_adiantum-subvolubile', '002_ephedra-americana',
+    '003_anthericum-eccremorrhizum', '004_oziroe-biflora',
+    '005_alstroemeria-lineatiflora', '006_ismene-amancaes',
+    '007_stenomesson-flavum', '008_puya-ferruginea',
+    '009_tillandsia-latifolia', '010_tillandsia-purpurea',
+    '011_commelina-fasciculata', '012_tinantia-erecta']
+    .map(function (s) { return '../app/img/' + s + '_principal1.avif'; });
+
+  // ===================================================== el marco
+  if (esMarco) {
+    document.body.className = 'marco';
+    /* Sin barra de desplazamiento: si no, un marco pedido de 375 px mide 360
+       por dentro y las cifras de abajo dirían otra cosa que los mandos. */
+    document.documentElement.style.overflow = 'hidden';
+    var n = Math.max(1, Math.min(FOTOS.length, +par.get('n') || 1));
+    var i = 0;
+
+    document.body.innerHTML =
+      '<div class="visor abierto" id="visor">' +
+        '<div class="visor-carril" id="carril">' +
+          '<div class="visor-hoja"><img src="' + FOTOS[0] + '" alt=""></div>' +
+        '</div>' +
+        '<div class="visor-arriba">' +
+          '<span class="visor-cuenta" id="cuenta"></span>' +
+          '<button id="x" aria-label="Cerrar"></button>' +
+        '</div>' +
+        '<div class="visor-abajo" id="abajo"></div>' +
+      '</div>' +
+      '<div class="medidas" id="medidas"></div>';
+
+    // la X con el mismo trazo que la de la app
+    document.getElementById('x').innerHTML =
+      '<svg class="ico" viewBox="0 0 256 256" aria-hidden="true" width="22" height="22">' +
+      '<path fill="currentColor" d="M205.66 194.34a8 8 0 0 1-11.32 11.32L128 139.31l-66.34 ' +
+      '66.35a8 8 0 0 1-11.32-11.32L116.69 128L50.34 61.66a8 8 0 0 1 11.32-11.32L128 ' +
+      '116.69l66.34-66.35a8 8 0 0 1 11.32 11.32L139.31 128Z"/></svg>';
+
+    var abajo = document.getElementById('abajo');
+    abajo.innerHTML = n < 2 ? '' : '<div class="visor-tira">' +
+      FOTOS.slice(0, n).map(function (s, k) {
+        return '<button data-k="' + k + '" aria-label="Foto ' + (k + 1) + '" ' +
+               'aria-current="' + (k === 0) + '"><img src="' + s + '" alt=""></button>';
+      }).join('') + '</div>';
+
+    function ir(k) {
+      i = k;
+      document.querySelector('#carril img').src = FOTOS[k];
+      var b = abajo.querySelectorAll('[data-k]');
+      [].forEach.call(b, function (x) {
+        x.setAttribute('aria-current', +x.dataset.k === k ? 'true' : 'false');
+      });
+      var act = abajo.querySelector('[aria-current="true"]');
+      var tira = act && act.parentNode;
+      if (tira && tira.scrollWidth > tira.clientWidth + 1) {
+        tira.scrollTo({ left: act.offsetLeft - (tira.clientWidth - act.offsetWidth) / 2,
+                        behavior: 'smooth' });
+      }
+      medir();
+    }
+    abajo.addEventListener('click', function (ev) {
+      var b = ev.target.closest('[data-k]');
+      if (b) ir(+b.dataset.k);
+    });
+
+    function medir() {
+      document.getElementById('cuenta').textContent = n > 1 ? (i + 1) + ' de ' + n : '';
+      var tira = abajo.querySelector('.visor-tira');
+      var W = document.documentElement.clientWidth;
+      var txt = 'ventana      ' + W + ' px   (' + (W >= 601 ? 'escritorio / tableta' : 'móvil') + ')\n' +
+                'fotos        ' + n + '\n';
+      if (!tira) {
+        txt += 'tira         no sale: con una sola foto no hay nada que elegir';
+      } else {
+        var rt = tira.getBoundingClientRect(), ra = abajo.getBoundingClientRect();
+        var bs = tira.querySelectorAll('button');
+        var mini = Math.round(bs[0].getBoundingClientRect().width);
+        var paso = bs.length > 1 ? bs[1].offsetLeft - bs[0].offsetLeft : mini;
+        var desborda = tira.scrollWidth > tira.clientWidth + 1;
+        var centrada = Math.abs((rt.left + rt.width / 2) - (ra.left + ra.width / 2)) < 1.5;
+        var asoma = Math.round(tira.clientWidth % paso);
+        txt += 'miniatura    ' + mini + ' px\n' +
+               'tira         ' + Math.round(rt.width) + ' px de ' + Math.round(ra.width) +
+                 '   ' + (centrada ? '<b>centrada</b>' : '<span class="mal">DESCENTRADA</span>') + '\n' +
+               'desborda     ' + (desborda ? '<b>sí</b>, sobran ' +
+                 Math.round(tira.scrollWidth - tira.clientWidth) + ' px a la derecha'
+                 : 'no, caben las ' + n + ' enteras') + '\n' +
+               'recorte      ' + (desborda
+                 ? (asoma > 4 ? '<b>sí</b>: de la siguiente asoman ' + asoma + ' de ' + mini + ' px'
+                              : '<span class="mal">no</span>: corta justo en el borde de una miniatura')
+                 : '—');
+      }
+      document.getElementById('medidas').innerHTML = txt;
+    }
+    addEventListener('resize', medir);
+    ir(0);
+    return;
+  }
+
+  // ================================================== la página de mandos
+  document.body.className = 'mandos';
+  var ANCHOS = [320, 360, 375, 414, 600, 601, 768, 1024, 0];
+  var ancho = 375, cuantas = 8;
+
+  document.body.innerHTML =
+    '<div class="cabecera">' +
+      '<h1>La tira de miniaturas del visor</h1>' +
+      '<p>Carga <code>app/css/estilos.css</code>, o sea las reglas de verdad. ' +
+      'El corte de ancho de la app está en 601 px, y el marco de abajo es una ' +
+      'ventana propia, así que la media query responde a su ancho y no al de ' +
+      'esta página. Hoy la ficha con más fotos de la guía tiene cuatro: con ' +
+      'siete u ocho se ve lo que pasará el día que haya más.</p>' +
+    '</div>' +
+    '<div class="mandos-fila">' +
+      '<label for="n">Fotos: <output id="nv"></output></label>' +
+      '<input type="range" id="n" min="1" max="12" step="1">' +
+      '<label>Ancho del marco</label>' +
+      '<div class="anchos" id="anchos"></div>' +
+    '</div>' +
+    '<div class="escenario"><iframe id="marco" title="El visor"></iframe></div>';
+
+  var rango = document.getElementById('n'), marco = document.getElementById('marco');
+  rango.value = cuantas;
+
+  document.getElementById('anchos').innerHTML = ANCHOS.map(function (a) {
+    return '<button data-a="' + a + '">' + (a ? a + ' px' : 'todo el ancho') + '</button>';
+  }).join('');
+
+  function pintar() {
+    document.getElementById('nv').textContent = cuantas;
+    marco.style.width = ancho ? ancho + 'px' : '100%';
+    marco.src = location.pathname + '?n=' + cuantas;
+    [].forEach.call(document.querySelectorAll('[data-a]'), function (b) {
+      b.setAttribute('aria-pressed', +b.dataset.a === ancho ? 'true' : 'false');
+    });
+  }
+  rango.addEventListener('input', function () { cuantas = +rango.value; pintar(); });
+  document.getElementById('anchos').addEventListener('click', function (ev) {
+    var b = ev.target.closest('[data-a]');
+    if (b) { ancho = +b.dataset.a; pintar(); }
+  });
+  pintar();
+})();
+</script>
+</body>
+</html>
