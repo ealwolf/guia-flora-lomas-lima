@@ -2837,8 +2837,21 @@ function abrirFicha(id, empujar) {
   var etiquetas = '';
   if (e.endemico) etiquetas += '<span class="eti verde">' + svgIcono('seal-check') + 'Endémica del Perú</span>';
   if (e.amenaza)  etiquetas += '<span class="eti ambar">' + svgIcono('warning-circle') + esc(e.amenaza + ' · ' + amenaza) + '</span>';
-  etiquetas += '<span class="eti">' + svgIcono('globe-hemisphere-west') + esc(origen) + '</span>';
-  etiquetas += '<span class="eti">' + svgIcono('plant') + esc(e.grupo) + '</span>';
+  /* Las dos que son un valor a secas llevan delante de qué son. «Nativa» y
+     «Ephedrales» flotaban en el renglón sin nada que dijera qué preguntan, y
+     el icono no basta: una hoja puede querer decir el porte, la familia o el
+     hábitat, y en esta misma ficha hay etiquetas de las tres clases. Las
+     otras dos del renglón no lo necesitan, porque ya son una frase hecha:
+     «Endémica del Perú» se explica sola, y «VU · Vulnerable» lo dice el
+     ámbar y el triángulo.
+     En <small>, que es como esta ficha marca lo que acompaña al dato -lo
+     mismo que el «según el texto» de la cara-: el nombre se lee si se busca
+     y no le quita el sitio al valor. Escrito y no en un title, porque un
+     tooltip no lo tiene un dedo y esto se usa en el cerro. */
+  etiquetas += '<span class="eti">' + svgIcono('globe-hemisphere-west') +
+               '<small>Origen</small>' + esc(origen) + '</span>';
+  etiquetas += '<span class="eti">' + svgIcono('plant') +
+               '<small>Tipo de planta</small>' + esc(e.grupo) + '</span>';
 
   var cal = '';
   if (e.flor.length) {
