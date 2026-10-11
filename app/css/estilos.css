@@ -1968,6 +1968,16 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    se vio que separada del resto no se leia como parte de los mandos, asi que
    el buscador vuelve arriba y todo lo que filtra se junta detras de un solo
    boton. Lo que queda del corte es lo poco que de verdad depende del ancho. */
+/* Un rótulo con dos formas: la larga y, donde no cabe, la corta. Hoy sólo
+   la usa «Distribución», que pide 364 px de pantalla para no partir la fila
+   del recuento -medido con una loma puesta, que es cuando la cuenta pasa de
+   «134 especies» a «7 de 134 especies» y se come 28 px más. */
+.et-angosta { display: none; }
+@media (max-width: 370px) {
+  .et-ancha { display: none; }
+  .et-angosta { display: inline; }
+}
+
 @media (max-width: 600px) {
   /* A una columna: «Vegetación de alrededor» mide casi lo que la pantalla,
      y en dos columnas dejaba a las etiquetas una tira sin sitio. */

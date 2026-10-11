@@ -236,8 +236,16 @@ var ORDENES = [
      134 están citadas en una sola, y eso es muestreo, no endemismo. La
      salvedad ya está escrita donde hace falta -en la nota de «No citadas en
      esta loma»- y el sentido del orden lo dice en lomas, que es el dato que
-     de verdad hay. */
-  { id: 'lomas',      txt: 'Distribución', corto: 'Lomas', ico: 'map-pin',
+     de verdad hay.
+
+     En el botón decía «Lomas», y ése era el peor corto posible: en esta app
+     «Lomas» ya es otra cosa -el botón de al lado, el que elige en qué loma
+     estás- así que el botón de ordenar parecía un segundo selector de loma.
+     Un corto puede acortar, pero no puede nombrar algo que ya existe.
+     Así que éste no acorta: dice «Distribución», lo mismo que el panel. Y
+     sólo por debajo de 370 px, donde no cabe, dice «Distrib.». */
+  { id: 'lomas',      txt: 'Distribución', corto: 'Distribución',
+    angosto: 'Distrib.', ico: 'map-pin',
     dir: ['Pocas lomas → Muchas', 'Muchas lomas → Pocas'] }
 ];
 function ordenActual() {
@@ -730,7 +738,14 @@ function pintarBotonOrden() {
      entero a la vista: criterio y sentido. */
   b.querySelector('.ico').outerHTML =
       svgIcono(F.dir === 'desc' ? 'sort-descending' : 'sort-ascending');
-  $('#btn-orden-txt').textContent = o.corto || o.txt;
+  /* Dos formas cuando las hay, y las enseña el CSS: así el corte de ancho
+     está en la hoja de estilos con los demás, y no en un matchMedia aquí
+     que habría que volver a mirar en cada giro de pantalla. */
+  var etq = o.corto || o.txt;
+  $('#btn-orden-txt').innerHTML = o.angosto
+      ? '<span class="et-ancha">' + esc(etq) + '</span>' +
+        '<span class="et-angosta">' + esc(o.angosto) + '</span>'
+      : esc(etq);
   b.setAttribute('aria-label', 'Ordenar. Ahora: ' + o.txt + ', ' + o.dir[i]);
 }
 
