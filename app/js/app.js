@@ -634,13 +634,16 @@ function tirarFiltros(tambienBusqueda) {
   limpiarTodo();                     // repinta
   if (borrado) {
     huellaBorrado = huellaFiltros();
-    var salvados = CAMPOS.filter(function (c) {
+    /* Dos frases y no una con cuenta pegada detras. Decia «Se quitaron los
+       filtros · 2 con candado siguen», que obliga a leer un numero para
+       enterarse de algo que ya se ve en el panel -el candado macizo y la
+       cifra de cada renglon-. Lo unico que hay que saber aqui es si se fue
+       todo o no, y eso se dice con una palabra. */
+    var hayCandado = CAMPOS.some(function (c) {
       return cerrado(c) && puestosEn(c);
-    }).length;
-    tostada(salvados
-              ? 'Se quitaron los filtros · ' + salvados +
-                (salvados === 1 ? ' con candado sigue' : ' con candado siguen')
-              : 'Se quitaron los filtros',
+    });
+    tostada(hayCandado ? 'Se quitaron los filtros sin bloquear.'
+                       : 'Se quitaron los filtros.',
             'Deshacer', devolverBorrado, ESPERA_DESHACER, olvidarBorrado);
   }
 }
@@ -3598,7 +3601,12 @@ function pintarGrupos() {
     m.classList.toggle('oculto', !n);
     r.classList.toggle('oculto', !n);
 
-    m.innerHTML = svgIcono(k ? 'lock-simple-fill' : 'lock-simple-open');
+    /* Con ojo de cerradura los dos. El macizo de antes era un rectangulo
+       redondeado relleno con el arco encima, y a 18 px eso no es un
+       candado: es un maletin. El ojo en negativo le devuelve el oficio sin
+       tocar lo que de verdad distingue los dos estados, que es macizo
+       contra linea y no el color. */
+    m.innerHTML = svgIcono(k ? 'lock-key-fill' : 'lock-key-open');
     m.classList.toggle('cerrado', k);
     m.setAttribute('aria-pressed', k ? 'true' : 'false');
     m.setAttribute('aria-label', k
@@ -3633,7 +3641,15 @@ function abrirPanel(v, cual) {
      devolvía la pared de fichas al segundo uso, que es justo lo que se quería
      quitar; y con la cuenta en el renglón no hace falta abrir para saber qué
      hay puesto. */
-  if (v && cual === '#panel') CAMPOS.forEach(function (c) { abrirGrupo(c, false); });
+  /* Con una excepcion: el color. Es con lo que se filtra casi siempre -se ve
+     una flor y lo primero que se sabe de ella es de que color es- y ademas
+     es corto, asi que el espectro cabe sin empujar los demas renglones fuera
+     de la pantalla. Plegarlo solo anadia un toque antes de lo que casi todo
+     el mundo viene a hacer. Los otros ocho siguen plegados, que es lo que
+     mantiene el panel como un indice. */
+  if (v && cual === '#panel') {
+    CAMPOS.forEach(function (c) { abrirGrupo(c, c === 'color'); });
+  }
   $(cual).classList.toggle('abierto', v);
   panelActual = v ? cual : null;
   $('#velo').classList.toggle('abierto', v);
