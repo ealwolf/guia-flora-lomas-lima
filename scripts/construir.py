@@ -110,7 +110,7 @@ def rango_meses(ini, fin):
     Excepcion a proposito. Por la norma tocaria «ago.-oct.»: una abreviatura
     «siempre se cierra con un punto» y lleva la caja de la palabra abreviada,
     que aqui es un nombre comun (DPD, «abreviatura» 1 y 2c), y el intervalo
-    iria con guion pegado. Pero al lado de la tira de meses —Ene, Feb, Mar…—
+    iria con guion pegado. Pero al lado de la tira de meses -Ene, Feb, Mar…-
     ese «ago.-oct.» desentona, y en la ficha mandan las dos cosas juntas. Las
     cifras (altura, altitud) si siguen la norma: «10-40 cm», «100-550 msnm».
 

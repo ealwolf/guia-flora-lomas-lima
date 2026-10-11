@@ -1,4 +1,4 @@
-/* Guía de Flora de las Lomas de Lima — hoja de estilos
+/* Guía de Flora de las Lomas de Lima - hoja de estilos
    Móvil primero. Vertical y horizontal. Claro y oscuro. */
 
 :root {
@@ -2058,7 +2058,7 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   .miniaturas button { width: 62px; height: 62px; }
   /* Los cuatro textos, repartidos en cuanto hay sitio. Sin tope de 70ch: lo
      que antes sobraba a la derecha en tableta era justo ese tope contra un
-     contenedor mas ancho. Con columns no hace falta punto de corte — a 736 px
+     contenedor mas ancho. Con columns no hace falta punto de corte: a 736 px
      salen dos de 351, a 940 dos de 453, y por debajo una sola que ya mide
      unos 70 caracteres de por si. */
   .bloque p { max-width: none; }

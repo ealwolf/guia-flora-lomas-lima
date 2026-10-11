@@ -35,14 +35,14 @@ GROSOR = 2
 
 # El nombre del archivo de Affinity no tiene por qué ser la clave del dibujo.
 NOMBRES = {
-    'habitat-crestaRocosa':  ('cresta',    u'Cresta rocosa — crestas encajadas que suben a un pico.'),
-    'habitat-fondoQuebrada': ('quebrada',  u'Fondo de quebrada — las mismas líneas, invertidas, bajando al fondo.'),
-    'habitat-laderaArenosa': ('arenosa',   u'Ladera arenosa — la ladera suave, con el grano de la arena.'),
-    'habitat-laderaRocosa':  ('rocosa',    u'Ladera rocosa — la ladera, cubierta de bloques de roca.'),
-    'habitat-lomaArborea':   ('arborea',   u'Loma arbórea — la tara y un segundo árbol menor.'),
-    'habitat-lomaArbustiva': ('arbustiva', u'Loma arbustiva — matas redondeadas, media altura.'),
-    'habitat-lomaHerbacea':  ('herbacea',  u'Loma herbácea — la pradera: una estera baja y continua.'),
-    'habitat-zonaCactaceas': ('cactaceas', u'Zona de cactáceas — columnares separados; el terreno más seco.'),
+    'habitat-crestaRocosa':  ('cresta',    u'Cresta rocosa: crestas encajadas que suben a un pico.'),
+    'habitat-fondoQuebrada': ('quebrada',  u'Fondo de quebrada: las mismas líneas, invertidas, bajando al fondo.'),
+    'habitat-laderaArenosa': ('arenosa',   u'Ladera arenosa: la ladera suave, con el grano de la arena.'),
+    'habitat-laderaRocosa':  ('rocosa',    u'Ladera rocosa: la ladera, cubierta de bloques de roca.'),
+    'habitat-lomaArborea':   ('arborea',   u'Loma arbórea: la tara y un segundo árbol menor.'),
+    'habitat-lomaArbustiva': ('arbustiva', u'Loma arbustiva: matas redondeadas, media altura.'),
+    'habitat-lomaHerbacea':  ('herbacea',  u'Loma herbácea: la pradera: una estera baja y continua.'),
+    'habitat-zonaCactaceas': ('cactaceas', u'Zona de cactáceas: columnares separados; el terreno más seco.'),
 }
 
 CABECERA = (u'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none" '

@@ -1,4 +1,4 @@
-/* Guía de Flora de las Lomas de Lima — lógica de la app
+/* Guía de Flora de las Lomas de Lima - lógica de la app
    Sin dependencias, sin red. Los datos llegan en window.GUIA. */
 (function () {
 'use strict';
@@ -736,7 +736,7 @@ function pintarBotonOrden() {
   var i = F.dir === 'desc' ? 1 : 0;
   var b = $('#btn-orden');
   /* El icono lleva el sentido: sort-ascending o sort-descending. Se sigue
-     leyendo como «ordenar» —son rayas de distinto largo con su flecha— pero
+     leyendo como «ordenar» -son rayas de distinto largo con su flecha- pero
      ademas dice hacia donde, que con la etiqueta al lado deja el estado
      entero a la vista: criterio y sentido. */
   b.querySelector('.ico').outerHTML =
@@ -2941,13 +2941,13 @@ function abrirFicha(id, empujar) {
     '</header>' +
 
     '<div class="datos">' +
-      dato('ruler', 'Altura', esc(e.alturaTxt || '—')) +
-      dato('calendar-blank', 'Floración', esc(e.florTxt || '—')) +
+      dato('ruler', 'Altura', esc(e.alturaTxt || '-')) +
+      dato('calendar-blank', 'Floración', esc(e.florTxt || '-')) +
       // guion y sin espacios, como los intervalos de la RAE (guion2 3.1b)
       dato('mountains', 'Altitud',
-           e.altitud[0] != null ? e.altitud[0] + '-' + e.altitud[1] + ' <small>msnm</small>' : '—') +
+           e.altitud[0] != null ? e.altitud[0] + '-' + e.altitud[1] + ' <small>msnm</small>' : '-') +
       dato('flower', 'Color de la flor', e.color ? '<span class="punto" style="background:' +
-           colorHex(e.color) + '"></span>' + esc(e.color) : '—') +
+           colorHex(e.color) + '"></span>' + esc(e.color) : '-') +
     '</div>' +
 
     '<div class="lateral">' +
@@ -2955,7 +2955,7 @@ function abrirFicha(id, empujar) {
         '<figure class="figura">' + svgPerfil(e) +
         '<figcaption>' + (cara(caraDe(e))
             ? 'Mira <b>' + esc(cara(caraDe(e)).frase) + '</b>'
-            : '<b>—</b>') + ' según el perfil de la guía' +
+            : '<b>-</b>') + ' según el perfil de la guía' +
         (e.altitudTxt ? '<br>En el texto: “' + esc(e.altitudTxt) + '”' : '') +
         '</figcaption></figure></section>' +
       '<section class="bloque"><h3>' + svgIcono('map-trifold') + 'Dónde se registró</h3>' +
@@ -4428,7 +4428,7 @@ function pintarFotos() {
 /* Si está instalada o no, no se puede saber, y más vale no fingirlo.
    `display-mode: standalone` dice si ESTA ventana es la app instalada, no si
    existe una instalación: abierta en una pestaña normal, una app instalada
-   contesta que no. Lo único seguro es al revés — el navegador no ofrece
+   contesta que no. Lo único seguro es al revés: el navegador no ofrece
    instalar lo que ya está instalado.
    Así que: botón cuando el navegador lo ofrece, y si no, el camino a mano
    para ese navegador. Instrucciones no son afirmaciones, y la app no se queda

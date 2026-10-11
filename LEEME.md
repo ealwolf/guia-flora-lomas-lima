@@ -1,4 +1,4 @@
-# Guía de Flora de las Lomas de Lima — app de campo
+# Guía de Flora de las Lomas de Lima - app de campo
 
 Catálogo de las **134 especies** de la guía de SERFOR (2015), para consultar en
 el teléfono **sin conexión**: en la loma no hay señal.
@@ -64,7 +64,7 @@ sí trae las fotos.
 python scripts/servir.py
 ```
 
-Te dice la dirección —algo como `http://192.168.1.40:8911`— y la abres con el
+Te dice la dirección -algo como `http://192.168.1.40:8911`- y la abres con el
 teléfono **en el mismo wifi**. Sirve `app/` tal cual y manda `no-store`, para
 que el navegador no se quede con la versión anterior mientras pruebas. `Ctrl+C`
 para parar; un puerto distinto, `python scripts/servir.py 9000`.
@@ -81,7 +81,7 @@ del sitio: `index.html` tiene que quedar en `/`, no en `/app/`.
 a la página y en un minuto tienes una dirección. Para volver a publicar,
 arrastras otra vez. Sin cuenta, sin git, sin instalar nada.
 
-**Si algún día quieres que sólo entres tú** — Cloudflare Pages: subes la
+**Si algún día quieres que sólo entres tú** - Cloudflare Pages: subes la
 carpeta igual, y en *Zero Trust → Access* pones una regla que exija tu correo.
 Cloudflare manda un código de un solo uso y nadie más puede abrirla. Es gratis
 hasta 50 personas, y no estorba al uso sin conexión: la comprobación es al
@@ -200,10 +200,10 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
   nativas (24 entre exóticas e introducidas). De las 39 endémicas, 10 viven en
   una sola loma.
 
-  Éstas se **cruzan**, no se suman: «endémica + amenazada» son 2 —*Amancaes* y
-  *Rabo de zorro*—, no 40. Son tres atributos sueltos de cada especie, así que
-  marcarlos es pedirlos todos, y marcar dos que se contradicen —endémica y no
-  nativa— devuelve 0, que es la respuesta honesta. Por eso se dibujan como
+  Éstas se **cruzan**, no se suman: «endémica + amenazada» son 2 -*Amancaes* y
+  *Rabo de zorro*-, no 40. Son tres atributos sueltos de cada especie, así que
+  marcarlos es pedirlos todos, y marcar dos que se contradicen -endémica y no
+  nativa- devuelve 0, que es la respuesta honesta. Por eso se dibujan como
   **casillas** y no como fichas: una lista de casillas se lee «todas las que
   marque», y una fila de fichas «cualquiera de estas». El resto de grupos se
   suman, como en cualquier buscador con filtros.
@@ -213,16 +213,16 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
 - **Ordenar** desde su propio botón, con el criterio y el sentido separados:
   *Guía*, *Nombre común*, *Nombre científico*, *Altitud* o *N.º de lomas*, y
   debajo un interruptor para el sentido. Son cinco criterios y un interruptor
-  en vez de diez opciones, y el sentido se nombra según el criterio —«A → Z»,
-  «1 → 134», «Menos / Más»— que dice bastante más que «ascendente».
+  en vez de diez opciones, y el sentido se nombra según el criterio -«A → Z»,
+  «1 → 134», «Menos / Más»- que dice bastante más que «ascendente».
 
   *N.º de lomas* con «Menos» delante es el que más saca del dato: 31 especies
   viven en una única loma. Los dos ajustes se recuerdan entre visitas, y cuando
   no es el orden del libro el botón lleva el nombre del criterio y se marca. No
   sale como ficha: un filtro quita especies y un orden sólo las mueve.
 
-  El icono del botón cambia con el sentido —`sort-ascending` o
-  `sort-descending`—, así que entre el icono y la etiqueta se ve el estado
+  El icono del botón cambia con el sentido -`sort-ascending` o
+  `sort-descending`-, así que entre el icono y la etiqueta se ve el estado
   entero sin abrir nada: qué criterio y hacia dónde.
 - **Ordenar y Filtros viven en la barra del contenido**, junto al recuento al
   que afectan. La cabecera se queda con lo de la app entera: apariencia, sobre
@@ -233,11 +233,11 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
   tienen como color principal; si has pedido otro orden, manda el tuyo y el
   color sólo desempata.
 - **La loma se elige de dos maneras**: por lista alfabética o **tocándola en el
-  mapa**, que es como piensa quien conoce la zona —«las de por aquí»— en vez de
+  mapa**, que es como piensa quien conoce la zona -«las de por aquí»- en vez de
   buscar un nombre. Antes el mapa estaba detrás de una pestaña y la gente no lo
   encontraba: «Mapa» en gris se lee como un rótulo, no como una puerta. Ahora
-  el grupo lleva un **mapita** que no sirve para elegir —sólo enseña que hay
-  mapa y marca las lomas puestas— y que abre **el mapa a pantalla completa**,
+  el grupo lleva un **mapita** que no sirve para elegir -sólo enseña que hay
+  mapa y marca las lomas puestas- y que abre **el mapa a pantalla completa**,
   donde hay sitio de verdad para el pellizco y para los nombres. En pantalla
   ancha el mapita se pone al lado de las fichas, donde sobra margen; en el
   teléfono, encima, en una tira baja. Cada loma lleva una zona de toque de
@@ -272,10 +272,10 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
   salió vive en `datos/crudo/img/` y no se toca nunca. Lo que carga la app es
   una copia en **avif** que genera `construir.py` con calidad 58, mismos
   píxeles: 11,65 MB pasan a 3,31, que son los que hay que bajarse al teléfono.
-  Se compararon recortes a tamaño real de fotos con textura fina —pelos,
-  gotas— y no se distingue. En las tarjetas se encuadran a 4:3 para que la
+  Se compararon recortes a tamaño real de fotos con textura fina -pelos,
+  gotas- y no se distingue. En las tarjetas se encuadran a 4:3 para que la
   rejilla salga pareja, pero eso es sólo el encuadre de la miniatura. En la
-  ficha se ven **enteras** —26 de las 295 son verticales— y al tocarlas se
+  ficha se ven **enteras** -26 de las 295 son verticales- y al tocarlas se
   abren a tamaño completo.
 - Convertirlas son unos 19 segundos la primera vez; después `construir.py`
   sólo rehace las que cambien. Para cambiar la calidad, `CALIDAD_AVIF` en
@@ -286,8 +286,8 @@ Vuelve a publicar la carpeta y listo. Cambiar la apariencia es editar
   dos de 365, a 940 dos de 453, y por debajo una sola que ya mide unos 70
   caracteres de por sí.
 - Desde una ficha se pasa **a la especie siguiente sin volver al catálogo**:
-  con las flechas de la cabecera, con las tarjetas del final —que dicen cuál
-  viene, con su foto— o con ← y → en el teclado. Sigue la lista que estás
+  con las flechas de la cabecera, con las tarjetas del final -que dicen cuál
+  viene, con su foto- o con ← y → en el teclado. Sigue la lista que estás
   viendo, filtrada y ordenada, no la numeración del libro, y se para en los
   extremos. **Nada de deslizar con el dedo**: en Android y en iPhone ese gesto
   desde el borde es el de volver, y perderlo a veces sale más caro que el
@@ -324,8 +324,8 @@ sola fila y la ficha se reparte en dos columnas.
 ## La cara de la loma se dice dos veces
 
 El pie del perfil indica la cara según **el dibujo**; la ficha de Hábitats, la
-que menciona **el texto**, y cada una lo dice con todas las letras —«según el
-perfil de la guía» y «según el texto»— con la explicación al posarse encima. Coinciden en 91 de 103 especies. En 12 la guía se
+que menciona **el texto**, y cada una lo dice con todas las letras -«según el
+perfil de la guía» y «según el texto»- con la explicación al posarse encima. Coinciden en 91 de 103 especies. En 12 la guía se
 contradice a sí misma (por ejemplo *Tillandsia latifolia*: el perfil la pinta en
 la cara occidental y el texto la describe en la oriental), así que se muestran
 las dos con su procedencia en vez de elegir una por ti.
@@ -359,7 +359,7 @@ edita `datos/propio/color_flor.csv` y vuelve a ejecutar `construir.py`.
 Y por eso la app no lo afirma. `display-mode: standalone` dice si **esta
 ventana** es la app instalada, no si existe una instalación: abierta en una
 pestaña normal, una app instalada responde que no. Lo único fiable es lo
-contrario — el navegador **no** ofrece instalar lo que ya está instalado — así
+contrario - el navegador **no** ofrece instalar lo que ya está instalado - así
 que el botón sale sólo cuando Chrome acaba de avisar de que se puede. Sin esa
 señal, la sección entera se esconde en vez de decir algo que podría ser falso.
 La excepción es el iPhone, donde Safari no avisa nunca y sólo queda explicar el
@@ -372,7 +372,7 @@ camino a mano.
 Altura y altitud se arman con las cifras y se escriben **con guion y sin
 espacios**: `25-50 cm`, `450-600 msnm`. Es lo que dice el *Diccionario
 panhispánico de dudas* en «guion²», 3.1 b: «Indica intervalos expresados tanto
-en números arábigos como en romanos: las páginas 23-45». Guion, no raya (—) ni
+en números arábigos como en romanos: las páginas 23-45». Guion, no raya (-) ni
 semirraya (–).
 
 Hacía falta porque el PDF trae la altura de cinco maneras distintas:
@@ -380,20 +380,20 @@ Hacía falta porque el PDF trae la altura de cinco maneras distintas:
 (1) y `60 a 80 cm` (1). Las 134 especies tienen las dos cifras, así que
 componerlo desde ellas no pierde nada y sale igual en todas.
 
-La floración también se arma con los números de mes —el PDF la traía de 23
-formas: «Ago - Oct», «Jul -Oct», «---»— y así aguanta el caso que cruza el año:
+La floración también se arma con los números de mes -el PDF la traía de 23
+formas: «Ago - Oct», «Jul -Oct», «---»- y así aguanta el caso que cruza el año:
 «Dic - Mar» son el 12 y el 3, no un mínimo y un máximo.
 
 Pero se escribe **`Ago - Oct`**, y eso es una excepción a propósito. Por la
 norma tocaría `ago.-oct.`: una abreviatura «siempre se cierra con un punto» y
 lleva la caja de la palabra abreviada, que aquí es un nombre común (DPD,
-«abreviatura» 1 y 2 c) —y sería `set.`, no `sept.`, que el DPD da *setiembre*
-como forma preferida en el Perú—. El problema es que justo debajo está la tira
+«abreviatura» 1 y 2 c) -y sería `set.`, no `sept.`, que el DPD da *setiembre*
+como forma preferida en el Perú-. El problema es que justo debajo está la tira
 del calendario, con las celdas *Ene, Feb, Mar…*, y `ago.-oct.` al lado de eso
 desentona. En la ficha mandan las dos cosas juntas.
 
 En la prosa no se toca nada: allí un espacio entre cifras suele ser el
-separador de millares —«1 050 msnm»— y es un espacio normal, así que al
+separador de millares -«1 050 msnm»- y es un espacio normal, así que al
 copiarlo se copia tal cual.
 
 ### La altitud: el dibujo y el texto no siempre dicen lo mismo
@@ -422,8 +422,8 @@ nada:
 | La extensión ocasional | «ocasionalmente… hasta los 1 000 msnm» | el dibujo enseña el rango normal, y eso no es un error |
 
 El cotejo vive en `datos/propio/altitud_propia.csv`, una fila por especie. Las
-columnas que empiezan por `_` son contexto sacado del PDF —el rango del dibujo,
-el pie de altitud, las cifras del texto y la frase entera de donde salen— y no
+columnas que empiezan por `_` son contexto sacado del PDF -el rango del dibujo,
+el pie de altitud, las cifras del texto y la frase entera de donde salen- y no
 se tocan. Las editables son `altitud_min`, `altitud_max`, `revisado` y
 `notas_altitud`, y **sólo cuentan cuando `revisado = TRUE`**: mientras tanto
 manda el dibujo, que es lo fiel al PDF. Hoy están las 134 sin revisar, así que
@@ -440,7 +440,7 @@ Las que no se arreglan con una regla general van en
 | N.º 94 *Nicotiana paniculata* | las 2 2 lomas visitadas | las 22 lomas visitadas |
 | N.º 104 *Phyla canescens* | entre los 400 800 msnm | entre los 400-800 msnm |
 
-Si alguna deja de hacer falta —porque se arregle en la extracción—
+Si alguna deja de hacer falta -porque se arregle en la extracción-
 `construir.py` avisa de que se puede quitar.
 
 ---
@@ -464,11 +464,11 @@ filtro: buscar *Villa María* devuelve 57 especies en vez de 56.
 
 Violeta y no azul, que el mar del mapa ya es azul; y no otro verde, porque dos
 verdes en siluetas de tres píxeles no se distinguen. Contra la tierra del mapa
-da 6,8:1 —el verde claro de antes se quedaba en 2,2— y simulando daltonismo
+da 6,8:1 -el verde claro de antes se quedaba en 2,2- y simulando daltonismo
 rojo-verde los dos siguen separándose.
 
-Para añadir más, pon el `loma_id` en la fila de la especie —varios separados
-por punto y coma— y vuelve a ejecutar `construir.py`. Los identificadores
+Para añadir más, pon el `loma_id` en la fila de la especie -varios separados
+por punto y coma- y vuelve a ejecutar `construir.py`. Los identificadores
 están en `datos/crudo/loma.csv`; si escribes uno que no existe, el script
 avisa y lo ignora.
 

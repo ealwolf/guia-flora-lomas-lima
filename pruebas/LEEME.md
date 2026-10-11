@@ -8,7 +8,7 @@ Cada una carga `app/css/estilos.css`, o sea las reglas de verdad. Lo único
 propio de estas páginas son los mandos y el marco, así que si una regla
 cambia en la app, cambia aquí; no hay una copia que se quede atrás.
 
-## `visor-tira.html` — la tira de miniaturas del visor
+## `visor-tira.html`: la tira de miniaturas del visor
 
 La tira se centra, en pantalla ancha se para en 464 px y, si no cabe,
 recorta la siguiente miniatura para que se vea que hay más. Ese recorte

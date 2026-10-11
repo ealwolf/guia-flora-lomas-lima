@@ -65,16 +65,16 @@ Si los dibujos se parecieran, nadie distinguiría los filtros. Por eso:
 
 Al retocar uno, mirar a su pareja. Son tres y están resueltas así:
 
-- **Arbóreas / Arbustivas** — el árbol tiene UN tronco, dibujado con dos
+- **Arbóreas / Arbustivas**: el árbol tiene UN tronco, dibujado con dos
   líneas que convergen, y la copa en alto, con aire entre la copa y el suelo.
   La mata tiene tallos finos de una línea que salen de un pie ancho, y la copa
   le baja hasta el suelo por los dos lados. Lo demás -contorno de bultos,
   mancha tenue, ramitas de 1,4- es igual en los dos, para que se vea que lo
   único que cambia es el esqueleto.
-- **Herbáceas / Trepadoras** — la hierba se sostiene sola, tallo casi vertical
+- **Herbáceas / Trepadoras**: la hierba se sostiene sola, tallo casi vertical
   con hojas lanceoladas y una flor. La trepadora se enrosca en un tutor
   visible, con cortes de línea en cada cruce y zarcillos en espiral.
-- **Ephedrales / Parásitas** — la efedra es todo recto: un haz rígido de
+- **Ephedrales / Parásitas**: la efedra es todo recto: un haz rígido de
   tallos sin hojas con las marcas de los nudos, de pie sobre su línea de
   suelo. La cuscuta es una hebra curva en espiras apretadas alrededor de OTRA
   planta -el huésped es lo único con hojas- con los cabos colgando y sin línea

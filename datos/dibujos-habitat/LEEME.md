@@ -61,8 +61,8 @@ compañía, los dos filtros dejan de distinguirse. Ésa es la regla; lo demás
 - Los rellenos tenues (`opacity` .1–.12) son sombra, nunca información.
 - Un solo grosor, 2, y 1.4 para algún detalle. El importador **no respeta** el
   grosor del original: Affinity dibuja a 4 px sobre 360, que en este lienzo
-  son 0,89, y esto se ve a 60 px de ancho —0,89 serían dos tercios de píxel y
-  la arena desaparecía entera—. Se normaliza en `GROSOR`, en el importador.
+  son 0,89, y esto se ve a 60 px de ancho -0,89 serían dos tercios de píxel y
+  la arena desaparecía entera-. Se normaliza en `GROSOR`, en el importador.
 - Sin `id`, `<text>`, `<style>` ni `<defs>`: los ocho acaban incrustados en la
   misma página y los nombres chocarían.
 - Se ven a 60 × 75 px. Nada más fino que 2 unidades.
@@ -75,9 +75,9 @@ retocar uno hay que mirar a sus hermanos.
 
 La primera familia va un paso más allá: los cuatro no son cuatro escenas, son
 **cuatro ventanas de un mismo campo**. Por eso su línea del suelo es
-`M0 82H80` y no `M6 82H74` — sale por los dos lados del lienzo, se corta con
+`M0 82H80` y no `M6 82H74`: sale por los dos lados del lienzo, se corta con
 él y sigue en la ficha de al lado. Si tocas uno, la línea se queda donde
-está. Las plantas sueltas —árboles, matas, cactus— van enteras dentro de su
+está. Las plantas sueltas -árboles, matas, cactus- van enteras dentro de su
 ficha, porque media mata cortada por el borde parece un fallo; la hierba no,
 que es una estera y se corta con el lienzo como el suelo.
 

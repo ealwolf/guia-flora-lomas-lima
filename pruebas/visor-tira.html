@@ -218,7 +218,7 @@
                'recorte      ' + (v.desborda
                  ? (v.asoma > 4 ? '<b>sí</b>: asoman ' + v.asoma + ' de ' + v.mini + ' px'
                     : '<span class="mal">no</span>: corta en el borde de una miniatura')
-                 : '—') + '\n' +
+                 : '-') + '\n' +
                'flechas      ' + (v.desborda ? 'con ratón, del lado que queda tira' : 'no hacen falta');
       }
       document.getElementById('medidas').innerHTML = txt;
@@ -302,7 +302,7 @@
     filas.forEach(function (v) {
       t += String(v.W).padStart(5) + String(v.mini).padStart(12) +
            String(v.tira).padStart(8) + String(v.enteras + '/' + v.n).padStart(11) +
-           '   ' + (v.desborda ? (v.asoma > 4 ? 'asoman ' + v.asoma : 'CORTE EN EL BORDE') : '—') + '\n';
+           '   ' + (v.desborda ? (v.asoma > 4 ? 'asoman ' + v.asoma : 'CORTE EN EL BORDE') : '-') + '\n';
     });
     t += '\n';
     if (saltos.length) {
