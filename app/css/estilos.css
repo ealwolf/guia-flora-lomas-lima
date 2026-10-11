@@ -1864,15 +1864,75 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .fuente b { color: var(--texto); font-weight: 600; }
 
 /* visor de imagen a pantalla completa */
+/* ---------- el visor de fotos ----------
+   El carril se queda TODOS los gestos -touch-action:none- porque aquí el
+   dedo hace tres cosas distintas y ninguna es desplazar la página: pasa de
+   foto, amplía y arrastra. Los mandos van por encima y fuera del carril,
+   así que sus toques son suyos y no gestos de foto. */
 .visor {
   position: fixed; inset: 0; z-index: 90; background: #000;
-  display: grid; place-items: center; opacity: 0; pointer-events: none; transition: opacity .2s;
+  opacity: 0; pointer-events: none; transition: opacity .2s;
+  overflow: hidden; touch-action: none;
+  -webkit-user-select: none; user-select: none;
 }
 .visor.abierto { opacity: 1; pointer-events: auto; }
-.visor img { max-width: 100%; max-height: 100%; object-fit: contain; }
-.visor button { position: absolute; top: 12px; right: 12px; color: #fff;
-  background: rgba(255,255,255,.14); border-radius: 11px; width: 40px; height: 40px;
-  display: grid; place-items: center; }
+.visor-carril { display: flex; height: 100%; will-change: transform; }
+.visor-hoja {
+  flex: 0 0 100%; width: 100%; height: 100%;
+  display: grid; place-items: center; overflow: hidden;
+}
+/* El tamaño lo pone visEncajar() en píxeles, porque depende del tamaño real
+   de cada foto y no sólo del hueco. Aquí sólo el tope de seguridad por si
+   una no llega a cargar. */
+.visor-hoja img {
+  max-width: 100%; max-height: 100%; object-fit: contain; display: block;
+  will-change: transform; -webkit-user-drag: none;
+}
+
+/* Un velo y no una barra: la foto llega hasta arriba y lo único que tiene
+   que pasar es que el botón se vea. El de antes era blanco al 14 % y sobre
+   una foto clara desaparecía, que es por lo que nadie lo encontraba. */
+.visor-arriba, .visor-abajo {
+  position: absolute; left: 0; right: 0; z-index: 2;
+  transition: opacity .2s, transform .2s;
+}
+.visor-arriba {
+  top: 0; display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; padding: calc(10px + env(safe-area-inset-top)) 12px 22px;
+  background: linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,0));
+}
+.visor-cuenta {
+  color: #fff; font-size: var(--t-1); font-weight: 600; letter-spacing: .02em;
+  padding-left: 6px; text-shadow: 0 1px 3px rgba(0,0,0,.6);
+}
+#visor-cerrar {
+  flex: none; width: 44px; height: 44px; border-radius: 999px; color: #fff;
+  background: rgba(0,0,0,.55); display: grid; place-items: center;
+  border: 1px solid rgba(255,255,255,.22);
+}
+#visor-cerrar:hover, #visor-cerrar:focus-visible { background: rgba(0,0,0,.8); }
+#visor-cerrar .ico { width: 22px; height: 22px; }
+
+.visor-abajo {
+  bottom: 0; display: flex; gap: 8px; overflow-x: auto; overflow-y: hidden;
+  padding: 24px 12px calc(12px + env(safe-area-inset-bottom));
+  background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.65));
+  touch-action: pan-x;                 /* la tira sí se desplaza con el dedo */
+  scrollbar-width: none;
+}
+.visor-abajo::-webkit-scrollbar { display: none; }
+.visor-abajo:empty { display: none; }
+.visor-abajo button {
+  flex: none; width: 54px; height: 54px; border-radius: 9px; overflow: hidden;
+  border: 2px solid transparent; opacity: .5; transition: opacity .15s, border-color .15s;
+}
+.visor-abajo button[aria-current="true"] { opacity: 1; border-color: #fff; }
+.visor-abajo button:hover, .visor-abajo button:focus-visible { opacity: 1; }
+.visor-abajo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Quitados de en medio: con un toque, o solos en cuanto empieza un gesto. */
+.visor.sin-mandos .visor-arriba { opacity: 0; transform: translateY(-10px); pointer-events: none; }
+.visor.sin-mandos .visor-abajo { opacity: 0; transform: translateY(10px); pointer-events: none; }
 
 /* ---------- adaptación ---------- */
 @media (min-width: 560px) {

@@ -245,7 +245,7 @@ var ORDENES = [
      Así que éste no acorta: dice «Distribución», lo mismo que el panel. Y
      sólo por debajo de 370 px, donde no cabe, dice «Distrib.». */
   { id: 'lomas',      txt: 'Distribución', corto: 'Distribución',
-    angosto: 'Distrib.', ico: 'map-pin',
+    angosto: 'Distrib.', ico: 'map-pin-simple-area',
     dir: ['Pocas lomas → Muchas', 'Muchas lomas → Pocas'] }
 ];
 function ordenActual() {
@@ -3042,14 +3042,336 @@ $('#ficha-int').addEventListener('click', function (ev) {
     return;
   }
   if (ev.target.id === 'foto-grande') {
-    $('#visor-img').src = ev.target.src;
-    $('#visor').classList.add('abierto');
+    /* La lista sale de las miniaturas que ya hay en la ficha y no del dato:
+       así el visor enseña exactamente lo mismo que se está viendo, y las
+       fotos son las mismas que el navegador ya tiene. */
+    var minis = $$('#ficha-int [data-foto]'), act = 0;
+    var lista = minis.length ? minis.map(function (m, k) {
+      if (m.getAttribute('aria-current') === 'true') act = k;
+      return m.querySelector('img').getAttribute('src');
+    }) : [ev.target.getAttribute('src')];
+    abrirVisor(lista, act);
   }
 });
 
-$('#visor').addEventListener('click', function () {
+/* ---------- el visor de fotos ----------
+
+   Era un fondo negro con una foto y un click que lo cerraba, y el click
+   estaba en el fondo ENTERO: tocar la foto la cerraba. De ahí venía todo.
+   Nadie había visto nunca el botón de cerrar, porque no hacía falta; y no
+   se podía ni ampliar ni pasar a la siguiente, porque cualquier gesto salía
+   del visor. En una guía de campo eso es grave: 125 de las 134 especies
+   traen dos fotos o más, y el sitio donde se ven grandes era justo donde no
+   se podían mirar.
+
+   Ahora hace lo que hace el carrete del propio teléfono, que es lo que la
+   gente ya sabe sin que nadie se lo explique:
+
+     deslizar en horizontal      pasa de foto
+     pellizcar o tocar dos veces amplía
+     con la foto ampliada        el dedo la mueve, y ya no pasa de foto
+     un toque                    esconde o enseña los mandos
+     deslizar hacia abajo        cierra, y el fondo se va aclarando
+
+   Lo de los mandos responde solo a la pregunta de si la tira de abajo debe
+   esconderse al ampliar: no hace falta una regla para el zoom. Se van con un
+   toque, vuelven con otro, y se quitan solos en cuanto empiezas cualquier
+   gesto. Es una regla y vale para los tres casos.
+
+   El precio es que tocar la foto ya no cierra. Tiene que dejar de hacerlo
+   para que el zoom exista, y por eso el botón de cerrar pasa de adorno a
+   imprescindible: lleva fondo oscuro propio, porque el de antes era blanco
+   al 14 % y sobre una foto clara no se veía. */
+var VIS = { i: 0, n: 0, z: 1, x: 0, y: 0, base: null, mandos: true, zmax: 4 };
+var visArr = null;      // el gesto en curso, o null
+var visPunt = {};       // los dedos puestos ahora mismo
+var visUltimoToque = 0;
+/* El visor se cierra quitando su entrada de historia, y eso dispara el mismo
+   popstate que usa la ficha para cerrarse. Sin esta marca, cerrar el visor
+   cerraba también la ficha de debajo: cuando llega el popstate la clase del
+   visor ya está quitada, así que el manejador creía que el atrás era para la
+   ficha. La marca dice «este atrás lo he pedido yo y ya está hecho». */
+var visVolviendo = false;
+var visEsperaToque = null;
+
+function visHoja(i) { return $('#visor-carril').children[i] || null; }
+function visImg(i) { var h = visHoja(i); return h ? h.firstChild : null; }
+function visAncho() { return $('#visor').clientWidth; }
+
+function abrirVisor(lista, i) {
+  if (!lista || !lista.length) return;
+  VIS.n = lista.length; VIS.i = Math.max(0, Math.min(VIS.n - 1, i || 0));
+  VIS.z = 1; VIS.x = 0; VIS.y = 0;
+  $('#visor-carril').innerHTML = lista.map(function (s) {
+    return '<div class="visor-hoja"><img src="' + esc(s) + '" alt="" draggable="false"></div>';
+  }).join('');
+  // hasta que no carga no se sabe su tamaño, y el encaje depende de él
+  $$('#visor-carril img').forEach(function (im) {
+    if (im.complete) visEncajar(im);
+    else im.onload = function () { visEncajar(im); if (visImg(VIS.i) === im) visMedir(); };
+  });
+  /* La tira de abajo reusa las mismas fotos: no hay miniaturas aparte, así
+     que no se baja ni un byte más por enseñarla. Con una sola foto no sale,
+     que sería una tira de un elemento. */
+  $('#visor-abajo').innerHTML = VIS.n < 2 ? '' : lista.map(function (s, k) {
+    return '<button data-vfoto="' + k + '" aria-label="Foto ' + (k + 1) + ' de ' + VIS.n +
+           '" aria-current="' + (k === VIS.i) + '"><img src="' + esc(s) + '" alt=""></button>';
+  }).join('');
+  $('#visor').classList.add('abierto');
+  bloquearFondo(true);
+  visMandos(true);
+  visIr(VIS.i, false);
+  $('#visor-cerrar').focus();
+  /* Una entrada de historia propia: así el «atrás» del teléfono cierra el
+     visor y deja la ficha, que es lo que se espera. Antes el visor no metía
+     ninguna y ese atrás se llevaba por delante la entrada de la ficha. */
+  history.pushState({ visor: 1 }, '');
+}
+
+function cerrarVisor(porHistoria) {
+  if (!$('#visor').classList.contains('abierto')) return;
+  var fin = VIS.i;
   $('#visor').classList.remove('abierto');
-  $('#visor-img').src = '';
+  $('#visor').style.background = '';
+  visArr = null; visPunt = {}; VIS.n = 0;
+  clearTimeout(visEsperaToque); visEsperaToque = null;
+  setTimeout(function () {
+    if ($('#visor').classList.contains('abierto')) return;
+    $('#visor-carril').innerHTML = ''; $('#visor-abajo').innerHTML = '';
+  }, 220);
+  bloquearFondo(false);
+  /* Si se salió por la foto 3, la ficha se queda en la 3. Volver y encontrar
+     otra vez la primera es perder el sitio sin motivo. */
+  var m = $$('#ficha-int [data-foto]')[fin];
+  if (m && m.getAttribute('aria-current') !== 'true') m.click();
+  if (!porHistoria && history.state && history.state.visor) {
+    visVolviendo = true;
+    history.back();
+  }
+}
+
+/* Cuánto se enseña cada foto, que aquí no es obvio.
+
+   Las fotos de la guía vienen en dos tamaños muy distintos: las 137
+   principales rondan los 591 px de ancho, pero las 158 de detalle son
+   recortes de 119 px -medianas reales, y la mayor de todas no llega a 190-.
+   Son las que trae el PDF; no hay más resolución en ningún sitio.
+
+   Así que las dos salidas fáciles están mal. A tamaño natural, más de la
+   mitad de las fotos son un sello de 119 px flotando en una pantalla negra.
+   Estiradas hasta llenar la pantalla, son papilla.
+
+   Se encajan: cada foto crece hasta llenar el hueco, pero nunca más de tres
+   veces su tamaño real. Una principal llena la pantalla; una de detalle
+   llega a unos 357 px, que se ve y todavía se reconoce.
+
+   Y el tope del pellizco se calcula igual, para que ampliar no pase nunca de
+   cuatro veces el píxel original: en las de detalle el tope baja a 2, en las
+   principales sube a 3 y pico. Dejar 6 fijo sería ofrecer un aumento que no
+   enseña nada nuevo. */
+function visEncajar(im) {
+  if (!im || !im.naturalWidth) return 1;
+  var W = $('#visor').clientWidth, H = $('#visor').clientHeight;
+  var k = Math.min(W / im.naturalWidth, H / im.naturalHeight, 3);
+  im.style.width = Math.round(im.naturalWidth * k) + 'px';
+  im.style.height = Math.round(im.naturalHeight * k) + 'px';
+  return k;
+}
+
+/* El tamaño que ocupa la foto SIN ampliar, que es lo que fija hasta dónde se
+   puede arrastrar. Se mide del rectángulo real y se le quita la ampliación
+   que tenga puesta. */
+function visMedir() {
+  var im = visImg(VIS.i);
+  if (!im) { VIS.base = null; return; }
+  var k = visEncajar(im);
+  VIS.zmax = Math.max(2, Math.min(6, 4 / k));
+  var r = im.getBoundingClientRect();
+  if (r.width) VIS.base = { w: r.width / VIS.z, h: r.height / VIS.z };
+}
+
+function visCenir() {
+  var b = VIS.base;
+  if (!b) return;
+  var mx = Math.max(0, (b.w * VIS.z - visAncho()) / 2);
+  var my = Math.max(0, (b.h * VIS.z - $('#visor').clientHeight) / 2);
+  VIS.x = Math.min(mx, Math.max(-mx, VIS.x));
+  VIS.y = Math.min(my, Math.max(-my, VIS.y));
+}
+
+/* Ampliar sin que se escape el punto que se está mirando: el dedo -o el sitio
+   del doble toque- se queda sobre el mismo trozo de foto. */
+function visZoomEn(z1, cx, cy, z0, x0, y0) {
+  VIS.z = z1;
+  VIS.x = cx - (cx - x0) * (z1 / z0);
+  VIS.y = cy - (cy - y0) * (z1 / z0);
+  visCenir();
+}
+
+function visPintar(animar) {
+  var dx = (visArr && visArr.modo === 'pasar') ? visArr.dx : 0;
+  var dy = (visArr && visArr.modo === 'bajar') ? visArr.dy : 0;
+  var c = $('#visor-carril');
+  c.style.transition = animar ? 'transform .26s cubic-bezier(.2,.8,.3,1)' : 'none';
+  c.style.transform = 'translate3d(' + (-VIS.i * visAncho() + dx) + 'px,' + dy + 'px,0)';
+  var im = visImg(VIS.i);
+  if (im) {
+    im.style.transition = animar ? 'transform .2s' : 'none';
+    im.style.transform = 'translate(' + VIS.x + 'px,' + VIS.y + 'px) scale(' + VIS.z + ')';
+  }
+  $('#visor').style.background = dy
+      ? 'rgba(0,0,0,' + Math.max(.3, 1 - Math.abs(dy) / 460).toFixed(2) + ')' : '';
+}
+
+function visIr(i, animar) {
+  i = Math.max(0, Math.min(VIS.n - 1, i));
+  if (i !== VIS.i) {
+    var vieja = visImg(VIS.i);
+    if (vieja) { vieja.style.transition = 'none'; vieja.style.transform = ''; }
+    VIS.i = i; VIS.z = 1; VIS.x = 0; VIS.y = 0;
+  }
+  visArr = null;
+  visMedir();
+  visPintar(animar);
+  $('#visor-cuenta').textContent = VIS.n > 1 ? (VIS.i + 1) + ' de ' + VIS.n : '';
+  $$('#visor-abajo [data-vfoto]').forEach(function (b) {
+    b.setAttribute('aria-current', +b.dataset.vfoto === VIS.i ? 'true' : 'false');
+  });
+}
+
+function visMandos(si) {
+  VIS.mandos = !!si;
+  $('#visor').classList.toggle('sin-mandos', !si);
+}
+
+function visDedos() {
+  var k = Object.keys(visPunt);
+  return k.map(function (i) { return visPunt[i]; });
+}
+
+function visPinza() {
+  var d = visDedos(), h = visHoja(VIS.i).getBoundingClientRect();
+  var ax = d[0].x - d[1].x, ay = d[0].y - d[1].y;
+  return { d: Math.max(1, Math.sqrt(ax * ax + ay * ay)),
+           cx: (d[0].x + d[1].x) / 2 - (h.left + h.width / 2),
+           cy: (d[0].y + d[1].y) / 2 - (h.top + h.height / 2) };
+}
+
+$('#visor-carril').addEventListener('pointerdown', function (ev) {
+  if (!VIS.n) return;
+  $('#visor-carril').setPointerCapture(ev.pointerId);
+  visPunt[ev.pointerId] = { x: ev.clientX, y: ev.clientY };
+  var n = visDedos().length;
+  if (n === 1) {
+    visArr = { x0: ev.clientX, y0: ev.clientY, dx: 0, dy: 0,
+               ox: VIS.x, oy: VIS.y, modo: '' };
+  } else if (n === 2) {
+    var p = visPinza();
+    visArr = { modo: 'pellizco', d0: p.d, z0: VIS.z, cx: p.cx, cy: p.cy,
+               ox: VIS.x, oy: VIS.y };
+    visMandos(false);
+  }
+});
+
+$('#visor-carril').addEventListener('pointermove', function (ev) {
+  if (!visPunt[ev.pointerId] || !visArr) return;
+  visPunt[ev.pointerId] = { x: ev.clientX, y: ev.clientY };
+
+  if (visArr.modo === 'pellizco') {
+    if (visDedos().length < 2) return;
+    var p = visPinza();
+    visZoomEn(Math.min(VIS.zmax, Math.max(1, visArr.z0 * (p.d / visArr.d0))),
+              visArr.cx, visArr.cy, visArr.z0, visArr.ox, visArr.oy);
+    visPintar(false);
+    return;
+  }
+
+  var dx = ev.clientX - visArr.x0, dy = ev.clientY - visArr.y0;
+  visArr.dx = dx; visArr.dy = dy;
+  if (!visArr.modo) {
+    if (Math.abs(dx) < 7 && Math.abs(dy) < 7) return;   // todavía puede ser un toque
+    /* Ampliada, el dedo mueve la foto y no pasa de página: si no, no habría
+       forma de mirar el borde derecho de una foto ampliada. */
+    visArr.modo = VIS.z > 1 ? 'mover'
+                : (Math.abs(dx) > Math.abs(dy) ? 'pasar' : 'bajar');
+    visMandos(false);
+  }
+  if (visArr.modo === 'mover') {
+    VIS.x = visArr.ox + dx; VIS.y = visArr.oy + dy; visCenir();
+  } else if (visArr.modo === 'pasar') {
+    // en los extremos el carril cede un tercio: dice que no hay más sin frenar en seco
+    if ((VIS.i === 0 && dx > 0) || (VIS.i === VIS.n - 1 && dx < 0)) visArr.dx = dx / 3;
+  }
+  visPintar(false);
+});
+
+function visSoltar(ev) {
+  if (!visPunt[ev.pointerId]) return;
+  delete visPunt[ev.pointerId];
+  var a = visArr;
+  if (!a) return;
+  if (a.modo === 'pellizco') {
+    if (visDedos().length) {           // queda un dedo: sigue como arrastre
+      var d = visDedos()[0];
+      visArr = { x0: d.x, y0: d.y, dx: 0, dy: 0, ox: VIS.x, oy: VIS.y, modo: '' };
+    } else {
+      visArr = null;
+      if (VIS.z <= 1.02) { VIS.z = 1; VIS.x = 0; VIS.y = 0; }
+      visCenir(); visPintar(true);
+      visMandos(VIS.z === 1);
+    }
+    return;
+  }
+  if (visDedos().length) return;
+  visArr = null;
+  if (a.modo === 'pasar') {
+    var W = visAncho(), paso = 0;
+    if (a.dx < -W * .2) paso = 1; else if (a.dx > W * .2) paso = -1;
+    visIr(VIS.i + paso, true);
+    visMandos(true);
+  } else if (a.modo === 'bajar') {
+    if (Math.abs(a.dy) > 110) { cerrarVisor(); return; }
+    visPintar(true); visMandos(true);
+  } else if (a.modo === 'mover') {
+    visPintar(true);
+  } else {
+    visToque(ev);                      // no se movió: es un toque
+  }
+}
+$('#visor-carril').addEventListener('pointerup', visSoltar);
+$('#visor-carril').addEventListener('pointercancel', visSoltar);
+
+/* Un toque enseña o esconde los mandos; dos amplían. Hay que esperar los 280
+   ms del segundo para saber cuál de los dos era, y esa espera sólo retrasa
+   enseñar los mandos, que no es nada. */
+function visToque(ev) {
+  var ahora = Date.now();
+  if (ahora - visUltimoToque < 280) {
+    clearTimeout(visEsperaToque); visEsperaToque = null; visUltimoToque = 0;
+    var h = visHoja(VIS.i).getBoundingClientRect();
+    if (VIS.z > 1) { VIS.z = 1; VIS.x = 0; VIS.y = 0; }
+    else {
+      visZoomEn(Math.min(2.5, VIS.zmax), ev.clientX - (h.left + h.width / 2),
+                     ev.clientY - (h.top + h.height / 2), 1, 0, 0);
+    }
+    visPintar(true);
+    visMandos(VIS.z === 1);
+    return;
+  }
+  visUltimoToque = ahora;
+  visEsperaToque = setTimeout(function () {
+    visEsperaToque = null; visMandos(!VIS.mandos);
+  }, 280);
+}
+
+$('#visor-cerrar').addEventListener('click', function () { cerrarVisor(); });
+$('#visor-abajo').addEventListener('click', function (ev) {
+  var b = ev.target.closest('[data-vfoto]');
+  if (b) visIr(+b.dataset.vfoto, true);
+});
+window.addEventListener('resize', function () {
+  if (!VIS.n) return;
+  visMedir(); visCenir(); visPintar(false);
 });
 
 $('#volver').addEventListener('click', function () { history.back(); });
@@ -3060,7 +3382,8 @@ $('#ficha-int').addEventListener('click', function (ev) {
   if (b) pasarA(+b.dataset.paso);
 });
 window.addEventListener('popstate', function () {
-  if ($('#visor').classList.contains('abierto')) { $('#visor').classList.remove('abierto'); return; }
+  if (visVolviendo) { visVolviendo = false; return; }
+  if ($('#visor').classList.contains('abierto')) { cerrarVisor(true); return; }
   cerrarFicha();
 });
 
@@ -3750,11 +4073,18 @@ $('#cerrar-info').addEventListener('click', function () { abrirInfo(false); });
 document.addEventListener('keydown', function (ev) {
   if (ev.key === 'Escape') {
     if (!$('#sug').hidden) { cerrarSug(); return; }
-    if ($('#visor').classList.contains('abierto')) { $('#visor').classList.remove('abierto'); return; }
+    if ($('#visor').classList.contains('abierto')) { cerrarVisor(); return; }
     if (panelActual) { cerrarPanelAbierto(); return; }
     if ($('#ficha').classList.contains('abierta')) history.back();
   }
   if (ev.key === '/' && document.activeElement !== $('#q')) { ev.preventDefault(); $('#q').focus(); }
+  /* Con el visor abierto las flechas pasan de foto y no de especie: es lo
+     que se está mirando. */
+  if ($('#visor').classList.contains('abierto')) {
+    if (ev.key === 'ArrowLeft') visIr(VIS.i - 1, true);
+    if (ev.key === 'ArrowRight') visIr(VIS.i + 1, true);
+    return;
+  }
   if ($('#ficha').classList.contains('abierta') && !$('#visor').classList.contains('abierto')) {
     if (ev.key === 'ArrowLeft') pasarA(-1);
     if (ev.key === 'ArrowRight') pasarA(1);

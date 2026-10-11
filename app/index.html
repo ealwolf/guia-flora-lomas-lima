@@ -350,10 +350,17 @@ window.addEventListener('beforeinstallprompt', function (ev) {
   <div class="ficha-int" id="ficha-int"></div>
 </article>
 
-<!-- ---------- visor de imagen ---------- -->
-<div class="visor" id="visor">
-  <img id="visor-img" alt="">
-  <button id="visor-cerrar" aria-label="Cerrar" data-ico="x"></button>
+<!-- ---------- visor de fotos ----------
+     El carril lleva una hoja por foto y se mueve entero; los mandos van
+     encima y fuera de él, porque el carril es quien se queda los gestos. -->
+<div class="visor" id="visor" role="dialog" aria-modal="true"
+     aria-label="Fotos de la especie">
+  <div class="visor-carril" id="visor-carril"></div>
+  <div class="visor-arriba">
+    <span class="visor-cuenta" id="visor-cuenta"></span>
+    <button id="visor-cerrar" aria-label="Cerrar las fotos" data-ico="x"></button>
+  </div>
+  <div class="visor-abajo" id="visor-abajo"></div>
 </div>
 
 <script src="js/datos.js"></script>
