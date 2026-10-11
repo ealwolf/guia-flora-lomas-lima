@@ -3085,8 +3085,15 @@ function prepararGrupos() {
         '<b class="grupo-n"></b>' +
       '</button>' +
       '<button class="candado" data-candado="' + c + '"></button>' +
+      /* Un aspa en círculo y no una papelera ni una flecha de deshacer. La
+         papelera dice «borrar», y aquí no se borra nada: se destildan unas
+         fichas que vuelven a marcarse de un toque; esa palabra se reserva
+         para lo que de verdad se pierde. La flecha dice «deshacer», que es
+         el gesto de atrás y no el de vaciar. El aspa es lo que esta app ya
+         usa para quitar -la del buscador, la de cada ficha puesta-, y el
+         círculo la separa de la de cerrar. */
       '<button class="reinicia" data-limpia="' + c + '">' +
-        svgIcono('arrow-counter-clockwise') + '</button>' +
+        svgIcono('x-circle') + '</button>' +
       '<button class="grupo-caret" tabindex="-1" aria-hidden="true">' +
         svgIcono('caret-down') + '</button>';
   });

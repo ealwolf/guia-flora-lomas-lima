@@ -654,9 +654,14 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
 .grupo-cab:hover .grupo-tit, .grupo-cab:focus-visible .grupo-tit { color: var(--texto); }
 .grupo-ico { flex: none; line-height: 0; color: var(--tenue); }
 .grupo-ico .ico { width: 22px; height: 22px; }
-.grupo-tit { flex: 1; min-width: 0; }
+/* La cifra va pegada al título, no al otro extremo de la fila: dice cuántos
+   lleva ESE grupo, así que es parte de cómo se llama lo que hay ahí. Al
+   fondo quedaba junto a los dos mandos y se leía como uno más de ellos.
+   Ahora la fila tiene dos bandos: a la izquierda qué es y cuánto lleva, a la
+   derecha lo que se le puede hacer. */
+.grupo-tit { flex: 0 1 auto; min-width: 0; }
 .grupo-n {
-  flex: none; min-width: 19px; padding: 2px 5px; border-radius: 999px;
+  flex: none; margin-right: auto; min-width: 19px; padding: 2px 5px; border-radius: 999px;
   font-size: 11.5px; font-weight: 700; letter-spacing: 0; line-height: 1.25;
   text-align: center; font-variant-numeric: tabular-nums;
   background: var(--acento); color: var(--sobre-acento);
