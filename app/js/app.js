@@ -3118,6 +3118,17 @@ function pintarGrupos() {
         tit + (n ? ', ' + n + (n === 1 ? ' puesto' : ' puestos') : ', sin filtrar') +
         (k && n ? ', se mantiene al limpiar' : ''));
 
+    /* El pie entero -mantener y quitar- sólo cuando hay algo marcado: sin
+       nada no hay qué quitar ni qué proteger, y dos botones muertos al final
+       de cada grupo son dos cosas que leer y descartar nueve veces.
+
+       Se pierde con esto poder echarle el candado a un grupo vacío, o sea
+       «lo que ponga aquí luego, guárdamelo». Era un uso raro y no se
+       explicaba solo; y lo que de verdad lo hacía útil -que lo guardado con
+       candado vuelva al abrir la app en frío- sigue funcionando, porque eso
+       guarda el valor y no sólo el candado. */
+    g.querySelector('.grupo-pie').classList.toggle('oculto', !n);
+
     var m = g.querySelector('.mantener');
     m.innerHTML = svgIcono(k ? 'lock-simple-fill' : 'lock-simple-open') +
                   '<span>Mantener al limpiar</span>';
