@@ -4072,7 +4072,7 @@ function abrirInfo(v) {
           'ni respaldada por el SERFOR ni por los autores de la guía. Es un ' +
           'proyecto independiente para poder consultar el libro en el campo, ' +
           'sin señal.</p>' +
-        '<p>Todo el contenido —textos, fotografías, dibujos y datos— es de la ' +
+        '<p>Todo el contenido (textos, fotografías, dibujos y datos) es de la ' +
           'guía y pertenece a sus autores y al SERFOR. Si algo de aquí no ' +
           'coincide con el libro, la información del libro es la correcta.</p>' +
         /* Se dice en presente y sin fechas, para que siga siendo verdad
@@ -4104,7 +4104,7 @@ function abrirInfo(v) {
           'rel="noopener noreferrer">' +
           svgIcono('globe-hemisphere-west') +
           '<span class="enlace-txt"><b>La guía en el portal del SERFOR</b>' +
-            '<span>gob.pe — la página oficial del libro, no una descarga. ' +
+            '<span>gob.pe. La página oficial del libro, no una descarga. ' +
             'Necesita conexión.</span></span>' +
           svgIcono('caret-right', 'enlace-ir') +
         '</a>' +
@@ -4113,17 +4113,29 @@ function abrirInfo(v) {
       /* Va aqui, entre el libro y lo demas, porque es la respuesta a la
          pregunta que deja abierta el aviso de arriba: si esto no es del
          SERFOR, de quien es. Y lleva a donde escribir, que es lo unico que
-         convierte un error encontrado en campo en un error arreglado. */
-      '<h3>' + svgIcono('user') + 'Quién la hace</h3>' +
+         convierte un error encontrado en campo en un error arreglado.
+
+         Sin rayas largas en todo el panel, a peticion: donde habia una va un
+         parentesis o un punto. Las que quedan en la ficha de especie no son
+         prosa, son el hueco de un dato que la guia no da. */
+      '<h3>' + svgIcono('info') + 'Sobre este proyecto</h3>' +
       '<div class="ficha-libro">' +
-        '<p>La hace <b>Eduardo Alcántara</b>, de <b>Lomas de Paraíso</b>. Suyo ' +
-          'es el trabajo de la app —el diseño, el programa, los dibujos y las ' +
-          'correcciones anotadas—; el contenido de la guía no, que es del ' +
-          'SERFOR y de sus autores.</p>' +
-        '<p><b>¿Encontraste un error?</b> Se agradece que avises: algo que no ' +
-          'cuadre con el libro, una especie vista en una loma que no le figura, ' +
-          'una foto cambiada. Cada aviso se comprueba contra el libro antes de ' +
-          'tocar nada.</p>' +
+        '<p>Este proyecto es una iniciativa para dar a conocer el trabajo que ' +
+          'se hizo con esta guía y para que lo use cualquiera, en especial ' +
+          'quienes buscamos la conservación de los ecosistemas de lomas.</p>' +
+        /* Tres lineas y no un parrafo: son tres atribuciones distintas y en
+           corrido habria que separarlas con puntos y comas para leerlas.
+           La de Phosphor dice la licencia porque la MIT pide que el aviso
+           viaje con el programa, y este panel es donde viaja. */
+        '<dl class="creditos">' +
+          '<dt>Diseño e ilustraciones</dt><dd>Eduardo Alcántara</dd>' +
+          '<dt>Iconografía</dt><dd>Phosphor Icons, con licencia MIT</dd>' +
+          '<dt>Contenido</dt><dd>Los autores de <i>' + esc(G.meta.titulo) +
+            '</i> (' + G.meta.anio + ') y el SERFOR</dd>' +
+        '</dl>' +
+        '<p>Si quieres dejar un comentario, avisar de un error o pedir ' +
+          'información sobre el proyecto, escríbeme. Cada aviso se comprueba ' +
+          'contra el libro antes de tocar nada.</p>' +
         /* El segundo enlace de la app, y de otra clase: un mailto no necesita
            conexion para abrirse y no sale a ningun sitio. La direccion va
            escrita debajo ademas de en el href, para quien no tenga una
@@ -4131,7 +4143,7 @@ function abrirInfo(v) {
         '<a class="enlace" href="mailto:' + CORREO + '?subject=' +
           encodeURIComponent('Guía de Flora de las Lomas: un error') + '">' +
           svgIcono('envelope-simple') +
-          '<span class="enlace-txt"><b>Avisar de un error</b>' +
+          '<span class="enlace-txt"><b>Escribir sobre el proyecto</b>' +
             '<span>' + esc(CORREO) + '</span></span>' +
           svgIcono('caret-right', 'enlace-ir') +
         '</a>' +

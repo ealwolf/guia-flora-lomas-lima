@@ -43,7 +43,7 @@ COLORES = [
 META = {
     'titulo': 'Guía de Flora de las Lomas de Lima',
     'autores': 'Miguel Lleellish, Jael Odar y Huber Trinidad',
-    'editor': 'SERFOR — Servicio Nacional Forestal y de Fauna Silvestre',
+    'editor': 'Servicio Nacional Forestal y de Fauna Silvestre (SERFOR)',
     'anio': 2015,
     'isbn': '978-612-46908-0-8',
     'cita': ('Lleellish M., J. Odar & H. Trinidad. 2015. Guía de Flora de las '

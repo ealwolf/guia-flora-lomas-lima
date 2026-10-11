@@ -386,6 +386,21 @@ button {
    el titulo siguiente quedaba pegado a ella. Asi que se quita el margen del
    ultimo hijo, sea lo que sea, y el hueco lo pone una sola regla: 20 px,
    iguales en las cinco secciones. */
+/* Los creditos: el concepto a la izquierda y quien lo firma a la derecha,
+   en una sola rejilla para que los tres caigan en la misma columna y se
+   puedan leer en vertical. Apilado en pantalla estrecha, que «Diseño e
+   ilustraciones» se come casi todo el ancho de un movil. */
+.ficha-libro .creditos {
+  margin: 0 0 9px; display: grid; gap: 5px 14px; align-items: baseline;
+  grid-template-columns: auto 1fr;
+}
+.ficha-libro .creditos dt { color: var(--tenue); }
+.ficha-libro .creditos dd { margin: 0; color: var(--texto); }
+@media (max-width: 420px) {
+  .ficha-libro .creditos { grid-template-columns: 1fr; gap: 1px; }
+  .ficha-libro .creditos dd { margin-bottom: 7px; }
+}
+
 .ficha-libro > :last-child { margin-bottom: 0; }
 /* Con .grupo delante por el peso: «.grupo h3 { margin: 0 }» pesa lo mismo
    que «.ficha-libro + h3» y esta mas abajo en la hoja, asi que ganaba y el
