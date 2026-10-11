@@ -1736,6 +1736,25 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
   display: flex; align-items: center; gap: 7px;
 }
 .bloque p { margin: 0; font-size: var(--t-2); line-height: 1.62; }
+/* Hábitats: el nombre de la familia a la izquierda y sus etiquetas a la
+   derecha. Apilado ocupaba ocho renglones para decir cuatro cosas -una
+   especie con las tres familias suele traer una etiqueta en cada una- y
+   dejaba el ancho entero vacío al lado de cada etiqueta suelta.
+
+   Una sola rejilla para todo el bloque, no una por renglón: así los cuatro
+   nombres caen en la misma columna y se pueden leer en vertical, que es
+   como se busca «y de ladera, ¿qué era?».
+
+   El nombre va más callado que el h3 -que es el título de la sección- y más
+   alto que las etiquetas. Las mismas palabras que el filtro. */
+.habs {
+  display: grid; grid-template-columns: auto 1fr;
+  gap: 8px 14px; align-items: baseline;
+}
+.bloque .eti-fam {
+  margin: 0; font-size: var(--t-1); font-weight: 600;
+  color: var(--tenue); line-height: 1.3;
+}
 .bloque + .bloque { border-top: 1px solid var(--borde); }
 
 /* El calendario es UNA tira, no doce fichas. Con hueco entre los meses y
@@ -1950,6 +1969,10 @@ main { padding: 12px 14px 90px; max-width: 1400px; margin: 0 auto; }
    el buscador vuelve arriba y todo lo que filtra se junta detras de un solo
    boton. Lo que queda del corte es lo poco que de verdad depende del ancho. */
 @media (max-width: 600px) {
+  /* A una columna: «Vegetación de alrededor» mide casi lo que la pantalla,
+     y en dos columnas dejaba a las etiquetas una tira sin sitio. */
+  .habs { grid-template-columns: 1fr; gap: 2px; }
+  .habs .envoltura:not(:last-child) { margin-bottom: 10px; }
   /* la cabecera se va al bajar: sus tres botones son de una vez -guardar,
      sobre la guia, apariencia- y el sitio de arriba vale mas para las fotos.
      Lo que sigue pegado es el buscador y la fila del recuento. */

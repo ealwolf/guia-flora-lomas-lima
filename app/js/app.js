@@ -1093,6 +1093,30 @@ var HABITATS = [
       ['Fondo de quebrada', 'quebrada'] ] }
 ];
 
+/* Los hábitats de una especie, repartidos en las familias de HABITATS y en
+   ese orden. Sueltos no se entienden: «Ladera rocosa» y «Cresta rocosa»
+   parecen dos maneras de decir lo mismo y son respuestas a dos preguntas
+   distintas -de qué es la ladera, y qué forma tiene la loma-, que es
+   justamente por lo que el filtro las tiene separadas. Aquí se dicen con las
+   mismas palabras que allí.
+   Lo que no esté en las tres familias sale al final y sin nombre, antes que
+   desaparecer: el dato manda sobre esta lista. */
+function habitatsPorFamilia(hs) {
+  var queda = hs.slice(), fuera = [];
+  var fam = HABITATS.map(function (f) {
+    var mios = [];
+    f.hay.forEach(function (h) {
+      var i = queda.indexOf(h[0]);
+      if (i >= 0) { mios.push(queda[i]); queda.splice(i, 1); }
+    });
+    return { tit: f.tit, hay: mios };
+  }).filter(function (f) { return f.hay.length; });
+  /* Lleva nombre aunque no sepamos cuál: en una rejilla de dos columnas, una
+     fila sin su celda de la izquierda correría todas las de abajo. */
+  if (queda.length) fuera.push({ tit: 'Otros', hay: queda });
+  return fam.concat(fuera);
+}
+
 /* El envoltorio va aquí y no en cada dibujo: así los ocho comparten lienzo y
    grosor de trazo por construcción, y el archivo guarda sólo las líneas. */
 function dibujoHabitat(n) { return lienzo(DIBH[n], 'hab-dib'); }
@@ -2933,13 +2957,24 @@ function abrirFicha(id, empujar) {
         '</figcaption></figure>' +
         '<div class="lista-lomas">' + lomasEti + '</div></section>' +
       (e.flor.length ? '<section class="bloque"><h3>' + svgIcono('calendar-blank') + 'Calendario de floración</h3>' + cal + '</section>' : '') +
-      (e.habitats.length ? '<section class="bloque"><h3>' + svgIcono('drop') + 'Hábitats</h3><div class="envoltura">' +
-        e.habitats.map(function (h) { return '<span class="eti">' + esc(h) + '</span>'; }).join('') +
-        (e.cara ? '<span class="eti" title="La guía dice la cara en dos sitios: ' +
+      (e.habitats.length ? '<section class="bloque"><h3>' + svgIcono('drop') + 'Hábitats</h3>' +
+        '<div class="habs">' +
+        habitatsPorFamilia(e.habitats).map(function (f) {
+          return '<p class="eti-fam">' + esc(f.tit) + '</p>' +
+            '<div class="envoltura">' + f.hay.map(function (h) {
+              return '<span class="eti">' + esc(h) + '</span>';
+            }).join('') + '</div>';
+        }).join('') +
+        /* La cara no es un hábitat y no puede quedarse suelta al final: con
+           las familias por encima parecería la última de «Relieve de loma».
+           Así que lleva la suya, y el valor se queda solo -«Occidental»- en
+           vez de repetir «Cara» en la etiqueta. El title no es un nombre
+           sino una salvedad, y por eso sigue siendo un title. */
+        (e.cara ? '<p class="eti-fam">Cara, según el texto</p><div class="envoltura">' +
+          '<span class="eti" title="La guía dice la cara en dos sitios: ' +
           'el dibujo del perfil y el texto. Ésta es la del texto; la del dibujo ' +
           'va bajo el perfil de altitud. En 12 de 103 especies no coinciden.">' +
-          svgIcono('sun') + 'Cara ' + esc(e.cara.toLowerCase()) +
-          ' <small>según el texto</small></span>' : '') +
+          svgIcono('sun') + esc(e.cara) + '</span></div>' : '') +
         '</div></section>' : '') +
     '</div>' +
 
