@@ -27,6 +27,30 @@ tocar nada:
   pendientes de rehacerse en Affinity como los otros cuatro; mientras tanto el
   juego tiene dos estilos, y se nota: los de Affinity llevan más detalle.
 
+## El otro juego de dibujos: «Tipo de planta»
+
+Hay un segundo juego con estas mismas reglas,
+[`datos/dibujos-grupo/`](../dibujos-grupo/LEEME.md), y es el filtro que está
+cinco renglones más arriba en el mismo panel. **Antes de tocar nada de aquí,
+hay que saber que existe.**
+
+Se llamó «Grupo» -la palabra del libro- hasta que pasó a **«Tipo de planta»**,
+y ese cambio es justo lo que da nombre al problema: cuatro de sus ocho se
+llaman casi igual que cuatro de éstos -arbórea, arbustiva, herbácea,
+cactáceas- y no preguntan lo mismo. El hábitat dice **qué crece alrededor** de
+la especie; el tipo de planta dice **qué es** la especie.
+
+Lo que los separa en el dibujo, y hay que respetarlo en los dos lados:
+
+| | Hábitat | Tipo de planta |
+| --- | --- | --- |
+| Qué se dibuja | un paisaje, varias plantas | un ejemplar, una planta sola |
+| Línea del suelo | cruza el lienzo entero, `M0 82H80` | corta y centrada, `M22 86H58`, o ninguna |
+
+Si un dibujo de aquí se queda con una sola planta, o uno de allí se llena de
+compañía, los dos filtros dejan de distinguirse. Ésa es la regla; lo demás
+-lienzo, trazo, sombras- es idéntico en los dos juegos.
+
 ## Las reglas
 
 - Lienzo `0 0 80 100` (4:5) y el mismo envoltorio en los ocho.
@@ -63,6 +87,8 @@ cruza los cuatro sin costura. Sólo el tramo elegido saca recuadro y fondo, y
 la línea le pasa por dentro. Si algún día se le devuelve el filete a esas
 fichas, la línea se parte: son 2 px por empalme.
 
-El `<svg>` de fuera lo pone `dibujoHabitat()`, en `app/js/app.js`;
+El `<svg>` de fuera lo pone `dibujoHabitat()`, en `app/js/app.js`, que no es
+más que una llamada a `lienzo()`: el mismo envoltorio que usa el otro juego,
+para que ninguno de los dos pueda salirse del lienzo o del trazo.
 `construir.py` guarda sólo el interior, así que el archivo puede abrirse y
 verse por su cuenta sin que eso cambie lo que llega a la app.
