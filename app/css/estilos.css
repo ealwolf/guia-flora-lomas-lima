@@ -380,6 +380,17 @@ button {
 }
 .ficha-libro b { color: var(--texto); }
 .ficha-libro p { margin: 0 0 9px; }
+/* Aire entre una seccion y el titulo de la siguiente. No lo habia: lo unico
+   que separaba era el margen de abajo del ultimo parrafo, 9 px, y cuando la
+   seccion terminaba en la tarjeta de un enlace -que no lleva margen abajo-
+   el titulo siguiente quedaba pegado a ella. Asi que se quita el margen del
+   ultimo hijo, sea lo que sea, y el hueco lo pone una sola regla: 20 px,
+   iguales en las cinco secciones. */
+.ficha-libro > :last-child { margin-bottom: 0; }
+/* Con .grupo delante por el peso: «.grupo h3 { margin: 0 }» pesa lo mismo
+   que «.ficha-libro + h3» y esta mas abajo en la hoja, asi que ganaba y el
+   hueco no aparecia. */
+.grupo .ficha-libro + h3 { margin-top: 20px; }
 
 /* punto en el boton de guardar: queda algo por bajar o por instalar */
 #btn-guardar { position: relative; }

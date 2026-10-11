@@ -826,6 +826,9 @@ function pintarCuenta() {
 /* La guía, en el portal del Estado donde está publicada. Aquí arriba y no
    metido en el texto: si algún día cambia la dirección, se cambia en un
    sitio. */
+/* La direccion de la asociacion y no una personal: quien escriba dentro de
+   dos años tiene que llegar a alguien aunque la persona cambie. */
+var CORREO = 'ealcantara@lomasdeparaiso.org';
 var ENLACE_SERFOR = 'https://www.gob.pe/institucion/serfor/informes-publicaciones/' +
                     '1124091-guia-de-flora-de-las-lomas-de-lima-2015';
 
@@ -4044,9 +4047,11 @@ function abrirInfo(v) {
     $('#info-libro').innerHTML =
       '<h3>' + svgIcono('warning-circle') + 'Aviso</h3>' +
       '<div class="ficha-libro">' +
-        /* Sin dueño mientras no este decidido si esto es de la asociacion o
-           algo personal. «Independiente» ademas refuerza lo de arriba sin
-           tener que nombrar a nadie. */
+        /* «Independiente» quiere decir independiente DEL SERFOR, que es de
+           quien hay que deslindarse aqui; quien la hace se dice mas abajo,
+           con nombre y con una direccion a la que escribir. Estuvo sin
+           dueño mientras no estaba decidido si era de la asociacion o algo
+           personal: ya lo esta. */
         '<p><b>Esta no es una aplicación oficial.</b> No está hecha, revisada ' +
           'ni respaldada por el SERFOR ni por los autores de la guía. Es un ' +
           'proyecto independiente para poder consultar el libro en el campo, ' +
@@ -4085,6 +4090,33 @@ function abrirInfo(v) {
           '<span class="enlace-txt"><b>La guía en el portal del SERFOR</b>' +
             '<span>gob.pe — la página oficial del libro, no una descarga. ' +
             'Necesita conexión.</span></span>' +
+          svgIcono('caret-right', 'enlace-ir') +
+        '</a>' +
+      '</div>' +
+
+      /* Va aqui, entre el libro y lo demas, porque es la respuesta a la
+         pregunta que deja abierta el aviso de arriba: si esto no es del
+         SERFOR, de quien es. Y lleva a donde escribir, que es lo unico que
+         convierte un error encontrado en campo en un error arreglado. */
+      '<h3>' + svgIcono('user') + 'Quién la hace</h3>' +
+      '<div class="ficha-libro">' +
+        '<p>La hace <b>Eduardo Alcántara</b>, de <b>Lomas de Paraíso</b>. Suyo ' +
+          'es el trabajo de la app —el diseño, el programa, los dibujos y las ' +
+          'correcciones anotadas—; el contenido de la guía no, que es del ' +
+          'SERFOR y de sus autores.</p>' +
+        '<p><b>¿Encontraste un error?</b> Se agradece que avises: algo que no ' +
+          'cuadre con el libro, una especie vista en una loma que no le figura, ' +
+          'una foto cambiada. Cada aviso se comprueba contra el libro antes de ' +
+          'tocar nada.</p>' +
+        /* El segundo enlace de la app, y de otra clase: un mailto no necesita
+           conexion para abrirse y no sale a ningun sitio. La direccion va
+           escrita debajo ademas de en el href, para quien no tenga una
+           aplicacion de correo puesta y tenga que copiarla a mano. */
+        '<a class="enlace" href="mailto:' + CORREO + '?subject=' +
+          encodeURIComponent('Guía de Flora de las Lomas: un error') + '">' +
+          svgIcono('envelope-simple') +
+          '<span class="enlace-txt"><b>Avisar de un error</b>' +
+            '<span>' + esc(CORREO) + '</span></span>' +
           svgIcono('caret-right', 'enlace-ir') +
         '</a>' +
       '</div>' +
