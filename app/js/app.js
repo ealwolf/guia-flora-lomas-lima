@@ -4072,15 +4072,24 @@ function abrirInfo(v) {
           'ni respaldada por el SERFOR ni por los autores de la guía. Es un ' +
           'proyecto independiente para poder consultar el libro en el campo, ' +
           'sin señal.</p>' +
-        '<p>Todo el contenido (textos, fotografías, dibujos y datos) es de la ' +
-          'guía y pertenece a sus autores y al SERFOR. Si algo de aquí no ' +
-          'coincide con el libro, la información del libro es la correcta.</p>' +
+        /* Decia «todo el contenido, incluidos los dibujos, es de la guia», y
+           los dibujos no: son de aqui. Deslindarlo importa justo porque lo
+           demas si es ajeno. */
+        '<p><b>Los textos y las fotografías son de la guía</b> y pertenecen a ' +
+          'sus autores y al SERFOR. Si algo de aquí no coincide con el libro, ' +
+          'la información del libro es la correcta. Los dibujos, el programa y ' +
+          'las correcciones anotadas sí son de este proyecto.</p>' +
         /* Se dice en presente y sin fechas, para que siga siendo verdad
            mientras se pide. Cuando haya respuesta, esta linea se cambia por
-           la autorizacion concreta. */
-        '<p><b>Difusión pendiente de autorización.</b> Para distribuir la guía ' +
-          'en esta forma hace falta el permiso del SERFOR. Mientras no lo haya, ' +
-          'esto es un prototipo para enseñar, no una app publicada.</p>' +
+           la autorizacion concreta.
+           Antes decia «esto es un prototipo para ensenar, no una app
+           publicada», y dejo de ser cierto el dia que se publico el sitio y
+           el codigo. Lo que no cambia es la postura, asi que es lo que se
+           dice ahora: sin lucro, citando, y se retira si lo piden. */
+        '<p><b>Se ha pedido autorización al SERFOR</b> para difundir la guía ' +
+          'en esta forma. Mientras tanto se publica sin ánimo de lucro, citando ' +
+          'siempre la fuente y con enlace al original, y se retirará de ' +
+          'inmediato si el SERFOR o cualquiera de los autores lo pide.</p>' +
       '</div>' +
 
       '<h3>' + svgIcono('book-open') + 'El libro</h3>' +
@@ -4136,6 +4145,11 @@ function abrirInfo(v) {
         '<p>Si quieres dejar un comentario, avisar de un error o pedir ' +
           'información sobre el proyecto, escríbeme. Cada aviso se comprueba ' +
           'contra el libro antes de tocar nada.</p>' +
+        /* Lo que cambia ahora que el repositorio es publico: ya no es solo
+           una app que se usa, es algo que otra institucion puede tomar. */
+        '<p>El proyecto entero es de código abierto: el programa, los guiones ' +
+          'y los datos están publicados para que cualquier institución pueda ' +
+          'tomarlo como punto de partida para su propia guía.</p>' +
         /* El segundo enlace de la app, y de otra clase: un mailto no necesita
            conexion para abrirse y no sale a ningun sitio. La direccion va
            escrita debajo ademas de en el href, para quien no tenga una

@@ -1,6 +1,7 @@
 """Arma los archivos que consume la app a partir de los datos del proyecto.
 
-    datos/crudo/    extracción del PDF, congelada. No se edita nunca.
+    datos/crudo/    el libro y su extracción, congelados. No se editan nunca.
+                    libro/ el PDF, tablas/ los csv, img/ las fotos.
     datos/propio/   tus correcciones (color de la flor, y lo que venga después).
         |
         v
@@ -20,6 +21,10 @@ import os, sys, io, csv, json, re, datetime, collections, hashlib
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CRUDO = os.path.join(RAIZ, 'datos', 'crudo')
+# Lo crudo esta en tres cajones y cada uno dice que es: el libro del que sale
+# todo, lo que se extrajo de el en texto y lo que se extrajo en imagen.
+TABLAS = os.path.join(CRUDO, 'tablas')
+LIBRO = os.path.join(CRUDO, 'libro')
 PROPIO = os.path.join(RAIZ, 'datos', 'propio')
 APPJS = os.path.join(RAIZ, 'app', 'js')
 
@@ -164,19 +169,19 @@ def main():
     # lo primero: las fotos, que de ahi salen el recuento y la lista del sw
     generar_fotos()
 
-    esp = leer(os.path.join(CRUDO, 'especie.csv'))
+    esp = leer(os.path.join(TABLAS, 'especie.csv'))
     if not esp:
-        sys.exit('falta datos/crudo/especie.csv')
-    img = leer(os.path.join(CRUDO, 'especie_imagen.csv'))
-    lomas = leer(os.path.join(CRUDO, 'loma.csv'))
-    colauto = {r['especie_id']: r for r in leer(os.path.join(CRUDO, 'especie_color.csv'))}
+        sys.exit('falta datos/crudo/tablas/especie.csv')
+    img = leer(os.path.join(TABLAS, 'especie_imagen.csv'))
+    lomas = leer(os.path.join(TABLAS, 'loma.csv'))
+    colauto = {r['especie_id']: r for r in leer(os.path.join(TABLAS, 'especie_color.csv'))}
     colrev = {r['especie_id']: r for r in leer(os.path.join(PROPIO, 'color_flor.csv'))}
     # La altitud de la guia sale del dibujo del perfil, que es de milimetros, y
     # en diez fichas no cuadra con lo que dice el texto de «Habitat» de esa
     # misma pagina. Esta capa recoge el cotejo. Solo manda cuando la fila esta
     # revisada: sin revisar, vale el dibujo, que es lo fiel al PDF.
     altrev = {r['especie_id']: r for r in leer(os.path.join(PROPIO, 'altitud_propia.csv'))}
-    rojos = json.load(open(os.path.join(CRUDO, 'perfil_rojo.json'), encoding='utf-8'))
+    rojos = json.load(open(os.path.join(TABLAS, 'perfil_rojo.json'), encoding='utf-8'))
     # los sinonimos no estan en la guia: son aporte propio
     sinon = {r['especie_id']: lista(r.get('sinonimos', ''), ';')
              for r in leer(os.path.join(PROPIO, 'sinonimos.csv'))}
@@ -333,7 +338,7 @@ def main():
                      {'codigo': 'VU', 'nombre': 'Vulnerable'},
                      {'codigo': 'EN', 'nombre': 'En peligro'},
                      {'codigo': 'CR', 'nombre': 'En peligro crítico'}],
-        'perfil': json.load(open(os.path.join(CRUDO, 'perfil.json'), encoding='utf-8')),
+        'perfil': json.load(open(os.path.join(TABLAS, 'perfil.json'), encoding='utf-8')),
     }
 
     os.makedirs(APPJS, exist_ok=True)
@@ -346,7 +351,7 @@ def main():
           % (os.path.getsize(p) / 1024, len(especies)))
 
     # mapa
-    svg = open(os.path.join(CRUDO, 'mapa.svg'), encoding='utf-8').read()
+    svg = open(os.path.join(TABLAS, 'mapa.svg'), encoding='utf-8').read()
     pm = os.path.join(APPJS, 'mapa.js')
     with open(pm, 'w', encoding='utf-8') as fh:
         fh.write('window.MAPA_SVG=')

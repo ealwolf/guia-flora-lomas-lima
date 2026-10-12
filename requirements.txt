@@ -1,0 +1,5 @@
+Pillow>=10.0
+
+# solo para volver a extraer desde el PDF, con scripts/extraer-*.py
+PyMuPDF>=1.24
+numpy>=1.26

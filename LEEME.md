@@ -3,9 +3,14 @@
 Catálogo de las **134 especies** de la guía de SERFOR (2015), para consultar en
 el teléfono **sin conexión**: en la loma no hay señal.
 
-> Los datos salen del PDF publicado por SERFOR. La extracción vive aparte, en
-> `App - Monitoreo`, y aquí llega como copia congelada. Este proyecto no la
-> modifica: le añade cosas encima.
+> Los datos salen del PDF publicado por SERFOR, que está en
+> `datos/crudo/libro/` junto con lo que se extrajo de él. Esa capa está
+> congelada y este proyecto no la modifica: le añade cosas encima, en
+> `datos/propio/`. Los guiones que hicieron la extracción están en `scripts/`,
+> así que se puede rehacer desde el PDF y comparar.
+
+> Si llegas de GitHub, empieza por el [README](README.md), que es más corto.
+> Esto es el documento largo.
 
 ---
 
@@ -137,7 +142,9 @@ Guía de Flora de las Lomas de Lima/
 │   └── img/                295 fotos en avif       ← generado
 │
 ├── datos/
-│   ├── crudo/              copia congelada del PDF. NO EDITAR.
+│   ├── crudo/              el libro y su extracción. NO EDITAR.
+│   │   ├── libro/          el PDF del SERFOR
+│   │   ├── tablas/         los csv, el mapa y los perfiles
 │   │   └── img/            las 295 fotos en jpg, tal como salieron
 │   ├── propio/             tus correcciones. Ningún script escribe aquí.
 │   │   ├── color_flor.csv
@@ -153,10 +160,12 @@ Guía de Flora de las Lomas de Lima/
 │   ├── publicar.py         app/ → flora-lomas-app/ y su zip
 │   ├── servir.py           servidor de pruebas, sin caché
 │   ├── sw.plantilla.js     de donde sale sw.js
-│   └── icono.py            dibuja el icono (se ejecuta una vez)
+│   ├── icono.py            dibuja el icono (se ejecuta una vez)
+│   ├── extraer-especies.py   libro/ → tablas/
+│   └── extraer-imagenes.py   libro/ → img/
 │
-└── docs/
-    └── guia_flora_lomas_lima_2015.pdf   la fuente
+├── README.md · LICENSE · DERECHOS.md · CONTRIBUTING.md
+└── requirements.txt
 ```
 
 Los archivos marcados como generados se rehacen en cada construcción; el resto
@@ -469,7 +478,7 @@ rojo-verde los dos siguen separándose.
 
 Para añadir más, pon el `loma_id` en la fila de la especie -varios separados
 por punto y coma- y vuelve a ejecutar `construir.py`. Los identificadores
-están en `datos/crudo/loma.csv`; si escribes uno que no existe, el script
+están en `datos/crudo/tablas/loma.csv`; si escribes uno que no existe, el script
 avisa y lo ignora.
 
 ---

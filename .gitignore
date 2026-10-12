@@ -16,3 +16,6 @@ assets/source/
 # respaldos completos antes de cambios grandes: pesan decenas de MB y ya
 # estan cubiertos por las etiquetas de git para lo que si va versionado
 respaldos/
+# el banco de pruebas de la tira del visor: util en la maquina de quien
+# desarrolla, ruido para quien llega al repositorio
+pruebas/
