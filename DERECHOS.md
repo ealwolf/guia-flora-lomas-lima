@@ -78,4 +78,4 @@ campo:
 Y, si viene al caso, esta app como lo que es:
 
 > Alcántara E. *Guía de Flora de las Lomas de Lima, app de campo*. Lomas de
-> Paraíso. https://github.com/USUARIO/guia-flora-lomas-lima
+> Paraíso. https://github.com/ealwolf/guia-flora-lomas-lima

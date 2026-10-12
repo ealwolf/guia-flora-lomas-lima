@@ -23,7 +23,7 @@ estructura está pensada para que se entienda.
 ## Cómo verla funcionando
 
 ```bash
-git clone https://github.com/USUARIO/guia-flora-lomas-lima.git
+git clone https://github.com/ealwolf/guia-flora-lomas-lima.git
 cd guia-flora-lomas-lima
 pip install -r requirements.txt
 python scripts/construir.py     # fabrica datos y fotos (unos 30 s la primera vez)
