@@ -4157,14 +4157,19 @@ function abrirInfo(v) {
           'y los datos están publicados para que cualquier institución pueda ' +
           'tomarlo como punto de partida para su propia guía.</p>' +
         /* El segundo enlace de la app, y de otra clase: un mailto no necesita
-           conexion para abrirse y no sale a ningun sitio. La direccion va
-           escrita debajo ademas de en el href, para quien no tenga una
-           aplicacion de correo puesta y tenga que copiarla a mano. */
+           conexion para abrirse y no sale a ningun sitio.
+
+           Solo la direccion. Llevaba encima un «Escribir sobre el proyecto»
+           que no anadia nada: el parrafo de arriba acaba de decir para que
+           es, el sobre dice que es correo, y la direccion dice a donde. Tres
+           maneras de decir lo mismo en cuatro centimetros. Y la direccion es
+           ademas lo unico que hay que poder leer y copiar si el telefono no
+           tiene aplicacion de correo puesta, asi que pasa a ser la linea
+           principal en vez del pie en gris. */
         '<a class="enlace" href="mailto:' + CORREO + '?subject=' +
           encodeURIComponent('Guía de Flora de las Lomas: un error') + '">' +
           svgIcono('envelope-simple') +
-          '<span class="enlace-txt"><b>Escribir sobre el proyecto</b>' +
-            '<span>' + esc(CORREO) + '</span></span>' +
+          '<span class="enlace-txt"><b>' + esc(CORREO) + '</b></span>' +
           svgIcono('caret-right', 'enlace-ir') +
         '</a>' +
       '</div>' +
