@@ -259,6 +259,13 @@ button {
   border: 1px solid transparent;
 }
 .opcion:hover, .opcion:focus-visible { background: var(--superficie-2); }
+/* Aire entre el rotulo de la seccion y su primera opcion. Los .grupo h3 van
+   con margen cero porque en el panel de filtros son renglones de un indice y
+   ahi el cero es correcto; aqui no, porque debajo hay opciones y el rotulo se
+   pegaba a la primera. Por eso la regla mira al hermano siguiente en vez de
+   tocar el h3: solo entra donde un titulo lleva opciones debajo, que hoy es
+   Apariencia y nada mas. */
+.grupo h3 + .opcion { margin-top: 10px; }
 .opcion[aria-checked="true"] {
   background: var(--acento-sua); color: var(--acento-txt); font-weight: 600;
 }

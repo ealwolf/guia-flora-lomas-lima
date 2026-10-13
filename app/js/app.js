@@ -4077,8 +4077,9 @@ function abrirInfo(v) {
            demas si es ajeno. */
         '<p><b>Los textos y las fotografías son de la guía</b> y pertenecen a ' +
           'sus autores y al SERFOR. Si algo de aquí no coincide con el libro, ' +
-          'la información del libro es la correcta. Los dibujos, el programa y ' +
-          'las correcciones anotadas sí son de este proyecto.</p>' +
+          'se debe considerar la información del libro como la correcta. Los ' +
+          'dibujos, el programa y las correcciones anotadas sí son de este ' +
+          'proyecto.</p>' +
         /* Se dice en presente y sin fechas, para que siga siendo verdad
            mientras se pide. Cuando haya respuesta, esta linea se cambia por
            la autorizacion concreta.
@@ -4142,9 +4143,14 @@ function abrirInfo(v) {
           '<dt>Contenido</dt><dd>Los autores de <i>' + esc(G.meta.titulo) +
             '</i> (' + G.meta.anio + ') y el SERFOR</dd>' +
         '</dl>' +
+        /* No basta con avisar: se dice que hace falta para que el aviso se
+           pueda atender. El libro manda, y lo que lo contradiga tiene que
+           venir con algo detras. */
         '<p>Si quieres dejar un comentario, avisar de un error o pedir ' +
-          'información sobre el proyecto, escríbeme. Cada aviso se comprueba ' +
-          'contra el libro antes de tocar nada.</p>' +
+          'información sobre el proyecto, escríbeme. En caso de solicitar ' +
+          'actualización de alguna(s) especie(s), se debe tomar como ' +
+          'referencia base lo que indica el libro y contrastar la información ' +
+          'con una fuente verídica o comprobada.</p>' +
         /* Lo que cambia ahora que el repositorio es publico: ya no es solo
            una app que se usa, es algo que otra institucion puede tomar. */
         '<p>El proyecto entero es de código abierto: el programa, los guiones ' +
@@ -4176,8 +4182,8 @@ function abrirInfo(v) {
 
       '<h3>' + svgIcono('sliders-horizontal') + 'Algunos cambios</h3>' +
       '<div class="ficha-libro">' +
-        '<p>Lo que la app pone de su parte se guarda separado del dato del ' +
-          'libro, para poder distinguir siempre uno de otro:</p>' +
+        '<p>Esta app muestra algunos cambios o funcionalidades adicionales ' +
+          'para dar una mejor experiencia de búsqueda/lectura, entre ellos:</p>' +
         '<ul class="cambios">' +
           '<li>El <b>color de la flor</b>, deducido del texto y de las ' +
             'fotografías, para poder buscar por color.</li>' +
