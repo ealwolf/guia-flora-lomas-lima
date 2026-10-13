@@ -832,6 +832,7 @@ function pintarCuenta() {
 /* La direccion de la asociacion y no una personal: quien escriba dentro de
    dos años tiene que llegar a alguien aunque la persona cambie. */
 var CORREO = 'ealcantara@lomasdeparaiso.org';
+var REPO = 'https://github.com/ealwolf/guia-flora-lomas-lima';
 var ENLACE_SERFOR = 'https://www.gob.pe/institucion/serfor/informes-publicaciones/' +
                     '1124091-guia-de-flora-de-las-lomas-de-lima-2015';
 
@@ -4155,10 +4156,21 @@ function abrirInfo(v) {
           'referencia base lo que indica el libro y contrastar la información ' +
           'con una fuente verídica o comprobada.</p>' +
         /* Lo que cambia ahora que el repositorio es publico: ya no es solo
-           una app que se usa, es algo que otra institucion puede tomar. */
+           una app que se usa, es algo que otra institucion puede tomar.
+
+           Y con su enlace, que si no la frase es un callejon sin salida:
+           existe justamente para quien querria mirarlo, y sin direccion no
+           tiene por donde. Una afirmacion asi o lleva enlace o sobra. */
         '<p>El proyecto entero es de código abierto: el programa, los guiones ' +
           'y los datos están publicados para que cualquier institución pueda ' +
           'tomarlo como punto de partida para su propia guía.</p>' +
+        '<a class="enlace" href="' + REPO + '" target="_blank" ' +
+          'rel="noopener noreferrer">' +
+          svgIcono('github-logo') +
+          '<span class="enlace-txt"><b>El proyecto en GitHub</b>' +
+            '<span>Código, datos y guiones. Necesita conexión.</span></span>' +
+          svgIcono('caret-right', 'enlace-ir') +
+        '</a>' +
         /* El segundo enlace de la app, y de otra clase: un mailto no necesita
            conexion para abrirse y no sale a ningun sitio.
 
