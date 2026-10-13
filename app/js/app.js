@@ -4107,15 +4107,14 @@ function abrirInfo(v) {
            de dónde sale todo esto y quedarse con el original, que es lo
            honrado teniendo el contenido ajeno dentro.
 
-           Es el primer -y único- enlace de la app, y sale fuera: se abre en
-           otra pestaña y lleva rel=noopener, y se avisa de que necesita
-           conexión, que aquí no se da por supuesta. */
+           Sale fuera: se abre en otra pestaña y lleva rel=noopener, y se
+           avisa de que necesita conexión, que en esta app no se da por
+           supuesta. */
         '<a class="enlace" href="' + ENLACE_SERFOR + '" target="_blank" ' +
           'rel="noopener noreferrer">' +
           svgIcono('globe-hemisphere-west') +
-          '<span class="enlace-txt"><b>La guía en el portal del SERFOR</b>' +
-            '<span>gob.pe. La página oficial del libro, no una descarga. ' +
-            'Necesita conexión.</span></span>' +
+          '<span class="enlace-txt"><b>Guía de Flora de las Lomas de Lima</b>' +
+            '<span>Página oficial de la guía. Necesita conexión.</span></span>' +
           svgIcono('caret-right', 'enlace-ir') +
         '</a>' +
       '</div>' +
