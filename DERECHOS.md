@@ -51,9 +51,10 @@ licencia MIT.
   de nadie y nadie gana dinero con ella. No está autorizado cobrar por ella.
 - **Se cita siempre la fuente**, en la app y aquí, con enlace al portal
   oficial.
-- **Autorización pendiente.** Se ha pedido al SERFOR el permiso para difundir
-  la guía en esta forma. Mientras no haya respuesta, el proyecto se mantiene
-  con esta postura.
+- **Falta pedir la autorización.** Para difundir la guía en esta forma hace
+  falta el permiso del SERFOR, y **todavía no se ha solicitado**. Mientras
+  tanto, el proyecto se mantiene con esta postura, y cuando se pida y haya
+  respuesta se dirá aquí cuál fue.
 - **Retirada inmediata.** Si el SERFOR o cualquiera de los autores pide que se
   retire el contenido de la guía, se retira sin discusión. Basta con escribir a
   ealcantara@lomasdeparaiso.org.

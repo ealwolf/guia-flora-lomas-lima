@@ -4080,17 +4080,21 @@ function abrirInfo(v) {
           'se debe considerar la información del libro como la correcta. Los ' +
           'dibujos, el programa y las correcciones anotadas sí son de este ' +
           'proyecto.</p>' +
-        /* Se dice en presente y sin fechas, para que siga siendo verdad
-           mientras se pide. Cuando haya respuesta, esta linea se cambia por
-           la autorizacion concreta.
-           Antes decia «esto es un prototipo para ensenar, no una app
+        /* Se dice lo que hay, no lo que convendria. Llego a decir «se ha
+           pedido autorizacion», y no se habia pedido: en una pantalla que
+           puede leer alguien del SERFOR, eso no es un matiz, es una
+           afirmacion falsa sobre ellos. Lo que falta se dice como lo que es
+           -falta-, y el dia que se pida y haya respuesta, esta linea se
+           cambia por la autorizacion concreta.
+           Antes de eso decia «esto es un prototipo para ensenar, no una app
            publicada», y dejo de ser cierto el dia que se publico el sitio y
            el codigo. Lo que no cambia es la postura, asi que es lo que se
-           dice ahora: sin lucro, citando, y se retira si lo piden. */
-        '<p><b>Se ha pedido autorización al SERFOR</b> para difundir la guía ' +
-          'en esta forma. Mientras tanto se publica sin ánimo de lucro, citando ' +
-          'siempre la fuente y con enlace al original, y se retirará de ' +
-          'inmediato si el SERFOR o cualquiera de los autores lo pide.</p>' +
+           dice: sin lucro, citando, y se retira si lo piden. */
+        '<p><b>Falta pedir autorización al SERFOR.</b> Para difundir la guía ' +
+          'en esta forma hace falta su permiso, y todavía no se ha solicitado. ' +
+          'Mientras tanto se publica sin ánimo de lucro, citando siempre la ' +
+          'fuente y con enlace al original, y se retirará de inmediato si el ' +
+          'SERFOR o cualquiera de los autores lo pide.</p>' +
       '</div>' +
 
       '<h3>' + svgIcono('book-open') + 'El libro</h3>' +
