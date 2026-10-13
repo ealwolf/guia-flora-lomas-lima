@@ -35,10 +35,12 @@ JavaScript, el mapa, los iconos, el service worker y las 295 fotos
 recomprimidas a AVIF. Las veces siguientes es instantáneo, porque sólo rehace
 lo que cambió.
 
-Para publicarla, `python scripts/publicar.py` deja un espejo de `app/` y un
-zip. La carpeta `app/` se puede arrastrar tal cual a cualquier alojamiento
-estático. La única condición es **HTTPS**, que es lo que exige un service
-worker.
+Para publicarla, la carpeta `app/` se arrastra tal cual a cualquier
+alojamiento estático. La única condición es **HTTPS**, que es lo que exige un
+service worker.
+
+Si en vez de publicarla hace falta pasarla como archivo, por correo o en una
+memoria, `python scripts/publicar.py` deja una copia de `app/` y su zip.
 
 ## Cómo está organizado
 
