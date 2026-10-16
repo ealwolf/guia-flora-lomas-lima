@@ -1097,12 +1097,15 @@ function chip(texto, activo, extra) {
    Van sin artículo. Son rótulos de un panel, no frases, y sin «la» y «el»
    se leen antes y pesan menos encima de las fichas.
 
-   La primera familia lleva «franja»: sus cuatro no son cuatro fichas sino
-   cuatro tramos de un mismo campo, pegados y sin filete, con la línea del
-   suelo cruzando de lado a lado sin cortarse. Sólo el tramo elegido saca su
-   recuadro, y la línea le pasa por dentro. */
+   Las tres familias se pintan igual, con fichas sueltas. La primera estuvo
+   un tiempo como una franja: sus cuatro pegados, sin filete, con la línea
+   del suelo cruzando los cuatro de un tirón, para que se leyeran como cuatro
+   ventanas de un mismo campo. Se volvió atrás a petición, porque los dibujos
+   se van a rehacer a mano y sueltos son editables uno a uno; la línea del
+   suelo de esos cuatro dejó de ir de filo a filo -de 0..80 a 6..74- porque
+   ahora toca los filetes de su propia ficha. */
 var HABITATS = [
-  { tit: 'Vegetación de alrededor', franja: true, hay: [
+  { tit: 'Vegetación de alrededor', hay: [
       ['Loma arbórea',      'arborea'],
       ['Loma arbustiva',    'arbustiva'],
       ['Loma herbácea',     'herbacea'],
@@ -1185,19 +1188,12 @@ function pintarFiltros() {
 
   $('#f-habitat').innerHTML = HABITATS.map(function (fam) {
     return '<p class="hab-fam">' + esc(fam.tit) + '</p>' +
-      '<div class="hab-fila' + (fam.franja ? ' franja' : '') + '">' +
+      '<div class="hab-fila">' +
       fam.hay.map(function (h) {
         return '<button class="hab" aria-pressed="' +
                (F.habitat.indexOf(h[0]) >= 0) + '" data-f="habitat" data-v="' +
-               esc(h[0]) + '">' + dibujoHabitat(h[1]) + '<span>' +
-               /* La franja no tiene filete mientras no se elige, así que nada
-                  decía que esos cuatro tramos se pulsan: parecían el paisaje
-                  de fondo. La casilla sí lo dice, y de paso dice que se puede
-                  marcar más de una. Es la misma que lleva Conservación, en
-                  pequeño. Las otras dos familias no la necesitan: ya se ven
-                  como fichas sueltas. */
-               (fam.franja ? '<span class="caja">' + svgIcono('check') + '</span>' : '') +
-               esc(h[0]) + '</span></button>';
+               esc(h[0]) + '">' + dibujoHabitat(h[1]) +
+               '<span>' + esc(h[0]) + '</span></button>';
       }).join('') + '</div>';
   }).join('');
 

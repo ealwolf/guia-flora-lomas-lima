@@ -1,0 +1,7 @@
+<!-- Ladera arenosa: la ladera suave, con el grano de la arena.
+     Generado por scripts/importar-dibujos.py desde assets/habitat-laderaArenosa.svg.
+     No lo edites aquí: edita assets/source/illustrations-habitat.af,
+     exporta otra vez y vuelve a pasar el guión. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<path d="M8.9,27.7C38,13.3 48.2,72.1 71,72.1"/><path d="M11.3,87.3h.01M16.9,85.6h.01M22.6,86h.01M28,87.9h.01M33.3,90.1h.01M39,90.7h.01M44.6,89.3h.01M49.9,87.1h.01M55.4,85.6h.01M61.1,86.1h.01M66.5,88.1h.01M11.3,78.4h.01M16.9,76.7h.01M22.6,77.1h.01M28,79.1h.01M33.3,81.2h.01M39,81.9h.01M44.6,80.5h.01M49.9,78.2h.01M55.4,76.7h.01M61.1,77.2h.01M66.5,79.3h.01M11.3,69.5h.01M16.9,67.9h.01M22.6,68.2h.01M28,70.2h.01M33.3,72.3h.01M39,73h.01M44.6,71.6h.01M49.9,69.3h.01M55.4,67.8h.01M11.3,60.6h.01M16.9,59h.01M22.6,59.3h.01M28,61.3h.01M33.3,63.5h.01M39,64.1h.01M44.6,62.7h.01M49.9,60.5h.01M11.3,51.8h.01M16.9,50.1h.01M22.6,50.5h.01M28,52.5h.01M33.3,54.6h.01M39,55.3h.01M44.6,53.9h.01M11.3,42.9h.01M16.9,41.3h.01M22.6,41.6h.01M28,43.6h.01M33.3,45.7h.01M39,46.4h.01M11.3,34h.01M16.9,32.4h.01M22.6,32.7h.01M28,34.7h.01M33.3,36.9h.01"/>
+</svg>

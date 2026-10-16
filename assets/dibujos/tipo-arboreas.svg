@@ -1,0 +1,20 @@
+<!-- Arbórea - un solo árbol, con la tara (Caesalpinia spinosa) y el
+     huarango (Vachellia macracantha) en la cabeza: tronco corto y copa
+     ancha y extendida, más ancha que alta.
+
+     Lo que tiene que leerse a 60 px es el TRONCO: uno solo, dibujado con
+     dos líneas que se cierran al subir para que tenga cuerpo y no sea un
+     tallo más. Arriba se abre en tres brazos que cruzan la copa. La copa es
+     el mismo contorno de bultos abierto por abajo que lleva la arbustiva,
+     con su mancha tenue, pero más ancha y despegada del suelo: entre la
+     copa y el suelo queda un hueco con sólo el tronco dentro, y ese hueco
+     es lo que dice «árbol» y no «mata». La loma arbórea del juego de
+     hábitats son dos taras sin contorno; aquí hace falta el contorno porque
+     es un árbol solo y con los brazos desnudos parecía un candelabro. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<path d="M26 86H54"/>
+<path d="M12 52a9 9 0 0 1 6-16a11 10 0 0 1 13-10a12 10 0 0 1 18 0a11 10 0 0 1 13 10a9 9 0 0 1 6 16"/>
+<path d="M38 86C38 76 39 68 40 60M42 86C42 76 41 68 40 60"/>
+<path d="M40 60C34 54 26 50 18 46M40 60C40 50 40 42 40 34M40 60C46 54 54 50 62 46"/>
+<path stroke-width="1.4" d="M26 50l-2-5M30 48l2-5M40 44l-5-4M40 44l5-4M54 50l2-5M50 48l-2-5"/>
+</svg>

@@ -16,7 +16,6 @@
      centrada. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 <path d="M22 86H58"/>
-<path d="M15 86C11 76 13 65 21 59C24 50 34 45 42 48C52 45 61 51 62 61C69 67 69 79 64 86Z" fill="currentColor" opacity=".12" stroke="none"/>
 <path d="M15 86C11 76 13 65 21 59C24 50 34 45 42 48C52 45 61 51 62 61C69 67 69 79 64 86"/>
 <path d="M34 86C33 78 30 71 26 65M40 86C40 77 41 68 41 59M46 86C47 78 51 71 55 66"/>
 <path stroke-width="1.4" d="M26 65l-4-3M26 65l4-4M41 59l-4-4M41 59l5-3M55 66l4-3M55 66l-4-3M31 73l-4-3M49 74l4-3"/>

@@ -1,0 +1,26 @@
+<!-- Loma arbórea - dos taras (Caesalpinia spinosa), el árbol grande de estas
+     lomas. Salen de una foto del propio proyecto.
+
+     Lo que hace reconocible a una tara no es la copa: es el esqueleto. Tronco
+     corto, tres brazos que se abren en ángulo abierto y van quebrándose al
+     subir, y una copa ANCHA Y PLANA, sin contorno. Por eso la copa es sólo
+     una mancha tenue y las ramas se ven cruzándola de parte a parte: con el
+     contorno cerrado sale el árbol de los cuentos, y con las hojas en bolas
+     en la punta de cada rama salen dos piruletas. Las dos cosas se probaron.
+
+     Las hojas son rayas cortas, no bolas: la tara tiene hoja compuesta de
+     foliolos pequeños, y a 60 px de ancho una raya de 1,4 lo dice y un óvalo
+     de 7 no.
+
+     Antes eran dos especies distintas -tara y mito-. Ahora son dos del mismo
+     árbol y juntos: lo que tiene que leerse no es «dos especies» sino «aquí
+     hay arboleda». El segundo es menor y va medio paso atrás, como se ven en
+     el campo, y la mancha es UNA SOLA y cruza los dos, que es lo que los cose
+     en un bulto en vez de dejarlos como dos dibujos puestos al lado. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<path d="M6 82H74"/>
+<path d="M4 41C4 33 11 28 21 27C29 24 37 26 42 31C45 34 47 36 50 38C54 34 60 34 65 37C72 39 77 44 75 49C66 54 56 51 48 50C30 52 11 49 4 41Z" fill="currentColor" opacity=".13" stroke="none"/>
+<path d="M26 82V60M26 60C23 54 18 48 12 40M26 60C27 51 27 41 26 31M26 60C30 53 36 46 42 38M18 48C16 45 15 42 14 38M33 49C35 45 37 41 38 37M21 44C19 42 18 40 17 37M31 44C33 42 34 40 35 37"/>
+<path d="M54 82V66M54 66C51 61 48 57 44 51M54 66C55 59 55 52 54 44M54 66C58 61 63 56 68 50M48 56C47 54 46 52 45 49M60 56C61 54 62 52 63 49"/>
+<path stroke-width="1.4" d="M12 40l-3-2M12 40l1-4M26 31l-3-3M26 31l4-2M42 38l3-2M42 38l-4-1M14 38l-3-1M38 37l3-1M44 51l-3-2M44 51l1-4M54 44l-3-2M54 44l4-2M68 50l3-2M68 50l-4-1M45 49l-3-1M63 49l3-1"/>
+</svg>

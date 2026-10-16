@@ -1,0 +1,24 @@
+<!-- Helecho - una sola fronda de culantrillo, Adiantum subvolubile, el
+     único helecho de la guía: un raquis que arranca abajo a la izquierda y
+     se arquea hacia arriba y a la derecha, con pinnas en abanico a los
+     lados.
+
+     El culantrillo no se reconoce por la fronda triangular del helecho de
+     los cuentos sino por las pinnas: pequeñas, en forma de abanico o de
+     media luna, cada una colgando de un pecíolo cortísimo y negro, alternas
+     a un lado y a otro del raquis. Por eso cada pinna es una cuña con el
+     borde redondo y un rabito, y van menguando hacia la punta. Son ocho:
+     cuatro grandes abajo y cuatro chicas arriba. Sin suelo: la fronda sale
+     de una grieta y lo que importa es el arco, no el pie. No se confunde
+     con nada del juego porque es el único dibujo que no sube derecho. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<path d="M20 84C22 64 36 42 56 32C59 30 62 27 64 25"/>
+<path transform="translate(22.6 71.7) rotate(-72)" d="M0 0v-3l-5-8a6 6 0 0 1 10 0l-5 8"/>
+<path transform="translate(26.3 62.3) rotate(116)" d="M0 0v-3l-5-8a6 6 0 0 1 10 0l-5 8"/>
+<path transform="translate(31.3 53.3) rotate(-56)" d="M0 0v-3l-5-8a6 6 0 0 1 10 0l-5 8"/>
+<path transform="translate(37.5 44.8) rotate(132)" d="M0 0v-3l-5-8a6 6 0 0 1 10 0l-5 8"/>
+<path transform="translate(44.8 37.5) rotate(-39)" d="M0 0v-2l-4-6a4.5 4.5 0 0 1 8 0l-4 6"/>
+<path transform="translate(53 31.6) rotate(150)" d="M0 0v-2l-4-6a4.5 4.5 0 0 1 8 0l-4 6"/>
+<path transform="translate(60 28) rotate(-41)" d="M0 0v-2l-4-6a4.5 4.5 0 0 1 8 0l-4 6"/>
+<path transform="translate(64 25) rotate(40)" d="M0 0v-2l-4-6a4.5 4.5 0 0 1 8 0l-4 6"/>
+</svg>

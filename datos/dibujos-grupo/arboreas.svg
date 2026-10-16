@@ -13,7 +13,6 @@
      es un árbol solo y con los brazos desnudos parecía un candelabro. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 100" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 <path d="M26 86H54"/>
-<path d="M12 52a9 9 0 0 1 6-16a11 10 0 0 1 13-10a12 10 0 0 1 18 0a11 10 0 0 1 13 10a9 9 0 0 1 6 16C56 55 24 55 12 52Z" fill="currentColor" opacity=".12" stroke="none"/>
 <path d="M12 52a9 9 0 0 1 6-16a11 10 0 0 1 13-10a12 10 0 0 1 18 0a11 10 0 0 1 13 10a9 9 0 0 1 6 16"/>
 <path d="M38 86C38 76 39 68 40 60M42 86C42 76 41 68 40 60"/>
 <path d="M40 60C34 54 26 50 18 46M40 60C40 50 40 42 40 34M40 60C46 54 54 50 62 46"/>
