@@ -29,12 +29,12 @@ corto son:
 - Lienzo `0 0 80 100` y el mismo envoltorio en los 16.
 - **Sin color.** Todo es `currentColor`, y así el dibujo sigue al tema claro u
   oscuro y se pone verde al elegir la ficha, sin una sola regla de color.
-- **Sólo líneas.** Un grosor, 1,2, y 0,84 para el detalle. Nada de rellenos:
+- **Sólo líneas.** Un grosor, 1, y 0,7 para el detalle. Nada de rellenos:
   el color, el grosor y el estilo los pone la app, no el archivo.
 - Sin `id`, `<text>`, `<style>` ni `<defs>`: los 16 acaban incrustados en la
   misma página y los nombres chocarían.
 - Se ven a unos 110 x 137 px en escritorio y 80 x 100 en móvil. A ese tamaño,
-  1,2 unidades son 1,65 px de trazo.
+  1 unidad es 1,33 px de trazo.
 
 ## Lo que conviene saber antes de tocar
 

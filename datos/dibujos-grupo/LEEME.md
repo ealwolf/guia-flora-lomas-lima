@@ -38,7 +38,7 @@ enseñar de qué clase de planta se habla sin tener que leer la palabra.
 ## Las reglas: las mismas que los hábitats
 
 Lienzo `0 0 80 100`, mismo envoltorio, todo en `currentColor` y un solo grosor
--1,2, y 0,84 para el detalle-, que lo pone la app y no el archivo. Sin
+-1, y 0,7 para el detalle-, que lo pone la app y no el archivo. Sin
 rellenos: los tenues que hubo (`opacity` .12) eran sombra y se quitaron, para
 que el color y el estilo los decida el código. `scripts/construir.py` lo
 comprueba con el mismo lector que usa para los hábitats, así que un dibujo

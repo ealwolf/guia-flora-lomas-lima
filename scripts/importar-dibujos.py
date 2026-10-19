@@ -32,7 +32,7 @@ RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ORIGEN = os.path.join(RAIZ, 'assets')
 DESTINO = os.path.join(RAIZ, 'datos', 'dibujos-habitat')
 LIENZO_W, LIENZO_H = 80.0, 100.0
-GROSOR = 1.2
+GROSOR = 1
 
 # El nombre del archivo de Affinity no tiene por qué ser la clave del dibujo.
 NOMBRES = {

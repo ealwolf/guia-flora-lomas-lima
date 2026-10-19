@@ -1152,22 +1152,26 @@ function dibujoGrupo(n) { return lienzo(DIBG[n], 'hab-dib'); }
    es sólo el interior, así que el lienzo y el trazo los pone aquí: no hay
    forma de que un dibujo se salga del juego. */
 /* El grosor de TODOS los dibujos se decide aquí, no en los archivos: ellos
-   guardan sólo las rutas. Son 1,2 unidades sobre el lienzo de 80.
+   guardan sólo las rutas. Es 1 unidad sobre el lienzo de 80.
 
    Estuvo en 2, y la cifra venía de cuando la ficha enseñaba el dibujo a 60 px
    de ancho. Las fichas crecieron y hoy se ve a 110, así que ese 2 se había
-   convertido en 2,74 px de trazo en pantalla: una línea gorda que en los
-   dibujos con detalle -las hojas de las matas, las briznas del pasto- se
-   tocaba consigo misma y los dejaba en una mancha. Con 1,2 son 1,65 px y las
-   hojas se ven sueltas.
+   convertido en 2,74 px de trazo en pantalla sin que nadie lo decidiera: una
+   línea gorda que en los dibujos con detalle -las hojas de las matas, las
+   briznas del pasto- se tocaba consigo misma y los dejaba en una mancha.
 
-   No se baja más por lo de siempre: en Affinity están dibujados a 3 px sobre
-   360, que aquí serían 0,67 unidades, o sea 0,91 px en pantalla. Por debajo
-   de un píxel la línea deja de ser línea y se vuelve un gris. */
+   Con 1 son 1,33 px y las hojas se separan. Se probó también 1,2 -1,65 px-,
+   que ya arreglaba lo peor, pero a 1 las matas se leen hoja a hoja y los
+   demás dibujos no pierden nada.
+
+   Más fino no: en Affinity están dibujados a 3 px sobre 360, que aquí serían
+   0,67 unidades, o sea 0,91 px en pantalla. Por debajo de un píxel la línea
+   deja de ser línea y se vuelve un gris. 1 es lo más cerca que se puede estar
+   de Affinity sin cruzar eso. */
 function lienzo(cuerpo, clase) {
   if (!cuerpo) return '';
   return '<svg class="' + clase + '" viewBox="0 0 80 100" aria-hidden="true" ' +
-         'focusable="false" fill="none" stroke="currentColor" stroke-width="1.2" ' +
+         'focusable="false" fill="none" stroke="currentColor" stroke-width="1" ' +
          'stroke-linecap="round" stroke-linejoin="round">' + cuerpo + '</svg>';
 }
 
