@@ -410,8 +410,14 @@ def main():
 # porque es fácil de romper -basta retocar uno en un editor de vectores, que
 # suele reescribir el <svg> entero- y el estropicio no se ve hasta que están
 # los ocho juntos y uno sale de otro tamaño.
+#
+# El grosor no se comprueba contra un número escrito aquí: basta con que lo
+# lleve. El que vale es el que pone la app en lienzo(), porque de estos
+# archivos sólo se guardan las rutas y el envoltorio lo pone ella. Estuvo
+# escrito un 2 y al bajar el trazo a 1,2 la construcción se paró por una
+# cifra que ya no manda en ningún sitio.
 ENVOLTORIO = ('viewBox="0 0 80 100"', 'fill="none"', 'stroke="currentColor"',
-              'stroke-width="2"', 'stroke-linecap="round"',
+              'stroke-width=', 'stroke-linecap="round"',
               'stroke-linejoin="round"')
 # ids y nombres propios: los ocho acaban incrustados en la misma página.
 PROHIBIDO = ('<text', '<style', '<defs', ' id=', '<image', 'xlink', '#')

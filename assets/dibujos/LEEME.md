@@ -29,27 +29,24 @@ corto son:
 - Lienzo `0 0 80 100` y el mismo envoltorio en los 16.
 - **Sin color.** Todo es `currentColor`, y así el dibujo sigue al tema claro u
   oscuro y se pone verde al elegir la ficha, sin una sola regla de color.
-- **Sólo líneas.** Un grosor, 2, y 1,4 para el detalle. Nada de rellenos: el
-  color y el estilo los pone la app, no el archivo.
+- **Sólo líneas.** Un grosor, 1,2, y 0,84 para el detalle. Nada de rellenos:
+  el color, el grosor y el estilo los pone la app, no el archivo.
 - Sin `id`, `<text>`, `<style>` ni `<defs>`: los 16 acaban incrustados en la
   misma página y los nombres chocarían.
-- Se ven a unos 60 x 75 px. Nada más fino que 2 unidades.
+- Se ven a unos 110 x 137 px en escritorio y 80 x 100 en móvil. A ese tamaño,
+  1,2 unidades son 1,65 px de trazo.
 
-## Dos cosas que conviene saber antes de tocar
+## Lo que conviene saber antes de tocar
 
-**La copa de la tara.** `habitat-lomaArborea.svg` es el único que conserva un
-relleno, y es a propósito: la copa de la tara es ancha y plana y **no tiene
-contorno**, así que es una mancha tenue con las ramas cruzándola. Si se cierra
-el contorno sale el árbol de los cuentos, y con hojas en bolas salen dos
-piruletas; las dos cosas se probaron. Para pasarla a línea hay que redibujar
-la copa, no sólo borrar el relleno.
+**Los ocho de hábitat salen de Affinity.** Están en
+`assets/source/illustrations-habitat.af` y llegan aquí por
+`scripts/importar-dibujos.py`, que los **sobrescribe** en cada pasada.
+Editarlos en esta carpeta es perder el trabajo la próxima vez que se corra
+aquel guión: para ésos se edita el `.af` y se reexporta a `assets/*.svg`.
 
-**Los cuatro de Affinity.** `laderaArenosa`, `laderaRocosa`, `crestaRocosa` y
-`fondoQuebrada` salen de `assets/source/illustrations-habitat.af` a través de
-`scripts/importar-dibujos.py`, que los **sobrescribe** en cada pasada. Editar
-aquí esos cuatro es perder el trabajo la próxima vez que se corra aquel
-guión: para ésos se edita el `.af`. Los otros doce son de aquí y se editan
-aquí. `importar-editados.py` avisa si tocas uno de los cuatro.
+**Los ocho de tipo de planta están dibujados a mano** y sí se editan aquí.
+Son los que quedan por pasar a Affinity. `importar-editados.py` avisa si
+tocas uno de los de hábitat.
 
 ## La línea del suelo
 

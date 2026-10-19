@@ -41,10 +41,13 @@ MAPA = {
     'tipo-parasitas':  ('dibujos-grupo', 'parasitas'),
 }
 
-# Cuatro de los hábitats los produce importar-dibujos.py desde Affinity y los
+# Los ocho de hábitat los produce importar-dibujos.py desde Affinity y los
 # sobrescribe en cada pasada. Editarlos aquí es perder el trabajo al siguiente
-# `python scripts/importar-dibujos.py`, así que se avisa.
-DE_AFFINITY = {'habitat-laderaArenosa', 'habitat-laderaRocosa',
+# `python scripts/importar-dibujos.py`, así que se avisa. Los de tipo de
+# planta todavía están dibujados a mano y sí se editan aquí.
+DE_AFFINITY = {'habitat-lomaArborea', 'habitat-lomaArbustiva',
+               'habitat-lomaHerbacea', 'habitat-zonaCactaceas',
+               'habitat-laderaArenosa', 'habitat-laderaRocosa',
                'habitat-crestaRocosa', 'habitat-fondoQuebrada'}
 
 

@@ -15,12 +15,13 @@ lienzo pasa a 80x100, queda un solo grosor y el color desaparece -lo pone
 currentColor desde fuera, que es lo que hace que el dibujo siga al tema y se
 ponga verde al elegirlo-. De 10 KB por archivo se queda en 1 ó 2.
 
-EL GROSOR NO SE RESPETA, y es a propósito. Los dibujos vienen con el trazo a
-4 px sobre 360, que en el lienzo de 80 son 0,89. Pero esto se ve a 60 px de
-ancho, así que 0,89 serían dos tercios de un píxel: la ladera arenosa perdía
-los 57 granos de arena enteros -no se veía ni uno- y las crestas quedaban en
-un gris sucio. Se normaliza a GROSOR, que es el de los demás dibujos del
-juego. Si algún día se quiere más fino, se cambia ahí y vale para los ocho.
+EL GROSOR NO SE RESPETA, y es a propósito: Affinity trae uno distinto por
+figura, porque va compensando a mano los grupos que escalan más en y que en
+x. Aquí se normaliza a GROSOR, igual para todas.
+
+GROSOR es el mismo que pone la app en lienzo(), para que el archivo abierto
+suelto se vea como en pantalla. El que manda de verdad es el de la app: de
+estos archivos sólo se guardan las rutas, y el envoltorio lo pone ella.
 
 No edites a mano lo que sale de aquí: edita el .af y vuelve a exportar.
 """
@@ -31,7 +32,7 @@ RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ORIGEN = os.path.join(RAIZ, 'assets')
 DESTINO = os.path.join(RAIZ, 'datos', 'dibujos-habitat')
 LIENZO_W, LIENZO_H = 80.0, 100.0
-GROSOR = 2
+GROSOR = 1.2
 
 # El nombre del archivo de Affinity no tiene por qué ser la clave del dibujo.
 NOMBRES = {

@@ -59,10 +59,17 @@ compañía, los dos filtros dejan de distinguirse. Ésa es la regla; lo demás
   oscuro y se pone verde al elegir la ficha, sin una sola regla de color
   aparte. Los dibujos de Affinity vienen en negro; el importador lo quita.
 - Los rellenos tenues (`opacity` .1–.12) son sombra, nunca información.
-- Un solo grosor, 2, y 1.4 para algún detalle. El importador **no respeta** el
-  grosor del original: Affinity dibuja a 4 px sobre 360, que en este lienzo
-  son 0,89, y esto se ve a 60 px de ancho -0,89 serían dos tercios de píxel y
-  la arena desaparecía entera-. Se normaliza en `GROSOR`, en el importador.
+- **Un solo grosor, 1,2**, y 0,84 para el detalle. El importador **no respeta**
+  el del original, porque Affinity trae uno distinto por figura: lo normaliza
+  en `GROSOR`. Pero el que de verdad manda es el de la app, en `lienzo()`:
+  de estos archivos sólo se guardan las rutas.
+
+  Estuvo en 2, de cuando la ficha enseñaba el dibujo a 60 px de ancho. Hoy se
+  ve a 110, así que ese 2 se había vuelto un trazo de 2,74 px en pantalla y
+  los dibujos con detalle -las hojas de las matas, las briznas del pasto- se
+  empastaban. Con 1,2 son 1,65 px. Más fino no: en Affinity están a 3 px
+  sobre 360, que aquí serían 0,91 px, y por debajo de un píxel la línea deja
+  de ser línea.
 - Sin `id`, `<text>`, `<style>` ni `<defs>`: los ocho acaban incrustados en la
   misma página y los nombres chocarían.
 - Se ven a 60 × 75 px. Nada más fino que 2 unidades.
